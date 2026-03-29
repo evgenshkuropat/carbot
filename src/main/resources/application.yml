@@ -1,0 +1,15 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5433/carbot
+    username: postgres
+    password: 263126
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+
+telegram:
+  bot:
+    token: 8637160094:AAEkzQnEwQDKMFP4evVZs9EBs9wis_ZB2Hs
+    username: CarRadarCZ_bot

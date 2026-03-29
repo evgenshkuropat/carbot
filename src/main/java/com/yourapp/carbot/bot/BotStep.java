@@ -1,0 +1,16 @@
+package com.yourapp.carbot.bot;
+
+public enum BotStep {
+    NONE,
+
+    WAITING_CAR_TYPE,
+    WAITING_BRAND,
+    WAITING_MAX_PRICE,
+    WAITING_MAX_MILEAGE,
+    WAITING_LOCATION,
+    WAITING_FUEL_TYPE,
+    WAITING_TRANSMISSION,
+    WAITING_YEAR_FROM,
+
+    COMPLETED
+}
