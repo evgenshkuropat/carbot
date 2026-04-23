@@ -12,30 +12,67 @@ public class UserFilterEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "language_code")
+    @Column(name = "language_code", length = 10)
     private String languageCode;
 
     @Column(nullable = false, unique = true)
     private Long chatId;
 
+    @Column(length = 100)
     private String carType;
+
+    @Column(length = 300)
     private String brand;
-    private Integer minPrice;
+
     private Integer maxPrice;
     private Integer maxMileage;
+
+    @Column(length = 100)
     private String location;
+
+    @Column(length = 50)
     private String fuelType;
+
+    @Column(length = 30)
     private String transmission;
+
     private Integer yearFrom;
 
+    @Column(nullable = false)
     private LocalDateTime createdAt;
+
+    @Column(nullable = false)
     private LocalDateTime updatedAt;
 
     public UserFilterEntity() {
     }
 
+    @PrePersist
+    public void prePersist() {
+        LocalDateTime now = LocalDateTime.now();
+
+        if (createdAt == null) {
+            createdAt = now;
+        }
+
+        updatedAt = now;
+    }
+
+    @PreUpdate
+    public void preUpdate() {
+        updatedAt = LocalDateTime.now();
+    }
+
     public Long getId() {
         return id;
+    }
+
+    public String getLanguageCode() {
+        return languageCode;
+    }
+
+    public void setLanguageCode(String languageCode) {
+        this.languageCode = languageCode;
     }
 
     public Long getChatId() {
@@ -60,14 +97,6 @@ public class UserFilterEntity {
 
     public void setBrand(String brand) {
         this.brand = brand;
-    }
-
-    public Integer getMinPrice() {
-        return minPrice;
-    }
-
-    public void setMinPrice(Integer minPrice) {
-        this.minPrice = minPrice;
     }
 
     public Integer getMaxPrice() {
@@ -133,13 +162,4 @@ public class UserFilterEntity {
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
     }
-
-    public String getLanguageCode() {
-        return languageCode;
-    }
-
-    public void setLanguageCode(String languageCode) {
-        this.languageCode = languageCode;
-    }
-
 }

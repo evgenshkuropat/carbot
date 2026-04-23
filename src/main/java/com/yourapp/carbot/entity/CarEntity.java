@@ -5,39 +5,59 @@ import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "cars")
+@Table(
+        name = "cars",
+        indexes = {
+                @Index(name = "idx_car_url", columnList = "url"),
+                @Index(name = "idx_car_price", columnList = "priceValue"),
+                @Index(name = "idx_car_created", columnList = "createdAt"),
+                @Index(name = "idx_car_source", columnList = "source")
+        }
+)
 public class CarEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 50)
     private String source;
 
     @Column(nullable = false, length = 500)
     private String title;
 
+    @Column(length = 100)
     private String price;
 
     private Integer priceValue;
 
+    @Column(length = 255)
     private String location;
 
     @Column(nullable = false, unique = true, length = 1000)
     private String url;
 
+    @Column(length = 1500)
     private String imageUrl;
 
+    @Column(nullable = false)
     private LocalDateTime createdAt;
 
+    @Column(length = 100)
     private String brand;
 
     private Integer year;
 
     private Integer mileage;
 
+    @Column(length = 50)
+    private String fuelType;
+
+    @Column(length = 50)
     private String transmission;
+
+    @Column(length = 50)
+    private String carType;
 
     public CarEntity() {
     }
@@ -53,7 +73,10 @@ public class CarEntity {
                      String brand,
                      Integer year,
                      Integer mileage,
-                     String transmission) {
+                     String fuelType,
+                     String transmission,
+                     String carType) {
+
         this.source = source;
         this.title = title;
         this.price = price;
@@ -65,7 +88,16 @@ public class CarEntity {
         this.brand = brand;
         this.year = year;
         this.mileage = mileage;
+        this.fuelType = fuelType;
         this.transmission = transmission;
+        this.carType = carType;
+    }
+
+    @PrePersist
+    public void prePersist() {
+        if (createdAt == null) {
+            createdAt = LocalDateTime.now();
+        }
     }
 
     public Long getId() {
@@ -160,11 +192,27 @@ public class CarEntity {
         this.mileage = mileage;
     }
 
+    public String getFuelType() {
+        return fuelType;
+    }
+
+    public void setFuelType(String fuelType) {
+        this.fuelType = fuelType;
+    }
+
     public String getTransmission() {
         return transmission;
     }
 
     public void setTransmission(String transmission) {
         this.transmission = transmission;
+    }
+
+    public String getCarType() {
+        return carType;
+    }
+
+    public void setCarType(String carType) {
+        this.carType = carType;
     }
 }

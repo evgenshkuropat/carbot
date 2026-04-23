@@ -1,10 +1,13 @@
 package com.yourapp.carbot.service.dto;
 
+import java.time.LocalDateTime;
+
 public class CarDto {
 
     private String source;
     private String title;
     private String price;
+    private Integer priceValue;
     private String location;
     private String url;
     private String imageUrl;
@@ -12,7 +15,15 @@ public class CarDto {
     private String brand;
     private Integer year;
     private Integer mileage;
+
+    private String fuelType;
+
     private String transmission;
+
+    private String carType;
+
+    private LocalDateTime createdAt;
+
 
     public CarDto() {
     }
@@ -20,16 +31,20 @@ public class CarDto {
     public CarDto(String source,
                   String title,
                   String price,
+                  Integer priceValue,
                   String location,
                   String url,
                   String imageUrl) {
         this.source = source;
         this.title = title;
         this.price = price;
+        this.priceValue = priceValue;
         this.location = location;
         this.url = url;
         this.imageUrl = imageUrl;
+        this.createdAt = LocalDateTime.now();
     }
+
 
     public String getSource() {
         return source;
@@ -39,6 +54,7 @@ public class CarDto {
         this.source = source;
     }
 
+
     public String getTitle() {
         return title;
     }
@@ -46,6 +62,7 @@ public class CarDto {
     public void setTitle(String title) {
         this.title = title;
     }
+
 
     public String getPrice() {
         return price;
@@ -55,6 +72,16 @@ public class CarDto {
         this.price = price;
     }
 
+
+    public Integer getPriceValue() {
+        return priceValue;
+    }
+
+    public void setPriceValue(Integer priceValue) {
+        this.priceValue = priceValue;
+    }
+
+
     public String getLocation() {
         return location;
     }
@@ -62,6 +89,7 @@ public class CarDto {
     public void setLocation(String location) {
         this.location = location;
     }
+
 
     public String getUrl() {
         return url;
@@ -71,6 +99,7 @@ public class CarDto {
         this.url = url;
     }
 
+
     public String getImageUrl() {
         return imageUrl;
     }
@@ -78,6 +107,7 @@ public class CarDto {
     public void setImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
     }
+
 
     public String getBrand() {
         return brand;
@@ -87,6 +117,7 @@ public class CarDto {
         this.brand = brand;
     }
 
+
     public Integer getYear() {
         return year;
     }
@@ -94,6 +125,7 @@ public class CarDto {
     public void setYear(Integer year) {
         this.year = year;
     }
+
 
     public Integer getMileage() {
         return mileage;
@@ -103,11 +135,39 @@ public class CarDto {
         this.mileage = mileage;
     }
 
+
+    public String getFuelType() {
+        return fuelType;
+    }
+
+    public void setFuelType(String fuelType) {
+        this.fuelType = fuelType;
+    }
+
+
     public String getTransmission() {
         return transmission;
     }
 
     public void setTransmission(String transmission) {
         this.transmission = transmission;
+    }
+
+
+    public String getCarType() {
+        return carType;
+    }
+
+    public void setCarType(String carType) {
+        this.carType = carType;
+    }
+
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
     }
 }

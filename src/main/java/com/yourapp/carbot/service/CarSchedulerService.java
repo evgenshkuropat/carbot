@@ -7,6 +7,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 @Service
 public class CarSchedulerService {
@@ -16,28 +17,45 @@ public class CarSchedulerService {
     private final CarParserService carParserService;
     private final CarNotificationService carNotificationService;
 
+    private final AtomicBoolean running = new AtomicBoolean(false);
+
     public CarSchedulerService(CarParserService carParserService,
                                CarNotificationService carNotificationService) {
         this.carParserService = carParserService;
         this.carNotificationService = carNotificationService;
     }
 
-    @Scheduled(fixedDelay = 10 * 60 * 1000)
+    @Scheduled(initialDelay = 30_000, fixedDelay = 10 * 60 * 1000)
     public void fetchAndStoreCarsScheduled() {
-        log.info("Car scheduler started");
+        if (!running.compareAndSet(false, true)) {
+            log.warn("Scheduler skipped: previous run still in progress");
+            return;
+        }
+
+        log.info("Scheduler started");
 
         try {
             List<CarEntity> newCars = carParserService.fetchAndStoreCars();
 
-            log.info("Car scheduler finished. New cars saved: {}", newCars.size());
+            int newCarsCount = newCars == null ? 0 : newCars.size();
+            log.info("Scheduler finished parsing/storing. New cars saved={}", newCarsCount);
 
-            if (!newCars.isEmpty()) {
+            if (newCarsCount == 0) {
+                log.info("No new cars found, notifications skipped");
+                return;
+            }
+
+            try {
                 int sentCount = carNotificationService.notifySubscribers(newCars);
-                log.info("Notifications actually sent: {}", sentCount);
+                log.info("Notifications sent={}", sentCount);
+            } catch (Exception e) {
+                log.error("Notification step failed", e);
             }
 
         } catch (Exception e) {
-            log.error("Car scheduler failed", e);
+            log.error("Scheduler failed", e);
+        } finally {
+            running.set(false);
         }
     }
 }

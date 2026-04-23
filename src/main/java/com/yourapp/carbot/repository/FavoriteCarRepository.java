@@ -14,5 +14,5 @@ public interface FavoriteCarRepository extends JpaRepository<FavoriteCarEntity, 
 
     List<FavoriteCarEntity> findByChatIdOrderByCreatedAtDesc(Long chatId);
 
-    void deleteByChatIdAndCarId(Long chatId, Long carId);
+    long deleteByChatIdAndCarId(Long chatId, Long carId);
 }

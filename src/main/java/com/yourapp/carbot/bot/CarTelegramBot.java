@@ -17,19 +17,31 @@ import org.telegram.telegrambots.longpolling.starter.SpringLongPollingBot;
 import org.telegram.telegrambots.longpolling.util.LongPollingSingleThreadUpdateConsumer;
 import org.telegram.telegrambots.meta.api.methods.AnswerCallbackQuery;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
+import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageReplyMarkup;
+import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
+import org.telegram.telegrambots.meta.api.objects.InputFile;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboard;
 import org.telegram.telegrambots.meta.generics.TelegramClient;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.net.URLConnection;
+import java.nio.file.Files;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Component
 public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleThreadUpdateConsumer {
-
-    private static final int FIND_PAGE_SIZE = 3;
 
     private final TelegramClient telegramClient;
     private final String botToken;
@@ -43,7 +55,7 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
     private final CarBotKeyboardFactory keyboardFactory;
     private final MessageService messages;
 
-    private final Map<Long, Integer> findOffsets = new ConcurrentHashMap<>();
+    private final Map<Long, SearchSession> searchSessions = new ConcurrentHashMap<>();
 
     public CarTelegramBot(
             @Value("${telegram.bot.token}") String botToken,
@@ -106,7 +118,7 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
                 return;
             }
 
-            if (handleMenuButton(chatId, username, telegramLanguageCode, text)) {
+            if (handleMenuButton(chatId, text)) {
                 return;
             }
 
@@ -121,34 +133,50 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
         }
     }
 
-    private boolean handleMenuButton(Long chatId, String username, String telegramLanguageCode, String text) {
-        return switch (text) {
-            case "🔍 Поиск", "🔍 Пошук", "🔍 Hledat", "🔍 Search" -> {
-                handleFind(chatId);
-                yield true;
-            }
-            case "⚙️ Фильтр", "⚙️ Фільтр", "⚙️ Filtr", "⚙️ Filter" -> {
-                startFilterSetup(chatId);
-                yield true;
-            }
-            case "📝 Мой фильтр", "📝 Мій фільтр", "📝 Můj filtr", "📝 My filter" -> {
-                showCurrentFilter(chatId);
-                yield true;
-            }
-            case "🆕 Последние", "🆕 Останні", "🆕 Nejnovější", "🆕 Latest" -> {
-                handleLatest(chatId);
-                yield true;
-            }
-            case "⭐ Избранное", "⭐ Обране", "⭐ Oblíbené", "⭐ Favorites" -> {
-                handleFavorites(chatId);
-                yield true;
-            }
-            case "🌐 Язык", "🌐 Мова", "🌐 Jazyk", "🌐 Language" -> {
-                handleLanguage(chatId);
-                yield true;
-            }
-            default -> false;
-        };
+    private boolean handleMenuButton(Long chatId, String text) {
+        String lang = lang(chatId);
+
+        String normalized = text
+                .replace("🔍 ", "")
+                .replace("⚙️ ", "")
+                .replace("📋 ", "")
+                .replace("📝 ", "")
+                .replace("🆕 ", "")
+                .replace("⭐ ", "")
+                .replace("🌐 ", "")
+                .trim();
+
+        if (normalized.equals(messages.get(lang, "menu.search")) || text.equals("/find")) {
+            handleFind(chatId);
+            return true;
+        }
+
+        if (normalized.equals(messages.get(lang, "menu.filter")) || text.equals("/filter")) {
+            startNewFilterSetup(chatId);
+            return true;
+        }
+
+        if (normalized.equals(messages.get(lang, "menu.myFilter")) || text.equals("/myfilter")) {
+            showCurrentFilter(chatId);
+            return true;
+        }
+
+        if (normalized.equals(messages.get(lang, "menu.latest")) || text.equals("/latest")) {
+            handleLatest(chatId);
+            return true;
+        }
+
+        if (normalized.equals(messages.get(lang, "menu.favorites")) || text.equals("/favorites")) {
+            handleFavorites(chatId);
+            return true;
+        }
+
+        if (normalized.equals(messages.get(lang, "menu.language")) || text.equals("/language")) {
+            handleLanguage(chatId);
+            return true;
+        }
+
+        return false;
     }
 
     private void handleCommand(Long chatId, String username, String telegramLanguageCode, String text) {
@@ -158,7 +186,7 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
             case "/find" -> handleFind(chatId);
             case "/favorites" -> handleFavorites(chatId);
             case "/help" -> handleHelp(chatId);
-            case "/filter" -> startFilterSetup(chatId);
+            case "/filter" -> startNewFilterSetup(chatId);
             case "/myfilter" -> showCurrentFilter(chatId);
             case "/resetfilter" -> resetFilter(chatId);
             case "/language" -> handleLanguage(chatId);
@@ -172,32 +200,78 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
 
     private void handleStart(Long chatId, String username, String telegramLanguageCode) {
         subscriberService.subscribe(chatId, username);
-        saveLanguage(chatId, resolveLanguageCode(telegramLanguageCode));
 
-        sendMessage(
-                chatId,
-                messages.get(lang(chatId), "menu.ready"),
-                keyboardFactory.mainMenuKeyboard(lang(chatId))
-        );
+        UserFilterEntity filter = userFilterService.getOrCreate(chatId);
 
-        startFilterSetup(chatId);
+        if (filter.getLanguageCode() == null || filter.getLanguageCode().isBlank()) {
+            filter.setLanguageCode(resolveLanguageCode(telegramLanguageCode));
+            userFilterService.save(filter);
+        }
+
+        if (isFilterConfigured(filter)) {
+            sendMessage(
+                    chatId,
+                    messages.get(lang(chatId), "start.welcomeBack")
+                            + "\n\n"
+                            + buildFilterSummary(filter),
+                    keyboardFactory.mainMenuKeyboard(lang(chatId))
+            );
+            return;
+        }
+
+        startNewFilterSetup(chatId);
     }
 
-    private void startFilterSetup(Long chatId) {
+    private boolean isFilterConfigured(UserFilterEntity filter) {
+        if (filter == null) {
+            return false;
+        }
+
+        return (filter.getCarType() != null && !filter.getCarType().isBlank())
+                || (filter.getBrand() != null && !filter.getBrand().isBlank())
+                || filter.getMaxPrice() != null
+                || filter.getMaxMileage() != null
+                || (filter.getLocation() != null && !filter.getLocation().isBlank())
+                || (filter.getFuelType() != null && !filter.getFuelType().isBlank())
+                || (filter.getTransmission() != null && !filter.getTransmission().isBlank())
+                || filter.getYearFrom() != null;
+    }
+
+    private void startNewFilterSetup(Long chatId) {
         String currentLang = lang(chatId);
 
         userFilterService.clearFilter(chatId);
 
         UserFilterEntity filter = userFilterService.getOrCreate(chatId);
         filter.setLanguageCode(currentLang);
+        filter.setCarType(null);
+        filter.setBrand(null);
+        filter.setFuelType(null);
+        filter.setTransmission(null);
+        filter.setLocation(null);
+        filter.setMaxPrice(null);
+        filter.setMaxMileage(null);
+        filter.setYearFrom(null);
         userFilterService.save(filter);
 
         userStateService.setStep(chatId, BotStep.WAITING_CAR_TYPE);
 
         sendMessage(
                 chatId,
-                messages.get(lang(chatId), "start.title"),
-                keyboardFactory.carTypeKeyboard(lang(chatId))
+                messages.get(currentLang, "start.title"),
+                keyboardFactory.carTypeKeyboard(currentLang, filter.getCarType(), true)
+        );
+    }
+
+    private void editFilterSetup(Long chatId) {
+        UserFilterEntity filter = userFilterService.getOrCreate(chatId);
+
+        userStateService.setStep(chatId, BotStep.WAITING_CAR_TYPE);
+
+        sendMessage(
+                chatId,
+                buildCarTypeSelectionText(chatId, filter.getCarType()),
+                keyboardFactory.carTypeKeyboard(lang(chatId), filter.getCarType(), true)
         );
     }
 
@@ -208,8 +282,13 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
 
         answerCallback(callbackId);
 
-        if ("find_more".equals(data)) {
-            handleFindMore(chatId);
+        if ("browse_next".equals(data)) {
+            handleBrowseNext(chatId);
+            return;
+        }
+
+        if ("browse_prev".equals(data)) {
+            handleBrowsePrev(chatId);
             return;
         }
 
@@ -229,7 +308,7 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
         }
 
         if ("myfilter_edit".equals(data)) {
-            startFilterSetup(chatId);
+            editFilterSetup(chatId);
             return;
         }
 
@@ -258,13 +337,38 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
             return;
         }
 
-        if (data.startsWith("car_type:")) {
-            handleCarTypeCallback(chatId, data.substring("car_type:".length()));
+        if (data.startsWith("wizard_back:")) {
+            handleWizardBack(chatId, data.substring("wizard_back:".length()));
             return;
         }
 
-        if (data.startsWith("brand:")) {
-            handleBrandCallback(chatId, data.substring("brand:".length()));
+        if (data.startsWith("car_type:toggle:")) {
+            handleCarTypeToggle(update, chatId, data.substring("car_type:toggle:".length()));
+            return;
+        }
+
+        if ("car_type:any".equals(data)) {
+            handleCarTypeAny(chatId);
+            return;
+        }
+
+        if ("car_type:done".equals(data)) {
+            handleCarTypeDone(update, chatId);
+            return;
+        }
+
+        if (data.startsWith("brand:toggle:")) {
+            handleBrandToggle(update, chatId, data.substring("brand:toggle:".length()));
+            return;
+        }
+
+        if ("brand:any".equals(data)) {
+            handleBrandAny(chatId);
+            return;
+        }
+
+        if ("brand:done".equals(data)) {
+            handleBrandDone(chatId);
             return;
         }
 
@@ -288,36 +392,244 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
             return;
         }
 
+        if (data.startsWith("fuel_type:")) {
+            handleFuelTypeCallback(chatId, data.substring("fuel_type:".length()));
+            return;
+        }
+
         if (data.startsWith("year_from:")) {
             handleYearFromCallback(chatId, data.substring("year_from:".length()));
         }
     }
 
-    private void handleCarTypeCallback(Long chatId, String value) {
+    private void handleWizardBack(Long chatId, String targetStep) {
         UserFilterEntity filter = userFilterService.getOrCreate(chatId);
-        filter.setCarType(value);
+        String lang = lang(chatId);
+
+        switch (targetStep) {
+            case "menu" -> {
+                userStateService.setStep(chatId, BotStep.NONE);
+                sendMessage(
+                        chatId,
+                        messages.get(lang, "menu.ready"),
+                        keyboardFactory.mainMenuKeyboard(lang)
+                );
+            }
+
+            case "car_type" -> {
+                userStateService.setStep(chatId, BotStep.WAITING_CAR_TYPE);
+                sendMessage(
+                        chatId,
+                        buildCarTypeSelectionText(chatId, filter.getCarType()),
+                        keyboardFactory.carTypeKeyboard(lang, filter.getCarType(), true)
+                );
+            }
+
+            case "brand" -> {
+                userStateService.setStep(chatId, BotStep.WAITING_BRAND);
+                sendMessage(
+                        chatId,
+                        buildBrandSelectionText(chatId, parseValues(filter.getBrand())),
+                        keyboardFactory.brandKeyboard(lang, filter.getBrand(), true)
+                );
+            }
+
+            case "max_price" -> {
+                userStateService.setStep(chatId, BotStep.WAITING_MAX_PRICE);
+                sendMessage(
+                        chatId,
+                        messages.get(lang, "price.choose") + "\n\n" + buildFilterProgress(filter),
+                        keyboardFactory.maxPriceKeyboard(lang, true)
+                );
+            }
+
+            case "location" -> {
+                userStateService.setStep(chatId, BotStep.WAITING_LOCATION);
+                sendMessage(
+                        chatId,
+                        messages.get(lang, "location.choose") + "\n\n" + buildFilterProgress(filter),
+                        keyboardFactory.locationKeyboard(lang, true)
+                );
+            }
+
+            case "max_mileage" -> {
+                userStateService.setStep(chatId, BotStep.WAITING_MAX_MILEAGE);
+                sendMessage(
+                        chatId,
+                        messages.get(lang, "mileage.choose") + "\n\n" + buildFilterProgress(filter),
+                        keyboardFactory.mileageKeyboard(lang, true)
+                );
+            }
+
+            case "transmission" -> {
+                userStateService.setStep(chatId, BotStep.WAITING_TRANSMISSION);
+                sendMessage(
+                        chatId,
+                        messages.get(lang, "transmission.choose") + "\n\n" + buildFilterProgress(filter),
+                        keyboardFactory.transmissionKeyboard(lang, true)
+                );
+            }
+
+            case "fuel_type" -> {
+                userStateService.setStep(chatId, BotStep.WAITING_FUEL_TYPE);
+                sendMessage(
+                        chatId,
+                        messages.get(lang, "fuelType.choose") + "\n\n" + buildFilterProgress(filter),
+                        keyboardFactory.fuelTypeKeyboard(lang, true)
+                );
+            }
+
+            case "year_from" -> {
+                userStateService.setStep(chatId, BotStep.WAITING_YEAR_FROM);
+                sendMessage(
+                        chatId,
+                        messages.get(lang, "yearFrom.choose") + "\n\n" + buildFilterProgress(filter),
+                        keyboardFactory.yearFromKeyboard(lang, true)
+                );
+            }
+        }
+    }
+
+    private void handleCarTypeToggle(Update update, Long chatId, String carTypeValue) {
+        UserFilterEntity filter = userFilterService.getOrCreate(chatId);
+
+        Set<String> selected = parseValues(filter.getCarType());
+
+        if (selected.contains(carTypeValue)) {
+            selected.remove(carTypeValue);
+        } else {
+            selected.add(carTypeValue);
+        }
+
+        filter.setCarType(joinValues(selected));
+        userFilterService.save(filter);
+
+        refreshCarTypeSelectionMessage(update, chatId, filter);
+    }
+
+    private void handleCarTypeAny(Long chatId) {
+        UserFilterEntity filter = userFilterService.getOrCreate(chatId);
+        filter.setCarType(null);
+        filter.setBrand(null);
         userFilterService.save(filter);
 
         userStateService.setStep(chatId, BotStep.WAITING_BRAND);
 
         sendMessage(
                 chatId,
-                messages.get(lang(chatId), "filter.carType.saved"),
-                keyboardFactory.brandKeyboard(lang(chatId))
+                messages.get(lang(chatId), "filter.carType.saved")
+                        + "\n\n"
+                        + buildFilterProgress(filter)
+                        + "\n\n"
+                        + messages.get(lang(chatId), "brand.choose"),
+                keyboardFactory.brandKeyboard(lang(chatId), filter.getBrand(), true)
         );
     }
 
-    private void handleBrandCallback(Long chatId, String value) {
+    private void handleCarTypeDone(Update update, Long chatId) {
         UserFilterEntity filter = userFilterService.getOrCreate(chatId);
-        filter.setBrand("ANY".equals(value) ? null : value);
+
+        if (filter.getCarType() == null || filter.getCarType().isBlank()) {
+            editMessageTextAndKeyboard(
+                    chatId,
+                    update.getCallbackQuery().getMessage().getMessageId(),
+                    messages.get(lang(chatId), "carType.chooseAtLeastOne"),
+                    keyboardFactory.carTypeKeyboard(lang(chatId), filter.getCarType(), true)
+            );
+            return;
+        }
+
+        filter.setBrand(null);
+        userFilterService.save(filter);
+        userStateService.setStep(chatId, BotStep.WAITING_BRAND);
+
+        sendMessage(
+                chatId,
+                messages.get(lang(chatId), "filter.carType.saved")
+                        + "\n\n"
+                        + buildFilterProgress(filter)
+                        + "\n\n"
+                        + messages.get(lang(chatId), "brand.choose"),
+                keyboardFactory.brandKeyboard(lang(chatId), filter.getBrand(), true)
+        );
+    }
+
+    private void refreshCarTypeSelectionMessage(Update update, Long chatId, UserFilterEntity filter) {
+        int messageId = update.getCallbackQuery().getMessage().getMessageId();
+
+        editMessageTextAndKeyboard(
+                chatId,
+                messageId,
+                buildCarTypeSelectionText(chatId, filter.getCarType()),
+                keyboardFactory.carTypeKeyboard(lang(chatId), filter.getCarType(), true)
+        );
+    }
+
+    private void handleBrandToggle(Update update, Long chatId, String brandValue) {
+        UserFilterEntity filter = userFilterService.getOrCreate(chatId);
+
+        Set<String> selected = parseValues(filter.getBrand());
+
+        if (selected.contains(brandValue)) {
+            selected.remove(brandValue);
+        } else {
+            selected.add(brandValue);
+        }
+
+        filter.setBrand(joinValues(selected));
+        userFilterService.save(filter);
+
+        int messageId = update.getCallbackQuery().getMessage().getMessageId();
+
+        editMessageTextAndKeyboard(
+                chatId,
+                messageId,
+                buildBrandSelectionText(chatId, selected),
+                keyboardFactory.brandKeyboard(lang(chatId), filter.getBrand(), true)
+        );
+    }
+
+    private void handleBrandAny(Long chatId) {
+        UserFilterEntity filter = userFilterService.getOrCreate(chatId);
+        filter.setBrand(null);
         userFilterService.save(filter);
 
         userStateService.setStep(chatId, BotStep.WAITING_MAX_PRICE);
 
         sendMessage(
                 chatId,
-                messages.get(lang(chatId), "filter.brand.saved"),
-                keyboardFactory.maxPriceKeyboard(lang(chatId))
+                messages.get(lang(chatId), "filter.brand.saved")
+                        + "\n\n"
+                        + buildFilterProgress(filter)
+                        + "\n\n"
+                        + messages.get(lang(chatId), "price.choose"),
+                keyboardFactory.maxPriceKeyboard(lang(chatId), true)
+        );
+    }
+
+    private void handleBrandDone(Long chatId) {
+        UserFilterEntity filter = userFilterService.getOrCreate(chatId);
+
+        if (filter.getBrand() == null || filter.getBrand().isBlank()) {
+            sendMessage(
+                    chatId,
+                    messages.get(lang(chatId), "brand.chooseAtLeastOne"),
+                    keyboardFactory.brandKeyboard(lang(chatId), filter.getBrand(), true)
+            );
+            return;
+        }
+
+        userFilterService.save(filter);
+        userStateService.setStep(chatId, BotStep.WAITING_MAX_PRICE);
+
+        sendMessage(
+                chatId,
+                messages.get(lang(chatId), "filter.brand.saved")
+                        + "\n\n"
+                        + buildFilterProgress(filter)
+                        + "\n\n"
+                        + messages.get(lang(chatId), "price.choose"),
+                keyboardFactory.maxPriceKeyboard(lang(chatId), true)
         );
     }
 
@@ -332,8 +644,12 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
 
         sendMessage(
                 chatId,
-                messages.get(lang(chatId), "filter.price.saved"),
-                keyboardFactory.locationKeyboard(lang(chatId))
+                messages.get(lang(chatId), "filter.price.saved")
+                        + "\n\n"
+                        + buildFilterProgress(filter)
+                        + "\n\n"
+                        + messages.get(lang(chatId), "location.choose"),
+                keyboardFactory.locationKeyboard(lang(chatId), true)
         );
     }
 
@@ -346,8 +662,12 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
 
         sendMessage(
                 chatId,
-                messages.get(lang(chatId), "filter.location.saved"),
-                keyboardFactory.mileageKeyboard(lang(chatId))
+                messages.get(lang(chatId), "filter.location.saved")
+                        + "\n\n"
+                        + buildFilterProgress(filter)
+                        + "\n\n"
+                        + messages.get(lang(chatId), "mileage.choose"),
+                keyboardFactory.mileageKeyboard(lang(chatId), true)
         );
     }
 
@@ -362,8 +682,12 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
 
         sendMessage(
                 chatId,
-                messages.get(lang(chatId), "filter.mileage.saved"),
-                keyboardFactory.transmissionKeyboard(lang(chatId))
+                messages.get(lang(chatId), "filter.mileage.saved")
+                        + "\n\n"
+                        + buildFilterProgress(filter)
+                        + "\n\n"
+                        + messages.get(lang(chatId), "transmission.choose"),
+                keyboardFactory.transmissionKeyboard(lang(chatId), true)
         );
     }
 
@@ -372,12 +696,34 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
         filter.setTransmission("ANY".equals(value) ? null : value);
         userFilterService.save(filter);
 
+        userStateService.setStep(chatId, BotStep.WAITING_FUEL_TYPE);
+
+        sendMessage(
+                chatId,
+                messages.get(lang(chatId), "filter.transmission.saved")
+                        + "\n\n"
+                        + buildFilterProgress(filter)
+                        + "\n\n"
+                        + messages.get(lang(chatId), "fuelType.choose"),
+                keyboardFactory.fuelTypeKeyboard(lang(chatId), true)
+        );
+    }
+
+    private void handleFuelTypeCallback(Long chatId, String value) {
+        UserFilterEntity filter = userFilterService.getOrCreate(chatId);
+        filter.setFuelType("ANY".equals(value) ? null : value);
+        userFilterService.save(filter);
+
         userStateService.setStep(chatId, BotStep.WAITING_YEAR_FROM);
 
         sendMessage(
                 chatId,
-                messages.get(lang(chatId), "filter.transmission.saved"),
-                keyboardFactory.yearFromKeyboard(lang(chatId))
+                messages.get(lang(chatId), "filter.fuelType.saved")
+                        + "\n\n"
+                        + buildFilterProgress(filter)
+                        + "\n\n"
+                        + messages.get(lang(chatId), "yearFrom.choose"),
+                keyboardFactory.yearFromKeyboard(lang(chatId), true)
         );
     }
 
@@ -392,8 +738,8 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
 
         sendMessage(
                 chatId,
-                buildFilterSummary(filter),
-                keyboardFactory.mainMenuKeyboard(lang(chatId))
+                buildFilterSummary(filter) + "\n\n" + messages.get(lang(chatId), "filter.saved.next"),
+                keyboardFactory.myFilterActionsKeyboard(lang(chatId))
         );
     }
 
@@ -409,6 +755,11 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
             return;
         }
 
+        sendMessage(
+                chatId,
+                messages.get(lang(chatId), "cars.latest")
+        );
+
         for (CarEntity car : cars) {
             sendCarCard(chatId, car);
         }
@@ -420,39 +771,30 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
         if (cars.isEmpty()) {
             sendMessage(
                     chatId,
-                    messages.get(lang(chatId), "cars.noMatches.pretty"),
+                    messages.get(lang(chatId), "cars.noMatches.pretty")
+                            + buildRelaxSuggestion(chatId, 0),
                     keyboardFactory.mainMenuKeyboard(lang(chatId))
             );
             return;
         }
 
-        findOffsets.put(chatId, 0);
-        sendMessage(chatId, buildFindSummary(chatId, cars.size()));
-        sendFindPage(chatId, cars);
-    }
+        SearchSession session = new SearchSession(cars);
+        searchSessions.put(chatId, session);
 
-    private void handleFindMore(Long chatId) {
-        List<CarEntity> cars = carSearchService.findMatchingCars(chatId, 50);
+        sendMessage(
+                chatId,
+                buildFindSummary(chatId, cars.size()) + buildRelaxSuggestion(chatId, cars.size())
+        );
 
-        if (cars.isEmpty()) {
-            sendMessage(
-                    chatId,
-                    messages.get(lang(chatId), "cars.noMatches.pretty"),
-                    keyboardFactory.mainMenuKeyboard(lang(chatId))
-            );
-            return;
-        }
-
-        sendFindPage(chatId, cars);
+        sendCurrentSearchCar(chatId);
     }
 
     private void handleFindRestart(Long chatId) {
-        findOffsets.put(chatId, 0);
         handleFind(chatId);
     }
 
     private void handleFindStop(Long chatId) {
-        findOffsets.remove(chatId);
+        searchSessions.remove(chatId);
         sendMessage(
                 chatId,
                 messages.get(lang(chatId), "cars.searchFinished"),
@@ -460,39 +802,66 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
         );
     }
 
-    private void sendFindPage(Long chatId, List<CarEntity> cars) {
-        int offset = findOffsets.getOrDefault(chatId, 0);
+    private void handleBrowseNext(Long chatId) {
+        SearchSession session = searchSessions.get(chatId);
 
-        if (offset >= cars.size()) {
+        if (session == null || session.isEmpty()) {
             sendMessage(
                     chatId,
-                    messages.get(lang(chatId), "cars.noMore"),
+                    messages.get(lang(chatId), "cars.searchFinished"),
                     keyboardFactory.mainMenuKeyboard(lang(chatId))
             );
             return;
         }
 
-        int end = Math.min(offset + FIND_PAGE_SIZE, cars.size());
+        session.next();
+        sendCurrentSearchCar(chatId);
+    }
 
-        for (int i = offset; i < end; i++) {
-            sendCarCard(chatId, cars.get(i));
-        }
+    private void handleBrowsePrev(Long chatId) {
+        SearchSession session = searchSessions.get(chatId);
 
-        if (end < cars.size()) {
+        if (session == null || session.isEmpty()) {
             sendMessage(
                     chatId,
-                    messages.get(lang(chatId), "cars.morePrompt"),
-                    keyboardFactory.findNavigationKeyboard(lang(chatId))
-            );
-        } else {
-            sendMessage(
-                    chatId,
-                    messages.get(lang(chatId), "cars.noMore"),
+                    messages.get(lang(chatId), "cars.searchFinished"),
                     keyboardFactory.mainMenuKeyboard(lang(chatId))
             );
+            return;
         }
 
-        findOffsets.put(chatId, end);
+        session.prev();
+        sendCurrentSearchCar(chatId);
+    }
+
+    private void sendCurrentSearchCar(Long chatId) {
+        SearchSession session = searchSessions.get(chatId);
+
+        if (session == null || session.isEmpty()) {
+            sendMessage(
+                    chatId,
+                    messages.get(lang(chatId), "cars.searchFinished"),
+                    keyboardFactory.mainMenuKeyboard(lang(chatId))
+            );
+            return;
+        }
+
+        CarEntity car = session.current();
+
+        String text = formatCar(chatId, car, session.currentNumber(), session.total());
+
+        sendCarMessage(
+                chatId,
+                car,
+                text,
+                keyboardFactory.searchBrowseKeyboard(
+                        lang(chatId),
+                        car.getId(),
+                        car.getUrl(),
+                        session.hasPrev(),
+                        session.hasNext()
+                )
+        );
     }
 
     private String buildFindSummary(Long chatId, int totalFound) {
@@ -504,24 +873,94 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
         }
 
         return """
-                %s %s
+            %s %s
 
-                %s: %s
-                %s: %s
-                %s: %s
-                %s: %s
-                %s: %s
-                %s: %s
-                """.formatted(
+            %s: %s
+            %s: %s
+            %s: %s
+            %s: %s
+            %s: %s
+            %s: %s
+            %s: %s
+            """.formatted(
                 messages.get(lang, "cars.matchesFound"),
                 totalFound,
+                messages.get(lang, "label.carType"), formatCarType(lang, filter.getCarType()),
                 messages.get(lang, "label.brand"), formatBrand(lang, filter.getBrand()),
                 messages.get(lang, "label.maxPrice"), filter.getMaxPrice() == null ? messages.get(lang, "common.noLimit") : filter.getMaxPrice() + " Kč",
                 messages.get(lang, "label.location"), formatLocation(lang, filter.getLocation()),
                 messages.get(lang, "label.maxMileage"), filter.getMaxMileage() == null ? messages.get(lang, "common.noLimit") : filter.getMaxMileage() + " km",
                 messages.get(lang, "label.transmission"), formatTransmission(lang, filter.getTransmission()),
+                messages.get(lang, "label.fuelType"), formatFuelType(lang, filter.getFuelType()),
                 messages.get(lang, "label.yearFrom"), filter.getYearFrom() == null ? messages.get(lang, "common.notImportant") : filter.getYearFrom().toString()
         );
+    }
+
+    private String buildRelaxSuggestion(Long chatId, int totalFound) {
+        String lang = lang(chatId);
+        UserFilterEntity filter = userFilterService.findByChatId(chatId).orElse(null);
+
+        if (filter == null) {
+            return "";
+        }
+
+        if (totalFound > 3) {
+            return "";
+        }
+
+        StringBuilder sb = new StringBuilder();
+
+        switch (lang) {
+            case "ru" -> sb.append("\n\n💡 Подсказка:\n");
+            case "uk" -> sb.append("\n\n💡 Підказка:\n");
+            case "cs" -> sb.append("\n\n💡 Tip:\n");
+            default -> sb.append("\n\n💡 Tip:\n");
+        }
+
+        if (filter.getMaxMileage() != null && filter.getMaxMileage() <= 150_000) {
+            switch (lang) {
+                case "ru" -> sb.append("• увеличьте максимальный пробег до 200 000–250 000 км\n");
+                case "uk" -> sb.append("• збільште максимальний пробіг до 200 000–250 000 км\n");
+                case "cs" -> sb.append("• zvyšte max. nájezd na 200 000–250 000 km\n");
+                default -> sb.append("• increase max mileage to 200,000–250,000 km\n");
+            }
+        }
+
+        if (filter.getYearFrom() != null && filter.getYearFrom() >= 2010) {
+            switch (lang) {
+                case "ru" -> sb.append("• снизьте минимальный год до 2005–2008\n");
+                case "uk" -> sb.append("• зменште мінімальний рік до 2005–2008\n");
+                case "cs" -> sb.append("• snižte minimální rok na 2005–2008\n");
+                default -> sb.append("• lower minimum year to 2005–2008\n");
+            }
+        }
+
+        if (filter.getBrand() != null && filter.getBrand().contains(",")) {
+            switch (lang) {
+                case "ru" -> sb.append("• либо добавьте ещё несколько марок\n");
+                case "uk" -> sb.append("• або додайте ще кілька марок\n");
+                case "cs" -> sb.append("• nebo přidejte ještě několik značek\n");
+                default -> sb.append("• or add a few more brands\n");
+            }
+        } else if (filter.getBrand() != null && !filter.getBrand().isBlank()) {
+            switch (lang) {
+                case "ru" -> sb.append("• попробуйте выбрать несколько марок вместо одной\n");
+                case "uk" -> sb.append("• спробуйте вибрати кілька марок замість однієї\n");
+                case "cs" -> sb.append("• zkuste vybrat více značek místo jedné\n");
+                default -> sb.append("• try selecting multiple brands instead of one\n");
+            }
+        }
+
+        if (filter.getCarType() != null && !filter.getCarType().isBlank()) {
+            switch (lang) {
+                case "ru" -> sb.append("• можно убрать ограничение по типу кузова\n");
+                case "uk" -> sb.append("• можна прибрати обмеження за типом кузова\n");
+                case "cs" -> sb.append("• můžete zrušit omezení typu karoserie\n");
+                default -> sb.append("• you can remove the body type restriction\n");
+            }
+        }
+
+        return sb.toString().trim().isEmpty() ? "" : sb.toString();
     }
 
     private void handleAddFavorite(Long chatId, String carIdValue) {
@@ -530,24 +969,12 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
             boolean added = favoriteCarService.addToFavorites(chatId, carId);
 
             if (added) {
-                sendMessage(
-                        chatId,
-                        messages.get(lang(chatId), "favorites.added"),
-                        keyboardFactory.mainMenuKeyboard(lang(chatId))
-                );
+                sendMessage(chatId, messages.get(lang(chatId), "favorites.added"));
             } else {
-                sendMessage(
-                        chatId,
-                        messages.get(lang(chatId), "favorites.alreadyExists"),
-                        keyboardFactory.mainMenuKeyboard(lang(chatId))
-                );
+                sendMessage(chatId, messages.get(lang(chatId), "favorites.alreadyExists"));
             }
         } catch (Exception e) {
-            sendMessage(
-                    chatId,
-                    messages.get(lang(chatId), "favorites.error"),
-                    keyboardFactory.mainMenuKeyboard(lang(chatId))
-            );
+            sendMessage(chatId, messages.get(lang(chatId), "favorites.error"));
         }
     }
 
@@ -557,24 +984,12 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
             boolean removed = favoriteCarService.removeFromFavorites(chatId, carId);
 
             if (removed) {
-                sendMessage(
-                        chatId,
-                        messages.get(lang(chatId), "favorites.removed"),
-                        keyboardFactory.mainMenuKeyboard(lang(chatId))
-                );
+                sendMessage(chatId, messages.get(lang(chatId), "favorites.removed"));
             } else {
-                sendMessage(
-                        chatId,
-                        messages.get(lang(chatId), "favorites.notFound"),
-                        keyboardFactory.mainMenuKeyboard(lang(chatId))
-                );
+                sendMessage(chatId, messages.get(lang(chatId), "favorites.notFound"));
             }
         } catch (Exception e) {
-            sendMessage(
-                    chatId,
-                    messages.get(lang(chatId), "favorites.removeError"),
-                    keyboardFactory.mainMenuKeyboard(lang(chatId))
-            );
+            sendMessage(chatId, messages.get(lang(chatId), "favorites.removeError"));
         }
     }
 
@@ -590,21 +1005,24 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
             return;
         }
 
-        sendMessage(chatId, messages.get(lang(chatId), "favorites.title") + " " + favorites.size());
+        sendMessage(
+                chatId,
+                messages.get(lang(chatId), "favorites.title") + " " + favorites.size()
+        );
 
         for (CarEntity car : favorites) {
-            sendMessage(
+            sendCarMessage(
                     chatId,
-                    formatCar(chatId, car),
+                    car,
                     keyboardFactory.carCardKeyboard(lang(chatId), car.getId(), car.getUrl(), true)
             );
         }
     }
 
     private void sendCarCard(Long chatId, CarEntity car) {
-        sendMessage(
+        sendCarMessage(
                 chatId,
-                formatCar(chatId, car),
+                car,
                 keyboardFactory.carCardKeyboard(lang(chatId), car.getId(), car.getUrl(), false)
         );
     }
@@ -644,7 +1062,7 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
     private void showCurrentFilter(Long chatId) {
         UserFilterEntity filter = userFilterService.findByChatId(chatId).orElse(null);
 
-        if (filter == null) {
+        if (!isFilterConfigured(filter)) {
             sendMessage(
                     chatId,
                     messages.get(lang(chatId), "filter.notConfigured"),
@@ -655,28 +1073,44 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
 
         String lang = lang(chatId);
 
+        String maxPrice = filter.getMaxPrice() == null
+                ? messages.get(lang, "common.noLimit")
+                : filter.getMaxPrice() + " Kč";
+
+        String maxMileage = filter.getMaxMileage() == null
+                ? messages.get(lang, "common.noLimit")
+                : filter.getMaxMileage() + " km";
+
+        String yearFrom = filter.getYearFrom() == null
+                ? messages.get(lang, "common.notImportant")
+                : filter.getYearFrom().toString();
+
+        String text = """
+            📋 %s
+
+            %s: %s
+            %s: %s
+            %s: %s
+            %s: %s
+            %s: %s
+            %s: %s
+            %s: %s
+            %s: %s
+            """.formatted(
+                messages.get(lang, "summary.currentFilter"),
+                messages.get(lang, "label.carType"), formatCarType(lang, filter.getCarType()),
+                messages.get(lang, "label.brand"), formatBrand(lang, filter.getBrand()),
+                messages.get(lang, "label.maxPrice"), maxPrice,
+                messages.get(lang, "label.location"), formatLocation(lang, filter.getLocation()),
+                messages.get(lang, "label.maxMileage"), maxMileage,
+                messages.get(lang, "label.transmission"), formatTransmission(lang, filter.getTransmission()),
+                messages.get(lang, "label.fuelType"), formatFuelType(lang, filter.getFuelType()),
+                messages.get(lang, "label.yearFrom"), yearFrom
+        );
+
         sendMessage(
                 chatId,
-                """
-                %s
-
-                %s: %s
-                %s: %s
-                %s: %s
-                %s: %s
-                %s: %s
-                %s: %s
-                %s: %s
-                """.formatted(
-                        messages.get(lang, "summary.settings"),
-                        messages.get(lang, "label.carType"), formatCarType(lang, filter.getCarType()),
-                        messages.get(lang, "label.brand"), formatBrand(lang, filter.getBrand()),
-                        messages.get(lang, "label.maxPrice"), filter.getMaxPrice() == null ? messages.get(lang, "common.noLimit") : filter.getMaxPrice() + " Kč",
-                        messages.get(lang, "label.location"), formatLocation(lang, filter.getLocation()),
-                        messages.get(lang, "label.maxMileage"), filter.getMaxMileage() == null ? messages.get(lang, "common.noLimit") : filter.getMaxMileage() + " km",
-                        messages.get(lang, "label.transmission"), formatTransmission(lang, filter.getTransmission()),
-                        messages.get(lang, "label.yearFrom"), filter.getYearFrom() == null ? messages.get(lang, "common.notImportant") : filter.getYearFrom().toString()
-                ),
+                text,
                 keyboardFactory.myFilterActionsKeyboard(lang)
         );
     }
@@ -694,8 +1128,10 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
         sendMessage(
                 chatId,
                 messages.get(lang(chatId), "filter.reset"),
-                keyboardFactory.myFilterResetKeyboard(lang(chatId))
+                keyboardFactory.mainMenuKeyboard(lang(chatId))
         );
+
+        startNewFilterSetup(chatId);
     }
 
     private String buildFilterSummary(UserFilterEntity filter) {
@@ -715,13 +1151,7 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
                 %s: %s
                 %s: %s
                 %s: %s
-
-                %s
-                /myfilter
-                /filter
-                /latest
-                /find
-                /favorites
+                %s: %s
                 """.formatted(
                 messages.get(lang, "filter.saved"),
                 messages.get(lang, "summary.settings"),
@@ -731,9 +1161,285 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
                 messages.get(lang, "label.location"), formatLocation(lang, filter.getLocation()),
                 messages.get(lang, "label.maxMileage"), filter.getMaxMileage() == null ? messages.get(lang, "common.noLimit") : filter.getMaxMileage() + " km",
                 messages.get(lang, "label.transmission"), formatTransmission(lang, filter.getTransmission()),
-                messages.get(lang, "label.yearFrom"), filter.getYearFrom() == null ? messages.get(lang, "common.notImportant") : filter.getYearFrom().toString(),
-                messages.get(lang, "summary.commands")
+                messages.get(lang, "label.fuelType"), formatFuelType(lang, filter.getFuelType()),
+                messages.get(lang, "label.yearFrom"), filter.getYearFrom() == null ? messages.get(lang, "common.notImportant") : filter.getYearFrom().toString()
         );
+    }
+
+    private String buildFilterProgress(UserFilterEntity filter) {
+        String lang = filter.getLanguageCode() == null || filter.getLanguageCode().isBlank()
+                ? "cs"
+                : filter.getLanguageCode();
+
+        StringBuilder sb = new StringBuilder();
+        sb.append(messages.get(lang, "summary.currentFilter")).append(":\n");
+
+        if (filter.getCarType() != null && !filter.getCarType().isBlank()) {
+            sb.append(messages.get(lang, "label.carType"))
+                    .append(": ")
+                    .append(formatCarType(lang, filter.getCarType()))
+                    .append("\n");
+        }
+
+        if (filter.getBrand() != null && !filter.getBrand().isBlank()) {
+            sb.append(messages.get(lang, "label.brand"))
+                    .append(": ")
+                    .append(formatBrand(lang, filter.getBrand()))
+                    .append("\n");
+        }
+
+        if (filter.getMaxPrice() != null) {
+            sb.append(messages.get(lang, "label.maxPrice"))
+                    .append(": ")
+                    .append(filter.getMaxPrice())
+                    .append(" Kč\n");
+        }
+
+        if (filter.getLocation() != null && !filter.getLocation().isBlank()) {
+            sb.append(messages.get(lang, "label.location"))
+                    .append(": ")
+                    .append(formatLocation(lang, filter.getLocation()))
+                    .append("\n");
+        }
+
+        if (filter.getMaxMileage() != null) {
+            sb.append(messages.get(lang, "label.maxMileage"))
+                    .append(": ")
+                    .append(filter.getMaxMileage())
+                    .append(" km\n");
+        }
+
+        if (filter.getTransmission() != null && !filter.getTransmission().isBlank()) {
+            sb.append(messages.get(lang, "label.transmission"))
+                    .append(": ")
+                    .append(formatTransmission(lang, filter.getTransmission()))
+                    .append("\n");
+        }
+
+        if (filter.getFuelType() != null && !filter.getFuelType().isBlank()) {
+            sb.append(messages.get(lang, "label.fuelType"))
+                    .append(": ")
+                    .append(formatFuelType(lang, filter.getFuelType()))
+                    .append("\n");
+        }
+
+        if (filter.getYearFrom() != null) {
+            sb.append(messages.get(lang, "label.yearFrom"))
+                    .append(": ")
+                    .append(filter.getYearFrom())
+                    .append("\n");
+        }
+
+        return sb.toString().trim();
+    }
+
+    private String buildCarTypeSelectionText(Long chatId, String rawCarTypes) {
+        String lang = lang(chatId);
+        Set<String> selected = parseValues(rawCarTypes);
+
+        if (selected.isEmpty()) {
+            return messages.get(lang, "carType.choose");
+        }
+
+        String joined = selected.stream()
+                .map(value -> messages.getOrDefault(lang, "carType." + value, value))
+                .reduce((a, b) -> a + ", " + b)
+                .orElse(messages.get(lang, "common.any"));
+
+        return messages.get(lang, "carType.selected") + "\n\n" + joined;
+    }
+
+    private String buildBrandSelectionText(Long chatId, Set<String> selected) {
+        String lang = lang(chatId);
+
+        if (selected.isEmpty()) {
+            return messages.get(lang, "brand.choose");
+        }
+
+        String brands = selected.stream()
+                .map(value -> messages.getOrDefault(lang, "brand." + value, value))
+                .reduce((a, b) -> a + ", " + b)
+                .orElse("-");
+
+        return messages.get(lang, "brand.selected") + "\n\n" + brands;
+    }
+
+    private Set<String> parseValues(String raw) {
+        Set<String> result = new LinkedHashSet<>();
+
+        if (raw == null || raw.isBlank()) {
+            return result;
+        }
+
+        for (String part : raw.split(",")) {
+            String value = part.trim();
+            if (!value.isBlank()) {
+                result.add(value);
+            }
+        }
+
+        return result;
+    }
+
+    private String joinValues(Set<String> values) {
+        return String.join(",", values);
+    }
+
+    private void sendCarMessage(Long chatId, CarEntity car, InlineKeyboardMarkup keyboard) {
+        sendCarMessage(
+                chatId,
+                car,
+                formatCar(chatId, car, null, null),
+                keyboard
+        );
+    }
+
+    private void sendCarMessage(Long chatId, CarEntity car, String text, InlineKeyboardMarkup keyboard) {
+        try {
+            if (hasImage(car.getImageUrl())) {
+                if (sendPhotoByUrl(chatId, car.getImageUrl(), text, keyboard)) {
+                    return;
+                }
+
+                if (sendPhotoByDownload(chatId, car, text, keyboard)) {
+                    return;
+                }
+            }
+
+            sendMessage(chatId, text, keyboard);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            sendMessage(chatId, text, keyboard);
+        }
+    }
+
+    private boolean sendPhotoByUrl(Long chatId,
+                                   String imageUrl,
+                                   String caption,
+                                   InlineKeyboardMarkup keyboard) {
+        try {
+            SendPhoto photo = SendPhoto.builder()
+                    .chatId(chatId.toString())
+                    .photo(new InputFile(imageUrl))
+                    .caption(caption)
+                    .replyMarkup(keyboard)
+                    .build();
+
+            telegramClient.execute(photo);
+            return true;
+
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    private boolean sendPhotoByDownload(Long chatId,
+                                        CarEntity car,
+                                        String caption,
+                                        InlineKeyboardMarkup keyboard) {
+        File tempFile = null;
+
+        try {
+            tempFile = downloadImageToTempFile(car);
+
+            if (tempFile == null || !tempFile.exists() || tempFile.length() == 0) {
+                return false;
+            }
+
+            SendPhoto photo = SendPhoto.builder()
+                    .chatId(chatId.toString())
+                    .photo(new InputFile(tempFile))
+                    .caption(caption)
+                    .replyMarkup(keyboard)
+                    .build();
+
+            telegramClient.execute(photo);
+            return true;
+
+        } catch (Exception e) {
+            return false;
+
+        } finally {
+            if (tempFile != null && tempFile.exists()) {
+                try {
+                    Files.deleteIfExists(tempFile.toPath());
+                } catch (Exception ignored) {
+                }
+            }
+        }
+    }
+
+    private File downloadImageToTempFile(CarEntity car) throws Exception {
+        String imageUrl = car.getImageUrl();
+
+        if (imageUrl == null || imageUrl.isBlank()) {
+            return null;
+        }
+
+        URLConnection connection = new java.net.URL(imageUrl).openConnection();
+
+        connection.setRequestProperty(
+                "User-Agent",
+                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 " +
+                        "(KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
+        );
+        connection.setRequestProperty("Accept", "image/avif,image/webp,image/apng,image/*,*/*;q=0.8");
+        connection.setRequestProperty("Referer", resolveReferer(car));
+        connection.setConnectTimeout(10000);
+        connection.setReadTimeout(15000);
+
+        String extension = guessExtension(imageUrl);
+
+        File tempFile = File.createTempFile("car-photo-" + UUID.randomUUID(), extension);
+
+        try (InputStream inputStream = connection.getInputStream();
+             FileOutputStream outputStream = new FileOutputStream(tempFile)) {
+
+            inputStream.transferTo(outputStream);
+        }
+
+        if (tempFile.length() == 0) {
+            Files.deleteIfExists(tempFile.toPath());
+            return null;
+        }
+
+        return tempFile;
+    }
+
+    private String resolveReferer(CarEntity car) {
+        String source = safe(car.getSource()).toUpperCase();
+
+        if (source.contains("BAZOS")) {
+            return "https://auto.bazos.cz/";
+        }
+
+        if (source.contains("SAUTO")) {
+            return "https://www.sauto.cz/";
+        }
+
+        return "https://www.google.com/";
+    }
+
+    private String guessExtension(String imageUrl) {
+        String lower = imageUrl.toLowerCase();
+
+        if (lower.contains(".png")) {
+            return ".png";
+        }
+        if (lower.contains(".jpeg")) {
+            return ".jpeg";
+        }
+        if (lower.contains(".webp")) {
+            return ".webp";
+        }
+        return ".jpg";
+    }
+
+    private boolean hasImage(String imageUrl) {
+        return imageUrl != null
+                && !imageUrl.isBlank()
+                && !imageUrl.toLowerCase().contains("empty.gif");
     }
 
     private void sendMessage(Long chatId, String text) {
@@ -777,6 +1483,33 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
         }
     }
 
+    private void editMessageTextAndKeyboard(Long chatId,
+                                            Integer messageId,
+                                            String text,
+                                            InlineKeyboardMarkup keyboard) {
+        try {
+            EditMessageText editText = EditMessageText.builder()
+                    .chatId(chatId.toString())
+                    .messageId(messageId)
+                    .text(text)
+                    .replyMarkup(keyboard)
+                    .build();
+
+            telegramClient.execute(editText);
+        } catch (Exception e) {
+            try {
+                EditMessageReplyMarkup editMarkup = EditMessageReplyMarkup.builder()
+                        .chatId(chatId.toString())
+                        .messageId(messageId)
+                        .replyMarkup(keyboard)
+                        .build();
+
+                telegramClient.execute(editMarkup);
+            } catch (Exception ignored) {
+            }
+        }
+    }
+
     private void answerCallback(String callbackId) {
         AnswerCallbackQuery answer = AnswerCallbackQuery.builder()
                 .callbackQueryId(callbackId)
@@ -815,40 +1548,168 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
         userFilterService.save(filter);
     }
 
-    private String formatCar(Long chatId, CarEntity car) {
+    private String formatCar(Long chatId, CarEntity car, Integer current, Integer total) {
         String lang = lang(chatId);
 
-        StringBuilder sb = new StringBuilder();
-        sb.append("🚗 ").append(safe(car.getTitle())).append("\n\n");
+        String title = formatTitle(car.getTitle());
+        String price = formatPrice(car);
+        String location = safeOrNull(car.getLocation());
+        String year = safeYear(car.getYear());
+        String mileage = safeMileage(car.getMileage());
+        String fuel = formatFuelTypeValue(lang, car.getFuelType());
+        String transmission = formatTransmissionValue(lang, car.getTransmission());
+        String source = formatSource(car.getSource());
+        String freshness = formatFreshness(lang, car.getCreatedAt());
 
-        appendLine(sb, "💰", messages.get(lang, "label.price"), safeOrNull(car.getPrice()));
-        appendLine(sb, "📍", messages.get(lang, "label.location"), safeOrNull(car.getLocation()));
-        appendLine(sb, "📅", messages.get(lang, "label.year"), formatYear(car.getYear()));
-        appendLine(sb, "🛣", messages.get(lang, "label.mileage"), formatMileage(car.getMileage()));
-        appendLine(sb, "⚙", messages.get(lang, "label.transmission"), formatTransmissionValue(lang, car.getTransmission()));
-        appendLine(sb, "🏷", messages.get(lang, "label.source"), safeOrNull(car.getSource()));
+        StringBuilder sb = new StringBuilder();
+
+        sb.append("🚗 ").append(title).append("\n\n");
+
+        if (price != null) {
+            sb.append("💰 ").append(price).append("\n");
+        }
+
+        if (year != null || mileage != null) {
+            sb.append("📅 ").append(year != null ? year : "-")
+                    .append(" | 🛣 ").append(mileage != null ? mileage : "-")
+                    .append("\n");
+        }
+
+        if (fuel != null || transmission != null) {
+            sb.append("⛽ ").append(fuel != null ? fuel : "-")
+                    .append(" | ⚙️ ").append(transmission != null ? transmission : "-")
+                    .append("\n");
+        }
+
+        if (location != null || source != null || freshness != null) {
+            sb.append("\n");
+        }
+
+        if (location != null) {
+            sb.append("📍 ").append(location).append("\n");
+        }
+
+        if (source != null) {
+            sb.append("🌐 ").append(messages.get(lang, "label.source"))
+                    .append(": ")
+                    .append(source)
+                    .append("\n");
+        }
+
+        if (freshness != null) {
+            sb.append("🕒 ").append(freshness).append("\n");
+        }
+
+        if (current != null && total != null && total > 0) {
+            sb.append("\n📊 ").append(current).append(" / ").append(total);
+        }
 
         return sb.toString().trim();
     }
 
-    private void appendLine(StringBuilder sb, String emoji, String label, String value) {
-        if (value == null || value.isBlank() || value.equals("-")) {
-            return;
+    private String formatTitle(String rawTitle) {
+        if (rawTitle == null || rawTitle.isBlank()) {
+            return "-";
         }
 
-        sb.append(emoji)
-                .append(" ")
-                .append(label)
-                .append(": ")
-                .append(value)
-                .append("\n");
+        String cleaned = rawTitle.replaceAll("\\s+", " ").trim();
+
+        if (cleaned.length() <= 55) {
+            return cleaned;
+        }
+
+        int splitIndex = cleaned.lastIndexOf(" ", 55);
+        if (splitIndex < 30) {
+            splitIndex = 55;
+        }
+
+        String first = cleaned.substring(0, splitIndex).trim();
+        String second = cleaned.substring(splitIndex).trim();
+
+        if (second.length() > 45) {
+            second = second.substring(0, 42).trim() + "...";
+        }
+
+        return first + "\n" + second;
     }
 
-    private String formatYear(Integer year) {
+    private String formatPrice(CarEntity car) {
+        if (car == null) {
+            return null;
+        }
+
+        if (car.getPrice() != null && !car.getPrice().isBlank()) {
+            return car.getPrice().trim();
+        }
+
+        if (car.getPriceValue() != null && car.getPriceValue() > 0) {
+            return String.format("%,d Kč", car.getPriceValue()).replace(",", " ");
+        }
+
+        return null;
+    }
+
+    private String formatSource(String source) {
+        if (source == null || source.isBlank()) {
+            return null;
+        }
+
+        return switch (source.trim().toUpperCase()) {
+            case "SAUTO" -> "Sauto.cz";
+            case "BAZOS" -> "Bazoš.cz";
+            default -> source.trim();
+        };
+    }
+
+    private String formatFreshness(String lang, LocalDateTime createdAt) {
+        if (createdAt == null) {
+            return null;
+        }
+
+        long minutes = Duration.between(createdAt, LocalDateTime.now()).toMinutes();
+
+        if (minutes < 1) {
+            return switch (lang) {
+                case "ru" -> "только что";
+                case "uk" -> "щойно";
+                case "cs" -> "právě teď";
+                default -> "just now";
+            };
+        }
+
+        if (minutes < 60) {
+            return switch (lang) {
+                case "ru" -> minutes + " мин назад";
+                case "uk" -> minutes + " хв тому";
+                case "cs" -> "před " + minutes + " min";
+                default -> minutes + " min ago";
+            };
+        }
+
+        long hours = minutes / 60;
+        if (hours < 24) {
+            return switch (lang) {
+                case "ru" -> hours + " ч назад";
+                case "uk" -> hours + " год тому";
+                case "cs" -> "před " + hours + " h";
+                default -> hours + " h ago";
+            };
+        }
+
+        long days = hours / 24;
+        return switch (lang) {
+            case "ru" -> days + " дн назад";
+            case "uk" -> days + " дн тому";
+            case "cs" -> "před " + days + " d";
+            default -> days + " d ago";
+        };
+    }
+
+    private String safeYear(Integer year) {
         return year == null ? null : year.toString();
     }
 
-    private String formatMileage(Integer mileage) {
+    private String safeMileage(Integer mileage) {
         if (mileage == null) {
             return null;
         }
@@ -862,18 +1723,59 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
         return messages.getOrDefault(lang, "transmission." + value, value);
     }
 
+    private String formatFuelTypeValue(String lang, String value) {
+        if (value == null || value.isBlank()) {
+            return null;
+        }
+        return messages.getOrDefault(lang, "fuelType." + value, value);
+    }
+
     private String formatCarType(String lang, String value) {
-        if (value == null || value.isBlank() || "ANY".equals(value)) {
+        if (value == null || value.isBlank() || "ANY".equalsIgnoreCase(value)) {
             return messages.get(lang, "common.any");
         }
-        return messages.getOrDefault(lang, "carType." + value, value);
+
+        String[] parts = value.split(",");
+        StringBuilder result = new StringBuilder();
+
+        for (String part : parts) {
+            String carType = part.trim();
+            if (carType.isBlank()) {
+                continue;
+            }
+
+            if (!result.isEmpty()) {
+                result.append(", ");
+            }
+
+            result.append(messages.getOrDefault(lang, "carType." + carType, carType));
+        }
+
+        return result.isEmpty() ? messages.get(lang, "common.any") : result.toString();
     }
 
     private String formatBrand(String lang, String value) {
         if (value == null || value.isBlank() || "ANY".equals(value)) {
             return messages.get(lang, "common.any");
         }
-        return messages.getOrDefault(lang, "brand." + value, value);
+
+        String[] parts = value.split(",");
+        StringBuilder result = new StringBuilder();
+
+        for (String part : parts) {
+            String brand = part.trim();
+            if (brand.isBlank()) {
+                continue;
+            }
+
+            if (!result.isEmpty()) {
+                result.append(", ");
+            }
+
+            result.append(messages.getOrDefault(lang, "brand." + brand, brand));
+        }
+
+        return result.isEmpty() ? messages.get(lang, "common.any") : result.toString();
     }
 
     private String formatTransmission(String lang, String value) {
@@ -881,6 +1783,13 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
             return messages.get(lang, "common.any");
         }
         return messages.getOrDefault(lang, "transmission." + value, value);
+    }
+
+    private String formatFuelType(String lang, String value) {
+        if (value == null || value.isBlank() || "ANY".equals(value)) {
+            return messages.get(lang, "common.any");
+        }
+        return messages.getOrDefault(lang, "fuelType." + value, value);
     }
 
     private String formatLocation(String lang, String value) {

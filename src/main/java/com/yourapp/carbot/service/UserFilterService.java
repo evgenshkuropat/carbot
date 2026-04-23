@@ -17,30 +17,20 @@ public class UserFilterService {
     }
 
     public UserFilterEntity getOrCreate(Long chatId) {
-        Optional<UserFilterEntity> existing = repository.findByChatId(chatId);
-
-        if (existing.isPresent()) {
-            UserFilterEntity filter = existing.get();
-
-            if (filter.getMinPrice() == null) {
-                filter.setMinPrice(30000);
-                filter.setUpdatedAt(LocalDateTime.now());
-                repository.save(filter);
-            }
-
-            return filter;
-        }
-
-        UserFilterEntity entity = new UserFilterEntity();
-        entity.setChatId(chatId);
-        entity.setCreatedAt(LocalDateTime.now());
-        entity.setUpdatedAt(LocalDateTime.now());
-        entity.setMinPrice(30000);
-
-        return repository.save(entity);
+        return repository.findByChatId(chatId).orElseGet(() -> {
+            UserFilterEntity entity = new UserFilterEntity();
+            entity.setChatId(chatId);
+            entity.setCreatedAt(LocalDateTime.now());
+            entity.setUpdatedAt(LocalDateTime.now());
+            return repository.save(entity);
+        });
     }
 
     public void save(UserFilterEntity filter) {
+        if (filter.getCreatedAt() == null) {
+            filter.setCreatedAt(LocalDateTime.now());
+        }
+
         filter.setUpdatedAt(LocalDateTime.now());
         repository.save(filter);
     }

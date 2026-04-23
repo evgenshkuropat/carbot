@@ -129,6 +129,12 @@ public class CarController {
                 car.getLocation(),
                 car.getUrl(),
                 car.getImageUrl(),
+                car.getBrand(),
+                car.getYear(),
+                car.getMileage(),
+                car.getFuelType(),
+                car.getTransmission(),
+                car.getCarType(),
                 car.getCreatedAt()
         );
     }

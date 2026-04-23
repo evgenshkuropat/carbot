@@ -6,8 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 @Service
 public class CarParserService {
@@ -24,24 +23,67 @@ public class CarParserService {
     }
 
     public List<CarDto> findCars() {
-        List<CarDto> result = new ArrayList<>();
+        List<CarDto> allCars = new ArrayList<>();
+        Set<String> seenUrls = new HashSet<>();
 
         for (CarSourceParser parser : parsers) {
             try {
                 List<CarDto> parsedCars = parser.fetchCars();
-                log.info("Parser {} returned {} cars", parser.getSourceName(), parsedCars.size());
-                result.addAll(parsedCars);
+
+                if (parsedCars == null || parsedCars.isEmpty()) {
+                    log.info("Parser {} returned 0 cars", parser.getSourceName());
+                    continue;
+                }
+
+                int addedCount = 0;
+                int duplicateCount = 0;
+                int invalidCount = 0;
+
+                for (CarDto car : parsedCars) {
+                    if (car == null || car.getUrl() == null || car.getUrl().isBlank()) {
+                        invalidCount++;
+                        continue;
+                    }
+
+                    String normalizedUrl = car.getUrl().trim();
+
+                    if (!seenUrls.add(normalizedUrl)) {
+                        duplicateCount++;
+                        continue;
+                    }
+
+                    allCars.add(car);
+                    addedCount++;
+                }
+
+                log.info("Parser {} returned={} added={} duplicates_skipped={} invalid_skipped={}",
+                        parser.getSourceName(),
+                        parsedCars.size(),
+                        addedCount,
+                        duplicateCount,
+                        invalidCount
+                );
+
             } catch (Exception e) {
                 log.error("Parser {} failed", parser.getSourceName(), e);
             }
         }
 
-        log.info("Total cars parsed from all sources: {}", result.size());
-        return result;
+        log.info("Total parsed unique cars={}", allCars.size());
+        return allCars;
     }
 
     public List<CarEntity> fetchAndStoreCars() {
         List<CarDto> cars = findCars();
-        return carStorageService.saveNewCars(cars);
+
+        if (cars.isEmpty()) {
+            log.info("No cars parsed, nothing to store");
+            return List.of();
+        }
+
+        List<CarEntity> savedCars = carStorageService.saveNewCars(cars);
+        log.info("Stored new cars={}", savedCars.size());
+
+        return savedCars;
     }
 }

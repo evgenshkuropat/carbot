@@ -4,12 +4,14 @@ import com.yourapp.carbot.entity.CarEntity;
 import com.yourapp.carbot.entity.FavoriteCarEntity;
 import com.yourapp.carbot.repository.CarRepository;
 import com.yourapp.carbot.repository.FavoriteCarRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
+@Transactional
 public class FavoriteCarService {
 
     private final FavoriteCarRepository favoriteCarRepository;
@@ -22,6 +24,7 @@ public class FavoriteCarService {
     }
 
     public boolean addToFavorites(Long chatId, Long carId) {
+
         if (chatId == null || carId == null) {
             return false;
         }
@@ -40,24 +43,25 @@ public class FavoriteCarService {
         favorite.setCreatedAt(LocalDateTime.now());
 
         favoriteCarRepository.save(favorite);
+
         return true;
     }
 
     public boolean removeFromFavorites(Long chatId, Long carId) {
+
         if (chatId == null || carId == null) {
             return false;
         }
 
-        if (!favoriteCarRepository.existsByChatIdAndCarId(chatId, carId)) {
-            return false;
-        }
+        long deleted = favoriteCarRepository.deleteByChatIdAndCarId(chatId, carId);
 
-        favoriteCarRepository.deleteByChatIdAndCarId(chatId, carId);
-        return true;
+        return deleted > 0;
     }
 
     public List<CarEntity> getFavorites(Long chatId) {
-        List<Long> ids = favoriteCarRepository.findByChatIdOrderByCreatedAtDesc(chatId)
+
+        List<Long> ids = favoriteCarRepository
+                .findByChatIdOrderByCreatedAtDesc(chatId)
                 .stream()
                 .map(FavoriteCarEntity::getCarId)
                 .toList();
@@ -70,6 +74,7 @@ public class FavoriteCarService {
     }
 
     public boolean isFavorite(Long chatId, Long carId) {
+
         if (chatId == null || carId == null) {
             return false;
         }
