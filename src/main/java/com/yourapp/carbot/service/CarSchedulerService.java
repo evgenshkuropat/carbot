@@ -28,7 +28,7 @@ public class CarSchedulerService {
         this.parserRunStatsService = parserRunStatsService;
     }
 
-    @Scheduled(initialDelay = 30_000, fixedDelay = 10 * 60 * 1000)
+    @Scheduled(initialDelay = 30_000, fixedDelay = 30 * 60 * 1000)
     public void fetchAndStoreCarsScheduled() {
 
         if (!running.compareAndSet(false, true)) {

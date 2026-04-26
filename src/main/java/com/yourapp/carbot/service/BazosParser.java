@@ -24,8 +24,8 @@ public class BazosParser implements CarSourceParser {
 
     private static final String BASE_URL = "https://auto.bazos.cz/inzeraty/osobni-auta/";
     private static final int REQUEST_TIMEOUT_MS = 20_000;
-    private static final int MAX_LIST_PAGES = 15;
-    private static final int MAX_DETAIL_LINKS = 300;
+    private static final int MAX_LIST_PAGES = 50;
+    private static final int MAX_DETAIL_LINKS = 1000;
     private static final int MIN_VALID_PRICE = 10_000;
     private static final int MAX_VALID_PRICE = 10_000_000;
 
@@ -369,122 +369,12 @@ public class BazosParser implements CarSourceParser {
                                          Integer mileage,
                                          String brand,
                                          String carType) {
-
         if (priceValue == null) {
             return false;
         }
 
-        boolean veryHighMileage = mileage != null && mileage >= 350_000;
-        boolean highMileage = mileage != null && mileage >= 250_000;
-        boolean lowMileage = mileage != null && mileage <= 160_000;
-
-        // подозрительно дешёвая без года
-        if (priceValue < 70_000 && year == null) {
-            return true;
-        }
-
-        // подозрительно дешёвая после 2010 года
-        if (priceValue < 35_000 && year != null && year >= 2010 && !veryHighMileage) {
-            return true;
-        }
-
-        String source = " " + normalizeText(title + " " + shortenForCheck(text, 500))
-                .toLowerCase(Locale.ROOT) + " ";
-
-        // если прямо написано что машина битая / на запчасти — пропускаем фильтр
-        if (containsAny(source,
-                " na díly ", " na dily ",
-                " nepojízdný ", " nepojizdny ",
-                " nepojízdné ", " nepojizdne ",
-                " nepojízdná ", " nepojizdna ",
-                " vada motoru ", " závada motoru ", " zavada motoru ",
-                " zadřený motor ", " zadreny motor ",
-                " havarovaný ", " havarovany ",
-                " bouraný ", " bourany ",
-                " na opravu ")) {
-            return false;
-        }
-
-        if (year != null) {
-
-            if (year >= 2018 && priceValue < 120_000 && !veryHighMileage) {
-                return true;
-            }
-
-            if (year >= 2015 && priceValue < 80_000 && !veryHighMileage) {
-                return true;
-            }
-
-            if (year >= 2012 && priceValue < 45_000 && !veryHighMileage) {
-                return true;
-            }
-
-            if (lowMileage) {
-
-                if (year >= 2015 && priceValue < 110_000) {
-                    return true;
-                }
-
-                if (year >= 2012 && priceValue < 70_000) {
-                    return true;
-                }
-            }
-        }
-
-        if (brand != null) {
-
-            switch (brand) {
-
-                case "BMW",
-                     "AUDI",
-                     "MERCEDES",
-                     "VOLVO",
-                     "LEXUS",
-                     "CUPRA",
-                     "LAND_ROVER",
-                     "PORSCHE" -> {
-
-                    if (priceValue < 60_000 && !veryHighMileage) {
-                        return true;
-                    }
-                }
-            }
-        }
-
-        if (carType != null) {
-
-            switch (carType) {
-
-                case "SUV",
-                     "MINIVAN",
-                     "PICKUP" -> {
-
-                    if (priceValue < 50_000 && !veryHighMileage) {
-                        return true;
-                    }
-                }
-            }
-        }
-
-        if (containsAny(source,
-                " superb ", " octavia ",
-                " passat ", " arteon ",
-                " kodiaq ", " karoq ", " yeti ",
-                " x1 ", " x3 ", " x5 ",
-                " q3 ", " q5 ", " q7 ",
-                " formentor ", " tiguan ", " touareg ",
-                " enyaq ", " ex30 ")) {
-
-            if (priceValue < 50_000 && !veryHighMileage) {
-                return true;
-            }
-
-            if (lowMileage && priceValue < 90_000) {
-                return true;
-            }
-        }
-
-        if (priceValue < 20_000 && !highMileage) {
+        // только совсем очевидный мусор
+        if (priceValue < 10_000) {
             return true;
         }
 
