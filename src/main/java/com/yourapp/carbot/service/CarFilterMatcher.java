@@ -522,146 +522,13 @@ public class CarFilterMatcher {
             return true;
         }
 
-        String title = " " + normalizeText(car.getTitle()) + " ";
         Integer carYear = car.getYear();
-        Integer price = car.getPriceValue();
-        Integer mileage = car.getMileage();
 
-        // Вторая защита:
-        // если по заголовку видно, что это старая модель/машина,
-        // то даже при ошибочно новом year она не должна проходить.
-        if (looksLikeOldCarByTitle(title, car)) {
-            return false;
-        }
-
-        // Если год отсутствует, но по названию явно видно что авто старое — тоже fail
         if (carYear == null) {
-            if (looksClearlyPreYearFrom(title, yearFrom)) {
-                return false;
-            }
             return true;
-        }
-
-        // Защита от ложного 2025/2026 из STK/TK/do 2027 и т.п.
-        if (carYear >= CURRENT_YEAR - 1 && looksClearlyOldCarTitle(title)) {
-            return false;
-        }
-
-        // Подозрительно новый год, но слишком дешёвая старая по смыслу машина
-        if (carYear >= Math.max(yearFrom, 2015) && isSuspiciousCheapModernCar(carYear, price, mileage, title)) {
-            return false;
         }
 
         return carYear >= yearFrom;
-    }
-
-    private boolean looksLikeOldCarByTitle(String title, CarEntity car) {
-        Integer year = car.getYear();
-        Integer price = car.getPriceValue();
-        Integer mileage = car.getMileage();
-
-        if (looksClearlyOldCarTitle(title)) {
-            return true;
-        }
-
-        if (year != null && year >= CURRENT_YEAR - 1 && looksClearlyOldCarTitle(title)) {
-            return true;
-        }
-
-        if (isVeryOldModelDespiteFreshYear(title, year)) {
-            return true;
-        }
-
-        if (price != null && price <= 30_000 && looksOldCheapCar(title, year, mileage)) {
-            return true;
-        }
-
-        return false;
-    }
-
-    private boolean looksClearlyPreYearFrom(String title, Integer yearFrom) {
-        if (yearFrom == null) {
-            return false;
-        }
-
-        if (yearFrom >= 2010 && looksClearlyOldCarTitle(title)) {
-            return true;
-        }
-
-        return false;
-    }
-
-    private boolean isSuspiciousCheapModernCar(Integer year, Integer price, Integer mileage, String title) {
-        if (year == null || price == null) {
-            return false;
-        }
-
-        if (year >= 2020 && price < 120_000) {
-            return true;
-        }
-
-        if (year >= 2016 && price < 80_000) {
-            return true;
-        }
-
-        if (year >= 2015 && mileage != null && mileage < 120_000 && price < 100_000) {
-            return true;
-        }
-
-        if (looksPremiumOrModernModel(title) && price < 100_000) {
-            return true;
-        }
-
-        return false;
-    }
-
-    private boolean looksOldCheapCar(String title, Integer year, Integer mileage) {
-        if (looksClearlyOldCarTitle(title)) {
-            return true;
-        }
-
-        if (year != null && year < 2010) {
-            return true;
-        }
-
-        if (mileage != null && mileage > 220_000) {
-            return true;
-        }
-
-        return false;
-    }
-
-    private boolean isVeryOldModelDespiteFreshYear(String title, Integer year) {
-        if (year == null) {
-            return false;
-        }
-
-        if (year < CURRENT_YEAR - 1) {
-            return false;
-        }
-
-        return containsAny(title,
-                " PASSAT B5 ",
-                " FELICIA ",
-                " FAVORIT ",
-                " FORMAN ",
-                " CORDOBA ",
-                " XSARA ",
-                " XANTIA ",
-                " ASTRA G ",
-                " OCTAVIA TOUR ",
-                " OCTAVIA I ",
-                " OCTAVIA 1 ",
-                " FABIA I ",
-                " FABIA 1 ",
-                " SCENIC I ",
-                " SCENIC 1 ",
-                " CLIO 1 ",
-                " CLIO 2 ",
-                " E39 ",
-                " E46 ",
-                " GOLF IV ",
-                " BORA ");
     }
 
     private boolean looksClearlyOldCarTitle(String title) {
@@ -706,44 +573,6 @@ public class CarFilterMatcher {
                 " ALFA ROMEO 156 ",
                 " 1.9 TDI 66KW ",
                 " 1.9TDI 74KW ");
-    }
-
-    private boolean looksPremiumOrModernModel(String title) {
-        return containsAny(title,
-                " KODIAQ ",
-                " KAROQ ",
-                " KAMIQ ",
-                " ENYAQ ",
-                " XC40 ",
-                " XC60 ",
-                " XC90 ",
-                " EX30 ",
-                " EX40 ",
-                " EX90 ",
-                " FORMENTOR ",
-                " CAPTUR TECHNO ",
-                " PUMA ",
-                " KUGA ",
-                " Q5 ",
-                " Q7 ",
-                " Q8 ",
-                " GLC ",
-                " GLE ",
-                " GLS ",
-                " ID.4 ",
-                " ID4 ",
-                " RANGE ROVER ",
-                " DEFENDER ",
-                " DISCOVERY ",
-                " EVOQUE ",
-                " T-ROC ",
-                " TROC ",
-                " TIGUAN ",
-                " TOUAREG ",
-                " ATECA ",
-                " TERRAMAR ",
-                " MACAN ",
-                " CAYENNE ");
     }
 
     private String normalizeLocation(String value) {
