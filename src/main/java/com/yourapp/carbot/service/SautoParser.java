@@ -575,31 +575,8 @@ public class SautoParser implements CarSourceParser {
             return false;
         }
 
-        String normalized = (" " + normalizeText(safe(title) + " " + safe(text)).toLowerCase(Locale.ROOT) + " ");
-
-        boolean premiumOrRecentModel = containsAny(normalized,
-                " kodiaq ", " karoq ", " kamiq ", " superb iii ", " superb 3 ",
-                " xc40 ", " xc60 ", " xc90 ",
-                " captur ", " clio techno ", " puma ", " kuga ",
-                " q5 ", " q7 ", " q8 ",
-                " id.4 ", " id4 ", " enyaq ",
-                " formentor ", " explorer ", " range rover ", " defender ",
-                " gla ", " glc ", " gle ", " gls ",
-                " t-roc ", " tiguan ", " touareg ", " ateca ", " terramar ");
-
-        if ((year != null && year >= 2016) && price < 80_000) {
-            return true;
-        }
-
-        if ((year != null && year >= 2020) && price < 120_000) {
-            return true;
-        }
-
-        if ((year != null && year >= 2018) && mileage != null && mileage < 100_000 && price < 100_000) {
-            return true;
-        }
-
-        if (premiumOrRecentModel && price < 100_000) {
+        // только явно нереальные цены
+        if (price < 10_000) {
             return true;
         }
 
@@ -652,31 +629,6 @@ public class SautoParser implements CarSourceParser {
                 " na opravu ",
                 " plně pojízdné ", " plne pojizdne ")) {
             return true;
-        }
-
-        if (year != null && mileage != null) {
-            if (year <= 1999 && mileage >= 180_000) return true;
-            if (year <= 2003 && mileage >= 230_000) return true;
-            if (year <= 2006 && mileage >= 280_000) return true;
-            if (year <= 2009 && mileage >= 330_000) return true;
-        }
-
-        if (year != null && priceValue <= 18_000) {
-            if (year <= 1998) return true;
-            if (year <= 2001 && mileage != null && mileage >= 150_000) return true;
-        }
-
-        if (priceValue <= 15_000 && mileage != null && mileage >= 250_000) {
-            return true;
-        }
-
-        if (priceValue <= 18_000 && mileage != null && mileage >= 350_000) {
-            return true;
-        }
-
-        if (priceValue <= 20_000 && year != null && mileage != null) {
-            if (year <= 2005 && mileage >= 300_000) return true;
-            if (year <= 2008 && mileage >= 380_000) return true;
         }
 
         if (containsAny(normalized, " lpg ") && mileage != null && mileage >= 350_000) {
