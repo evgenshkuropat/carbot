@@ -385,10 +385,6 @@ public class CarFilterMatcher {
             if (title.contains(" " + brand + " ")) {
                 return true;
             }
-
-            if (title.contains(" " + brand + " ")) {
-                return true;
-            }
         }
 
         return false;
