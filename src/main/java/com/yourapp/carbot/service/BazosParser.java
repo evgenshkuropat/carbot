@@ -179,7 +179,8 @@ public class BazosParser implements CarSourceParser {
         if (page <= 0) {
             return BASE_URL;
         }
-        return BASE_URL + (page * 20) + "/";
+
+        return "https://auto.bazos.cz/inzeraty/osobni-auta/?strana=" + (page + 1);
     }
 
     private String extractNextPageUrl(Document doc) {
