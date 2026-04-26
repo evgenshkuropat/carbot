@@ -416,7 +416,7 @@ public class CarFilterMatcher {
         String wanted = normalizeLocation(filterLocation);
 
         if (carLocation.isBlank()) {
-            return false;
+            return true;
         }
 
         if (carLocation.equals(wanted)) {
