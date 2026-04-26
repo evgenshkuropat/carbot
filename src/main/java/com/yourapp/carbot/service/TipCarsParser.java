@@ -1,6 +1,7 @@
 package com.yourapp.carbot.service;
 
 import com.yourapp.carbot.service.dto.CarDto;
+import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -23,6 +24,7 @@ public class TipCarsParser implements CarSourceParser {
     private static final Logger log = LoggerFactory.getLogger(TipCarsParser.class);
 
     private static final String BASE_LIST_URL = "https://www.tipcars.com/osobni/";
+    private static final String BASE_URL = "https://www.tipcars.com/";
     private static final int MAX_LIST_PAGES = 5;
     private static final int REQUEST_TIMEOUT_MS = 15_000;
 
@@ -50,16 +52,21 @@ public class TipCarsParser implements CarSourceParser {
                 String pageUrl = buildPageUrl(page);
 
                 try {
-                    Document listDoc = Jsoup.connect(pageUrl)
-                            .userAgent("Mozilla/5.0")
-                            .timeout(REQUEST_TIMEOUT_MS)
-                            .get();
+                    int before = detailLinks.size();
 
+                    Document listDoc = connect(pageUrl).get();
                     Set<String> pageLinks = extractDetailLinks(listDoc);
                     detailLinks.addAll(pageLinks);
 
-                    log.info("TIPCARS list page={} url={} detail_links_found={} total_unique_links={}",
-                            page, pageUrl, pageLinks.size(), detailLinks.size());
+                    int addedOnPage = detailLinks.size() - before;
+
+                    log.info("TIPCARS list page={} url={} detail_links_found={} new_links={} total_unique_links={}",
+                            page, pageUrl, pageLinks.size(), addedOnPage, detailLinks.size());
+
+                    if (page > 1 && addedOnPage == 0) {
+                        log.info("TIPCARS pagination stopped page={} reason=no_new_links", page);
+                        break;
+                    }
 
                     sleepQuietly(300);
                 } catch (Exception e) {
@@ -71,23 +78,21 @@ public class TipCarsParser implements CarSourceParser {
             log.info("TIPCARS total unique detail links found={}", detailLinks.size());
 
             for (String url : detailLinks) {
-                try {
-                    ParseResult result = parseDetail(url);
+                ParseResult result = parseDetail(url);
 
-                    if (result.car() != null) {
-                        cars.add(result.car());
-                    } else {
-                        switch (result.reason()) {
-                            case "missing_price" -> missingPriceCount++;
-                            case "invalid_price" -> invalidPriceCount++;
-                            case "broken_listing" -> brokenCount++;
-                            case "parse_exception" -> parseExceptionCount++;
-                        }
+                if (result.car() != null) {
+                    cars.add(result.car());
+                } else {
+                    switch (result.reason()) {
+                        case "missing_price" -> missingPriceCount++;
+                        case "invalid_price" -> invalidPriceCount++;
+                        case "broken_listing" -> brokenCount++;
+                        case "parse_exception" -> parseExceptionCount++;
+                        default -> brokenCount++;
                     }
-                } catch (Exception e) {
-                    parseExceptionCount++;
-                    log.warn("TIPCARS detail parse failed url={} error={}", safe(url), safe(e.getMessage()));
                 }
+
+                sleepQuietly(150);
             }
 
         } catch (Exception e) {
@@ -103,15 +108,15 @@ public class TipCarsParser implements CarSourceParser {
 
     private ParseResult parseDetail(String url) {
         try {
-            Document doc = Jsoup.connect(url)
-                    .userAgent("Mozilla/5.0")
-                    .timeout(REQUEST_TIMEOUT_MS)
-                    .get();
+            Document doc = connect(url).get();
 
             String title = extractTitle(doc);
             String pageText = normalizeText(doc.text());
 
-            if (isJunkTitle(title) || isJunkUrl(url) || isJunkText(pageText)) {
+            if (title == null || title.isBlank()
+                    || isJunkTitle(title)
+                    || isJunkUrl(url)
+                    || isJunkText(pageText)) {
                 log.warn("TIPCARS SKIP url={} reason=broken_listing title={}", safe(url), safe(title));
                 return new ParseResult(null, "broken_listing");
             }
@@ -133,14 +138,10 @@ public class TipCarsParser implements CarSourceParser {
             String location = extractLocation(doc, pageText);
             String imageUrl = extractImageUrl(doc);
             String brand = extractBrand(title, url);
-            String fuelType = extractFuelType(pageText + " " + title);
-            String transmission = extractTransmission(pageText + " " + title);
+            String combinedText = pageText + " " + title + " " + url;
+            String fuelType = extractFuelType(combinedText);
+            String transmission = extractTransmission(combinedText);
             String carType = extractCarType(title, pageText, url);
-
-            if (title == null || title.isBlank()) {
-                log.warn("TIPCARS SKIP url={} reason=broken_listing title={}", safe(url), safe(title));
-                return new ParseResult(null, "broken_listing");
-            }
 
             CarDto car = new CarDto();
             car.setSource("TIPCARS");
@@ -177,6 +178,16 @@ public class TipCarsParser implements CarSourceParser {
         }
     }
 
+    private Connection connect(String url) {
+        return Jsoup.connect(url)
+                .userAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36")
+                .referrer(BASE_URL)
+                .header("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8")
+                .header("Accept-Language", "cs-CZ,cs;q=0.9,en;q=0.8")
+                .timeout(REQUEST_TIMEOUT_MS)
+                .followRedirects(true);
+    }
+
     private String buildPageUrl(int page) {
         if (page <= 1) {
             return BASE_LIST_URL;
@@ -189,6 +200,7 @@ public class TipCarsParser implements CarSourceParser {
 
         for (Element a : listDoc.select("a[href]")) {
             String href = a.absUrl("href");
+
             if (!isValidDetailLink(href)) {
                 continue;
             }
@@ -221,12 +233,14 @@ public class TipCarsParser implements CarSourceParser {
                 || normalized.contains("/aktuality/")
                 || normalized.contains("/temata/")
                 || normalized.contains("/tiskove-zpravy/")
+                || normalized.contains("/operativni-leasing")
+                || normalized.contains("/pronajem")
                 || normalized.endsWith("/osobni/")
                 || normalized.endsWith("/osobni")) {
             return false;
         }
 
-        return normalized.matches("https://www\\.tipcars\\.com/.+/.+/.+/.+/.+-\\d+\\.html");
+        return normalized.matches("https://www\\.tipcars\\.com/.+-\\d+\\.html");
     }
 
     private String extractTitle(Document doc) {
@@ -375,6 +389,10 @@ public class TipCarsParser implements CarSourceParser {
 
         String lower = normalizeText(value).toLowerCase(Locale.ROOT);
 
+        if (lower.length() > 80) {
+            return false;
+        }
+
         return !containsAny(lower,
                 "reklama",
                 "tipcars",
@@ -500,7 +518,8 @@ public class TipCarsParser implements CarSourceParser {
                 " cvt ",
                 " s tronic ",
                 " powershift ",
-                " edc ")) {
+                " edc ",
+                " e-cvt ")) {
             return "AUTOMATIC";
         }
 
@@ -588,10 +607,7 @@ public class TipCarsParser implements CarSourceParser {
                 " magazín o autech tipcars ",
                 " magazin o autech tipcars ",
                 " nejnovější auto/moto diskuze ",
-                " nejnovejsi auto/moto diskuze ",
-                " reklam ",
-                " doporučené články ",
-                " doporucene clanky ");
+                " nejnovejsi auto/moto diskuze ");
     }
 
     private Integer parseIntSafe(String raw) {
@@ -700,7 +716,9 @@ public class TipCarsParser implements CarSourceParser {
         StringBuilder sb = new StringBuilder();
 
         for (String part : parts) {
-            if (part.isBlank()) continue;
+            if (part.isBlank()) {
+                continue;
+            }
 
             if (sb.length() > 0) {
                 sb.append(' ');
@@ -725,5 +743,6 @@ public class TipCarsParser implements CarSourceParser {
         }
     }
 
-    private record ParseResult(CarDto car, String reason) {}
+    private record ParseResult(CarDto car, String reason) {
+    }
 }

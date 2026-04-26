@@ -24,7 +24,8 @@ public class BazosParser implements CarSourceParser {
 
     private static final String BASE_URL = "https://auto.bazos.cz/inzeraty/osobni-auta/";
     private static final int REQUEST_TIMEOUT_MS = 20_000;
-    private static final int MAX_DETAIL_LINKS = 20;
+    private static final int MAX_LIST_PAGES = 15;
+    private static final int MAX_DETAIL_LINKS = 300;
     private static final int MIN_VALID_PRICE = 10_000;
     private static final int MAX_VALID_PRICE = 10_000_000;
 
@@ -32,7 +33,7 @@ public class BazosParser implements CarSourceParser {
             Pattern.compile("\\b\\d{3}/\\d{2}\\s*[rR]\\s*\\d{2}\\b");
 
     private static final Pattern TYRE_SIZE_ALT_PATTERN =
-            Pattern.compile("\\b\\d{3}/\\d{2}/\\d{2}\\b");
+            Pattern.compile("\\b\\d{3}/\\d{2}/[rR]?\\d{2}\\b");
 
     private static final Pattern RIM_SPEC_PATTERN =
             Pattern.compile("\\b\\d{1,2}[jJ]x\\d{2}\\b|\\bET\\s?\\d{2,3}\\b|\\b[45]x\\d{3}\\b");
@@ -51,6 +52,7 @@ public class BazosParser implements CarSourceParser {
     @Override
     public List<CarDto> fetchCars() {
         List<CarDto> cars = new ArrayList<>();
+        Set<String> allDetailUrls = new LinkedHashSet<>();
 
         int emptyTitleCount = 0;
         int demandListingCount = 0;
@@ -62,22 +64,59 @@ public class BazosParser implements CarSourceParser {
         int parseErrorCount = 0;
 
         try {
-            Document listDoc = Jsoup.connect(BASE_URL)
-                    .userAgent("Mozilla/5.0")
-                    .timeout(REQUEST_TIMEOUT_MS)
-                    .get();
+            for (int page = 0; page < MAX_LIST_PAGES; page++) {
+                String pageUrl = buildListPageUrl(page);
 
-            Set<String> detailUrls = extractDetailUrls(listDoc);
-            log.info("BAZOS detail links found={}", detailUrls.size());
+                try {
+                    Document listDoc = Jsoup.connect(pageUrl)
+                            .userAgent("Mozilla/5.0")
+                            .timeout(REQUEST_TIMEOUT_MS)
+                            .get();
+
+                    Set<String> pageUrls = extractDetailUrls(listDoc);
+
+                    log.info(
+                            "BAZOS page={} url={} detail links found={}",
+                            page + 1,
+                            pageUrl,
+                            pageUrls.size()
+                    );
+
+                    if (pageUrls.isEmpty()) {
+                        break;
+                    }
+
+                    int before = allDetailUrls.size();
+                    allDetailUrls.addAll(pageUrls);
+                    int added = allDetailUrls.size() - before;
+
+                    if (added == 0) {
+                        log.info("BAZOS pagination stopped page={} reason=no_new_links", page + 1);
+                        break;
+                    }
+
+                    if (allDetailUrls.size() >= MAX_DETAIL_LINKS) {
+                        break;
+                    }
+
+                } catch (Exception e) {
+                    log.warn("BAZOS list page parse failed url={} error={}", pageUrl, e.getMessage());
+                    break;
+                }
+            }
+
+            log.info("BAZOS total detail links collected={}", allDetailUrls.size());
 
             int count = 0;
-            for (String url : detailUrls) {
+
+            for (String url : allDetailUrls) {
                 if (count >= MAX_DETAIL_LINKS) {
                     break;
                 }
 
                 try {
                     ParseResult result = parseDetail(url);
+
                     if (result.car() != null) {
                         cars.add(result.car());
                     } else {
@@ -92,6 +131,7 @@ public class BazosParser implements CarSourceParser {
                             case "parse_error" -> parseErrorCount++;
                         }
                     }
+
                 } catch (Exception e) {
                     parseErrorCount++;
                     log.warn("BAZOS SKIP url={} reason=parse_error", safe(url));
@@ -101,7 +141,7 @@ public class BazosParser implements CarSourceParser {
             }
 
         } catch (Exception e) {
-            log.warn("BAZOS list parse failed: {}", e.getMessage());
+            log.warn("BAZOS parser failed: {}", e.getMessage());
         }
 
         log.info("BAZOS parsed {} cars", cars.size());
@@ -135,6 +175,52 @@ public class BazosParser implements CarSourceParser {
         return detailUrls;
     }
 
+    private String buildListPageUrl(int page) {
+        if (page <= 0) {
+            return BASE_URL;
+        }
+
+        return "https://auto.bazos.cz/" + (page * 20) + "/";
+    }
+
+    private String extractNextPageUrl(Document doc) {
+        Elements links = doc.select("a[href]");
+
+        for (Element link : links) {
+            String text = normalizeText(link.text()).toLowerCase(Locale.ROOT);
+            String href = link.absUrl("href");
+
+            if (href == null || href.isBlank()) {
+                continue;
+            }
+
+            if (text.equals("další") ||
+                    text.equals("dalsi") ||
+                    text.equals(">") ||
+                    text.equals(">>") ||
+                    text.contains("další") ||
+                    text.contains("dalsi")) {
+                return href;
+            }
+        }
+
+        for (Element link : links) {
+            String href = link.absUrl("href");
+
+            if (href != null &&
+                    href.contains("auto.bazos.cz") &&
+                    href.contains("/inzeraty/osobni-auta/")) {
+                String rawText = normalizeText(link.text());
+
+                if (rawText.matches("\\d+")) {
+                    return href;
+                }
+            }
+        }
+
+        return null;
+    }
+
     private ParseResult parseDetail(String url) {
         try {
             Document doc = Jsoup.connect(url)
@@ -165,7 +251,7 @@ public class BazosParser implements CarSourceParser {
                 return ParseResult.skip("commercial_vehicle");
             }
 
-            if (looksTyreOrWheelListing(title, listingText, analysisText)) {
+            if (looksTyreOrWheelListing(title, preview, listingText)) {
                 log.warn("BAZOS SKIP url={} reason=tyre_or_wheel_listing title={}", safe(url), safe(title));
                 return ParseResult.skip("non_car_listing");
             }
@@ -212,8 +298,8 @@ public class BazosParser implements CarSourceParser {
 
             String price = formatPrice(priceValue);
             String location = extractLocation(doc, analysisText);
-            Integer year = extractYear(title, analysisText);
-            Integer mileage = extractMileage(title, analysisText);
+            Integer year = extractYear(title, listingText);
+            Integer mileage = extractMileage(title, listingText);
             String fuelType = firstNonBlank(
                     extractFuelType(title),
                     extractFuelType(listingText),
@@ -225,7 +311,7 @@ public class BazosParser implements CarSourceParser {
                     extractTransmission(analysisText)
             );
             String brand = extractBrand(title, analysisText);
-            String carType = extractCarType(title, analysisText, url);
+            String carType = extractCarType(title, listingText, url);
             String imageUrl = extractImageUrl(doc);
 
             if (isSuspiciousCheapCar(title, analysisText, priceValue, year, mileage, brand, carType)) {
@@ -288,8 +374,24 @@ public class BazosParser implements CarSourceParser {
             return false;
         }
 
-        String source = " " + normalizeText(title + " " + shortenForCheck(text, 500)).toLowerCase(Locale.ROOT) + " ";
+        boolean veryHighMileage = mileage != null && mileage >= 350_000;
+        boolean highMileage = mileage != null && mileage >= 250_000;
+        boolean lowMileage = mileage != null && mileage <= 160_000;
 
+        // подозрительно дешёвая без года
+        if (priceValue < 70_000 && year == null) {
+            return true;
+        }
+
+        // подозрительно дешёвая после 2010 года
+        if (priceValue < 35_000 && year != null && year >= 2010 && !veryHighMileage) {
+            return true;
+        }
+
+        String source = " " + normalizeText(title + " " + shortenForCheck(text, 500))
+                .toLowerCase(Locale.ROOT) + " ";
+
+        // если прямо написано что машина битая / на запчасти — пропускаем фильтр
         if (containsAny(source,
                 " na díly ", " na dily ",
                 " nepojízdný ", " nepojizdny ",
@@ -303,25 +405,26 @@ public class BazosParser implements CarSourceParser {
             return false;
         }
 
-        boolean veryHighMileage = mileage != null && mileage >= 350_000;
-        boolean highMileage = mileage != null && mileage >= 250_000;
-        boolean lowMileage = mileage != null && mileage <= 160_000;
-
         if (year != null) {
+
             if (year >= 2018 && priceValue < 120_000 && !veryHighMileage) {
                 return true;
             }
+
             if (year >= 2015 && priceValue < 80_000 && !veryHighMileage) {
                 return true;
             }
+
             if (year >= 2012 && priceValue < 45_000 && !veryHighMileage) {
                 return true;
             }
 
             if (lowMileage) {
+
                 if (year >= 2015 && priceValue < 110_000) {
                     return true;
                 }
+
                 if (year >= 2012 && priceValue < 70_000) {
                     return true;
                 }
@@ -329,8 +432,18 @@ public class BazosParser implements CarSourceParser {
         }
 
         if (brand != null) {
+
             switch (brand) {
-                case "BMW", "AUDI", "MERCEDES", "VOLVO", "LEXUS", "CUPRA", "LAND_ROVER", "PORSCHE" -> {
+
+                case "BMW",
+                     "AUDI",
+                     "MERCEDES",
+                     "VOLVO",
+                     "LEXUS",
+                     "CUPRA",
+                     "LAND_ROVER",
+                     "PORSCHE" -> {
+
                     if (priceValue < 60_000 && !veryHighMileage) {
                         return true;
                     }
@@ -339,8 +452,13 @@ public class BazosParser implements CarSourceParser {
         }
 
         if (carType != null) {
+
             switch (carType) {
-                case "SUV", "MINIVAN", "PICKUP" -> {
+
+                case "SUV",
+                     "MINIVAN",
+                     "PICKUP" -> {
+
                     if (priceValue < 50_000 && !veryHighMileage) {
                         return true;
                     }
@@ -366,7 +484,7 @@ public class BazosParser implements CarSourceParser {
             }
         }
 
-        if (priceValue < 35_000 && !highMileage) {
+        if (priceValue < 20_000 && !highMileage) {
             return true;
         }
 
@@ -501,7 +619,10 @@ public class BazosParser implements CarSourceParser {
     private Integer extractYear(String title, String text) {
         String source = normalizeText(title + " " + text);
 
-        Matcher matcher = Pattern.compile("(?i)(?:rok výroby|rok vyroby|r\\.v\\.?|rv|první registrace|prvni registrace|do provozu|uvedení do provozu|uvedeni do provozu)\\s*[:\\-]?\\s*(19\\d{2}|20\\d{2})").matcher(source);
+        Matcher matcher = Pattern.compile(
+                "(?i)(?:rok výroby|rok vyroby|r\\.v\\.?|rv|první registrace|prvni registrace|do provozu|uvedení do provozu|uvedeni do provozu)\\s*[:\\-]?\\s*(19\\d{2}|20\\d{2})"
+        ).matcher(source);
+
         if (matcher.find()) {
             return parseYearCandidate(matcher.group(1));
         }
@@ -509,12 +630,33 @@ public class BazosParser implements CarSourceParser {
         matcher = Pattern.compile("\\b(19\\d{2}|20\\d{2})\\b").matcher(source);
         while (matcher.find()) {
             Integer year = parseYearCandidate(matcher.group(1));
-            if (year != null) {
+
+            if (year != null && !isBadYearContext(source, matcher.start(), matcher.end())) {
                 return year;
             }
         }
 
         return null;
+    }
+
+    private boolean isBadYearContext(String text, int start, int end) {
+        int from = Math.max(0, start - 45);
+        int to = Math.min(text.length(), end + 45);
+
+        String context = text.substring(from, to).toLowerCase(Locale.ROOT);
+
+        return context.contains("stk")
+                || context.contains(" tk ")
+                || context.contains("technick")
+                || context.contains("platná do")
+                || context.contains("platna do")
+                || context.contains("do roku")
+                || context.contains("do 202")
+                || context.contains("záruka do")
+                || context.contains("zaruka do")
+                || context.contains("garance do")
+                || context.contains("servis do")
+                || context.contains("serviska do");
     }
 
     private Integer extractMileage(String title, String text) {
@@ -1228,36 +1370,103 @@ public class BazosParser implements CarSourceParser {
                 " valník ",
                 " valnik ",
                 " 5t ",
-                " 5000 kg ");
+                " 5000 kg ",
+                " tahač ", " tahac ",
+                " návěs ", " naves ",
+                " sklápěcí ", " sklapeci ",
+                " pracovní stroj ", " pracovni stroj ",
+                " volvo fe ",
+                " volvo fl ",
+                " volvo fmx ",
+                " daf ",
+                " man valník ", " man valnik ",
+                " předstan ", " predstan ",
+                " swift 390 ",
+                " toscane ",
+                " mover ",
+                " markýza ", " markyza ",
+                " nosič kol ", " nosic kol ",
+                " obytný ", " obytny ",
+                " obytné ", " obytne ",
+                " sport line ",
+                " vip ",
+                " chausson ",
+                " adria ",
+                " bailey ",
+                " beyerland ",
+                " hobby de luxe ",
+                " knaus ");
     }
 
     private boolean looksTyreOrWheelListing(String title, String text, String analysisText) {
-        String source = " " + normalizeText(title + " " + text + " " + shortenForCheck(analysisText, 1000))
+        String titleSource = " " + normalizeText(title).toLowerCase(Locale.ROOT) + " ";
+        String source = " " + normalizeText(title + " " + text + " " + shortenForCheck(analysisText, 700))
                 .toLowerCase(Locale.ROOT) + " ";
 
-        if (TYRE_SIZE_PATTERN.matcher(source).find()) {
+        if (looksLikeRealCar(title, analysisText)) {
+            return false;
+        }
+
+        if (containsAny(titleSource,
+                " pneu ",
+                " pneumatiky ",
+                " alu kola ",
+                " sada kol ",
+                " sada pneu ",
+                " disky ",
+                " ráfky ",
+                " rafky ",
+                " letní kola ",
+                " letni kola ",
+                " zimní kola ",
+                " zimni kola ",
+                " rezervní kolo ",
+                " rezervni kolo ")) {
             return true;
         }
 
-        if (TYRE_SIZE_ALT_PATTERN.matcher(source).find()) {
+        if (startsWithAny(titleSource,
+                "pneu ",
+                "pneumatiky ",
+                "alu kola ",
+                "disky ",
+                "sada kol ",
+                "sada pneu ",
+                "kola ",
+                "ráfky ",
+                "rafky ")) {
             return true;
         }
 
-        if (RIM_SPEC_PATTERN.matcher(source).find()) {
+        boolean hasTyreSize =
+                TYRE_SIZE_PATTERN.matcher(source).find()
+                        || TYRE_SIZE_ALT_PATTERN.matcher(source).find();
+
+        boolean hasWheelWords = containsAny(source,
+                " pneu ",
+                " pneumatiky ",
+                " sada pneu ",
+                " sada pneumatik ",
+                " alu kola ",
+                " disky ",
+                " ráfky ",
+                " rafky ",
+                " letní pneu ",
+                " letni pneu ",
+                " zimní pneu ",
+                " zimni pneu ");
+
+        if (hasTyreSize && hasWheelWords) {
             return true;
         }
 
-        if (containsAny(source,
-                " pneu ", " pneumatiky ", " gumy ",
-                " letni ", " zimni ", " celorocni ",
-                " alu kola ", " disky ", " rafky ",
-                " sada kol ", " sada pneu ", " sada pneumatik ",
-                " protektor ", " rezervni kolo ")) {
+        boolean hasRimSpec = RIM_SPEC_PATTERN.matcher(source).find();
+        if (hasRimSpec && hasWheelWords) {
             return true;
         }
 
         for (String brand : TYRE_BRANDS) {
-            if (source.contains(" " + brand + " ")) {
+            if (source.contains(" " + brand + " ") && hasWheelWords) {
                 return true;
             }
         }
@@ -1414,10 +1623,6 @@ public class BazosParser implements CarSourceParser {
     private boolean looksLikeRealCar(String title, String text) {
         String source = " " + normalizeText(title + " " + shortenForCheck(text, 500)).toLowerCase(Locale.ROOT) + " ";
 
-        if (looksTyreOrWheelListing(title, text, text)) {
-            return false;
-        }
-
         int score = 0;
 
         if (extractBrand(title, text) != null) score += 2;
@@ -1434,7 +1639,7 @@ public class BazosParser implements CarSourceParser {
             score += 1;
         }
 
-        if (containsAny(source, " tdi ", " tsi ", " hdi ", " dci ", " cdi ", " crdi ", " 4x4 ")) {
+        if (containsAny(source, " tdi ", " tsi ", " hdi ", " dci ", " cdi ", " crdi ", " 4x4 ", " dsg ")) {
             score += 1;
         }
 
@@ -1520,15 +1725,15 @@ public class BazosParser implements CarSourceParser {
                 " jen celek ");
     }
 
-    private Integer parseYearCandidate(String value) {
-        Integer year = parseNumber(value);
-        if (year == null) {
-            return null;
-        }
+    private Integer parseYearCandidate(String raw) {
+        try {
+            int year = Integer.parseInt(raw);
+            int currentYear = java.time.Year.now().getValue();
 
-        int currentYear = java.time.LocalDateTime.now().getYear();
-        if (year >= 1950 && year <= currentYear + 1) {
-            return year;
+            if (year >= 1950 && year <= currentYear) {
+                return year;
+            }
+        } catch (NumberFormatException ignored) {
         }
 
         return null;
@@ -1611,12 +1816,16 @@ public class BazosParser implements CarSourceParser {
         }
 
         String lowerSource = source.toLowerCase(Locale.ROOT).trim();
+
         for (String value : values) {
-            if (value != null && !value.isBlank()) {
-                String lowerValue = value.toLowerCase(Locale.ROOT).trim();
-                if (lowerSource.startsWith(lowerValue)) {
-                    return true;
-                }
+            if (value == null || value.isBlank()) {
+                continue;
+            }
+
+            String lowerValue = value.toLowerCase(Locale.ROOT).trim();
+
+            if (lowerSource.startsWith(lowerValue)) {
+                return true;
             }
         }
 

@@ -15,23 +15,31 @@ public class CarParserService {
 
     private final List<CarSourceParser> parsers;
     private final CarStorageService carStorageService;
+    private final ParserRunStatsService parserRunStatsService;
 
     public CarParserService(List<CarSourceParser> parsers,
-                            CarStorageService carStorageService) {
+                            CarStorageService carStorageService,
+                            ParserRunStatsService parserRunStatsService) {
         this.parsers = parsers;
         this.carStorageService = carStorageService;
+        this.parserRunStatsService = parserRunStatsService;
     }
 
     public List<CarDto> findCars() {
         List<CarDto> allCars = new ArrayList<>();
         Set<String> seenUrls = new HashSet<>();
 
+        parserRunStatsService.reset();
+
         for (CarSourceParser parser : parsers) {
+            String sourceName = parser.getSourceName();
+
             try {
                 List<CarDto> parsedCars = parser.fetchCars();
 
                 if (parsedCars == null || parsedCars.isEmpty()) {
-                    log.info("Parser {} returned 0 cars", parser.getSourceName());
+                    log.info("Parser {} returned 0 cars", sourceName);
+                    parserRunStatsService.recordParserResult(sourceName, 0, 0, 0, 0);
                     continue;
                 }
 
@@ -56,8 +64,16 @@ public class CarParserService {
                     addedCount++;
                 }
 
+                parserRunStatsService.recordParserResult(
+                        sourceName,
+                        parsedCars.size(),
+                        addedCount,
+                        duplicateCount,
+                        invalidCount
+                );
+
                 log.info("Parser {} returned={} added={} duplicates_skipped={} invalid_skipped={}",
-                        parser.getSourceName(),
+                        sourceName,
                         parsedCars.size(),
                         addedCount,
                         duplicateCount,
@@ -65,9 +81,13 @@ public class CarParserService {
                 );
 
             } catch (Exception e) {
-                log.error("Parser {} failed", parser.getSourceName(), e);
+                parserRunStatsService.recordParserFailed(sourceName);
+
+                log.error("Parser {} failed", sourceName, e);
             }
         }
+
+        parserRunStatsService.setTotalParsedUnique(allCars.size());
 
         log.info("Total parsed unique cars={}", allCars.size());
         return allCars;
@@ -78,10 +98,14 @@ public class CarParserService {
 
         if (cars.isEmpty()) {
             log.info("No cars parsed, nothing to store");
+            parserRunStatsService.setTotalSaved(0);
             return List.of();
         }
 
         List<CarEntity> savedCars = carStorageService.saveNewCars(cars);
+
+        parserRunStatsService.setTotalSaved(savedCars.size());
+
         log.info("Stored new cars={}", savedCars.size());
 
         return savedCars;

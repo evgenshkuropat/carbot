@@ -4,6 +4,7 @@ import com.yourapp.carbot.entity.CarEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -32,4 +33,10 @@ public interface CarRepository extends JpaRepository<CarEntity, Long> {
     List<CarEntity> findTop50ByTitleContainingIgnoreCaseOrderByCreatedAtDesc(String title);
 
     List<CarEntity> findTop200ByOrderByCreatedAtDesc();
+
+    long countBySource(String source);
+
+    long countByCreatedAtAfter(LocalDateTime dateTime);
+
+    long countBySourceAndCreatedAtAfter(String source, LocalDateTime dateTime);
 }

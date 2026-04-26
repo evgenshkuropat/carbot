@@ -9,14 +9,21 @@ public class MessageService {
 
     private final Map<String, Map<String, String>> messages = Map.of(
             "ru", Map.ofEntries(
-                    Map.entry("start.title", """
-                            🚗 Привет!
-
-                            Помогу настроить поиск авто по Чехии.
-                            Это займёт меньше минуты.
-
-                            Шаг 1/8 · Тип кузова
-                            Можно выбрать несколько вариантов.
+                    Map.entry("start.welcome", """
+                            🚗 Поиск авто по всей Чехии
+                            
+                            Я собираю объявления с:
+                            • Bazoš.cz
+                            • Sauto.cz
+                            • TipCars.cz
+                            
+                            Помогу вам:
+                            
+                            🔍 найти авто по фильтру
+                            ⭐ сохранять избранные объявления
+                            🆕 получать новые объявления автоматически
+                            
+                            Выберите действие ниже 👇
                             """),
                     Map.entry("start.welcomeBack", """
                             С возвращением! 👋
@@ -307,14 +314,21 @@ public class MessageService {
             ),
 
             "uk", Map.ofEntries(
-                    Map.entry("start.title", """
-                            🚗 Привіт!
-
-                            Допоможу налаштувати пошук авто по Чехії.
-                            Це займе менше хвилини.
-
-                            Крок 1/8 · Тип кузова
-                            Можна вибрати кілька варіантів.
+                    Map.entry("start.welcome", """
+                            🚗 Пошук авто по всій Чехії
+                            
+                            Я збираю оголошення з:
+                            • Bazoš.cz
+                            • Sauto.cz
+                            • TipCars.cz
+                            
+                            Допоможу вам:
+                            
+                            🔍 знайти авто за фільтром
+                            ⭐ зберігати обрані оголошення
+                            🆕 отримувати нові пропозиції автоматично
+                            
+                            Оберіть дію нижче 👇
                             """),
                     Map.entry("start.welcomeBack", """
                             З поверненням! 👋
@@ -605,14 +619,21 @@ public class MessageService {
             ),
 
             "cs", Map.ofEntries(
-                    Map.entry("start.title", """
-                            🚗 Ahoj!
-
-                            Pomohu nastavit hledání auta po Česku.
-                            Zabere to méně než minutu.
-
-                            Krok 1/8 · Karoserie
-                            Můžete vybrat více možností.
+                    Map.entry("start.welcome", """
+                            🚗 Vyhledávání aut po celé ČR
+                            
+                            Sbírám inzeráty z:
+                            • Bazoš.cz
+                            • Sauto.cz
+                            • TipCars.cz
+                            
+                            Pomohu vám:
+                            
+                            🔍 najít auto podle filtru
+                            ⭐ ukládat oblíbené inzeráty
+                            🆕 sledovat nové nabídky automaticky
+                            
+                            Vyberte akci níže 👇
                             """),
                     Map.entry("start.welcomeBack", """
                             Vítejte zpět! 👋
@@ -903,14 +924,21 @@ public class MessageService {
             ),
 
             "en", Map.ofEntries(
-                    Map.entry("start.title", """
-                            🚗 Hi!
-
-                            I will help you set up car search in the Czech Republic.
-                            It will take less than a minute.
-
-                            Step 1/8 · Body type
-                            You can choose multiple options.
+                    Map.entry("start.welcome", """
+                            🚗 Car search across the Czech Republic
+                            
+                            I collect listings from:
+                            • Bazoš.cz
+                            • Sauto.cz
+                            • TipCars.cz
+                            
+                            I can help you:
+                            
+                            🔍 find cars using filters
+                            ⭐ save favorite listings
+                            🆕 receive new listings automatically
+                            
+                            Choose an action below 👇
                             """),
                     Map.entry("start.welcomeBack", """
                             Welcome back! 👋
@@ -1203,7 +1231,7 @@ public class MessageService {
 
     public String get(String language, String key) {
         Map<String, String> langMap = messages.getOrDefault(language, messages.get("en"));
-        return langMap.getOrDefault(key, key);
+        return langMap.getOrDefault(key, messages.get("en").getOrDefault(key, key));
     }
 
     public String getOrDefault(String language, String key, String fallback) {

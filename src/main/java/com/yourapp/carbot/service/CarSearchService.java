@@ -97,6 +97,21 @@ public class CarSearchService {
         System.out.println("PASSED year = " + yearPassed);
         System.out.println("FINAL MATCHED = " + finalPassed);
         System.out.println("==================================");
+        System.out.println("========== DEBUG RENAULT CARS ==========");
+
+        allCars.stream()
+                .filter(car -> "RENAULT".equalsIgnoreCase(car.getBrand()))
+                .limit(30)
+                .forEach(car -> System.out.println(
+                        "title=" + car.getTitle()
+                                + ", price=" + car.getPriceValue()
+                                + ", mileage=" + car.getMileage()
+                                + ", year=" + car.getYear()
+                                + ", fuel=" + car.getFuelType()
+                                + ", type=" + car.getCarType()
+                ));
+
+        System.out.println("========================================");
 
         return allCars.stream()
                 .filter(car -> carFilterMatcher.matches(car, filter))
@@ -104,4 +119,6 @@ public class CarSearchService {
                 .limit(limit)
                 .toList();
     }
+
+
 }

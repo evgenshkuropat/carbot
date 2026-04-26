@@ -6,6 +6,7 @@ import com.yourapp.carbot.repository.CarRepository;
 import com.yourapp.carbot.repository.FavoriteCarRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
+import java.util.Optional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -70,7 +71,10 @@ public class FavoriteCarService {
             return List.of();
         }
 
-        return carRepository.findAllById(ids);
+        return ids.stream()
+                .map(carRepository::findById)
+                .flatMap(Optional::stream)
+                .toList();
     }
 
     public boolean isFavorite(Long chatId, Long carId) {
@@ -80,5 +84,10 @@ public class FavoriteCarService {
         }
 
         return favoriteCarRepository.existsByChatIdAndCarId(chatId, carId);
+    }
+
+    // ⭐ новый метод для /admin статистики
+    public long countAllFavorites() {
+        return favoriteCarRepository.count();
     }
 }

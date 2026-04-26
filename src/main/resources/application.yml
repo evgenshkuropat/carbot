@@ -1,14 +1,13 @@
-spring:
-  datasource:
-    url: jdbc:postgresql://localhost:5433/carbot
-    username: postgres
-    password: 263126
-    driver-class-name: org.postgresql.Driver
-
-  jpa:
-    open-in-view: false
+  server.port=${PORT:8080}
+    
+    spring.datasource.url=jdbc:postgresql://${PGHOST}:${PGPORT}/${PGDATABASE}
+    spring.datasource.username=${PGUSER}
+    spring.datasource.password=${PGPASSWORD}
+    
+    spring.jpa.hibernate.ddl-auto=update
 
 telegram:
   bot:
     token: 8637160094:AAEkzQnEwQDKMFP4evVZs9EBs9wis_ZB2Hs
     username: CarRadarCZ_bot
+    admin-chat-ids: 1246486851

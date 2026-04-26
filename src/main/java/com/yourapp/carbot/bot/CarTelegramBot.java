@@ -56,6 +56,7 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
     private final MessageService messages;
 
     private final Map<Long, SearchSession> searchSessions = new ConcurrentHashMap<>();
+    private final Set<Long> adminChatIds;
 
     public CarTelegramBot(
             @Value("${telegram.bot.token}") String botToken,
@@ -66,7 +67,8 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
             CarSearchService carSearchService,
             FavoriteCarService favoriteCarService,
             CarBotKeyboardFactory keyboardFactory,
-            MessageService messages
+            MessageService messages,
+            @Value("${telegram.bot.admin-chat-ids:}") String adminChatIdsRaw
     ) {
         this.botToken = botToken;
         this.telegramClient = new OkHttpTelegramClient(botToken);
@@ -78,6 +80,7 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
         this.favoriteCarService = favoriteCarService;
         this.keyboardFactory = keyboardFactory;
         this.messages = messages;
+        this.adminChatIds = parseAdminChatIds(adminChatIdsRaw);
     }
 
     @Override
@@ -190,6 +193,7 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
             case "/myfilter" -> showCurrentFilter(chatId);
             case "/resetfilter" -> resetFilter(chatId);
             case "/language" -> handleLanguage(chatId);
+            case "/admin" -> handleAdmin(chatId);
             default -> sendMessage(
                     chatId,
                     messages.get(lang(chatId), "command.unknown"),
@@ -199,6 +203,7 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
     }
 
     private void handleStart(Long chatId, String username, String telegramLanguageCode) {
+
         subscriberService.subscribe(chatId, username);
 
         UserFilterEntity filter = userFilterService.getOrCreate(chatId);
@@ -208,18 +213,13 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
             userFilterService.save(filter);
         }
 
-        if (isFilterConfigured(filter)) {
-            sendMessage(
-                    chatId,
-                    messages.get(lang(chatId), "start.welcomeBack")
-                            + "\n\n"
-                            + buildFilterSummary(filter),
-                    keyboardFactory.mainMenuKeyboard(lang(chatId))
-            );
-            return;
-        }
+        String lang = lang(chatId);
 
-        startNewFilterSetup(chatId);
+        sendMessage(
+                chatId,
+                messages.get(lang, "start.welcome"),
+                keyboardFactory.mainMenuKeyboard(lang)
+        );
     }
 
     private boolean isFilterConfigured(UserFilterEntity filter) {
@@ -258,7 +258,7 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
 
         sendMessage(
                 chatId,
-                messages.get(currentLang, "start.title"),
+                messages.get(currentLang, "carType.choose"),
                 keyboardFactory.carTypeKeyboard(currentLang, filter.getCarType(), true)
         );
     }
@@ -766,14 +766,26 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
     }
 
     private void handleFind(Long chatId) {
+        UserFilterEntity filter = userFilterService.findByChatId(chatId).orElse(null);
+        String lang = lang(chatId);
+
+        if (!isFilterConfigured(filter)) {
+            sendMessage(
+                    chatId,
+                    messages.get(lang, "filter.notConfigured"),
+                    keyboardFactory.mainMenuKeyboard(lang)
+            );
+            return;
+        }
+
         List<CarEntity> cars = carSearchService.findMatchingCars(chatId, 50);
 
         if (cars.isEmpty()) {
             sendMessage(
                     chatId,
-                    messages.get(lang(chatId), "cars.noMatches.pretty")
+                    messages.get(lang, "cars.noMatches.pretty")
                             + buildRelaxSuggestion(chatId, 0),
-                    keyboardFactory.mainMenuKeyboard(lang(chatId))
+                    keyboardFactory.myFilterActionsKeyboard(lang)
             );
             return;
         }
@@ -875,6 +887,7 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
         return """
             %s %s
 
+            %s: %s
             %s: %s
             %s: %s
             %s: %s
@@ -1418,6 +1431,10 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
             return "https://www.sauto.cz/";
         }
 
+        if (source.contains("TIPCARS") || source.contains("TIP_CARS")) {
+            return "https://www.tipcars.com/";
+        }
+
         return "https://www.google.com/";
     }
 
@@ -1581,19 +1598,12 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
                     .append("\n");
         }
 
-        if (location != null || source != null || freshness != null) {
-            sb.append("\n");
-        }
-
         if (location != null) {
             sb.append("📍 ").append(location).append("\n");
         }
 
         if (source != null) {
-            sb.append("🌐 ").append(messages.get(lang, "label.source"))
-                    .append(": ")
-                    .append(source)
-                    .append("\n");
+            sb.append("🌐 ").append(source).append("\n");
         }
 
         if (freshness != null) {
@@ -1654,11 +1664,21 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
             return null;
         }
 
-        return switch (source.trim().toUpperCase()) {
-            case "SAUTO" -> "Sauto.cz";
-            case "BAZOS" -> "Bazoš.cz";
-            default -> source.trim();
-        };
+        String normalized = source.trim().toUpperCase();
+
+        if (normalized.contains("SAUTO")) {
+            return "Sauto.cz";
+        }
+
+        if (normalized.contains("BAZOS")) {
+            return "Bazoš.cz";
+        }
+
+        if (normalized.contains("TIPCARS") || normalized.contains("TIP_CARS")) {
+            return "TipCars.cz";
+        }
+
+        return source.trim();
     }
 
     private String formatFreshness(String lang, LocalDateTime createdAt) {
@@ -1687,6 +1707,7 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
         }
 
         long hours = minutes / 60;
+
         if (hours < 24) {
             return switch (lang) {
                 case "ru" -> hours + " ч назад";
@@ -1697,11 +1718,34 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
         }
 
         long days = hours / 24;
+
+        if (days < 30) {
+            return switch (lang) {
+                case "ru" -> days + " дн назад";
+                case "uk" -> days + " дн тому";
+                case "cs" -> "před " + days + " d";
+                default -> days + " d ago";
+            };
+        }
+
+        long months = days / 30;
+
+        if (months < 12) {
+            return switch (lang) {
+                case "ru" -> months + " мес назад";
+                case "uk" -> months + " міс тому";
+                case "cs" -> "před " + months + " měs.";
+                default -> months + " mo ago";
+            };
+        }
+
+        long years = days / 365;
+
         return switch (lang) {
-            case "ru" -> days + " дн назад";
-            case "uk" -> days + " дн тому";
-            case "cs" -> "před " + days + " d";
-            default -> days + " d ago";
+            case "ru" -> years + " г назад";
+            case "uk" -> years + " р тому";
+            case "cs" -> "před " + years + " r.";
+            default -> years + " y ago";
         };
     }
 
@@ -1805,5 +1849,123 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
 
     private String safeOrNull(String value) {
         return value == null || value.isBlank() ? null : value;
+    }
+
+    private void handleAdmin(Long chatId) {
+
+        if (!isAdmin(chatId)) {
+            sendMessage(chatId, "⛔ Admin access denied.");
+            return;
+        }
+
+        LocalDateTime last24h = LocalDateTime.now().minusHours(24);
+
+        long totalCars = carRepository.count();
+
+        long bazosCars = carRepository.countBySource("BAZOS");
+        long sautoCars = carRepository.countBySource("SAUTO");
+        long tipCars = carRepository.countBySource("TIPCARS");
+
+        long newLast24h = carRepository.countByCreatedAtAfter(last24h);
+
+        long bazosLast24h = carRepository.countBySourceAndCreatedAtAfter("BAZOS", last24h);
+        long sautoLast24h = carRepository.countBySourceAndCreatedAtAfter("SAUTO", last24h);
+        long tipCarsLast24h = carRepository.countBySourceAndCreatedAtAfter("TIPCARS", last24h);
+
+        long usersTotal = subscriberService.countAllSubscribers();
+        long usersActive = subscriberService.countActiveSubscribers();
+        long favoritesTotal = favoriteCarService.countAllFavorites();
+
+        List<CarEntity> latestCars = carRepository.findTop5ByOrderByCreatedAtDesc();
+
+        StringBuilder latest = new StringBuilder();
+
+        if (latestCars.isEmpty()) {
+            latest.append("—");
+        } else {
+            for (CarEntity car : latestCars) {
+                latest.append("• ")
+                        .append(formatSource(car.getSource()))
+                        .append(" — ")
+                        .append(formatTitleForAdmin(car.getTitle()))
+                        .append("\n");
+            }
+        }
+
+        String text = """
+        🛠 Admin panel
+
+        ✅ Bot status: running
+
+        👥 Users total: %d
+        🔔 Active subscriptions: %d
+        ⭐ Favorites saved: %d
+
+        🚗 Cars in DB: %d
+        🆕 New last 24h: %d
+
+        📦 Sources total:
+        • Bazoš.cz: %d
+        • Sauto.cz: %d
+        • TipCars.cz: %d
+
+        🕒 Sources last 24h:
+        • Bazoš.cz: %d
+        • Sauto.cz: %d
+        • TipCars.cz: %d
+
+        🧾 Latest cars:
+        %s
+        """.formatted(
+                usersTotal,
+                usersActive,
+                favoritesTotal,
+                totalCars,
+                newLast24h,
+                bazosCars,
+                sautoCars,
+                tipCars,
+                bazosLast24h,
+                sautoLast24h,
+                tipCarsLast24h,
+                latest.toString().trim()
+        );
+
+        sendMessage(chatId, text);
+    }
+
+    private boolean isAdmin(Long chatId) {
+        return chatId != null && adminChatIds.contains(chatId);
+    }
+
+    private Set<Long> parseAdminChatIds(String raw) {
+        Set<Long> result = new LinkedHashSet<>();
+
+        if (raw == null || raw.isBlank()) {
+            return result;
+        }
+
+        for (String part : raw.split(",")) {
+            try {
+                result.add(Long.parseLong(part.trim()));
+            } catch (Exception ignored) {
+            }
+        }
+
+        return result;
+    }
+
+    private String formatTitleForAdmin(String title) {
+        if (title == null || title.isBlank()) {
+            return "-";
+        }
+
+        String cleaned = title.replaceAll("\\s+", " ").trim();
+
+        if (cleaned.length() <= 45) {
+            return cleaned;
+        }
+
+        return cleaned.substring(0, 42).trim() + "...";
     }
 }

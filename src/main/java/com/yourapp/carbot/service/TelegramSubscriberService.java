@@ -1,6 +1,5 @@
 package com.yourapp.carbot.service;
 
-import com.yourapp.carbot.entity.CarEntity;
 import com.yourapp.carbot.entity.TelegramSubscriberEntity;
 import com.yourapp.carbot.repository.TelegramSubscriberRepository;
 import org.springframework.stereotype.Service;
@@ -32,5 +31,13 @@ public class TelegramSubscriberService {
         entity.setCreatedAt(LocalDateTime.now());
 
         repository.save(entity);
+    }
+
+    public long countAllSubscribers() {
+        return repository.count();
+    }
+
+    public long countActiveSubscribers() {
+        return repository.count();
     }
 }

@@ -46,12 +46,12 @@ public class CarBotKeyboardFactory {
 
     public InlineKeyboardMarkup languageKeyboard() {
         InlineKeyboardRow row1 = new InlineKeyboardRow();
-        row1.add(InlineKeyboardButton.builder().text("🇷🇺 Русский").callbackData("lang:ru").build());
         row1.add(InlineKeyboardButton.builder().text("🇺🇦 Українська").callbackData("lang:uk").build());
+        row1.add(InlineKeyboardButton.builder().text("🇨🇿 Čeština").callbackData("lang:cs").build());
 
         InlineKeyboardRow row2 = new InlineKeyboardRow();
-        row2.add(InlineKeyboardButton.builder().text("🇨🇿 Čeština").callbackData("lang:cs").build());
         row2.add(InlineKeyboardButton.builder().text("🇬🇧 English").callbackData("lang:en").build());
+        row2.add(InlineKeyboardButton.builder().text("🇷🇺 Русский").callbackData("lang:ru").build());
 
         return InlineKeyboardMarkup.builder()
                 .keyboard(List.of(row1, row2))
