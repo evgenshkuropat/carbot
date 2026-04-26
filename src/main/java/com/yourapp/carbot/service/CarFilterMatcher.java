@@ -371,6 +371,21 @@ public class CarFilterMatcher {
                 continue;
             }
 
+            if (brand.equals("RENAULT")) {
+                if (containsAny(title, " RENAULT ", " CLIO ", " MEGANE ", " SCENIC ",
+                        " GRAND SCENIC ", " LAGUNA ", " KANGOO ", " CAPTUR ",
+                        " AUSTRAL ", " RAFALE ", " KOLEOS ", " KADJAR ",
+                        " TALISMAN ", " FLUENCE ", " LATITUDE ", " SYMBOL ",
+                        " TWINGO ", " ZOE ", " DUSTER ", " SANDERO ", " LOGAN ")) {
+                    return true;
+                }
+                continue;
+            }
+
+            if (title.contains(" " + brand + " ")) {
+                return true;
+            }
+
             if (title.contains(" " + brand + " ")) {
                 return true;
             }
