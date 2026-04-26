@@ -179,7 +179,7 @@ public class BazosParser implements CarSourceParser {
         if (page <= 0) {
             return BASE_URL;
         }
-        return "https://auto.bazos.cz/?hledat=osobni+auta&rubriky=auto&hlokalita=&humkreis=25&cenaod=&cenado=&order=&crp=" + (page * 20) + "&kitx=ne";
+        return BASE_URL + (page * 20) + "/";
     }
 
     private String extractNextPageUrl(Document doc) {
@@ -812,25 +812,13 @@ public class BazosParser implements CarSourceParser {
         }
 
         if (containsAny(titleSource,
-                " hatchback ",
-                " hatch ",
-                " spaceback ",
-                " fabia ",
-                " focus ",
-                " golf ",
-                " polo ",
-                " i30 ",
-                " ceed ",
-                " c3 ",
-                " c2 ",
-                " clio ",
-                " megane ",
-                " fiesta ",
-                " civic ",
-                " leon ",
-                " swift ",
-                " agila ",
-                " 207 ")) {
+                " hatchback ", " hatch ", " spaceback ",
+                " fabia ", " focus ", " golf ", " polo ",
+                " i30 ", " ceed ", " c3 ", " c2 ",
+                " clio ", " megane ", " fiesta ",
+                " civic ", " leon ", " swift ",
+                " agila ", " 207 ",
+                " sandero ", " logan ")) {
             return "HATCHBACK";
         }
 
@@ -1410,7 +1398,16 @@ public class BazosParser implements CarSourceParser {
                 " světla ", " svetla ",
                 " zrcátko ", " zrcatko ",
                 " převodovka ", " prevodovka ",
-                " motor ",
+                " prodám motor ",
+                " prodam motor ",
+                " motor na prodej ",
+                " motor z auta ",
+                " motor z vozu ",
+                " blok motoru ",
+                " hlava motoru ",
+                " dvouhmota ",
+                " setrvačník ",
+                " setrvacnik ",
                 " turbo ",
                 " vstřiky ", " vstriky ",
                 " čerpadlo ", " cerpadlo ",
@@ -1421,17 +1418,21 @@ public class BazosParser implements CarSourceParser {
         }
 
         if (startsWithAny(titleValue,
-                " motor ",
-                " motory ",
-                " převodovka ",
-                " prevodovka ",
-                " turbo ",
-                " vstřiky ",
-                " vstriky ",
-                " čerpadlo ",
-                " cerpadlo ",
-                " blok motoru ",
-                " hlava motoru ",
+                "prodám motor ",
+                "prodam motor ",
+                "motor na prodej ",
+                "motor z auta ",
+                "motor z vozu ",
+                "motory ",
+                "převodovka ",
+                "prevodovka ",
+                "turbo ",
+                "vstřiky ",
+                "vstriky ",
+                "čerpadlo ",
+                "cerpadlo ",
+                "blok motoru ",
+                "hlava motoru ",
                 " blatník ",
                 " blatnik ",
                 " nárazník ",
@@ -1485,9 +1486,16 @@ public class BazosParser implements CarSourceParser {
                 " kapota ", " světla ", " svetla ",
                 " brzdové kotouče ", " brzdove kotouce ",
                 " brzdové destičky ", " brzdove desticky ",
-                " motor ", " motory ",
+                " prodám motor ", " prodam motor ",
+                " motor na prodej ",
+                " motor z auta ", " motor z vozu ",
+                " blok motoru ", " hlava motoru ",
+                " motory ",
                 " převodovka ", " prevodovka ",
                 " turbo ",
+                " dvouhmota ",
+                " setrvačník ",
+                " setrvacnik ",
                 " vstřiky ", " vstriky ",
                 " čerpadlo ", " cerpadlo ",
                 " spojka ",
@@ -1534,7 +1542,9 @@ public class BazosParser implements CarSourceParser {
 
         if (containsAny(source,
                 " kola ", " disky ", " pneu ", " gumy ", " náhradní díly ", " nahradni dily ",
-                " blatník ", " blatnik ", " nárazník ", " naraznik ", " motor ", " převodovka ", " prevodovka ",
+                " blatník ", " blatnik ", " nárazník ", " naraznik ",
+                " převodovka ", " prevodovka ",
+                " dvouhmota ", " setrvačník ", " setrvacnik ",
                 " střešní nosič ", " stresni nosic ", " thule ", " rakev ", " box na střechu ", " box na strechu ")) {
             score -= 3;
         }
