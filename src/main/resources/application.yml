@@ -11,9 +11,9 @@ spring:
 
 telegram:
   bot:
-    token: 8637160094:AAEkzQnEwQDKMFP4evVZs9EBs9wis_ZB2Hs
-    username: CarRadarCZ_bot
-    admin-chat-ids: 1246486851
+    token: ${TELEGRAM_BOT_TOKEN}
+    username: ${TELEGRAM_BOT_USERNAME}
+    admin-chat-ids: ${TELEGRAM_ADMIN_CHAT_IDS}
 
 server:
   port: ${PORT:8080}
