@@ -298,8 +298,8 @@ public class BazosParser implements CarSourceParser {
 
             String price = formatPrice(priceValue);
             String location = extractLocation(doc, analysisText);
-            Integer year = extractYear(title, listingText);
-            Integer mileage = extractMileage(title, listingText);
+            Integer year = extractYear(title, analysisText);
+            Integer mileage = extractMileage(title, analysisText);
             String fuelType = firstNonBlank(
                     extractFuelType(title),
                     extractFuelType(listingText),
@@ -510,7 +510,7 @@ public class BazosParser implements CarSourceParser {
         String source = normalizeText(title + " " + text);
 
         Matcher matcher = Pattern.compile(
-                "(?i)(?:rok výroby|rok vyroby|r\\.v\\.?|rv|první registrace|prvni registrace|do provozu|uvedení do provozu|uvedeni do provozu)\\s*[:\\-]?\\s*(19\\d{2}|20\\d{2})"
+                "(?i)(?:rok výroby|rok vyroby|r\\.v\\.?|rv|první registrace|prvni registrace|do provozu|uvedení do provozu|uvedeni do provozu)\\s*[:\\-]?\\s*(?:\\d{1,2}\\s*/\\s*)?(19\\d{2}|20\\d{2})"
         ).matcher(source);
 
         if (matcher.find()) {
@@ -552,7 +552,10 @@ public class BazosParser implements CarSourceParser {
     private Integer extractMileage(String title, String text) {
         String source = normalizeText(title + " " + text);
 
-        Matcher matcher = Pattern.compile("(?i)(?:najeto|najetých km|najetych km|stav tachometru)\\s*[:\\-]?\\s*([0-9\\s\\.]{2,})\\s*km").matcher(source);
+        Matcher matcher = Pattern.compile(
+                "(?i)(?:najeto|najetých km|najetych km|stav tachometru|počet km|pocet km)\\s*[:\\-]?\\s*([0-9\\s\\.]{2,})\\s*km"
+        ).matcher(source);
+
         if (matcher.find()) {
             Integer value = parseMileageCandidate(matcher.group(1));
             if (value != null) {
