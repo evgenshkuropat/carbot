@@ -31,7 +31,7 @@ public class CarSearchService {
             return List.of();
         }
 
-        List<CarEntity> allCars = carRepository.findAll();
+        List<CarEntity> allCars = carRepository.findAllByOrderByCreatedAtDesc();
 
         long carTypePassed = 0;
         long brandPassed = 0;
@@ -46,33 +46,15 @@ public class CarSearchService {
         for (CarEntity car : allCars) {
             FilterCheckResult check = carFilterMatcher.check(car, filter);
 
-            if (check.carTypeOk()) {
-                carTypePassed++;
-            }
-            if (check.brandOk()) {
-                brandPassed++;
-            }
-            if (check.maxPriceOk()) {
-                pricePassed++;
-            }
-            if (check.locationOk()) {
-                locationPassed++;
-            }
-            if (check.mileageOk()) {
-                mileagePassed++;
-            }
-            if (check.fuelTypeOk()) {
-                fuelPassed++;
-            }
-            if (check.transmissionOk()) {
-                transmissionPassed++;
-            }
-            if (check.yearOk()) {
-                yearPassed++;
-            }
-            if (check.result()) {
-                finalPassed++;
-            }
+            if (check.carTypeOk()) carTypePassed++;
+            if (check.brandOk()) brandPassed++;
+            if (check.maxPriceOk()) pricePassed++;
+            if (check.locationOk()) locationPassed++;
+            if (check.mileageOk()) mileagePassed++;
+            if (check.fuelTypeOk()) fuelPassed++;
+            if (check.transmissionOk()) transmissionPassed++;
+            if (check.yearOk()) yearPassed++;
+            if (check.result()) finalPassed++;
         }
 
         System.out.println("========== DEBUG SEARCH ==========");
@@ -97,28 +79,86 @@ public class CarSearchService {
         System.out.println("PASSED year = " + yearPassed);
         System.out.println("FINAL MATCHED = " + finalPassed);
         System.out.println("==================================");
-        System.out.println("========== DEBUG RENAULT CARS ==========");
+
+        System.out.println("========== DEBUG RENAULT FAILED / PASSED ==========");
 
         allCars.stream()
-                .filter(car -> "RENAULT".equalsIgnoreCase(car.getBrand()))
-                .limit(30)
-                .forEach(car -> System.out.println(
-                        "title=" + car.getTitle()
-                                + ", price=" + car.getPriceValue()
-                                + ", mileage=" + car.getMileage()
-                                + ", year=" + car.getYear()
-                                + ", fuel=" + car.getFuelType()
-                                + ", type=" + car.getCarType()
-                ));
+                .filter(this::looksLikeRenault)
+                .limit(150)
+                .forEach(car -> {
+                    FilterCheckResult check = carFilterMatcher.check(car, filter);
 
-        System.out.println("========================================");
+                    System.out.println(
+                            "result=" + check.result()
+                                    + " | carTypeOk=" + check.carTypeOk()
+                                    + " brandOk=" + check.brandOk()
+                                    + " priceOk=" + check.maxPriceOk()
+                                    + " locationOk=" + check.locationOk()
+                                    + " mileageOk=" + check.mileageOk()
+                                    + " fuelOk=" + check.fuelTypeOk()
+                                    + " transmissionOk=" + check.transmissionOk()
+                                    + " yearOk=" + check.yearOk()
+                                    + " || title=" + car.getTitle()
+                                    + " | brand=" + car.getBrand()
+                                    + " | price=" + car.getPriceValue()
+                                    + " | mileage=" + car.getMileage()
+                                    + " | year=" + car.getYear()
+                                    + " | fuel=" + car.getFuelType()
+                                    + " | transmission=" + car.getTransmission()
+                                    + " | type=" + car.getCarType()
+                                    + " | location=" + car.getLocation()
+                                    + " | createdAt=" + car.getCreatedAt()
+                    );
+                });
 
-        return allCars.stream()
+        System.out.println("===================================================");
+
+        List<CarEntity> matched = allCars.stream()
                 .filter(car -> carFilterMatcher.matches(car, filter))
-                .sorted(Comparator.comparing(CarEntity::getCreatedAt).reversed())
+                .sorted(Comparator.comparing(
+                        CarEntity::getCreatedAt,
+                        Comparator.nullsLast(Comparator.naturalOrder())
+                ).reversed())
                 .limit(limit)
                 .toList();
+
+        System.out.println("========== FINAL MATCHED CARS ==========");
+        matched.forEach(car -> System.out.println(
+                "title=" + car.getTitle()
+                        + " | brand=" + car.getBrand()
+                        + " | price=" + car.getPriceValue()
+                        + " | mileage=" + car.getMileage()
+                        + " | year=" + car.getYear()
+                        + " | fuel=" + car.getFuelType()
+                        + " | transmission=" + car.getTransmission()
+                        + " | type=" + car.getCarType()
+                        + " | location=" + car.getLocation()
+                        + " | createdAt=" + car.getCreatedAt()
+        ));
+        System.out.println("========================================");
+
+        return matched;
     }
 
+    private boolean looksLikeRenault(CarEntity car) {
+        if (car == null) {
+            return false;
+        }
 
+        String title = car.getTitle() == null ? "" : car.getTitle().toUpperCase();
+        String brand = car.getBrand() == null ? "" : car.getBrand().toUpperCase();
+
+        return brand.contains("RENAULT")
+                || title.contains("RENAULT")
+                || title.contains("CLIO")
+                || title.contains("MEGANE")
+                || title.contains("MÉGANE")
+                || title.contains("SCENIC")
+                || title.contains("FLUENCE")
+                || title.contains("LAGUNA")
+                || title.contains("CAPTUR")
+                || title.contains("KADJAR")
+                || title.contains("KOLEOS")
+                || title.contains("TWINGO");
+    }
 }

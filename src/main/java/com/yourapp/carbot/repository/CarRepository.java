@@ -16,6 +16,8 @@ public interface CarRepository extends JpaRepository<CarEntity, Long> {
 
     List<CarEntity> findByUrlIn(Collection<String> urls);
 
+    List<CarEntity> findAllByOrderByCreatedAtDesc();
+
     List<CarEntity> findTop5ByOrderByCreatedAtDesc();
 
     List<CarEntity> findTop50ByOrderByCreatedAtDesc();
