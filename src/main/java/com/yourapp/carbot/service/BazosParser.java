@@ -251,7 +251,7 @@ public class BazosParser implements CarSourceParser {
                 return ParseResult.skip("commercial_vehicle");
             }
 
-            if (looksTyreOrWheelListing(title, preview, listingText)) {
+            if (looksTyreOrWheelListing(title, preview, analysisText)) {
                 log.warn("BAZOS SKIP url={} reason=tyre_or_wheel_listing title={}", safe(url), safe(title));
                 return ParseResult.skip("non_car_listing");
             }
@@ -298,7 +298,11 @@ public class BazosParser implements CarSourceParser {
 
             String price = formatPrice(priceValue);
             String location = extractLocation(doc, analysisText);
-            Integer year = extractYear(title, analysisText);
+            Integer year = extractYear(title, title);
+
+            if (year == null) {
+                year = extractYear("", analysisText);
+            }
             Integer mileage = extractMileage(title, analysisText);
             String fuelType = firstNonBlank(
                     extractFuelType(title),
@@ -496,7 +500,7 @@ public class BazosParser implements CarSourceParser {
 
         if (matcher.find()) {
             String raw = normalizeText(matcher.group(1));
-            raw = raw.replaceFirst("(?i)^(lokalita|okres|město|mesto)\\s*:?\\s*", "").trim();
+            raw = raw.replaceFirst("(?i)^(lokalita|okres|město|mesto|kraj)\\s*:?\\s*", "").trim();
 
             if (isRealLocation(raw)) {
                 return raw;
@@ -878,6 +882,9 @@ public class BazosParser implements CarSourceParser {
                 " a6 ",
                 " a7 ",
                 " a8 ",
+                " s7 ",
+                " s400d ",
+                " s400 ",
                 " e90 ",
                 " e60 ",
                 " e39 ",
@@ -977,6 +984,8 @@ public class BazosParser implements CarSourceParser {
                 " cr-v ",
                 " hr-v ",
                 " rav4 ",
+                " cx-5 ",
+                " cx5 ",
                 " macan ",
                 " cayenne ",
                 " ux ",
