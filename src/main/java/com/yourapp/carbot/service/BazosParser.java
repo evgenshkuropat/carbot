@@ -1261,6 +1261,10 @@ public class BazosParser implements CarSourceParser {
     private boolean looksCommercialVehicle(String title, String text, String url) {
         String source = " " + normalizeText(title + " " + shortenForCheck(text, 400) + " " + safe(url)).toLowerCase(Locale.ROOT) + " ";
 
+        if (looksLikePassengerCarModel(title)) {
+            return false;
+        }
+
         return containsAny(source,
                 " sprinter ",
                 " vito ",
@@ -1829,6 +1833,43 @@ public class BazosParser implements CarSourceParser {
             return normalized;
         }
         return normalized.substring(0, maxLen);
+    }
+
+    private boolean looksLikePassengerCarModel(String title) {
+        String source = " " + normalizeText(title).toLowerCase(Locale.ROOT) + " ";
+
+        return containsAny(source,
+                " rav4 ",
+                " rav 4 ",
+                " land cruiser ",
+                " x1 ",
+                " x3 ",
+                " x5 ",
+                " discovery sport ",
+                " range rover ",
+                " evoque ",
+                " cherokee ",
+                " grand cherokee ",
+                " forester ",
+                " outback ",
+                " xv ",
+                " mokka ",
+                " tarraco ",
+                " sorento ",
+                " sportage ",
+                " tucson ",
+                " santa fe ",
+                " kona ",
+                " duster ",
+                " tiguan ",
+                " touareg ",
+                " kodiaq ",
+                " karoq ",
+                " rav ",
+                " qashqai ",
+                " cx-5 ",
+                " cx5 "
+        );
     }
 
     private String safe(String value) {
