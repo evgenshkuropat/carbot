@@ -8,7 +8,6 @@ import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-import org.jsoup.Connection;
 
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
@@ -69,16 +68,10 @@ public class BazosParser implements CarSourceParser {
                 String pageUrl = buildListPageUrl(page);
 
                 try {
-                    Connection.Response response = Jsoup.connect(pageUrl)
+                    Document listDoc = Jsoup.connect(pageUrl)
                             .userAgent("Mozilla/5.0")
                             .timeout(REQUEST_TIMEOUT_MS)
-                            .execute();
-
-                    Document listDoc = Jsoup.parse(
-                            response.bodyStream(),
-                            "windows-1250",
-                            pageUrl
-                    );
+                            .get();
 
                     Set<String> pageUrls = extractDetailUrls(listDoc);
 
@@ -230,16 +223,10 @@ public class BazosParser implements CarSourceParser {
 
     private ParseResult parseDetail(String url) {
         try {
-            Connection.Response response = Jsoup.connect(url)
+            Document doc = Jsoup.connect(url)
                     .userAgent("Mozilla/5.0")
                     .timeout(REQUEST_TIMEOUT_MS)
-                    .execute();
-
-            Document doc = Jsoup.parse(
-                    response.bodyStream(),
-                    "windows-1250",
-                    url
-            );
+                    .get();
 
             String title = extractTitle(doc);
             String preview = extractPreview(doc);
@@ -723,9 +710,7 @@ public class BazosParser implements CarSourceParser {
                 " automatu ",
                 " automatem ",
                 " aut. ",
-                " aut ",
                 " a/t ",
-                " at ",
                 " cvt ",
                 " e-cvt ",
                 " ecvt ",
