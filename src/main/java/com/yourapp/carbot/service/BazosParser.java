@@ -8,6 +8,7 @@ import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.jsoup.Connection;
 
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
@@ -68,10 +69,16 @@ public class BazosParser implements CarSourceParser {
                 String pageUrl = buildListPageUrl(page);
 
                 try {
-                    Document listDoc = Jsoup.connect(pageUrl)
+                    Connection.Response response = Jsoup.connect(pageUrl)
                             .userAgent("Mozilla/5.0")
                             .timeout(REQUEST_TIMEOUT_MS)
-                            .get();
+                            .execute();
+
+                    Document listDoc = Jsoup.parse(
+                            response.bodyStream(),
+                            "windows-1250",
+                            pageUrl
+                    );
 
                     Set<String> pageUrls = extractDetailUrls(listDoc);
 
@@ -223,10 +230,16 @@ public class BazosParser implements CarSourceParser {
 
     private ParseResult parseDetail(String url) {
         try {
-            Document doc = Jsoup.connect(url)
+            Connection.Response response = Jsoup.connect(url)
                     .userAgent("Mozilla/5.0")
                     .timeout(REQUEST_TIMEOUT_MS)
-                    .get();
+                    .execute();
+
+            Document doc = Jsoup.parse(
+                    response.bodyStream(),
+                    "windows-1250",
+                    url
+            );
 
             String title = extractTitle(doc);
             String preview = extractPreview(doc);
@@ -703,24 +716,44 @@ public class BazosParser implements CarSourceParser {
         if (containsAny(source,
                 " automatická převodovka ",
                 " automaticka prevodovka ",
+                " automatická ",
+                " automaticka ",
                 " automat ",
-                " tiptronic ",
+                " automatic ",
+                " automatu ",
+                " automatem ",
+                " aut. ",
+                " aut ",
+                " a/t ",
+                " at ",
+                " cvt ",
+                " e-cvt ",
+                " ecvt ",
                 " dsg ",
                 " s tronic ",
-                " powershift ",
-                " cvt ",
                 " stronic ",
-                " automatu ")) {
+                " tiptronic ",
+                " powershift ",
+                " multitronic ",
+                " steptronic ",
+                " x-tronic ",
+                " xtronic ")) {
             return "AUTOMATIC";
         }
 
         if (containsAny(source,
                 " manuální převodovka ",
                 " manualni prevodovka ",
+                " manuální ",
+                " manualni ",
                 " manuál ",
                 " manual ",
+                " man. ",
+                " man ",
                 " 5stupňová manuální ",
+                " 5stupnova manualni ",
                 " 6stupňová manuální ",
+                " 6stupnova manualni ",
                 " řazení manuální ",
                 " razeni manualni ")) {
             return "MANUAL";
