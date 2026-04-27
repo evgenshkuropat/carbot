@@ -31,6 +31,7 @@ public class SautoParser implements CarSourceParser {
     private static final int CURRENT_YEAR = Year.now().getValue();
     private static final int MIN_YEAR = 1990;
     private static final int MAX_REASONABLE_PRICE = 10_000_000;
+    private static final int MIN_VALID_PRICE = 30_000;
 
     @Override
     public String getSourceName() {
@@ -134,13 +135,16 @@ public class SautoParser implements CarSourceParser {
             }
 
             Integer priceValue = extractPriceValueDirect(doc, title, listingText);
+
             if (priceValue == null) {
-                log.warn("SAUTO SKIP url={} reason=missing_price title={}", safe(url), safe(title));
+                log.warn("SAUTO SKIP url={} reason=missing_price title={}",
+                        safe(url), safe(title));
                 return new ParseResult(null, "missing_price");
             }
 
-            if (priceValue <= 0 || priceValue > MAX_REASONABLE_PRICE) {
-                log.warn("SAUTO SKIP url={} reason=invalid_price title={} price={}", safe(url), safe(title), priceValue);
+            if (priceValue < MIN_VALID_PRICE || priceValue > MAX_REASONABLE_PRICE) {
+                log.warn("SAUTO SKIP url={} reason=invalid_price title={} price={}",
+                        safe(url), safe(title), priceValue);
                 return new ParseResult(null, "invalid_price");
             }
 
@@ -570,13 +574,24 @@ public class SautoParser implements CarSourceParser {
                 " zbytek na splátky ", " zbytek na splatky ");
     }
 
-    private boolean isClearlyFakeModernCarPrice(Integer price, Integer year, Integer mileage, String title, String text) {
+    private boolean isClearlyFakeModernCarPrice(Integer price,
+                                                Integer year,
+                                                Integer mileage,
+                                                String title,
+                                                String text) {
         if (price == null) {
             return false;
         }
 
-        // только явно нереальные цены
-        if (price < 10_000) {
+        if (price < MIN_VALID_PRICE) {
+            return true;
+        }
+
+        if (year != null && year >= 2015 && price < 80_000) {
+            return true;
+        }
+
+        if (year != null && year >= 2020 && price < 150_000) {
             return true;
         }
 
@@ -608,8 +623,18 @@ public class SautoParser implements CarSourceParser {
                 " závada motoru ", " zavada motoru ",
                 " vada motoru ",
                 " motor ko ",
-                " prasklá převodovka ", " praskla prevodovka ",
-                " prsklá převodovka ", " prskla prevodovka ",
+                " převodovka ko ", " prevodovka ko ",
+                " spojka ko ",
+                " špatná spojka ", " spatna spojka ",
+                " vada turba ",
+                " turbo ko ",
+                " k opravě ", " k oprave ",
+                " na opravu ",
+                " nutná oprava ", " nutna oprava ",
+                " bez dokladů ", " bez dokladu ",
+                " bez tp ",
+                " bez stk ",
+                " anglie ",
                 " havarované ", " havarovane ",
                 " havarovaný ", " havarovany ",
                 " havarovaná ", " havarovana ",
@@ -617,26 +642,28 @@ public class SautoParser implements CarSourceParser {
                 " bouraný ", " bourany ",
                 " bouraná ", " bourana ",
                 " poškozeno ", " poskozeno ",
-                " poškození požárem ", " poskozeni pozarem ",
-                " bez dokladů ", " bez dokladu ",
-                " bez tp ",
-                " bez stk ",
-                " anglie ",
-                " nutná oprava ", " nutna oprava ",
-                " špatná spojka ", " spatna spojka ",
-                " vada turba ",
-                " k opravě ", " k oprave ",
-                " na opravu ",
-                " plně pojízdné ", " plne pojizdne ")) {
+                " zamluveno ",
+                " rezervace ")) {
             return true;
         }
 
-        if (containsAny(normalized, " lpg ") && mileage != null && mileage >= 350_000) {
+        if (priceValue < 70_000 && mileage != null && mileage >= 250_000) {
+            return true;
+        }
+
+        if (priceValue < 100_000 && mileage != null && mileage >= 320_000) {
+            return true;
+        }
+
+        if (year != null && year < 2005 && priceValue < 80_000) {
+            return true;
+        }
+
+        if (year != null && year < 2010 && mileage != null && mileage >= 300_000 && priceValue < 120_000) {
             return true;
         }
 
         if (containsAny(normalized,
-                " storia ",
                 " felicia ",
                 " favorit ",
                 " forman ",
@@ -647,10 +674,11 @@ public class SautoParser implements CarSourceParser {
                 " cordoba ",
                 " golf iv ",
                 " golf 4 ",
-                " passat b5 ")
-                && priceValue <= 18_000
-                && mileage != null
-                && mileage >= 170_000) {
+                " passat b5 ",
+                " fiat multipla ",
+                " lancia y ",
+                " suzuki wagon r ")
+                && priceValue < 100_000) {
             return true;
         }
 
