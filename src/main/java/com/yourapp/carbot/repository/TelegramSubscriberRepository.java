@@ -9,4 +9,7 @@ public interface TelegramSubscriberRepository
         extends JpaRepository<TelegramSubscriberEntity, Long> {
 
     Optional<TelegramSubscriberEntity> findByChatId(Long chatId);
+
+    void deleteByChatId(Long chatId);
+
 }

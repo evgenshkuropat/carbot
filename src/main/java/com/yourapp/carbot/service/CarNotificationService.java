@@ -232,13 +232,20 @@ public class CarNotificationService {
                     .build();
 
             telegramClient.execute(message);
+
             log.info("Sent as text message. source={} chatId={} title='{}'",
                     safe(car.getSource()), chatId, safe(car.getTitle()));
+
             return true;
 
+        } catch (BotBlockedException e) {
+            return false;
         } catch (Exception e) {
+            removeBlockedSubscriber(chatId, e);
+
             log.error("Failed to send car notification. chatId={}, url={}",
                     chatId, safe(car.getUrl()), e);
+
             return false;
         }
     }
@@ -261,13 +268,18 @@ public class CarNotificationService {
                     .build();
 
             telegramClient.execute(photo);
+
             log.info("Photo sent by URL. source={} chatId={} title='{}'",
                     safe(car.getSource()), chatId, safe(car.getTitle()));
+
             return true;
 
         } catch (Exception e) {
+            removeBlockedSubscriber(chatId, e);
+
             log.warn("Telegram could not fetch image by URL. source={} imageUrl={} carUrl={} reason={}",
                     safe(car.getSource()), safe(car.getImageUrl()), safe(car.getUrl()), e.getMessage());
+
             return false;
         }
     }
@@ -295,13 +307,18 @@ public class CarNotificationService {
                     .build();
 
             telegramClient.execute(photo);
+
             log.info("Photo sent by download. source={} chatId={} title='{}'",
                     safe(car.getSource()), chatId, safe(car.getTitle()));
+
             return true;
 
         } catch (Exception e) {
+            removeBlockedSubscriber(chatId, e);
+
             log.warn("Failed to send downloaded image. source={} imageUrl={} carUrl={} reason={}",
                     safe(car.getSource()), safe(car.getImageUrl()), safe(car.getUrl()), e.getMessage());
+
             return false;
 
         } finally {
@@ -350,9 +367,13 @@ public class CarNotificationService {
             return true;
 
         } catch (Exception e) {
+            removeBlockedSubscriber(chatId, e);
+
             log.warn("Failed to send placeholder photo. source={} title='{}' reason={}",
                     safe(car.getSource()), safe(car.getTitle()), e.getMessage());
+
             return false;
+
         } finally {
             if (tempFile != null && tempFile.exists()) {
                 try {
@@ -705,6 +726,24 @@ public class CarNotificationService {
         }
 
         return normalized;
+    }
+
+    private void removeBlockedSubscriber(Long chatId, Exception e) {
+        String message = e.getMessage();
+
+        if (message != null &&
+                (message.contains("[403]") ||
+                        message.toLowerCase(Locale.ROOT).contains("bot was blocked by the user"))) {
+
+            subscriberRepository.deleteByChatId(chatId);
+
+            log.warn("Subscriber removed because bot was blocked. chatId={}", chatId);
+
+            throw new BotBlockedException();
+        }
+    }
+
+    private static class BotBlockedException extends RuntimeException {
     }
 
     private String safe(String value) {
