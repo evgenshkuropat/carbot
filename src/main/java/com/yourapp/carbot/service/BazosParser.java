@@ -491,7 +491,7 @@ public class BazosParser implements CarSourceParser {
         }
 
         Matcher matcher = Pattern.compile(
-                "(?i)(?:lokalita|okres|město|mesto)\\s*:?\\s*([A-ZÁČĎÉĚÍŇÓŘŠŤÚŮÝŽa-záčďéěíňóřšťúůýž0-9\\- ]{2,60})"
+                "(?i)(?:lokalita|okres|město|mesto|kraj)\\s*:?\\s*([A-ZÁČĎÉĚÍŇÓŘŠŤÚŮÝŽa-záčďéěíňóřšťúůýž0-9\\- ]{2,60})"
         ).matcher(fullText);
 
         if (matcher.find()) {
@@ -530,18 +530,26 @@ public class BazosParser implements CarSourceParser {
     }
 
     private boolean isBadYearContext(String text, int start, int end) {
-        int from = Math.max(0, start - 45);
-        int to = Math.min(text.length(), end + 45);
+
+        int from = Math.max(0, start - 60);
+        int to = Math.min(text.length(), end + 60);
 
         String context = text.substring(from, to).toLowerCase(Locale.ROOT);
 
         return context.contains("stk")
+                || context.contains("stk:")
+                || context.contains("stk do")
                 || context.contains(" tk ")
+                || context.contains("tk:")
+                || context.contains("tk do")
                 || context.contains("technick")
+                || context.contains("technická")
+                || context.contains("technicka")
                 || context.contains("platná do")
                 || context.contains("platna do")
+                || context.contains("do provozu")
                 || context.contains("do roku")
-                || context.contains("do 202")
+                || context.matches(".*do\\s*202\\d.*")
                 || context.contains("záruka do")
                 || context.contains("zaruka do")
                 || context.contains("garance do")
@@ -784,6 +792,27 @@ public class BazosParser implements CarSourceParser {
         if (containsAny(source, " mini ")) return "MINI";
         if (containsAny(source, " tesla ")) return "TESLA";
         if (containsAny(source, " land rover ", " range rover ")) return "LAND_ROVER";
+
+        // fallback model detection
+
+        if (source.contains(" golf ")) return "VOLKSWAGEN";
+        if (source.contains(" passat ")) return "VOLKSWAGEN";
+        if (source.contains(" tiguan ")) return "VOLKSWAGEN";
+        if (source.contains(" sharan ")) return "VOLKSWAGEN";
+        if (source.contains(" touran ")) return "VOLKSWAGEN";
+
+        if (source.contains(" octavia ")) return "SKODA";
+        if (source.contains(" superb ")) return "SKODA";
+        if (source.contains(" fabia ")) return "SKODA";
+        if (source.contains(" kodiaq ")) return "SKODA";
+        if (source.contains(" karoq ")) return "SKODA";
+
+        if (source.contains(" focus ")) return "FORD";
+        if (source.contains(" mondeo ")) return "FORD";
+
+        if (source.contains(" megane ")) return "RENAULT";
+        if (source.contains(" scenic ")) return "RENAULT";
+        if (source.contains(" clio ")) return "RENAULT";
 
         return null;
     }
@@ -1269,8 +1298,6 @@ public class BazosParser implements CarSourceParser {
                 " nosič kol ", " nosic kol ",
                 " obytný ", " obytny ",
                 " obytné ", " obytne ",
-                " sport line ",
-                " vip ",
                 " chausson ",
                 " adria ",
                 " bailey ",
@@ -1284,7 +1311,8 @@ public class BazosParser implements CarSourceParser {
         String source = " " + normalizeText(title + " " + text + " " + shortenForCheck(analysisText, 700))
                 .toLowerCase(Locale.ROOT) + " ";
 
-        if (looksLikeRealCar(title, analysisText)) {
+        if (looksLikeRealCar(title, analysisText)
+                || extractBrand(title, analysisText) != null) {
             return false;
         }
 
@@ -1365,6 +1393,11 @@ public class BazosParser implements CarSourceParser {
     }
 
     private boolean looksNonCarListing(String title, String text, String url, String analysisText) {
+        if (looksLikeRealCar(title, analysisText)
+                || extractBrand(title, analysisText) != null) {
+            return false;
+        }
+
         if (looksTyreOrWheelListing(title, text, analysisText)) {
             return true;
         }
@@ -1680,6 +1713,7 @@ public class BazosParser implements CarSourceParser {
     }
 
     private boolean isRealLocation(String value) {
+
         if (value == null) {
             return false;
         }
@@ -1695,7 +1729,9 @@ public class BazosParser implements CarSourceParser {
                 && !lower.equals("lokalita:")
                 && !lower.equals("okres")
                 && !lower.equals("město")
-                && !lower.equals("mesto");
+                && !lower.equals("mesto")
+                && !lower.equals("okolí")
+                && !lower.equals("okoli");
     }
 
     private boolean containsAny(String source, String... values) {
