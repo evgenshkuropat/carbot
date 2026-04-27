@@ -701,6 +701,23 @@ public class BazosParser implements CarSourceParser {
         String source = " " + normalizeText(text).toLowerCase(Locale.ROOT) + " ";
 
         if (containsAny(source,
+                " manuální převodovka ",
+                " manualni prevodovka ",
+                " manuální ",
+                " manualni ",
+                " manuál ",
+                " manual ",
+                " man. ",
+                " 5stupňová manuální ",
+                " 5stupnova manualni ",
+                " 6stupňová manuální ",
+                " 6stupnova manualni ",
+                " řazení manuální ",
+                " razeni manualni ")) {
+            return "MANUAL";
+        }
+
+        if (containsAny(source,
                 " automatická převodovka ",
                 " automaticka prevodovka ",
                 " automatická ",
@@ -711,6 +728,8 @@ public class BazosParser implements CarSourceParser {
                 " automatem ",
                 " aut. ",
                 " a/t ",
+                " at6 ",
+                " at8 ",
                 " cvt ",
                 " e-cvt ",
                 " ecvt ",
@@ -724,24 +743,6 @@ public class BazosParser implements CarSourceParser {
                 " x-tronic ",
                 " xtronic ")) {
             return "AUTOMATIC";
-        }
-
-        if (containsAny(source,
-                " manuální převodovka ",
-                " manualni prevodovka ",
-                " manuální ",
-                " manualni ",
-                " manuál ",
-                " manual ",
-                " man. ",
-                " man ",
-                " 5stupňová manuální ",
-                " 5stupnova manualni ",
-                " 6stupňová manuální ",
-                " 6stupnova manualni ",
-                " řazení manuální ",
-                " razeni manualni ")) {
-            return "MANUAL";
         }
 
         return null;
