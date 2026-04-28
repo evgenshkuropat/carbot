@@ -528,6 +528,10 @@ public class BazosParser implements CarSourceParser {
     private Integer extractYear(String title, String text) {
         String source = normalizeText(title + " " + text);
 
+        if (containsAny(source, " PRODANO ", " PRODÁNO ", " ZADANO ", " ZADÁNO ")) {
+            source = normalizeText(title);
+        }
+
         Matcher matcher = Pattern.compile(
                 "(?i)(?:rok výroby|rok vyroby|r\\.v\\.?|rv|první registrace|prvni registrace|do provozu|uvedení do provozu|uvedeni do provozu)\\s*[:\\-]?\\s*(?:\\d{1,2}\\s*/\\s*)?(19\\d{2}|20\\d{2})"
         ).matcher(source);
@@ -1673,7 +1677,7 @@ public class BazosParser implements CarSourceParser {
             int year = Integer.parseInt(raw);
             int currentYear = java.time.Year.now().getValue();
 
-            if (year >= 1950 && year <= currentYear) {
+            if (year >= 1990 && year <= currentYear) {
                 return year;
             }
         } catch (NumberFormatException ignored) {
