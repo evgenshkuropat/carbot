@@ -80,38 +80,6 @@ public class CarSearchService {
         System.out.println("FINAL MATCHED = " + finalPassed);
         System.out.println("==================================");
 
-        System.out.println("========== DEBUG RENAULT FAILED / PASSED ==========");
-
-        allCars.stream()
-                .filter(this::looksLikeRenault)
-                .limit(150)
-                .forEach(car -> {
-                    FilterCheckResult check = carFilterMatcher.check(car, filter);
-
-                    System.out.println(
-                            "result=" + check.result()
-                                    + " | carTypeOk=" + check.carTypeOk()
-                                    + " brandOk=" + check.brandOk()
-                                    + " priceOk=" + check.maxPriceOk()
-                                    + " locationOk=" + check.locationOk()
-                                    + " mileageOk=" + check.mileageOk()
-                                    + " fuelOk=" + check.fuelTypeOk()
-                                    + " transmissionOk=" + check.transmissionOk()
-                                    + " yearOk=" + check.yearOk()
-                                    + " || title=" + car.getTitle()
-                                    + " | brand=" + car.getBrand()
-                                    + " | price=" + car.getPriceValue()
-                                    + " | mileage=" + car.getMileage()
-                                    + " | year=" + car.getYear()
-                                    + " | fuel=" + car.getFuelType()
-                                    + " | transmission=" + car.getTransmission()
-                                    + " | type=" + car.getCarType()
-                                    + " | location=" + car.getLocation()
-                                    + " | createdAt=" + car.getCreatedAt()
-                    );
-                });
-
-        System.out.println("===================================================");
 
         List<CarEntity> matched = allCars.stream()
                 .filter(car -> carFilterMatcher.matches(car, filter))

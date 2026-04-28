@@ -493,12 +493,49 @@ public class CarFilterMatcher {
 
         String carFuelType = normalizeToken(car.getFuelType());
         String wanted = normalizeToken(wantedFuelType);
+        String title = " " + normalizeText(car.getTitle()) + " ";
 
         if (carFuelType.isBlank()) {
+
+            if ("DIESEL".equals(wanted) && containsAny(title,
+                    " TDI ", " DCI ", " HDI ", " CDI ",
+                    " CRDI ", " TDCI ", " BLUEHDI ",
+                    " MULTIJET ", " DIESEL ", " NAFTA ")) {
+                return true;
+            }
+
+            if ("PETROL".equals(wanted) && containsAny(title,
+                    " TSI ", " TFSI ", " MPI ", " TCE ",
+                    " ECOBOOST ", " FSI ", " BENZIN ")) {
+                return true;
+            }
+
+            if ("ELECTRIC".equals(wanted) && containsAny(title,
+                    " ELECTRIC ", " ELEKTRO ", " EV ",
+                    " BEV ", " KWH ")) {
+                return true;
+            }
+
+            if ("HYBRID".equals(wanted) && containsAny(title,
+                    " HYBRID ", " HEV ", " MHEV ",
+                    " PHEV ", " PLUG-IN ")) {
+                return true;
+            }
+
+            if ("LPG".equals(wanted) && containsAny(title, " LPG ")) {
+                return true;
+            }
+
+            if ("CNG".equals(wanted) && containsAny(title, " CNG ")) {
+                return true;
+            }
+
             return false;
         }
 
-        if (carFuelType.equals(wanted) || carFuelType.contains(wanted) || wanted.contains(carFuelType)) {
+        if (carFuelType.equals(wanted)
+                || carFuelType.contains(wanted)
+                || wanted.contains(carFuelType)) {
             return true;
         }
 
@@ -518,12 +555,56 @@ public class CarFilterMatcher {
 
         String carTransmission = normalizeToken(car.getTransmission());
         String wanted = normalizeToken(wantedTransmission);
+        String fuelType = normalizeToken(car.getFuelType());
+        String title = " " + normalizeText(car.getTitle()) + " ";
+
+        if ("AUTOMATIC".equals(wanted)) {
+            if ("ELECTRIC".equals(fuelType)) {
+                return true;
+            }
+
+            if (carTransmission.isBlank() && containsAny(title,
+                    " DSG ",
+                    " AUTOMAT ",
+                    " AUTOMATIC ",
+                    " AUT ",
+                    " A/T ",
+                    " AT ",
+                    " CVT ",
+                    " E-CVT ",
+                    " ECVT ",
+                    " TIPTRONIC ",
+                    " S TRONIC ",
+                    " STRONIC ",
+                    " POWERSHIFT ",
+                    " 7G-TRONIC ",
+                    " 9G-TRONIC ",
+                    " XTRONIC ",
+                    " X-TRONIC ")) {
+                return true;
+            }
+        }
+
+        if ("MANUAL".equals(wanted)) {
+            if (carTransmission.isBlank() && containsAny(title,
+                    " MANUAL ",
+                    " MANUALNI ",
+                    " MAN ",
+                    " 5MT ",
+                    " 6MT ",
+                    " 5Q ",
+                    " 6Q ")) {
+                return true;
+            }
+        }
 
         if (carTransmission.isBlank()) {
             return false;
         }
 
-        return carTransmission.equals(wanted) || carTransmission.contains(wanted) || wanted.contains(carTransmission);
+        return carTransmission.equals(wanted)
+                || carTransmission.contains(wanted)
+                || wanted.contains(carTransmission);
     }
 
     private boolean matchesYearFrom(CarEntity car, UserFilterEntity filter) {
@@ -540,50 +621,6 @@ public class CarFilterMatcher {
         }
 
         return carYear >= yearFrom;
-    }
-
-    private boolean looksClearlyOldCarTitle(String title) {
-        return containsAny(title,
-                " PASSAT B5 ",
-                " PASSAT VARIANT 1.9TDI 74KW ",
-                " PASSAT 1.6 FSI ",
-                " BORA ",
-                " GOLF 1,4 BASIS ",
-                " GOLF 1.4 BASIS ",
-                " FELICIA ",
-                " FAVORIT ",
-                " FORMAN ",
-                " CORDOBA ",
-                " XSARA ",
-                " XANTIA ",
-                " SAXO ",
-                " C2 1,1 ",
-                " C3 1,4 ",
-                " ASTRA G ",
-                " ASTRA CARAVAN 1.7CDTI ",
-                " OCTAVIA TOUR ",
-                " OCTAVIA I ",
-                " OCTAVIA 1 ",
-                " FABIA I ",
-                " FABIA 1 ",
-                " SCENIC I ",
-                " SCENIC 1 ",
-                " CLIO 1 ",
-                " CLIO 2 ",
-                " MEGANE 2,0 ",
-                " MEGANE 1.4I ",
-                " E39 ",
-                " E46 ",
-                " A190 LONG ",
-                " GETZ 1.1 ",
-                " MERIVA 1.4 ",
-                " ZAFIRA 1,8 ",
-                " FOCUS 1,6 I ",
-                " FOCUS 1.6I ",
-                " FOCUS 1,8 16V ",
-                " ALFA ROMEO 156 ",
-                " 1.9 TDI 66KW ",
-                " 1.9TDI 74KW ");
     }
 
     private String normalizeLocation(String value) {
