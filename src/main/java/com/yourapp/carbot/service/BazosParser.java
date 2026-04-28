@@ -26,7 +26,7 @@ public class BazosParser implements CarSourceParser {
     private static final int REQUEST_TIMEOUT_MS = 20_000;
     private static final int MAX_LIST_PAGES = 50;
     private static final int MAX_DETAIL_LINKS = 1000;
-    private static final int MIN_VALID_PRICE = 10_000;
+    private static final int MIN_VALID_PRICE = 30_000;
     private static final int MAX_VALID_PRICE = 10_000_000;
 
     private static final Pattern TYRE_SIZE_PATTERN =
@@ -377,8 +377,23 @@ public class BazosParser implements CarSourceParser {
             return false;
         }
 
-        // только совсем очевидный мусор
-        if (priceValue < 10_000) {
+        if (priceValue < MIN_VALID_PRICE) {
+            return true;
+        }
+
+        if (year != null && year >= 2015 && priceValue < 80_000) {
+            return true;
+        }
+
+        if (year != null && year >= 2020 && priceValue < 150_000) {
+            return true;
+        }
+
+        if (priceValue < 70_000 && mileage != null && mileage >= 250_000) {
+            return true;
+        }
+
+        if (priceValue < 100_000 && mileage != null && mileage >= 320_000) {
             return true;
         }
 
@@ -1335,6 +1350,22 @@ public class BazosParser implements CarSourceParser {
                 " bailey ",
                 " beyerland ",
                 " hobby de luxe ",
+                " transit ",
+                " transporter ",
+                " sprinter ",
+                " crafter ",
+                " ducato ",
+                " boxer ",
+                " jumper ",
+                " master ",
+                " movano ",
+                " expert ",
+                " vito ",
+                " viano ",
+                " v-class ",
+                " v klasse ",
+                " dodávka ",
+                " dodavka ",
                 " knaus ");
     }
 
