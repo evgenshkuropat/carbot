@@ -542,7 +542,14 @@ public class BazosParser implements CarSourceParser {
 
         matcher = Pattern.compile("\\b(19\\d{2}|20\\d{2})\\b").matcher(source);
         while (matcher.find()) {
-            Integer year = parseYearCandidate(matcher.group(1));
+            String rawYear = matcher.group(1);
+
+            if ("2008".equals(rawYear)
+                    && normalizeText(source).toLowerCase(Locale.ROOT).contains("peugeot 2008")) {
+                continue;
+            }
+
+            Integer year = parseYearCandidate(rawYear);
 
             if (year != null && !isBadYearContext(source, matcher.start(), matcher.end())) {
                 return year;
@@ -1673,6 +1680,7 @@ public class BazosParser implements CarSourceParser {
                 " soubor náhradních dílů ", " soubor nahradnich dilu ",
                 " jen celek ",
                 " prodáno ", " prodano ",
+                " prodej ",
                 " zálohováno ", " zalohovano ",
                 " zadáno ", " zadano ");
     }
