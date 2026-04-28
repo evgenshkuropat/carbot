@@ -627,6 +627,18 @@ public class SautoParser implements CarSourceParser {
             return true;
         }
 
+        if (priceValue < 30_000 && containsAny(normalized,
+                " bez kardanu ",
+                " bez kardanů ",
+                " bez 4x4 ",
+                " vada ",
+                " závada ",
+                " zavada ",
+                " nepojízd",
+                " nepojizd")) {
+            return true;
+        }
+
         if (containsAny(normalized, " lpg ") && mileage != null && mileage >= 350_000) {
             return true;
         }
@@ -667,6 +679,7 @@ public class SautoParser implements CarSourceParser {
                 " nepojízdné ", " nepojizdne ",
                 " nepojízdný ", " nepojizdny ",
                 " nepojízdná ", " nepojizdna ",
+                " nepojízd ", " nepojizd ",
                 " bez tp ",
                 " bez stk ",
                 " prasklá převodovka ", " praskla prevodovka ",
@@ -684,7 +697,18 @@ public class SautoParser implements CarSourceParser {
                 " pouze na nd ",
                 " bez dokladů ", " bez dokladu ",
                 " rezervace ",
-                " zamluveno ");
+                " zamluveno ",
+                " bez kardanu ",
+                " bez kardanů ",
+                " bez kardanu",
+                " bez 4x4 ",
+                " nefunkční 4x4 ",
+                " nefunkcni 4x4 ",
+                " vadný pohon ",
+                " vadny pohon ",
+                " poškozený pohon ",
+                " poskozeny pohon "
+                );
     }
 
     private boolean looksCommercialVehicle(String title, String text, String url) {
