@@ -804,6 +804,7 @@ public class BazosParser implements CarSourceParser {
         if (containsAny(titleSource, " land rover ", " range rover ")) return "LAND_ROVER";
 
         if (containsAny(source, " škoda ", " skoda ")) return "SKODA";
+        if (containsAny(titleSource, " chevrolet ")) return "CHEVROLET";
         if (containsAny(source, " volkswagen ", " vw ")) return "VOLKSWAGEN";
         if (containsAny(source, " audi ")) return "AUDI";
         if (containsAny(source, " bmw ")) return "BMW";
@@ -1036,6 +1037,7 @@ public class BazosParser implements CarSourceParser {
                 " range rover ",
                 " evoque ",
                 " velar ",
+                " tarraco ",
                 " discovery sport ")) {
             return "SUV";
         }
@@ -1669,7 +1671,10 @@ public class BazosParser implements CarSourceParser {
                 " bez stk ",
                 " bez tp ",
                 " soubor náhradních dílů ", " soubor nahradnich dilu ",
-                " jen celek ");
+                " jen celek ",
+                " prodáno ", " prodano ",
+                " zálohováno ", " zalohovano ",
+                " zadáno ", " zadano ");
     }
 
     private Integer parseYearCandidate(String raw) {
