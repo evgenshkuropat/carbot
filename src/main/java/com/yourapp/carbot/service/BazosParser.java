@@ -544,8 +544,13 @@ public class BazosParser implements CarSourceParser {
         while (matcher.find()) {
             String rawYear = matcher.group(1);
 
-            if ("2008".equals(rawYear)
-                    && normalizeText(source).toLowerCase(Locale.ROOT).contains("peugeot 2008")) {
+            String normalizedLower = normalizeText(source).toLowerCase(Locale.ROOT);
+
+            if (
+                    ("2008".equals(rawYear) && normalizedLower.contains("peugeot 2008")) ||
+                            ("3008".equals(rawYear) && normalizedLower.contains("peugeot 3008")) ||
+                            ("5008".equals(rawYear) && normalizedLower.contains("peugeot 5008"))
+            ) {
                 continue;
             }
 
