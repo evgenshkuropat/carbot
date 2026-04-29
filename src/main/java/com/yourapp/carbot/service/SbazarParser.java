@@ -37,7 +37,32 @@ public class SbazarParser implements CarSourceParser {
 
     @Override
     public List<CarDto> fetchCars() {
-        log.warn("SBAZAR temporarily disabled");
+        log.warn("SBAZAR debug mode enabled. No cars will be saved or notified.");
+
+        try {
+            Document doc = Jsoup.connect(BASE_URL)
+                    .userAgent("Mozilla/5.0")
+                    .timeout(REQUEST_TIMEOUT_MS)
+                    .get();
+
+            Set<String> links = extractDetailUrls(doc);
+
+            log.warn("SBAZAR DEBUG collected links count={}", links.size());
+
+            int i = 0;
+            for (String link : links) {
+                if (i >= 30) {
+                    break;
+                }
+
+                log.warn("SBAZAR DEBUG link {}: {}", i + 1, link);
+                i++;
+            }
+
+        } catch (Exception e) {
+            log.warn("SBAZAR DEBUG failed: {}", e.getMessage());
+        }
+
         return List.of();
     }
 
