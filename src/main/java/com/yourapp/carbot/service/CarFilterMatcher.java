@@ -5,13 +5,11 @@ import com.yourapp.carbot.entity.UserFilterEntity;
 import org.springframework.stereotype.Component;
 
 import java.text.Normalizer;
-import java.time.Year;
 import java.util.Locale;
 
 @Component
 public class CarFilterMatcher {
 
-    private static final int CURRENT_YEAR = Year.now().getValue();
 
     public boolean matches(CarEntity car, UserFilterEntity filter) {
         return check(car, filter).result();
@@ -65,6 +63,25 @@ public class CarFilterMatcher {
         }
 
         String storedType = normalizeToken(car.getCarType());
+
+        // Если парсер уже определил тип кузова — доверяем ему.
+        // Не пытаемся дополнительно угадывать по title, иначе WAGON может пройти как SEDAN.
+        if (!storedType.isBlank()) {
+            for (String rawType : filterTypes.split(",")) {
+                String wanted = normalizeToken(rawType);
+
+                if (wanted.isBlank()) {
+                    continue;
+                }
+
+                if (storedType.equals(wanted)) {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
         String title = " " + normalizeText(car.getTitle()) + " ";
 
         for (String rawType : filterTypes.split(",")) {
@@ -74,10 +91,6 @@ public class CarFilterMatcher {
                 continue;
             }
 
-            if (!storedType.isBlank() && storedType.equals(wanted)) {
-                return true;
-            }
-
             boolean matchedByTitle = switch (wanted) {
                 case "SEDAN" -> containsAny(title,
                         " SEDAN ",
@@ -85,21 +98,7 @@ public class CarFilterMatcher {
                         " LIMUZINA ",
                         " LIFTBACK ",
                         " FASTBACK ",
-                        " SALOON ",
-                        " OCTAVIA ",
-                        " SUPERB ",
-                        " PASSAT ",
-                        " ARTEON ",
-                        " A4 ",
-                        " A6 ",
-                        " A8 ",
-                        " E90 ",
-                        " E60 ",
-                        " E39 ",
-                        " MODEL 3 ",
-                        " MODEL S ",
-                        " C5 ",
-                        " CORDOBA ");
+                        " SALOON ");
 
                 case "HATCHBACK" -> containsAny(title,
                         " HATCHBACK ",
@@ -478,7 +477,7 @@ public class CarFilterMatcher {
         Integer carMileage = car.getMileage();
 
         if (carMileage == null) {
-            return true;
+            return false;
         }
 
         return carMileage <= maxMileage;
