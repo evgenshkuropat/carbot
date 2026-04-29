@@ -399,33 +399,47 @@ public class SbazarParser implements CarSourceParser {
     private String extractFuelType(String text) {
         String source = " " + normalizeText(text).toLowerCase(Locale.ROOT) + " ";
 
-        if (containsAny(source, " elektro ", " elektromobil ", " electric ", " ev ", " kwh ", " bev ")) {
-            return "ELECTRIC";
-        }
-
-        if (containsAny(source, " hybrid ", " hybridní ", " hybridni ", " plug-in ", " plugin ", " phev ", " hev ")) {
-            return "HYBRID";
-        }
-
+        // LPG
         if (containsAny(source, " lpg ")) {
             return "LPG";
         }
 
+        // CNG
         if (containsAny(source, " cng ")) {
             return "CNG";
         }
 
+        // DIESEL (ставим раньше ELECTRIC!)
         if (containsAny(source,
                 " diesel ", " nafta ", " tdi ", " tdci ", " cdi ", " dci ", " hdi ",
                 " crdi ", " jtd ", " multijet ", " bluehdi ", " cdti ")) {
             return "DIESEL";
         }
 
+        // PETROL
         if (containsAny(source,
                 " benzin ", " benzín ", " tsi ", " tfsi ", " fsi ", " mpi ", " gdi ",
                 " tgdi ", " tce ", " ecoboost ", " vti ", " vvt-i ", " i-vtec ",
                 " skyactiv-g ", " 1.0i ", " 1.2i ", " 1.4i ", " 1.6i ", " 2.0i ")) {
             return "PETROL";
+        }
+
+        // HYBRID
+        if (containsAny(source,
+                " hybrid ", " hybridní ", " hybridni ",
+                " plug-in ", " plugin ", " phev ", " hev ")) {
+            return "HYBRID";
+        }
+
+        // ELECTRIC (самый последний!)
+        if (containsAny(source,
+                " elektro ",
+                " elektromobil ",
+                " elektroauto ",
+                " electric ",
+                " bev ",
+                " kwh ")) {
+            return "ELECTRIC";
         }
 
         return null;
