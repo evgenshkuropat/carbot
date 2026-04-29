@@ -30,6 +30,7 @@ public class SautoParser implements CarSourceParser {
 
     private static final int CURRENT_YEAR = Year.now().getValue();
     private static final int MIN_YEAR = 1990;
+    private static final int MIN_VALID_PRICE = 30_000;
     private static final int MAX_REASONABLE_PRICE = 10_000_000;
 
     @Override
@@ -142,6 +143,12 @@ public class SautoParser implements CarSourceParser {
             if (priceValue <= 0 || priceValue > MAX_REASONABLE_PRICE) {
                 log.warn("SAUTO SKIP url={} reason=invalid_price title={} price={}", safe(url), safe(title), priceValue);
                 return new ParseResult(null, "invalid_price");
+            }
+
+            if (priceValue < MIN_VALID_PRICE) {
+                log.warn("SAUTO SKIP url={} reason=cheap_low_quality_listing title={} price={}",
+                        safe(url), safe(title), priceValue);
+                return new ParseResult(null, "cheap_low_quality_listing");
             }
 
             Integer year = extractYearSafely(title, description, analysisText);
