@@ -37,87 +37,8 @@ public class SbazarParser implements CarSourceParser {
 
     @Override
     public List<CarDto> fetchCars() {
-        List<CarDto> cars = new ArrayList<>();
-        Set<String> detailUrls = new LinkedHashSet<>();
-
-        int invalidPriceCount = 0;
-        int emptyTitleCount = 0;
-        int nonCarCount = 0;
-        int parseErrorCount = 0;
-
-        for (int page = 1; page <= MAX_LIST_PAGES; page++) {
-            String pageUrl = buildListPageUrl(page);
-
-            try {
-                Document doc = Jsoup.connect(pageUrl)
-                        .userAgent("Mozilla/5.0")
-                        .timeout(REQUEST_TIMEOUT_MS)
-                        .get();
-
-                Set<String> pageLinks = extractDetailUrls(doc);
-
-                log.info("SBAZAR page={} url={} detail links found={}",
-                        page, pageUrl, pageLinks.size());
-
-                if (pageLinks.isEmpty()) {
-                    break;
-                }
-
-                int before = detailUrls.size();
-                detailUrls.addAll(pageLinks);
-                int added = detailUrls.size() - before;
-
-                if (added == 0) {
-                    log.info("SBAZAR pagination stopped page={} reason=no_new_links", page);
-                    break;
-                }
-
-                if (detailUrls.size() >= MAX_DETAIL_LINKS) {
-                    break;
-                }
-
-            } catch (Exception e) {
-                log.warn("SBAZAR list page parse failed url={} error={}", pageUrl, e.getMessage());
-                break;
-            }
-        }
-
-        log.info("SBAZAR total detail links collected={}", detailUrls.size());
-
-        int count = 0;
-
-        for (String url : detailUrls) {
-            if (count >= MAX_DETAIL_LINKS) {
-                break;
-            }
-
-            try {
-                ParseResult result = parseDetail(url);
-
-                if (result.car() != null) {
-                    cars.add(result.car());
-                } else {
-                    switch (result.reason()) {
-                        case "empty_title" -> emptyTitleCount++;
-                        case "invalid_price" -> invalidPriceCount++;
-                        case "non_car_listing" -> nonCarCount++;
-                        case "parse_error" -> parseErrorCount++;
-                    }
-                }
-
-            } catch (Exception e) {
-                parseErrorCount++;
-                log.warn("SBAZAR SKIP url={} reason=parse_error error={}", safe(url), e.getMessage());
-            }
-
-            count++;
-        }
-
-        log.info("SBAZAR parsed {} cars", cars.size());
-        log.info("SBAZAR SUMMARY parsed={} empty_title={} invalid_price={} non_car_listing={} parse_error={}",
-                cars.size(), emptyTitleCount, invalidPriceCount, nonCarCount, parseErrorCount);
-
-        return cars;
+        log.warn("SBAZAR temporarily disabled");
+        return List.of();
     }
 
     private String buildListPageUrl(int page) {
