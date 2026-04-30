@@ -480,26 +480,27 @@ public class TipCarsParser implements CarSourceParser {
     private String extractFuelType(String text) {
         String normalized = " " + normalizeText(text).toLowerCase(Locale.ROOT) + " ";
 
-        if (containsAny(normalized, " elektro ", " elektrické ", " elektricke ", " electric ", " ev ", " kwh ", " battery ")) {
-            return "ELECTRIC";
-        }
-        if (containsAny(normalized, " plug-in hybrid ", " plug in hybrid ", " phev ")) {
+        if (containsAny(normalized, " lpg ")) return "LPG";
+        if (containsAny(normalized, " cng ")) return "CNG";
+
+        if (containsAny(normalized, " plug-in hybrid ", " plug in hybrid ", " phev ", " recharge ")) {
             return "PLUGIN_HYBRID";
         }
-        if (containsAny(normalized, " hybrid ", " hybridní ", " hybridni ", " hev ", " mhev ")) {
+
+        if (containsAny(normalized, " hybrid ", " hybridní ", " hybridni ", " hev ", " mhev ", " e:hev ", " ehev ")) {
             return "HYBRID";
         }
-        if (containsAny(normalized, " diesel ", " nafta ", " tdi ", " hdi ", " dci ", " cdi ", " crdi ", " jtd ")) {
+
+        if (containsAny(normalized, " diesel ", " nafta ", " tdi ", " hdi ", " dci ", " cdi ", " crdi ", " jtd ", " d4 ", " d3 ")) {
             return "DIESEL";
         }
-        if (containsAny(normalized, " benzín ", " benzin ", " petrol ", " tsi ", " tfsi ", " mpi ", " fsi ", " tce ", " ecoboost ", " vvt-i ")) {
+
+        if (containsAny(normalized, " benzín ", " benzin ", " petrol ", " tsi ", " tfsi ", " mpi ", " fsi ", " tce ", " ecoboost ", " vvt-i ", " t4 ", " t5 ", " b3 ", " b4 ", " b5 ")) {
             return "PETROL";
         }
-        if (containsAny(normalized, " lpg ")) {
-            return "LPG";
-        }
-        if (containsAny(normalized, " cng ")) {
-            return "CNG";
+
+        if (containsAny(normalized, " elektro ", " elektrické ", " elektricke ", " electric ", " kwh ", " battery ", " bev ")) {
+            return "ELECTRIC";
         }
 
         return null;
@@ -513,13 +514,20 @@ public class TipCarsParser implements CarSourceParser {
                 " automatická ",
                 " automaticka ",
                 " automatic ",
+                " aut ",
+                " aut. ",
+                " at ",
+                " at ",
+                " a/t ",
                 " dsg ",
                 " tiptronic ",
                 " cvt ",
+                " e-cvt ",
+                " ecvt ",
                 " s tronic ",
+                " stronic ",
                 " powershift ",
-                " edc ",
-                " e-cvt ")) {
+                " edc ")) {
             return "AUTOMATIC";
         }
 
@@ -527,7 +535,11 @@ public class TipCarsParser implements CarSourceParser {
                 " manuál ",
                 " manual ",
                 " manuální ",
-                " manualni ")) {
+                " manualni ",
+                " man ",
+                " man. ",
+                " 5mt ",
+                " 6mt ")) {
             return "MANUAL";
         }
 
@@ -537,27 +549,53 @@ public class TipCarsParser implements CarSourceParser {
     private String extractCarType(String title, String text, String url) {
         String source = " " + normalizeText(safe(title) + " " + safe(text) + " " + safe(url)).toLowerCase(Locale.ROOT) + " ";
 
-        if (containsAny(source, " kombi ", " combi ", " wagon ", " estate ", " touring ", " avant ", " variant ", " caravan ", " sw ")) {
-            return "WAGON";
-        }
-        if (containsAny(source, " hatchback ", " hatch ")) {
-            return "HATCHBACK";
-        }
-        if (containsAny(source, " sedan ", " liftback ", " fastback ", " limuzína ", " limuzina ")) {
-            return "SEDAN";
-        }
-        if (containsAny(source, " suv ", " crossover ", " off-road ", " offroad ")) {
-            return "SUV";
-        }
-        if (containsAny(source, " mpv ", " minivan ", " 7-míst ", " 7 mist ", " 7 míst ")) {
+        if (containsAny(source,
+                " berlingo ", " tourneo connect ", " tourneo courier ", " caddy ",
+                " roomster ", " scenic ", " espace ", " sharan ", " alhambra ",
+                " galaxy ", " s-max ", " c-max ", " zafira ", " verso ", " mpv ",
+                " minivan ", " 7-míst ", " 7 mist ", " 7 míst ")) {
             return "MINIVAN";
         }
-        if (containsAny(source, " pickup ", " pick-up ")) {
+
+        if (containsAny(source,
+                " nitro ", " cx-5 ", " cx5 ", " cx-30 ", " forester ", " outback ",
+                " rav4 ", " cr-v ", " crv ", " hr-v ", " hrv ", " cx-60 ",
+                " qashqai ", " x-trail ", " tiguan ", " touareg ", " kodiaq ",
+                " karoq ", " kamiq ", " kuga ", " puma ", " xc40 ", " xc60 ",
+                " xc90 ", " gla ", " glb ", " glc ", " gle ", " q3 ", " q5 ",
+                " q7 ", " q8 ", " x1 ", " x3 ", " x5 ", " sportage ", " tucson ",
+                " santa fe ", " duster ", " suv ", " crossover ", " off-road ", " offroad ")) {
+            return "SUV";
+        }
+
+        if (containsAny(source,
+                " kombi ", " combi ", " wagon ", " estate ", " touring ",
+                " avant ", " variant ", " caravan ", " sw ", " v40 ", " v50 ",
+                " v60 ", " v70 ", " v90 ")) {
+            return "WAGON";
+        }
+
+        if (containsAny(source,
+                " hatchback ", " hatch ", " golf ", " fabia ", " fiesta ",
+                " focus ", " i30 ", " ceed ", " clio ", " c3 ", " leon ")) {
+            return "HATCHBACK";
+        }
+
+        if (containsAny(source,
+                " sedan ", " liftback ", " fastback ", " limuzína ", " limuzina ",
+                " passat ", " octavia ", " superb ", " arteon ", " model 3 ",
+                " model s ")) {
+            return "SEDAN";
+        }
+
+        if (containsAny(source, " pickup ", " pick-up ", " ranger ", " hilux ", " amarok ", " navara ")) {
             return "PICKUP";
         }
+
         if (containsAny(source, " coupé ", " coupe ", " gran coupe ", " gran coupé ")) {
             return "COUPE";
         }
+
         if (containsAny(source, " cabrio ", " roadster ", " spider ", " cabriolet ", " convertible ", " kabriolet ")) {
             return "CABRIO";
         }
