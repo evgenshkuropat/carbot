@@ -138,10 +138,10 @@ public class TipCarsParser implements CarSourceParser {
             String location = extractLocation(doc, pageText);
             String imageUrl = extractImageUrl(doc);
             String brand = extractBrand(title, url);
-            String combinedText = pageText + " " + title + " " + url;
+            String combinedText = title + " " + url;
             String fuelType = extractFuelType(combinedText);
             String transmission = extractTransmission(combinedText);
-            String carType = extractCarType(title, pageText, url);
+            String carType = extractCarType(title, title, url);
 
             CarDto car = new CarDto();
             car.setSource("TIPCARS");
@@ -480,26 +480,43 @@ public class TipCarsParser implements CarSourceParser {
     private String extractFuelType(String text) {
         String normalized = " " + normalizeText(text).toLowerCase(Locale.ROOT) + " ";
 
-        if (containsAny(normalized, " lpg ")) return "LPG";
-        if (containsAny(normalized, " cng ")) return "CNG";
-
-        if (containsAny(normalized, " plug-in hybrid ", " plug in hybrid ", " phev ", " recharge ")) {
-            return "PLUGIN_HYBRID";
-        }
-
-        if (containsAny(normalized, " hybrid ", " hybridní ", " hybridni ", " hev ", " mhev ", " e:hev ", " ehev ")) {
-            return "HYBRID";
-        }
-
-        if (containsAny(normalized, " diesel ", " nafta ", " tdi ", " hdi ", " dci ", " cdi ", " crdi ", " jtd ", " d4 ", " d3 ")) {
+        if (containsAny(normalized,
+                " diesel ", " nafta ", " tdi ", " hdi ", " dci ", " cdi ",
+                " crdi ", " tdci ", " jtd ", " multijet ", " bluehdi ",
+                " d4 ", " d3 ")) {
             return "DIESEL";
         }
 
-        if (containsAny(normalized, " benzín ", " benzin ", " petrol ", " tsi ", " tfsi ", " mpi ", " fsi ", " tce ", " ecoboost ", " vvt-i ", " t4 ", " t5 ", " b3 ", " b4 ", " b5 ")) {
+        if (containsAny(normalized,
+                " benzín ", " benzin ", " petrol ", " tsi ", " tfsi ",
+                " mpi ", " fsi ", " tce ", " ecoboost ", " vvt-i ",
+                " t4 ", " t5 ", " b3 ", " b4 ", " b5 ")) {
             return "PETROL";
         }
 
-        if (containsAny(normalized, " elektro ", " elektrické ", " elektricke ", " electric ", " kwh ", " battery ", " bev ")) {
+        if (containsAny(normalized,
+                " plug-in hybrid ", " plug in hybrid ", " plug-in ",
+                " phev ", " recharge ")) {
+            return "PLUGIN_HYBRID";
+        }
+
+        if (containsAny(normalized,
+                " hybrid ", " hybridní ", " hybridni ",
+                " hev ", " mhev ", " e:hev ", " ehev ")) {
+            return "HYBRID";
+        }
+
+        if (containsAny(normalized, " lpg ")) {
+            return "LPG";
+        }
+
+        if (containsAny(normalized, " cng ")) {
+            return "CNG";
+        }
+
+        if (containsAny(normalized,
+                " elektro ", " elektrické ", " elektricke ",
+                " electric ", " kwh ", " battery ", " bev ")) {
             return "ELECTRIC";
         }
 
