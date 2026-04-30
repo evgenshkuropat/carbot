@@ -159,15 +159,15 @@ public class CarNotificationService {
 
         FilterCheckResult check = carFilterMatcher.check(car, filter);
 
-        log.info("""
-                        FILTER chatId={} title='{}' result={}
-                        filter: carType={}, brand={}, maxPrice={}, location={}, maxMileage={}, fuelType={}, transmission={}, yearFrom={}
-                        car:    carType={}, brand={}, priceValue={}, location={}, mileage={}, fuelType={}, transmission={}, year={}
-                        checks: carTypeOk={}, brandOk={}, maxPriceOk={}, locationOk={}, mileageOk={}, fuelTypeOk={}, transmissionOk={}, yearOk={}
-                        """,
+        log.info(
+                "FILTER chatId={} title='{}' result={} | " +
+                        "filter[carType={}, brand={}, maxPrice={}, location={}, maxMileage={}, fuelType={}, transmission={}, yearFrom={}] | " +
+                        "car[carType={}, brand={}, priceValue={}, location={}, mileage={}, fuelType={}, transmission={}, year={}] | " +
+                        "checks[carTypeOk={}, brandOk={}, maxPriceOk={}, locationOk={}, mileageOk={}, fuelTypeOk={}, transmissionOk={}, yearOk={}]",
                 chatId,
                 safe(car.getTitle()),
                 check.result() ? "PASS" : "FAIL",
+
                 safe(filter.getCarType()),
                 safe(filter.getBrand()),
                 filter.getMaxPrice(),
@@ -176,6 +176,7 @@ public class CarNotificationService {
                 safe(filter.getFuelType()),
                 safe(filter.getTransmission()),
                 filter.getYearFrom(),
+
                 safe(car.getCarType()),
                 safe(car.getBrand()),
                 car.getPriceValue(),
@@ -184,6 +185,7 @@ public class CarNotificationService {
                 safe(car.getFuelType()),
                 safe(car.getTransmission()),
                 car.getYear(),
+
                 check.carTypeOk(),
                 check.brandOk(),
                 check.maxPriceOk(),

@@ -477,7 +477,7 @@ public class CarFilterMatcher {
         Integer carMileage = car.getMileage();
 
         if (carMileage == null) {
-            return false;
+            return true;
         }
 
         return carMileage <= maxMileage;
@@ -562,7 +562,11 @@ public class CarFilterMatcher {
                 return true;
             }
 
-            if (carTransmission.isBlank() && containsAny(title,
+            if (!carTransmission.isBlank()) {
+                return "AUTOMATIC".equals(carTransmission);
+            }
+
+            return containsAny(title,
                     " DSG ",
                     " AUTOMAT ",
                     " AUTOMATIC ",
@@ -579,31 +583,30 @@ public class CarFilterMatcher {
                     " 7G-TRONIC ",
                     " 9G-TRONIC ",
                     " XTRONIC ",
-                    " X-TRONIC ")) {
-                return true;
-            }
+                    " X-TRONIC ");
         }
 
         if ("MANUAL".equals(wanted)) {
-            if (carTransmission.isBlank() && containsAny(title,
+            if (!carTransmission.isBlank()) {
+                return "MANUAL".equals(carTransmission);
+            }
+
+            return containsAny(title,
                     " MANUAL ",
                     " MANUALNI ",
+                    " MANUALNI PREVODOVKA ",
                     " MAN ",
                     " 5MT ",
                     " 6MT ",
                     " 5Q ",
-                    " 6Q ")) {
-                return true;
-            }
+                    " 6Q ");
         }
 
         if (carTransmission.isBlank()) {
             return false;
         }
 
-        return carTransmission.equals(wanted)
-                || carTransmission.contains(wanted)
-                || wanted.contains(carTransmission);
+        return carTransmission.equals(wanted);
     }
 
     private boolean matchesYearFrom(CarEntity car, UserFilterEntity filter) {
