@@ -565,31 +565,38 @@ public class BazosParser implements CarSourceParser {
     }
 
     private boolean isBadYearContext(String text, int start, int end) {
-
-        int from = Math.max(0, start - 60);
-        int to = Math.min(text.length(), end + 60);
+        int from = Math.max(0, start - 80);
+        int to = Math.min(text.length(), end + 80);
 
         String context = text.substring(from, to).toLowerCase(Locale.ROOT);
 
         return context.contains("stk")
                 || context.contains("stk:")
                 || context.contains("stk do")
-                || context.contains(" tk ")
+                || context.contains("tk ")
                 || context.contains("tk:")
                 || context.contains("tk do")
                 || context.contains("technick")
-                || context.contains("technická")
-                || context.contains("technicka")
                 || context.contains("platná do")
                 || context.contains("platna do")
                 || context.contains("do provozu")
                 || context.contains("do roku")
-                || context.matches(".*do\\s*202\\d.*")
-                || context.contains("záruka do")
-                || context.contains("zaruka do")
-                || context.contains("garance do")
+                || context.contains("záruka")
+                || context.contains("zaruka")
+                || context.contains("garance")
                 || context.contains("servis do")
-                || context.contains("serviska do");
+                || context.contains("serviska do")
+                || context.contains("rezervace")
+                || context.contains("rezervováno")
+                || context.contains("rezervovano")
+                || context.contains("prodáno")
+                || context.contains("prodano")
+                || context.contains("zadáno")
+                || context.contains("zadano")
+                || context.contains("model 2025")
+                || context.contains("model 2026")
+                || context.contains("rok 2025")
+                || context.contains("rok 2026");
     }
 
     private Integer extractMileage(String title, String text) {
@@ -965,6 +972,19 @@ public class BazosParser implements CarSourceParser {
         if (source.contains(" v90 ")) return "VOLVO";
         if (source.contains(" c70 ")) return "VOLVO";
 
+        if (source.contains(" 540d ") || source.contains(" xdrive ")) return "BMW";
+        if (source.contains(" q7 ")) return "AUDI";
+        if (source.contains(" sq5 ")) return "AUDI";
+        if (source.contains(" stelvio ")) return "ALFA_ROMEO";
+        if (source.contains(" model s ")) return "TESLA";
+        if (source.contains(" grand cherokee ")) return "JEEP";
+        if (source.contains(" cayenne ")) return "PORSCHE";
+        if (source.contains(" 2008 ")) return "PEUGEOT";
+        if (source.contains(" 308 ")) return "PEUGEOT";
+        if (source.contains(" corsa ")) return "OPEL";
+        if (source.contains(" mazda 3 ")) return "MAZDA";
+        if (source.contains(" mazda 6 ")) return "MAZDA";
+
         return null;
     }
 
@@ -1007,7 +1027,10 @@ public class BazosParser implements CarSourceParser {
                 " civic ", " leon ", " swift ",
                 " agila ", " 207 ",
                 " sandero ", " logan ", " scala ", " citigo ", " fiat 500 ",
-                " tipo ", " fiat tipo ")) {
+                " tipo ", " fiat tipo ",
+                " corsa ",
+                " mazda 3 ",
+                " 308 ")) {
             return "HATCHBACK";
         }
 
@@ -1057,7 +1080,9 @@ public class BazosParser implements CarSourceParser {
                 " 525 ",
                 " 530 ",
                 " 540 ",
-                " thalia ")) {
+                " thalia ",
+                " model s ",
+                " 540d ")) {
             return "SEDAN";
         }
 
@@ -1163,7 +1188,12 @@ public class BazosParser implements CarSourceParser {
                 " cx-3 ",
                 " cx3 ",
                 " discovery sport ",
-                " explorer ", " ix35 ", " x4 ", " compass ", " cx-3 ", " cx3 ")) {
+                " explorer ", " ix35 ", " x4 ", " compass ", " cx-3 ", " cx3 ",
+                " stelvio ",
+                " q7 ",
+                " sq5 ",
+                " grand cherokee ",
+                " cherokee ")) {
             return "SUV";
         }
 
@@ -1409,6 +1439,13 @@ public class BazosParser implements CarSourceParser {
                 .toLowerCase(Locale.ROOT) + " ";
 
         if (looksLikePassengerCarModel(title)) {
+            return false;
+        }
+
+        String detectedBrand = extractBrand(title, text);
+        String detectedType = extractCarType(title, text, url);
+
+        if (detectedBrand != null && detectedType != null) {
             return false;
         }
 
