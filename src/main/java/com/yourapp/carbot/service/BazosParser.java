@@ -648,9 +648,24 @@ public class BazosParser implements CarSourceParser {
                 " hybridni ",
                 " plug-in hybrid ",
                 " plugin hybrid ",
+                " plug in ",
+                " plug-in ",
+                " hev ",
                 " phev ",
-                " hev ")) {
+                " superb iv ",
+                " octavia iv ",
+                " enyaq iv ",
+                " ehybrid ",
+                " e-hybrid ")) {
             return "HYBRID";
+        }
+
+        if (containsAny(source, " lpg ")) {
+            return "LPG";
+        }
+
+        if (containsAny(source, " cng ")) {
+            return "CNG";
         }
 
         if (compact.contains("tdi")
@@ -675,7 +690,8 @@ public class BazosParser implements CarSourceParser {
                 || compact.contains("540d")
                 || compact.contains("550d")
                 || compact.contains("xdrive30d")
-                || compact.contains("m550d")) {
+                || compact.contains("m550d")
+                || compact.contains("sdv6")) {
             return "DIESEL";
         }
 
@@ -686,16 +702,10 @@ public class BazosParser implements CarSourceParser {
                 || compact.contains("tgdi")
                 || compact.contains("tce")
                 || compact.contains("ecoboost")
-                || compact.contains("skyactivg")) {
+                || compact.contains("skyactivg")
+                || compact.contains("vvti")
+                || compact.contains("vvt")) {
             return "PETROL";
-        }
-
-        if (containsAny(source, " lpg ")) {
-            return "LPG";
-        }
-
-        if (containsAny(source, " cng ")) {
-            return "CNG";
         }
 
         if (containsAny(source,
@@ -1030,7 +1040,8 @@ public class BazosParser implements CarSourceParser {
                 " tipo ", " fiat tipo ",
                 " corsa ",
                 " mazda 3 ",
-                " 308 ")) {
+                " 308 ",
+                " yaris ")) {
             return "HATCHBACK";
         }
 
@@ -1199,7 +1210,11 @@ public class BazosParser implements CarSourceParser {
                 " q7 ",
                 " sq5 ",
                 " grand cherokee ",
-                " cherokee ")) {
+                " cherokee ",
+                " discovery ",
+                " discovery sport ",
+                " grand vitara ",
+                " vitara ")) {
             return "SUV";
         }
 
