@@ -653,8 +653,19 @@ public class BazosParser implements CarSourceParser {
                 " hev ",
                 " phev ",
                 " superb iv ",
-                " octavia iv ",
-                " enyaq iv ",
+                " ehybrid ",
+                " mhev ",
+                " e-hybrid ")) {
+            return "HYBRID";
+        }
+
+        if (source.contains(" superb ")
+                && containsAny(source,
+                " iv ",
+                " i-v ",
+                " phev ",
+                " plug-in ",
+                " plug in ",
                 " ehybrid ",
                 " e-hybrid ")) {
             return "HYBRID";
