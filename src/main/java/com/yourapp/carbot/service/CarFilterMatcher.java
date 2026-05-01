@@ -64,22 +64,18 @@ public class CarFilterMatcher {
 
         String storedType = normalizeToken(car.getCarType());
 
-        if (storedType.isBlank()) {
+        if (storedType == null || storedType.isBlank()) {
             storedType = detectCarTypeFromTitle(car.getTitle());
         }
 
-        if (storedType.isBlank()) {
+        if (storedType == null || storedType.isBlank()) {
             return false;
         }
 
         for (String rawType : filterTypes.split(",")) {
             String wanted = normalizeToken(rawType);
 
-            if (wanted.isBlank()) {
-                continue;
-            }
-
-            if (storedType.equals(wanted)) {
+            if (wanted != null && !wanted.isBlank() && storedType.equals(wanted)) {
                 return true;
             }
         }
