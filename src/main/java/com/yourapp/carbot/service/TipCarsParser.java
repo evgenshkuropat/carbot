@@ -564,25 +564,36 @@ public class TipCarsParser implements CarSourceParser {
     }
 
     private String extractCarType(String title, String text, String url) {
-        String source = " " + normalizeText(safe(title) + " " + safe(text) + " " + safe(url)).toLowerCase(Locale.ROOT) + " ";
+        String source = " " + normalizeText(safe(title) + " " + safe(text) + " " + safe(url))
+                .toLowerCase(Locale.ROOT) + " ";
 
+        // SUV должен быть раньше MINIVAN, потому что Kodiaq/Tiguan/XC90 тоже могут иметь "7 míst"
         if (containsAny(source,
-                " berlingo ", " tourneo connect ", " tourneo courier ", " caddy ",
-                " roomster ", " scenic ", " espace ", " sharan ", " alhambra ",
-                " galaxy ", " s-max ", " c-max ", " zafira ", " verso ", " mpv ",
-                " minivan ", " 7-míst ", " 7 mist ", " 7 míst ")) {
-            return "MINIVAN";
+                " nitro ", " cx-5 ", " cx5 ", " cx-30 ", " cx-60 ",
+                " forester ", " outback ", " rav4 ", " cr-v ", " crv ",
+                " hr-v ", " hrv ", " qashqai ", " x-trail ",
+                " tiguan ", " touareg ", " t-roc ", " troc ",
+                " kodiaq ", " karoq ", " kamiq ",
+                " kuga ", " puma ", " ecosport ",
+                " xc40 ", " xc60 ", " xc90 ", " ex30 ", " ex40 ", " ex90 ",
+                " gla ", " glb ", " glc ", " gle ", " gls ",
+                " q2 ", " q3 ", " q4 ", " q5 ", " q7 ", " q8 ",
+                " x1 ", " x2 ", " x3 ", " x4 ", " x5 ", " x6 ", " x7 ",
+                " sportage ", " sorento ", " stonic ",
+                " tucson ", " santa fe ", " kona ",
+                " duster ", " bigster ",
+                " suv ", " crossover ", " off-road ", " offroad ")) {
+            return "SUV";
         }
 
         if (containsAny(source,
-                " nitro ", " cx-5 ", " cx5 ", " cx-30 ", " forester ", " outback ",
-                " rav4 ", " cr-v ", " crv ", " hr-v ", " hrv ", " cx-60 ",
-                " qashqai ", " x-trail ", " tiguan ", " touareg ", " kodiaq ",
-                " karoq ", " kamiq ", " kuga ", " puma ", " xc40 ", " xc60 ",
-                " xc90 ", " gla ", " glb ", " glc ", " gle ", " q3 ", " q5 ",
-                " q7 ", " q8 ", " x1 ", " x3 ", " x5 ", " sportage ", " tucson ",
-                " santa fe ", " duster ", " suv ", " crossover ", " off-road ", " offroad ")) {
-            return "SUV";
+                " berlingo ", " rifter ", " partner tepee ",
+                " tourneo connect ", " tourneo courier ", " caddy ",
+                " roomster ", " scenic ", " espace ", " sharan ", " alhambra ",
+                " galaxy ", " s-max ", " c-max ", " zafira ", " verso ",
+                " touran ", " lodgy ", " jogger ",
+                " mpv ", " minivan ", " 7-míst ", " 7 mist ", " 7 míst ")) {
+            return "MINIVAN";
         }
 
         if (containsAny(source,
@@ -594,7 +605,7 @@ public class TipCarsParser implements CarSourceParser {
 
         if (containsAny(source,
                 " hatchback ", " hatch ", " golf ", " fabia ", " fiesta ",
-                " focus ", " i30 ", " ceed ", " clio ", " c3 ", " leon ")) {
+                " focus ", " i20 ", " i30 ", " ceed ", " clio ", " c3 ", " leon ")) {
             return "HATCHBACK";
         }
 
@@ -605,15 +616,18 @@ public class TipCarsParser implements CarSourceParser {
             return "SEDAN";
         }
 
-        if (containsAny(source, " pickup ", " pick-up ", " ranger ", " hilux ", " amarok ", " navara ")) {
+        if (containsAny(source,
+                " pickup ", " pick-up ", " ranger ", " hilux ", " amarok ", " navara ")) {
             return "PICKUP";
         }
 
-        if (containsAny(source, " coupé ", " coupe ", " gran coupe ", " gran coupé ")) {
+        if (containsAny(source,
+                " coupé ", " coupe ", " gran coupe ", " gran coupé ")) {
             return "COUPE";
         }
 
-        if (containsAny(source, " cabrio ", " roadster ", " spider ", " cabriolet ", " convertible ", " kabriolet ")) {
+        if (containsAny(source,
+                " cabrio ", " roadster ", " spider ", " cabriolet ", " convertible ", " kabriolet ")) {
             return "CABRIO";
         }
 

@@ -64,25 +64,13 @@ public class CarFilterMatcher {
 
         String storedType = normalizeToken(car.getCarType());
 
-        // Если парсер уже определил тип кузова — доверяем ему.
-        // Не пытаемся дополнительно угадывать по title, иначе WAGON может пройти как SEDAN.
-        if (!storedType.isBlank()) {
-            for (String rawType : filterTypes.split(",")) {
-                String wanted = normalizeToken(rawType);
-
-                if (wanted.isBlank()) {
-                    continue;
-                }
-
-                if (storedType.equals(wanted)) {
-                    return true;
-                }
-            }
-
-            return false;
+        if (storedType.isBlank()) {
+            storedType = detectCarTypeFromTitle(car.getTitle());
         }
 
-        String title = " " + normalizeText(car.getTitle()) + " ";
+        if (storedType.isBlank()) {
+            return false;
+        }
 
         for (String rawType : filterTypes.split(",")) {
             String wanted = normalizeToken(rawType);
@@ -91,220 +79,248 @@ public class CarFilterMatcher {
                 continue;
             }
 
-            boolean matchedByTitle = switch (wanted) {
-                case "SEDAN" -> containsAny(title,
-                        " SEDAN ",
-                        " LIMOUSINE ",
-                        " LIMUZINA ",
-                        " LIFTBACK ",
-                        " FASTBACK ",
-                        " SALOON ");
-
-                case "HATCHBACK" -> containsAny(title,
-                        " HATCHBACK ",
-                        " SPACEBACK ",
-                        " CLIO ",
-                        " FABIA ",
-                        " SCALA ",
-                        " POLO ",
-                        " GOLF ",
-                        " FIESTA ",
-                        " CORSA ",
-                        " I20 ",
-                        " I30 ",
-                        " CEED ",
-                        " MAZDA 3 ",
-                        " CIVIC ",
-                        " MEGANE ",
-                        " C2 ",
-                        " C3 ",
-                        " XSARA ",
-                        " AGILA ",
-                        " 207 ",
-                        " TRIDY A ",
-                        " TRIDY-A ",
-                        " A-CLASS ");
-
-                case "WAGON" -> containsAny(title,
-                        " KOMBI ",
-                        " COMBI ",
-                        " WAGON ",
-                        " VARIANT ",
-                        " TOURING ",
-                        " AVANT ",
-                        " ESTATE ",
-                        " GRANDTOUR ",
-                        " GRAND TOUR ",
-                        " SPORTS TOURER ",
-                        " SPORTSWAGON ",
-                        " SPORTWAGON ",
-                        " CARAVAN ",
-                        " SHOOTING BRAKE ",
-                        " ALLTRACK ",
-                        " SCOUT ",
-                        " SW ",
-                        " V40 ",
-                        " V50 ",
-                        " V60 ",
-                        " V70 ",
-                        " V90 ");
-
-                case "SUV" -> containsAny(title,
-                        " SUV ",
-                        " CROSSOVER ",
-                        " YETI ",
-                        " KAMIQ ",
-                        " KAROQ ",
-                        " KODIAQ ",
-                        " T-ROC ",
-                        " TROC ",
-                        " TIGUAN ",
-                        " TOUAREG ",
-                        " QASHQAI ",
-                        " JUKE ",
-                        " X-TRAIL ",
-                        " FORMENTOR ",
-                        " ATECA ",
-                        " ARONA ",
-                        " KUGA ",
-                        " PUMA ",
-                        " ECOSPORT ",
-                        " X1 ",
-                        " X2 ",
-                        " X3 ",
-                        " X4 ",
-                        " X5 ",
-                        " X6 ",
-                        " X7 ",
-                        " GLA ",
-                        " GLB ",
-                        " GLC ",
-                        " GLE ",
-                        " GLS ",
-                        " Q2 ",
-                        " Q3 ",
-                        " Q4 ",
-                        " Q5 ",
-                        " Q7 ",
-                        " Q8 ",
-                        " XC40 ",
-                        " XC60 ",
-                        " XC90 ",
-                        " EX30 ",
-                        " EX40 ",
-                        " EX90 ",
-                        " CAPTUR ",
-                        " AUSTRAL ",
-                        " RAFALE ",
-                        " SPORTAGE ",
-                        " SORENTO ",
-                        " STONIC ",
-                        " TUCSON ",
-                        " SANTA FE ",
-                        " KONA ",
-                        " DUSTER ",
-                        " KOLEOS ",
-                        " KADJAR ",
-                        " CR-V ",
-                        " HR-V ",
-                        " RAV4 ",
-                        " C-HR ",
-                        " CHR ",
-                        " MACAN ",
-                        " CAYENNE ",
-                        " UX ",
-                        " NX ",
-                        " RX ",
-                        " ENYAQ ",
-                        " ID.4 ",
-                        " ID.5 ",
-                        " EVOQUE ",
-                        " VELAR ",
-                        " RANGE ROVER ",
-                        " DISCOVERY SPORT ",
-                        " DEFENDER ",
-                        " EV6 ",
-                        " 2008 ");
-
-                case "MINIVAN" -> containsAny(title,
-                        " MINIVAN ",
-                        " MPV ",
-                        " CADDY ",
-                        " TOURAN ",
-                        " SHARAN ",
-                        " ALHAMBRA ",
-                        " SCENIC ",
-                        " ESPACE ",
-                        " BERLINGO ",
-                        " RIFTER ",
-                        " PARTNER TEPEE ",
-                        " ZAFIRA ",
-                        " MERIVA ",
-                        " B-MAX ",
-                        " S-MAX ",
-                        " GALAXY ",
-                        " ROOMSTER ",
-                        " LODGY ",
-                        " VERSO ",
-                        " C-MAX ",
-                        " GRAND C-MAX ",
-                        " TOURNEO COURIER ",
-                        " TOURNEO CONNECT ",
-                        " DOBLO ",
-                        " COMBO ",
-                        " VANEO ");
-
-                case "COUPE" -> containsAny(title,
-                        " COUPE ",
-                        " COUPÉ ",
-                        " GRAN COUPE ",
-                        " MUSTANG ",
-                        " AMG GT ",
-                        " SUPRA ",
-                        " BRZ ",
-                        " GT86 ",
-                        " GR86 ",
-                        " 370Z ",
-                        " 350Z ",
-                        " RC F ",
-                        " TT COUPE ",
-                        " R8 ");
-
-                case "CABRIO" -> containsAny(title,
-                        " CABRIO ",
-                        " CABRIOLET ",
-                        " KABRIO ",
-                        " ROADSTER ",
-                        " SPYDER ",
-                        " SPIDER ",
-                        " CONVERTIBLE ",
-                        " MX-5 ",
-                        " Z4 ",
-                        " SLK ",
-                        " BOXSTER ");
-
-                case "PICKUP" -> containsAny(title,
-                        " PICKUP ",
-                        " PICK-UP ",
-                        " RANGER ",
-                        " HILUX ",
-                        " AMAROK ",
-                        " NAVARA ",
-                        " L200 ",
-                        " GLADIATOR ",
-                        " DODGE RAM ",
-                        " RAM 1500 ",
-                        " RAM 2500 ");
-
-                default -> false;
-            };
-
-            if (matchedByTitle) {
+            if (storedType.equals(wanted)) {
                 return true;
             }
         }
 
         return false;
+    }
+
+    private String detectCarTypeFromTitle(String rawTitle) {
+        String title = " " + normalizeText(rawTitle) + " ";
+
+        // ВАЖНО: SUV раньше MINIVAN/WAGON/SEDAN
+        if (containsAny(title,
+                " SUV ",
+                " CROSSOVER ",
+                " YETI ",
+                " KAMIQ ",
+                " KAROQ ",
+                " KODIAQ ",
+                " T-ROC ",
+                " TROC ",
+                " TIGUAN ",
+                " TOUAREG ",
+                " QASHQAI ",
+                " JUKE ",
+                " X-TRAIL ",
+                " FORMENTOR ",
+                " ATECA ",
+                " ARONA ",
+                " KUGA ",
+                " PUMA ",
+                " ECOSPORT ",
+                " X1 ",
+                " X2 ",
+                " X3 ",
+                " X4 ",
+                " X5 ",
+                " X6 ",
+                " X7 ",
+                " GLA ",
+                " GLB ",
+                " GLC ",
+                " GLE ",
+                " GLS ",
+                " Q2 ",
+                " Q3 ",
+                " Q4 ",
+                " Q5 ",
+                " Q7 ",
+                " Q8 ",
+                " XC40 ",
+                " XC60 ",
+                " XC90 ",
+                " EX30 ",
+                " EX40 ",
+                " EX90 ",
+                " CAPTUR ",
+                " AUSTRAL ",
+                " RAFALE ",
+                " SPORTAGE ",
+                " SORENTO ",
+                " STONIC ",
+                " TUCSON ",
+                " SANTA FE ",
+                " KONA ",
+                " DUSTER ",
+                " KOLEOS ",
+                " KADJAR ",
+                " CR-V ",
+                " HR-V ",
+                " RAV4 ",
+                " C-HR ",
+                " CHR ",
+                " MACAN ",
+                " CAYENNE ",
+                " UX ",
+                " NX ",
+                " RX ",
+                " ENYAQ ",
+                " ID.4 ",
+                " ID.5 ",
+                " EVOQUE ",
+                " VELAR ",
+                " RANGE ROVER ",
+                " DISCOVERY SPORT ",
+                " DEFENDER ",
+                " EV6 ",
+                " 2008 ")) {
+            return "SUV";
+        }
+
+        if (containsAny(title,
+                " MINIVAN ",
+                " MPV ",
+                " CADDY ",
+                " TOURAN ",
+                " SHARAN ",
+                " ALHAMBRA ",
+                " SCENIC ",
+                " ESPACE ",
+                " BERLINGO ",
+                " RIFTER ",
+                " PARTNER TEPEE ",
+                " ZAFIRA ",
+                " MERIVA ",
+                " B-MAX ",
+                " S-MAX ",
+                " GALAXY ",
+                " ROOMSTER ",
+                " LODGY ",
+                " VERSO ",
+                " C-MAX ",
+                " GRAND C-MAX ",
+                " TOURNEO COURIER ",
+                " TOURNEO CONNECT ",
+                " DOBLO ",
+                " COMBO ",
+                " VANEO ")) {
+            return "MINIVAN";
+        }
+
+        if (containsAny(title,
+                " KOMBI ",
+                " COMBI ",
+                " WAGON ",
+                " VARIANT ",
+                " TOURING ",
+                " AVANT ",
+                " ESTATE ",
+                " GRANDTOUR ",
+                " GRAND TOUR ",
+                " SPORTS TOURER ",
+                " SPORTSWAGON ",
+                " SPORTWAGON ",
+                " CARAVAN ",
+                " SHOOTING BRAKE ",
+                " ALLTRACK ",
+                " SCOUT ",
+                " SW ",
+                " V40 ",
+                " V50 ",
+                " V60 ",
+                " V70 ",
+                " V90 ",
+                " A4 AVANT ",
+                " A6 AVANT ",
+                " OCTAVIA COMBI ",
+                " SUPERB COMBI ")) {
+            return "WAGON";
+        }
+
+        if (containsAny(title,
+                " HATCHBACK ",
+                " SPACEBACK ",
+                " CLIO ",
+                " FABIA ",
+                " SCALA ",
+                " POLO ",
+                " GOLF ",
+                " FIESTA ",
+                " CORSA ",
+                " I20 ",
+                " I30 ",
+                " CEED ",
+                " MAZDA 3 ",
+                " CIVIC ",
+                " MEGANE ",
+                " C2 ",
+                " C3 ",
+                " XSARA ",
+                " AGILA ",
+                " 207 ",
+                " TRIDY A ",
+                " TRIDY-A ",
+                " A-CLASS ")) {
+            return "HATCHBACK";
+        }
+
+        if (containsAny(title,
+                " SEDAN ",
+                " LIMOUSINE ",
+                " LIMUZINA ",
+                " LIFTBACK ",
+                " FASTBACK ",
+                " SALOON ",
+                " PASSAT ",
+                " OCTAVIA ",
+                " SUPERB ",
+                " ARTEON ",
+                " MODEL 3 ",
+                " MODEL S ")) {
+            return "SEDAN";
+        }
+
+        if (containsAny(title,
+                " PICKUP ",
+                " PICK-UP ",
+                " RANGER ",
+                " HILUX ",
+                " AMAROK ",
+                " NAVARA ",
+                " L200 ",
+                " GLADIATOR ",
+                " DODGE RAM ",
+                " RAM 1500 ",
+                " RAM 2500 ")) {
+            return "PICKUP";
+        }
+
+        if (containsAny(title,
+                " COUPE ",
+                " GRAN COUPE ",
+                " MUSTANG ",
+                " AMG GT ",
+                " SUPRA ",
+                " BRZ ",
+                " GT86 ",
+                " GR86 ",
+                " 370Z ",
+                " 350Z ",
+                " RC F ",
+                " TT COUPE ",
+                " R8 ")) {
+            return "COUPE";
+        }
+
+        if (containsAny(title,
+                " CABRIO ",
+                " CABRIOLET ",
+                " KABRIO ",
+                " ROADSTER ",
+                " SPYDER ",
+                " SPIDER ",
+                " CONVERTIBLE ",
+                " MX-5 ",
+                " Z4 ",
+                " SLK ",
+                " BOXSTER ")) {
+            return "CABRIO";
+        }
+
+        return null;
     }
 
     private boolean matchesBrand(CarEntity car, UserFilterEntity filter) {
