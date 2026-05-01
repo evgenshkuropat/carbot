@@ -1445,7 +1445,7 @@ public class SautoParser implements CarSourceParser {
         if (containsAny(titleSource,
                 " kombi ", " combi ", " wagon ", " estate ", " touring ", " avant ", " variant ",
                 " caravan ", " sw ", " shooting brake ", " sport tourer ", " sports tourer ",
-                " grandtour ", " grand tour ")) {
+                " grandtour ", " grand tour "," allroad ", " a6 allroad ")) {
             return "WAGON";
         }
 
@@ -1461,7 +1461,8 @@ public class SautoParser implements CarSourceParser {
             return "SUV";
         }
 
-        if (containsAny(titleSource, " mpv ", " minivan ")) {
+        if (containsAny(titleSource, " mpv ", " minivan ", " kangoo ",
+                " kangoo grand ")) {
             return "MINIVAN";
         }
 

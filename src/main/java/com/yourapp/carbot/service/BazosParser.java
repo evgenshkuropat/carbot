@@ -946,10 +946,16 @@ public class BazosParser implements CarSourceParser {
                 " model 3 ",
                 " model s ",
                 " cordoba ",
+                " ds5 ",
                 " eqe ",
                 " eqs ",
                 " cls ",
-                " cla ")) {
+                " cla ",
+                " rada 5 ",
+                " 520 ",
+                " 525 ",
+                " 530 ",
+                " 540 ")) {
             return "SEDAN";
         }
 
@@ -1050,6 +1056,9 @@ public class BazosParser implements CarSourceParser {
                 " evoque ",
                 " velar ",
                 " tarraco ",
+                " compass ",
+                " cx-3 ",
+                " cx3 ",
                 " discovery sport ")) {
             return "SUV";
         }
