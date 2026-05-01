@@ -833,7 +833,7 @@ public class BazosParser implements CarSourceParser {
         if (containsAny(titleSource, " volvo ")) return "VOLVO";
         if (containsAny(titleSource, " lexus ")) return "LEXUS";
         if (containsAny(titleSource, " mazda ")) return "MAZDA";
-        if (containsAny(titleSource, " citroën ", " citroen ")) return "CITROEN";
+        if (containsAny(titleSource, " citroën ", " citroen ", " citreon ")) return "CITROEN";
         if (containsAny(titleSource, " fiat ")) return "FIAT";
         if (containsAny(titleSource, " dodge ")) return "DODGE";
         if (containsAny(titleSource, " nissan ")) return "NISSAN";
@@ -847,10 +847,10 @@ public class BazosParser implements CarSourceParser {
         if (containsAny(titleSource, " porsche ")) return "PORSCHE";
         if (containsAny(titleSource, " mini ")) return "MINI";
         if (containsAny(titleSource, " tesla ")) return "TESLA";
+        if (containsAny(titleSource, " chevrolet ")) return "CHEVROLET";
         if (containsAny(titleSource, " land rover ", " range rover ")) return "LAND_ROVER";
 
         if (containsAny(source, " škoda ", " skoda ")) return "SKODA";
-        if (containsAny(titleSource, " chevrolet ")) return "CHEVROLET";
         if (containsAny(source, " volkswagen ", " vw ")) return "VOLKSWAGEN";
         if (containsAny(source, " audi ")) return "AUDI";
         if (containsAny(source, " bmw ")) return "BMW";
@@ -866,7 +866,7 @@ public class BazosParser implements CarSourceParser {
         if (containsAny(source, " volvo ")) return "VOLVO";
         if (containsAny(source, " lexus ")) return "LEXUS";
         if (containsAny(source, " mazda ")) return "MAZDA";
-        if (containsAny(source, " citroën ", " citroen ")) return "CITROEN";
+        if (containsAny(source, " citroën ", " citroen ", " citreon ")) return "CITROEN";
         if (containsAny(source, " fiat ")) return "FIAT";
         if (containsAny(source, " dodge ")) return "DODGE";
         if (containsAny(source, " nissan ")) return "NISSAN";
@@ -880,6 +880,7 @@ public class BazosParser implements CarSourceParser {
         if (containsAny(source, " porsche ")) return "PORSCHE";
         if (containsAny(source, " mini ")) return "MINI";
         if (containsAny(source, " tesla ")) return "TESLA";
+        if (containsAny(source, " chevrolet ")) return "CHEVROLET";
         if (containsAny(source, " land rover ", " range rover ")) return "LAND_ROVER";
 
         // fallback model detection
@@ -887,21 +888,72 @@ public class BazosParser implements CarSourceParser {
         if (source.contains(" golf ")) return "VOLKSWAGEN";
         if (source.contains(" passat ")) return "VOLKSWAGEN";
         if (source.contains(" tiguan ")) return "VOLKSWAGEN";
+        if (source.contains(" touareg ")) return "VOLKSWAGEN";
         if (source.contains(" sharan ")) return "VOLKSWAGEN";
         if (source.contains(" touran ")) return "VOLKSWAGEN";
+        if (source.contains(" caddy ")) return "VOLKSWAGEN";
 
         if (source.contains(" octavia ")) return "SKODA";
         if (source.contains(" superb ")) return "SKODA";
         if (source.contains(" fabia ")) return "SKODA";
         if (source.contains(" kodiaq ")) return "SKODA";
         if (source.contains(" karoq ")) return "SKODA";
+        if (source.contains(" kamiq ")) return "SKODA";
+        if (source.contains(" roomster ")) return "SKODA";
+        if (source.contains(" scala ")) return "SKODA";
+        if (source.contains(" citigo ")) return "SKODA";
+        if (source.contains(" enyaq ")) return "SKODA";
 
         if (source.contains(" focus ")) return "FORD";
         if (source.contains(" mondeo ")) return "FORD";
+        if (source.contains(" fiesta ")) return "FORD";
+        if (source.contains(" kuga ")) return "FORD";
+        if (source.contains(" galaxy ")) return "FORD";
+        if (source.contains(" ranger ")) return "FORD";
+        if (source.contains(" mustang ")) return "FORD";
 
         if (source.contains(" megane ")) return "RENAULT";
         if (source.contains(" scenic ")) return "RENAULT";
         if (source.contains(" clio ")) return "RENAULT";
+        if (source.contains(" thalia ")) return "RENAULT";
+        if (source.contains(" kangoo ")) return "RENAULT";
+
+        if (source.contains(" berlingo ")) return "CITROEN";
+        if (source.contains(" picasso ")) return "CITROEN";
+        if (source.contains(" c2 ")) return "CITROEN";
+        if (source.contains(" c3 ")) return "CITROEN";
+        if (source.contains(" c4 ")) return "CITROEN";
+        if (source.contains(" c5 ")) return "CITROEN";
+        if (source.contains(" ds5 ")) return "CITROEN";
+        if (source.contains(" xsara ")) return "CITROEN";
+
+        if (source.contains(" tipo ")) return "FIAT";
+        if (source.contains(" panda ")) return "FIAT";
+        if (source.contains(" ducato ")) return "FIAT";
+        if (source.contains(" fiat 500 ") || source.contains(" 500 lounge ")) return "FIAT";
+
+        if (source.contains(" compass ")) return "JEEP";
+        if (source.contains(" cherokee ")) return "JEEP";
+        if (source.contains(" renegade ")) return "JEEP";
+
+        if (source.contains(" sportage ")) return "KIA";
+        if (source.contains(" ceed ")) return "KIA";
+        if (source.contains(" carens ")) return "KIA";
+
+        if (source.contains(" leon ")) return "SEAT";
+        if (source.contains(" ibiza ")) return "SEAT";
+        if (source.contains(" alhambra ")) return "SEAT";
+
+        if (source.contains(" rav4 ")) return "TOYOTA";
+        if (source.contains(" land cruiser ")) return "TOYOTA";
+        if (source.contains(" aygo ")) return "TOYOTA";
+
+        if (source.contains(" xc60 ")) return "VOLVO";
+        if (source.contains(" xc90 ")) return "VOLVO";
+        if (source.contains(" v40 ")) return "VOLVO";
+        if (source.contains(" v60 ")) return "VOLVO";
+        if (source.contains(" v90 ")) return "VOLVO";
+        if (source.contains(" c70 ")) return "VOLVO";
 
         return null;
     }
@@ -930,7 +982,10 @@ public class BazosParser implements CarSourceParser {
                 " estate ",
                 " alltrack ",
                 " scout ",
-                " outback ", " v90 ", " v60 ", " v70 ", " g31 ")) {
+                " outback ",
+                " v40 ", " v50 ", " v60 ", " v70 ", " v90 ",
+                " g31 ",
+                " tipo sw ")) {
             return "WAGON";
         }
 
@@ -941,7 +996,8 @@ public class BazosParser implements CarSourceParser {
                 " clio ", " megane ", " fiesta ",
                 " civic ", " leon ", " swift ",
                 " agila ", " 207 ",
-                " sandero ", " logan ", " scala ", " citigo ", " fiat 500 ")) {
+                " sandero ", " logan ", " scala ", " citigo ", " fiat 500 ",
+                " tipo ", " fiat tipo ")) {
             return "HATCHBACK";
         }
 
@@ -990,7 +1046,8 @@ public class BazosParser implements CarSourceParser {
                 " 520 ",
                 " 525 ",
                 " 530 ",
-                " 540 ")) {
+                " 540 ",
+                " thalia ")) {
             return "SEDAN";
         }
 
