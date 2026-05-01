@@ -663,18 +663,12 @@ public class BazosParser implements CarSourceParser {
                 || compact.contains("multijet")
                 || compact.contains("bluehdi")
                 || compact.contains("cdti")
-                || compact.contains("18d")
-                || compact.contains("20d")
-                || compact.contains("25d")
-                || compact.contains("30d")
-                || compact.contains("35d")
-                || compact.contains("40d")
-                || compact.contains("50d")
                 || compact.contains("118d")
                 || compact.contains("120d")
                 || compact.contains("220d")
                 || compact.contains("320d")
                 || compact.contains("330d")
+                || compact.contains("420d")
                 || compact.contains("520d")
                 || compact.contains("525d")
                 || compact.contains("530d")
@@ -733,6 +727,8 @@ public class BazosParser implements CarSourceParser {
                 " 3.5i ",
                 " 4.0i ",
                 " 5.0i ",
+                " mustang ",
+                " v8 ",
                 " 330i ",
                 " 320i ",
                 " 318i ",
@@ -984,6 +980,10 @@ public class BazosParser implements CarSourceParser {
         if (source.contains(" corsa ")) return "OPEL";
         if (source.contains(" mazda 3 ")) return "MAZDA";
         if (source.contains(" mazda 6 ")) return "MAZDA";
+        if (source.contains(" partner ")) return "PEUGEOT";
+        if (source.contains(" mazda 5 ")) return "MAZDA";
+        if (source.contains(" favorit ")) return "SKODA";
+        if (source.contains(" kangoo ")) return "RENAULT";
 
         return null;
     }
@@ -1111,7 +1111,13 @@ public class BazosParser implements CarSourceParser {
                 " tourneo connect ",
                 " doblo ",
                 " combo ",
-                " picasso ", " grand c4 picasso ", " c4 picasso ", " b 200 ", " b200 ")) {
+                " picasso ", " grand c4 picasso ", " c4 picasso ", " b 200 ", " b200 ",
+                " partner tepee ",
+                " mazda 5 ",
+                " grand scenic ",
+                " grand scénic ",
+                " kangoo ",
+                " carens ")) {
             return "MINIVAN";
         }
 
