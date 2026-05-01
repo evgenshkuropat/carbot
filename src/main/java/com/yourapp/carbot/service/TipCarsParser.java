@@ -564,71 +564,104 @@ public class TipCarsParser implements CarSourceParser {
     }
 
     private String extractCarType(String title, String text, String url) {
-        String source = " " + normalizeText(safe(title) + " " + safe(text) + " " + safe(url))
-                .toLowerCase(Locale.ROOT) + " ";
+        String source = " " + normalizeText(safe(title) + " " + safe(text) + " " + safe(url)).toLowerCase(Locale.ROOT) + " ";
+        String normalizedUrl = url == null ? "" : url.toLowerCase(Locale.ROOT);
 
-        // SUV должен быть раньше MINIVAN, потому что Kodiaq/Tiguan/XC90 тоже могут иметь "7 míst"
-        if (containsAny(source,
-                " nitro ", " cx-5 ", " cx5 ", " cx-30 ", " cx-60 ",
-                " forester ", " outback ", " rav4 ", " cr-v ", " crv ",
-                " hr-v ", " hrv ", " qashqai ", " x-trail ",
-                " tiguan ", " touareg ", " t-roc ", " troc ",
-                " kodiaq ", " karoq ", " kamiq ",
-                " kuga ", " puma ", " ecosport ",
-                " xc40 ", " xc60 ", " xc90 ", " ex30 ", " ex40 ", " ex90 ",
-                " gla ", " glb ", " glc ", " gle ", " gls ",
-                " q2 ", " q3 ", " q4 ", " q5 ", " q7 ", " q8 ",
-                " x1 ", " x2 ", " x3 ", " x4 ", " x5 ", " x6 ", " x7 ",
-                " sportage ", " sorento ", " stonic ",
-                " tucson ", " santa fe ", " kona ",
-                " duster ", " bigster ",
-                " suv ", " crossover ", " off-road ", " offroad ")) {
+        if (normalizedUrl.contains("/suv/")) {
             return "SUV";
         }
 
-        if (containsAny(source,
-                " berlingo ", " rifter ", " partner tepee ",
-                " tourneo connect ", " tourneo courier ", " caddy ",
-                " roomster ", " scenic ", " espace ", " sharan ", " alhambra ",
-                " galaxy ", " s-max ", " c-max ", " zafira ", " verso ",
-                " touran ", " lodgy ", " jogger ",
-                " mpv ", " minivan ", " 7-míst ", " 7 mist ", " 7 míst ")) {
-            return "MINIVAN";
-        }
-
-        if (containsAny(source,
-                " kombi ", " combi ", " wagon ", " estate ", " touring ",
-                " avant ", " variant ", " caravan ", " sw ", " v40 ", " v50 ",
-                " v60 ", " v70 ", " v90 ")) {
+        if (normalizedUrl.contains("/kombi/")) {
             return "WAGON";
         }
 
-        if (containsAny(source,
-                " hatchback ", " hatch ", " golf ", " fabia ", " fiesta ",
-                " focus ", " i20 ", " i30 ", " ceed ", " clio ", " c3 ", " leon ")) {
-            return "HATCHBACK";
-        }
-
-        if (containsAny(source,
-                " sedan ", " liftback ", " fastback ", " limuzína ", " limuzina ",
-                " passat ", " octavia ", " superb ", " arteon ", " model 3 ",
-                " model s ")) {
-            return "SEDAN";
-        }
-
-        if (containsAny(source,
-                " pickup ", " pick-up ", " ranger ", " hilux ", " amarok ", " navara ")) {
+        if (normalizedUrl.contains("/pick-up/") || normalizedUrl.contains("/pickup/")) {
             return "PICKUP";
         }
 
-        if (containsAny(source,
-                " coupé ", " coupe ", " gran coupe ", " gran coupé ")) {
+        if (normalizedUrl.contains("/hatchback/")) {
+            return "HATCHBACK";
+        }
+
+        if (normalizedUrl.contains("/sedan/")) {
+            return "SEDAN";
+        }
+
+        if (normalizedUrl.contains("/kabriolet/") || normalizedUrl.contains("/cabrio/")) {
+            return "CABRIO";
+        }
+
+        if (normalizedUrl.contains("/coupe/") || normalizedUrl.contains("/kupe/")) {
             return "COUPE";
         }
 
         if (containsAny(source,
-                " cabrio ", " roadster ", " spider ", " cabriolet ", " convertible ", " kabriolet ")) {
-            return "CABRIO";
+                " formentor ",
+                " compass ",
+                " suv ",
+                " crossover ",
+                " karoq ",
+                " kamiq ",
+                " kodiaq ",
+                " tiguan ",
+                " touareg ",
+                " q3 ",
+                " q5 ",
+                " q7 ",
+                " q8 ",
+                " x1 ",
+                " x3 ",
+                " x5 ",
+                " xc40 ",
+                " xc60 ",
+                " xc90 ",
+                " sportage ",
+                " rav4 ",
+                " cr-v ",
+                " cx-3 ",
+                " cx-5 ")) {
+            return "SUV";
+        }
+
+        if (containsAny(source,
+                " shooting brake ",
+                " kombi ",
+                " combi ",
+                " wagon ",
+                " variant ",
+                " touring ",
+                " avant ",
+                " estate ")) {
+            return "WAGON";
+        }
+
+        if (containsAny(source,
+                " pickup ",
+                " pick-up ",
+                " ram 1500 ",
+                " ranger ",
+                " hilux ",
+                " amarok ",
+                " navara ")) {
+            return "PICKUP";
+        }
+
+        if (containsAny(source,
+                " hatchback ",
+                " fabia ",
+                " golf ",
+                " ibiza ",
+                " 595 ")) {
+            return "HATCHBACK";
+        }
+
+        if (containsAny(source,
+                " sedan ",
+                " octavia ",
+                " superb ",
+                " passat ",
+                " arteon ")) {
+            return "SEDAN";
         }
 
         return null;
