@@ -631,7 +631,8 @@ public class BazosParser implements CarSourceParser {
                 " electric ",
                 " ev ",
                 " kwh ",
-                " bev ")) {
+                " bev ",
+                " enyaq ", " id.3 ", " id.4 ", " id.5 ", " tesla ", " leaf ", " kona electric ")) {
             return "ELECTRIC";
         }
 
@@ -679,6 +680,7 @@ public class BazosParser implements CarSourceParser {
                 " palivo benzín ",
                 " benzin ",
                 " benzín ",
+                " benzinove ", " benzínové ",
                 " tsi ",
                 " tfsi ",
                 " fsi ",
@@ -720,7 +722,11 @@ public class BazosParser implements CarSourceParser {
                 " n54 ",
                 " n55 ",
                 " b48 ",
-                " b58 ")) {
+                " b58 ",
+                " 18d ", " 20d ", " 25d ", " 30d ", " 35d ", " 40d ", " 50d ",
+                " 118d ", " 120d ", " 220d ", " 320d ", " 330d ",
+                " 520d ", " 525d ", " 530d ", " 540d ", " 550d ",
+                " xdrive30d ", " m550d ")) {
             return "PETROL";
         }
 
@@ -923,7 +929,8 @@ public class BazosParser implements CarSourceParser {
                 " caravan ",
                 " estate ",
                 " alltrack ",
-                " scout ")) {
+                " scout ",
+                " outback ", " v90 ", " v60 ", " v70 ", " g31 ")) {
             return "WAGON";
         }
 
@@ -934,7 +941,7 @@ public class BazosParser implements CarSourceParser {
                 " clio ", " megane ", " fiesta ",
                 " civic ", " leon ", " swift ",
                 " agila ", " 207 ",
-                " sandero ", " logan ")) {
+                " sandero ", " logan ", " scala ", " citigo ", " fiat 500 ")) {
             return "HATCHBACK";
         }
 
@@ -1011,7 +1018,8 @@ public class BazosParser implements CarSourceParser {
                 " tourneo courier ",
                 " tourneo connect ",
                 " doblo ",
-                " combo ")) {
+                " combo ",
+                " picasso ", " grand c4 picasso ", " c4 picasso ", " b 200 ", " b200 ")) {
             return "MINIVAN";
         }
 
