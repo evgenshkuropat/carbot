@@ -618,7 +618,9 @@ public class BazosParser implements CarSourceParser {
     }
 
     private String extractFuelType(String text) {
+
         String source = " " + normalizeText(text).toLowerCase(Locale.ROOT) + " ";
+        String compact = source.replaceAll("[^a-z0-9]", "");
 
         if (containsAny(source,
                 " palivo: elektro ",
@@ -642,6 +644,32 @@ public class BazosParser implements CarSourceParser {
                 " phev ",
                 " hev ")) {
             return "HYBRID";
+        }
+
+        // ВАЖНО: ловим слитные дизели типа 2.0tdi
+        if (compact.contains("tdi")
+                || compact.contains("tdci")
+                || compact.contains("cdi")
+                || compact.contains("dci")
+                || compact.contains("hdi")
+                || compact.contains("crdi")
+                || compact.contains("jtd")
+                || compact.contains("multijet")
+                || compact.contains("bluehdi")
+                || compact.contains("cdti")) {
+            return "DIESEL";
+        }
+
+        // ВАЖНО: ловим слитные бензины типа 1.5tsi
+        if (compact.contains("tsi")
+                || compact.contains("tfsi")
+                || compact.contains("mpi")
+                || compact.contains("gdi")
+                || compact.contains("tgdi")
+                || compact.contains("tce")
+                || compact.contains("ecoboost")
+                || compact.contains("skyactivg")) {
+            return "PETROL";
         }
 
         if (containsAny(source,
@@ -1059,7 +1087,8 @@ public class BazosParser implements CarSourceParser {
                 " compass ",
                 " cx-3 ",
                 " cx3 ",
-                " discovery sport ")) {
+                " discovery sport ",
+                " explorer ", " ix35 ", " x4 ", " compass ", " cx-3 ", " cx3 ")) {
             return "SUV";
         }
 
@@ -1118,12 +1147,12 @@ public class BazosParser implements CarSourceParser {
         }
 
         if (containsAny(urlSource,
-                "/liftback-", "/sedan-", "sportback", "fastback")) {
+                "/liftback-", "/sedan-", "sportback", "fastback", " 408 ")) {
             return "SEDAN";
         }
 
         if (containsAny(urlSource,
-                "/mpv-", "minivan")) {
+                "/mpv-", "minivan", " partner tepee ", " mazda 5 ", " grand scénic ", " grand scenic ")) {
             return "MINIVAN";
         }
 
