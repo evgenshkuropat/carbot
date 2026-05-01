@@ -661,8 +661,6 @@ public class BazosParser implements CarSourceParser {
 
         if (source.contains(" superb ")
                 && containsAny(source,
-                " iv ",
-                " i-v ",
                 " phev ",
                 " plug-in ",
                 " plug in ",
