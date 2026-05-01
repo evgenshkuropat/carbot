@@ -618,7 +618,6 @@ public class BazosParser implements CarSourceParser {
     }
 
     private String extractFuelType(String text) {
-
         String source = " " + normalizeText(text).toLowerCase(Locale.ROOT) + " ";
         String compact = source.replaceAll("[^a-z0-9]", "");
 
@@ -647,7 +646,6 @@ public class BazosParser implements CarSourceParser {
             return "HYBRID";
         }
 
-        // ВАЖНО: ловим слитные дизели типа 2.0tdi
         if (compact.contains("tdi")
                 || compact.contains("tdci")
                 || compact.contains("cdi")
@@ -657,11 +655,29 @@ public class BazosParser implements CarSourceParser {
                 || compact.contains("jtd")
                 || compact.contains("multijet")
                 || compact.contains("bluehdi")
-                || compact.contains("cdti")) {
+                || compact.contains("cdti")
+                || compact.contains("18d")
+                || compact.contains("20d")
+                || compact.contains("25d")
+                || compact.contains("30d")
+                || compact.contains("35d")
+                || compact.contains("40d")
+                || compact.contains("50d")
+                || compact.contains("118d")
+                || compact.contains("120d")
+                || compact.contains("220d")
+                || compact.contains("320d")
+                || compact.contains("330d")
+                || compact.contains("520d")
+                || compact.contains("525d")
+                || compact.contains("530d")
+                || compact.contains("540d")
+                || compact.contains("550d")
+                || compact.contains("xdrive30d")
+                || compact.contains("m550d")) {
             return "DIESEL";
         }
 
-        // ВАЖНО: ловим слитные бензины типа 1.5tsi
         if (compact.contains("tsi")
                 || compact.contains("tfsi")
                 || compact.contains("mpi")
@@ -673,6 +689,14 @@ public class BazosParser implements CarSourceParser {
             return "PETROL";
         }
 
+        if (containsAny(source, " lpg ")) {
+            return "LPG";
+        }
+
+        if (containsAny(source, " cng ")) {
+            return "CNG";
+        }
+
         if (containsAny(source,
                 " palivo: benzin ",
                 " palivo: benzín ",
@@ -680,15 +704,9 @@ public class BazosParser implements CarSourceParser {
                 " palivo benzín ",
                 " benzin ",
                 " benzín ",
-                " benzinove ", " benzínové ",
-                " tsi ",
-                " tfsi ",
+                " benzinove ",
+                " benzínové ",
                 " fsi ",
-                " mpi ",
-                " gdi ",
-                " tgdi ",
-                " tce ",
-                " ecoboost ",
                 " vti ",
                 " vvt-i ",
                 " i-vtec ",
@@ -722,16 +740,8 @@ public class BazosParser implements CarSourceParser {
                 " n54 ",
                 " n55 ",
                 " b48 ",
-                " b58 ",
-                " 18d ", " 20d ", " 25d ", " 30d ", " 35d ", " 40d ", " 50d ",
-                " 118d ", " 120d ", " 220d ", " 320d ", " 330d ",
-                " 520d ", " 525d ", " 530d ", " 540d ", " 550d ",
-                " xdrive30d ", " m550d ")) {
+                " b58 ")) {
             return "PETROL";
-        }
-
-        if (containsAny(source, " lpg ", " cng ")) {
-            return "LPG";
         }
 
         if (containsAny(source,
@@ -1769,6 +1779,14 @@ public class BazosParser implements CarSourceParser {
     }
 
     private boolean looksSuspiciousListing(String title, String text) {
+        String cleanTitle = normalizeText(title).toLowerCase(Locale.ROOT);
+
+        if (cleanTitle.equals("prodam")
+                || cleanTitle.equals("prodám")
+                || cleanTitle.equals("prodej")) {
+            return true;
+        }
+
         String source = " " + normalizeText(title + " " + shortenForCheck(text, 500)).toLowerCase(Locale.ROOT) + " ";
 
         return containsAny(source,
@@ -1788,7 +1806,6 @@ public class BazosParser implements CarSourceParser {
                 " soubor náhradních dílů ", " soubor nahradnich dilu ",
                 " jen celek ",
                 " prodáno ", " prodano ",
-                " prodej ",
                 " zálohováno ", " zalohovano ",
                 " zadáno ", " zadano ");
     }
@@ -1845,7 +1862,6 @@ public class BazosParser implements CarSourceParser {
     }
 
     private boolean isRealLocation(String value) {
-
         if (value == null) {
             return false;
         }
@@ -1856,6 +1872,14 @@ public class BazosParser implements CarSourceParser {
         }
 
         String lower = normalized.toLowerCase(Locale.ROOT);
+
+        if (lower.matches("\\d+")) {
+            return false;
+        }
+
+        if (lower.length() < 3) {
+            return false;
+        }
 
         return !lower.equals("lokalita")
                 && !lower.equals("lokalita:")
