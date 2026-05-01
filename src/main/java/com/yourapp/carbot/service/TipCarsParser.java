@@ -139,7 +139,11 @@ public class TipCarsParser implements CarSourceParser {
             String imageUrl = extractImageUrl(doc);
             String brand = extractBrand(title, url);
             String combinedText = title + " " + url;
-            String fuelType = extractFuelType(combinedText);
+            String fuelType = firstNonBlank(
+                    extractFuelType(title),
+                    extractFuelType(url),
+                    extractFuelType(pageText)
+            );
             String transmission = extractTransmission(combinedText);
             String carType = extractCarType(title, title, url);
 
@@ -478,46 +482,100 @@ public class TipCarsParser implements CarSourceParser {
     }
 
     private String extractFuelType(String text) {
-        String normalized = " " + normalizeText(text).toLowerCase(Locale.ROOT) + " ";
+        String source = " " + normalizeText(safe(text)).toLowerCase(Locale.ROOT) + " ";
+        String compact = source.replaceAll("[^a-z0-9]", "");
 
-        if (containsAny(normalized,
-                " diesel ", " nafta ", " tdi ", " hdi ", " dci ", " cdi ",
-                " crdi ", " tdci ", " jtd ", " multijet ", " bluehdi ",
-                " d4 ", " d3 ")) {
-            return "DIESEL";
+        if (containsAny(source,
+                "/elektro/",
+                " elektro ",
+                " electric ",
+                " elektromobil ",
+                " kwh ",
+                " bev ",
+                " id.3 ",
+                " id.4 ",
+                " id.5 ",
+                " tesla ",
+                " enyaq ",
+                " mg4 ")) {
+            return "ELECTRIC";
         }
 
-        if (containsAny(normalized,
-                " benzín ", " benzin ", " petrol ", " tsi ", " tfsi ",
-                " mpi ", " fsi ", " tce ", " ecoboost ", " vvt-i ",
-                " t4 ", " t5 ", " b3 ", " b4 ", " b5 ")) {
-            return "PETROL";
-        }
-
-        if (containsAny(normalized,
-                " plug-in hybrid ", " plug in hybrid ", " plug-in ",
-                " phev ", " recharge ")) {
-            return "PLUGIN_HYBRID";
-        }
-
-        if (containsAny(normalized,
-                " hybrid ", " hybridní ", " hybridni ",
-                " hev ", " mhev ", " e:hev ", " ehev ")) {
+        if (containsAny(source,
+                "/hybridni-benzin/",
+                "/hybridni-nafta/",
+                " hybrid ",
+                " hybridni ",
+                " hybridní ",
+                " plug-in ",
+                " plugin ",
+                " phev ",
+                " mhev ",
+                " e-cvt ",
+                " ecvt ")) {
             return "HYBRID";
         }
 
-        if (containsAny(normalized, " lpg ")) {
+        if (containsAny(source,
+                "/benzin/",
+                " benzin ",
+                " benzín ",
+                " tsi ",
+                " tfsi ",
+                " mpi ",
+                " gdi ",
+                " tgdi ",
+                " t-gdi ",
+                " tce ",
+                " ecoboost ",
+                " skyactiv-g ",
+                " vvt-i ")) {
+            return "PETROL";
+        }
+
+        if (containsAny(source,
+                "/nafta/",
+                " nafta ",
+                " diesel ",
+                " tdi ",
+                " tdci ",
+                " cdi ",
+                " dci ",
+                " hdi ",
+                " crdi ",
+                " cdti ",
+                " bluehdi ")) {
+            return "DIESEL";
+        }
+
+        if (containsAny(source,
+                "/lpg/",
+                "/cng/",
+                " lpg ",
+                " cng ")) {
             return "LPG";
         }
 
-        if (containsAny(normalized, " cng ")) {
-            return "CNG";
+        if (compact.contains("tdi")
+                || compact.contains("tdci")
+                || compact.contains("cdi")
+                || compact.contains("dci")
+                || compact.contains("hdi")
+                || compact.contains("crdi")
+                || compact.contains("cdti")
+                || compact.contains("bluehdi")) {
+            return "DIESEL";
         }
 
-        if (containsAny(normalized,
-                " elektro ", " elektrické ", " elektricke ",
-                " electric ", " kwh ", " battery ", " bev ")) {
-            return "ELECTRIC";
+        if (compact.contains("tsi")
+                || compact.contains("tfsi")
+                || compact.contains("mpi")
+                || compact.contains("gdi")
+                || compact.contains("tgdi")
+                || compact.contains("tce")
+                || compact.contains("ecoboost")
+                || compact.contains("skyactivg")) {
+            return "PETROL";
         }
 
         return null;
@@ -533,7 +591,6 @@ public class TipCarsParser implements CarSourceParser {
                 " automatic ",
                 " aut ",
                 " aut. ",
-                " at ",
                 " at ",
                 " a/t ",
                 " dsg ",
@@ -846,5 +903,17 @@ public class TipCarsParser implements CarSourceParser {
     }
 
     private record ParseResult(CarDto car, String reason) {
+    }
+
+    private String firstNonBlank(String... values) {
+        if (values == null) return null;
+
+        for (String v : values) {
+            if (v != null && !v.isBlank()) {
+                return v;
+            }
+        }
+
+        return null;
     }
 }
