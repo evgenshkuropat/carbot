@@ -1054,7 +1054,9 @@ public class BazosParser implements CarSourceParser {
                 " mazda 3 ",
                 " 308 ",
                 " rapid ",
-                " yaris ")) {
+                " yaris ",
+                " peugeot 107 ",
+                " 107 ")) {
             return "HATCHBACK";
         }
 
@@ -1106,7 +1108,10 @@ public class BazosParser implements CarSourceParser {
                 " 540 ",
                 " thalia ",
                 " model s ",
-                " 540d ")) {
+                " 540d ",
+                " c220d ",
+                " c 220 ",
+                " c-class ")) {
             return "SEDAN";
         }
 
@@ -1141,7 +1146,9 @@ public class BazosParser implements CarSourceParser {
                 " grand scenic ",
                 " grand scénic ",
                 " kangoo ",
-                " carens ")) {
+                " carens ",
+                " smax ",
+                " s-max ")) {
             return "MINIVAN";
         }
 
@@ -1227,7 +1234,10 @@ public class BazosParser implements CarSourceParser {
                 " discovery ",
                 " discovery sport ",
                 " grand vitara ",
-                " vitara ")) {
+                " vitara ",
+                " model y ",
+                " xv ",
+                " forester ")) {
             return "SUV";
         }
 
@@ -1270,7 +1280,9 @@ public class BazosParser implements CarSourceParser {
                 " 370z ",
                 " 350z ",
                 " rc f ",
-                " r8 ")) {
+                " r8 ",
+                " rc 300h ",
+                " lexus rc ")) {
             return "COUPE";
         }
 
@@ -1453,6 +1465,7 @@ public class BazosParser implements CarSourceParser {
             case "BMW" -> containsAny(urlLower, "skoda-", "dacia-", "seat-", "renault-");
             case "MERCEDES" -> containsAny(urlLower, "skoda-", "seat-", "dacia-", "ford-");
             case "SEAT" -> containsAny(urlLower, "dacia-", "mercedes-", "bmw-", "audi-");
+            case "VOLKSWAGEN" -> containsAny(urlLower, "skoda-", "audi-", "bmw-", "mercedes-", "dacia-", "seat-", "cupra-");
             default -> false;
         };
     }
@@ -1505,11 +1518,17 @@ public class BazosParser implements CarSourceParser {
                 " karavan ", " caravan ",
                 " obytný vůz ", " obytny vuz ",
                 " obytný ", " obytny ", " obytné ", " obytne ",
+                " adria ",
+                " laika ",
+                " matrix ",
+                " kosmo ",
+                " obytný automobil ",
+                " obytny automobil ",
                 " přívěs ", " prives ",
                 " předstan ", " predstan ",
                 " mover ", " markýza ", " markyza ",
                 " nosič kol ", " nosic kol ",
-                " chausson ", " adria ", " bailey ", " beyerland ",
+                " chausson ", " bailey ", " beyerland ",
                 " hobby ", " hobby de luxe ", " knaus ",
                 " swift 390 ", " toscane "
         );
@@ -1659,7 +1678,10 @@ public class BazosParser implements CarSourceParser {
                 " čerpadlo ", " cerpadlo ",
                 " filtr pevných částic ", " filtr pevných castic ", " dpf ",
                 " spojka ",
-                " katalyzátor ", " katalyzator ")) {
+                " katalyzátor ", " katalyzator ",
+                " křídlo ", " kridlo ",
+                " karbon ",
+                " spoiler ")) {
             return true;
         }
 
@@ -2088,9 +2110,12 @@ public class BazosParser implements CarSourceParser {
 
         String cleaned = normalizeText(value);
 
-        cleaned = cleaned.replaceFirst("(?i)^i\\s+", "").trim();
         cleaned = cleaned.replaceAll("(?i)\\b(tel|telefon|volejte|volat)\\b.*$", "").trim();
         cleaned = cleaned.replaceAll("\\+?\\d[\\d\\s]{6,}.*$", "").trim();
+
+        // remove Czech/Slovak postal code at the end: "Kolín 280 02" -> "Kolín"
+        cleaned = cleaned.replaceAll("\\s+\\d{3}\\s?\\d{2}$", "").trim();
+
         cleaned = cleaned.replaceAll("[,;\\-]+$", "").trim();
 
         return cleaned.isBlank() ? null : cleaned;
