@@ -504,6 +504,8 @@ public class BazosParser implements CarSourceParser {
         if (locationEl != null) {
             String raw = normalizeText(locationEl.text());
             raw = raw.replaceFirst("(?i)^lokalita\\s*:?\\s*", "").trim();
+            raw = cleanLocation(raw);
+
             if (isRealLocation(raw)) {
                 return raw;
             }
@@ -516,6 +518,7 @@ public class BazosParser implements CarSourceParser {
         if (matcher.find()) {
             String raw = normalizeText(matcher.group(1));
             raw = raw.replaceFirst("(?i)^(lokalita|okres|město|mesto|kraj)\\s*:?\\s*", "").trim();
+            raw = cleanLocation(raw);
 
             if (isRealLocation(raw)) {
                 return raw;
@@ -1050,6 +1053,7 @@ public class BazosParser implements CarSourceParser {
                 " corsa ",
                 " mazda 3 ",
                 " 308 ",
+                " rapid ",
                 " yaris ")) {
             return "HATCHBACK";
         }
@@ -2075,5 +2079,19 @@ public class BazosParser implements CarSourceParser {
         static ParseResult skip(String reason) {
             return new ParseResult(null, reason);
         }
+    }
+
+    private String cleanLocation(String value) {
+        if (value == null) {
+            return null;
+        }
+
+        String cleaned = normalizeText(value);
+
+        cleaned = cleaned.replaceAll("(?i)\\b(tel|telefon|volejte|volat)\\b.*$", "").trim();
+        cleaned = cleaned.replaceAll("\\+?\\d[\\d\\s]{6,}.*$", "").trim();
+        cleaned = cleaned.replaceAll("[,;\\-]+$", "").trim();
+
+        return cleaned.isBlank() ? null : cleaned;
     }
 }
