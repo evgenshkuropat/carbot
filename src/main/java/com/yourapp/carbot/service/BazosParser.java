@@ -567,6 +567,11 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
     }
 
     private String extractLocation(Document doc, String fullText) {
+        String locationFromTitle = extractLocationFromTitle(doc);
+        if (isRealLocation(locationFromTitle)) {
+            return cleanLocation(locationFromTitle);
+        }
+
         String detailLocation = extractLocationFromDetailTable(doc);
         if (isRealLocation(detailLocation)) {
             return cleanLocation(detailLocation);
@@ -608,8 +613,38 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         return null;
     }
 
+    private String extractLocationFromTitle(Document doc) {
+        String value = extractLocationFromTitleText(doc.title());
+        if (isRealLocation(value)) {
+            return value;
+        }
+
+        Element ogTitle = doc.selectFirst("meta[property=og:title]");
+        if (ogTitle != null) {
+            return extractLocationFromTitleText(ogTitle.attr("content"));
+        }
+
+        return null;
+    }
+
+    private String extractLocationFromTitleText(String titleText) {
+        String title = normalizeText(titleText);
+        if (title.isBlank()) {
+            return null;
+        }
+
+        title = title.replaceFirst("(?i)\\s*\\|\\s*Bazoš\\.cz\\s*$", "").trim();
+
+        int separatorIndex = title.lastIndexOf(" - ");
+        if (separatorIndex < 0 || separatorIndex + 3 >= title.length()) {
+            return null;
+        }
+
+        return normalizeText(title.substring(separatorIndex + 3));
+    }
+
     private String extractLocationFromDetailLink(Document doc) {
-        Element locationLink = doc.selectFirst(".listadvlevo a[href*=/inzeraty/][href$=/]");
+        Element locationLink = doc.selectFirst(".listadvlevo a[href*=\"/inzeraty/\"][href$=\"/\"]");
         if (locationLink == null) {
             return null;
         }
@@ -636,9 +671,9 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 return normalizeText(matcher.group(1));
             }
 
-            matcher = Pattern.compile("\\s-\\s([^|,]{2,60})$").matcher(content);
-            if (matcher.find()) {
-                return normalizeText(matcher.group(1));
+            String fromTitle = extractLocationFromTitleText(content);
+            if (isRealLocation(fromTitle)) {
+                return fromTitle;
             }
         }
 
