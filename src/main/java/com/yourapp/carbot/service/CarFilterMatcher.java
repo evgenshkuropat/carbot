@@ -426,8 +426,11 @@ public class CarFilterMatcher {
         String carLocation = normalizeLocation(car.getLocation());
         String wanted = normalizeLocation(filterLocation);
 
+        // ВАЖНО:
+        // если пользователь выбрал регион, а у машины нет локации —
+        // такую машину НЕ пропускаем
         if (carLocation.isBlank()) {
-            return true;
+            return false;
         }
 
         if (carLocation.equals(wanted)) {
@@ -489,7 +492,7 @@ public class CarFilterMatcher {
         Integer carMileage = car.getMileage();
 
         if (carMileage == null) {
-            return true;
+            return false;
         }
 
         return carMileage <= maxMileage;
