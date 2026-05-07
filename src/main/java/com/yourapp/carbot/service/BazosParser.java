@@ -1,7 +1,6 @@
 package com.yourapp.carbot.service;
 
 import com.yourapp.carbot.service.dto.CarDto;
-import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
@@ -18,11 +17,13 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @Service
-public class BazosParser implements CarSourceParser {
+public class BazosParser extends AbstractJsoupParser implements CarSourceParser {
 
     private static final Logger log = LoggerFactory.getLogger(BazosParser.class);
 
     private static final String BASE_URL = "https://auto.bazos.cz/inzeraty/osobni-auta/";
+    private static final String SEARCH_PAGE_URL =
+            "https://auto.bazos.cz/?hledat=osobni+auta&rubriky=auto&hlokalita=&humkreis=25&cenaod=&cenado=&order=&kitx=ne&crp=";
     private static final int REQUEST_TIMEOUT_MS = 20_000;
     private static final int MAX_LIST_PAGES = 50;
     private static final int MAX_DETAIL_LINKS = 1000;
@@ -68,10 +69,7 @@ public class BazosParser implements CarSourceParser {
                 String pageUrl = buildListPageUrl(page);
 
                 try {
-                    Document listDoc = Jsoup.connect(pageUrl)
-                            .userAgent("Mozilla/5.0")
-                            .timeout(REQUEST_TIMEOUT_MS)
-                            .get();
+                    Document listDoc = loadDocument(pageUrl);
 
                     Set<String> pageUrls = extractDetailUrls(listDoc);
 
@@ -177,10 +175,10 @@ public class BazosParser implements CarSourceParser {
 
     private String buildListPageUrl(int page) {
         if (page <= 0) {
-            return "https://auto.bazos.cz/";
+            return BASE_URL;
         }
 
-        return "https://auto.bazos.cz/" + (page * 20) + "/";
+        return SEARCH_PAGE_URL + (page * 20);
     }
 
     private String extractNextPageUrl(Document doc) {
@@ -223,10 +221,7 @@ public class BazosParser implements CarSourceParser {
 
     private ParseResult parseDetail(String url) {
         try {
-            Document doc = Jsoup.connect(url)
-                    .userAgent("Mozilla/5.0")
-                    .timeout(REQUEST_TIMEOUT_MS)
-                    .get();
+            Document doc = loadDocument(url);
 
             String title = extractTitle(doc);
             String preview = extractPreview(doc);
@@ -1944,7 +1939,8 @@ public class BazosParser implements CarSourceParser {
         return null;
     }
 
-    private String normalizeText(String value) {
+    @Override
+    protected String normalizeText(String value) {
         if (value == null) {
             return "";
         }
