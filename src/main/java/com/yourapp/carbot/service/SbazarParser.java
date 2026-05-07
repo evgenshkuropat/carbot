@@ -45,40 +45,28 @@ public class SbazarParser implements CarSourceParser {
             log.info("SBAZAR collected detail links={}", links.size());
 
         } catch (Exception e) {
-            log.warn("SBAZAR fetch failed error={}", e.getMessage());
+            log.warn("SBAZAR fetch failed: {}", e.getMessage());
         }
 
         return List.of();
     }
 
     private Set<String> extractDetailUrls(Document doc) {
-        Set<String> urls = new LinkedHashSet<>();
+        Set<String> links = new LinkedHashSet<>();
 
-        Elements links = doc.select("a[href]");
-
-        for (Element link : links) {
-            String href = link.absUrl("href");
+        for (Element a : doc.select("a[href]")) {
+            String href = a.absUrl("href");
 
             if (href == null || href.isBlank()) {
                 continue;
             }
 
-            href = stripUrlParams(href);
-
-            if (!href.contains("sbazar.cz")) {
-                continue;
-            }
-
-            log.warn("SBAZAR DEBUG raw href: {}", href);
-
-            if (href.contains("/detail/") || href.matches(".*/[0-9]+-[^/?#]+.*")) {
-                if (!href.contains("/170-osobni-auta")) {
-                    urls.add(href);
-                }
+            if (href.contains("/inzerat/")) {
+                links.add(href);
             }
         }
 
-        return urls;
+        return links;
     }
 
     private String stripUrlParams(String url) {
