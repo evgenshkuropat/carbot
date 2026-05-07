@@ -230,78 +230,78 @@ public class BazosParser implements CarSourceParser {
 
             String title = extractTitle(doc);
             String preview = extractPreview(doc);
-            String fullText = normalizeText(doc.text());
+            String detailInfo = extractDetailInfoText(doc);
 
             String listingText = normalizeText(title + " " + preview);
-            String analysisText = normalizeText(title + " " + preview + " " + fullText);
-            String priceText = analysisText;
+            String analysisText = normalizeText(title + " " + preview + " " + detailInfo);
+            String priceText = normalizeText(preview + " " + detailInfo);
 
             if (title.isBlank()) {
-                log.warn("BAZOS SKIP url={} reason=empty_title title={}", safe(url), safe(title));
+                log.info("BAZOS SKIP url={} reason=empty_title title={}", safe(url), safe(title));
                 return ParseResult.skip("empty_title");
             }
 
             if (looksDemandListing(title, listingText, url)) {
-                log.warn("BAZOS SKIP url={} reason=demand_listing title={}", safe(url), safe(title));
+                log.info("BAZOS SKIP url={} reason=demand_listing title={}", safe(url), safe(title));
                 return ParseResult.skip("demand_listing");
             }
 
             if (looksCommercialVehicle(title, listingText, url)) {
-                log.warn("BAZOS SKIP url={} reason=commercial_vehicle title={}", safe(url), safe(title));
+                log.info("BAZOS SKIP url={} reason=commercial_vehicle title={}", safe(url), safe(title));
                 return ParseResult.skip("commercial_vehicle");
             }
 
             if (looksTyreOrWheelListing(title, preview, analysisText)) {
-                log.warn("BAZOS SKIP url={} reason=tyre_or_wheel_listing title={}", safe(url), safe(title));
+                log.info("BAZOS SKIP url={} reason=tyre_or_wheel_listing title={}", safe(url), safe(title));
                 return ParseResult.skip("non_car_listing");
             }
 
             if (containsNonCarBrand(title, listingText) && !looksLikeRealCar(title, analysisText)) {
-                log.warn("BAZOS SKIP url={} reason=non_car_brand title={}", safe(url), safe(title));
+                log.info("BAZOS SKIP url={} reason=non_car_brand title={}", safe(url), safe(title));
                 return ParseResult.skip("non_car_listing");
             }
 
             if (looksNonCarListing(title, listingText, url, analysisText)) {
-                log.warn("BAZOS SKIP url={} reason=non_car_listing title={}", safe(url), safe(title));
+                log.info("BAZOS SKIP url={} reason=non_car_listing title={}", safe(url), safe(title));
                 return ParseResult.skip("non_car_listing");
             }
 
             if (looksBrokenOrForPartsListing(title, analysisText)) {
-                log.warn("BAZOS SKIP url={} reason=broken_or_for_parts title={}", safe(url), safe(title));
+                log.info("BAZOS SKIP url={} reason=broken_or_for_parts title={}", safe(url), safe(title));
                 return ParseResult.skip("broken_or_for_parts");
             }
 
             if (looksSuspiciousListing(title, listingText)) {
-                log.warn("BAZOS SKIP url={} reason=suspicious_listing title={}", safe(url), safe(title));
+                log.info("BAZOS SKIP url={} reason=suspicious_listing title={}", safe(url), safe(title));
                 return ParseResult.skip("suspicious_listing");
             }
 
             boolean titleUrlMismatch = looksTitleUrlMismatch(title, url);
             if (titleUrlMismatch) {
-                log.warn("BAZOS WARN url={} reason=title_url_mismatch title={}", safe(url), safe(title));
+                log.info("BAZOS WARN url={} reason=title_url_mismatch title={}", safe(url), safe(title));
             }
 
             if (looksBrandMismatch(title, url)) {
-                log.warn("BAZOS SKIP url={} reason=brand_url_mismatch title={}", safe(url), safe(title));
+                log.info("BAZOS SKIP url={} reason=brand_url_mismatch title={}", safe(url), safe(title));
                 return ParseResult.skip("non_car_listing");
             }
 
             Integer priceValue = extractPrice(doc, priceText);
             if (priceValue == null) {
-                log.warn("BAZOS SKIP url={} reason=missing_price title={}", safe(url), safe(title));
+                log.info("BAZOS SKIP url={} reason=missing_price title={}", safe(url), safe(title));
                 return ParseResult.skip("invalid_price");
             }
             if (!isValidBazosPrice(priceValue)) {
-                log.warn("BAZOS SKIP url={} reason=invalid_price title={}", safe(url), safe(title));
+                log.info("BAZOS SKIP url={} reason=invalid_price title={}", safe(url), safe(title));
                 return ParseResult.skip("invalid_price");
             }
 
             String price = formatPrice(priceValue);
             String location = extractLocation(doc, analysisText);
-            Integer year = extractYear(title, title);
+            Integer year = extractYear(title, listingText);
 
             if (year == null) {
-                year = extractYear("", analysisText);
+                year = extractYear("", preview);
             }
             Integer mileage = extractMileage(title, analysisText);
             String fuelType = firstNonBlank(
@@ -319,7 +319,7 @@ public class BazosParser implements CarSourceParser {
             String imageUrl = extractImageUrl(doc);
 
             if (isSuspiciousCheapCar(title, analysisText, priceValue, year, mileage, brand, carType)) {
-                log.warn(
+                log.info(
                         "BAZOS SKIP url={} reason=suspicious_cheap_car title={} price={} year={} brand={} carType={}",
                         safe(url),
                         safe(title),
@@ -416,13 +416,32 @@ public class BazosParser implements CarSourceParser {
         return "";
     }
 
+    private String extractDetailInfoText(Document doc) {
+        Element table = doc.selectFirst(".listadvlevo table");
+        if (table != null) {
+            return normalizeText(table.text());
+        }
+
+        Element detail = doc.selectFirst(".listadvlevo");
+        if (detail != null) {
+            return normalizeText(detail.text());
+        }
+
+        return "";
+    }
+
     private Integer extractPrice(Document doc, String text) {
+        Integer detailPrice = extractPriceFromDetailTable(doc);
+        if (isValidBazosPrice(detailPrice)) {
+            return detailPrice;
+        }
+
         Element priceEl = doc.selectFirst(".inzeratycena, .price, b[class*=price], strong[class*=price]");
 
         if (priceEl != null) {
             String raw = normalizeText(priceEl.text());
             Integer price = parseNumber(raw);
-            log.info("BAZOS PRICE HTML raw='{}' parsed={}", safe(raw), price);
+            log.debug("BAZOS PRICE HTML raw='{}' parsed={}", safe(raw), price);
 
             if (isValidBazosPrice(price)) {
                 return price;
@@ -442,7 +461,7 @@ public class BazosParser implements CarSourceParser {
                 }
             }
         } else {
-            log.info("BAZOS PRICE HTML raw=-");
+            log.debug("BAZOS PRICE HTML raw=-");
         }
 
         Integer fromCenaLabel = extractPriceFromCenaLabel(text);
@@ -455,7 +474,31 @@ public class BazosParser implements CarSourceParser {
             return fromKcPattern;
         }
 
-        log.warn("BAZOS PRICE NOT FOUND");
+        log.info("BAZOS PRICE NOT FOUND");
+        return null;
+    }
+
+    private Integer extractPriceFromDetailTable(Document doc) {
+        for (Element row : doc.select(".listadvlevo tr")) {
+            Elements cells = row.select("td");
+            if (cells.size() < 2) {
+                continue;
+            }
+
+            String label = normalizeText(cells.get(0).text()).toLowerCase(Locale.ROOT);
+            if (!label.startsWith("cena")) {
+                continue;
+            }
+
+            String raw = normalizeText(cells.text());
+            Integer price = extractPriceFromKcPattern(raw);
+            log.debug("BAZOS PRICE DETAIL_TABLE raw='{}' parsed={}", safe(raw), price);
+
+            if (isValidBazosPrice(price)) {
+                return price;
+            }
+        }
+
         return null;
     }
 
@@ -467,7 +510,7 @@ public class BazosParser implements CarSourceParser {
         while (matcher.find()) {
             String raw = matcher.group(1);
             Integer candidate = parseNumber(raw);
-            log.info("BAZOS PRICE LABEL raw='{}' parsed={}", safe(raw), candidate);
+            log.debug("BAZOS PRICE LABEL raw='{}' parsed={}", safe(raw), candidate);
 
             if (isValidBazosPrice(candidate)) {
                 return candidate;
@@ -485,7 +528,7 @@ public class BazosParser implements CarSourceParser {
         while (matcher.find()) {
             String raw = matcher.group(1);
             Integer candidate = parseNumber(raw);
-            log.info("BAZOS PRICE TEXT raw='{}' parsed={}", safe(raw), candidate);
+            log.debug("BAZOS PRICE TEXT raw='{}' parsed={}", safe(raw), candidate);
 
             if (isValidBazosPrice(candidate)) {
                 return candidate;
@@ -500,6 +543,11 @@ public class BazosParser implements CarSourceParser {
     }
 
     private String extractLocation(Document doc, String fullText) {
+        String detailLocation = extractLocationFromDetailTable(doc);
+        if (isRealLocation(detailLocation)) {
+            return cleanLocation(detailLocation);
+        }
+
         Element locationEl = doc.selectFirst(".inzeratylokality, .inzeratylok, .lokalita");
         if (locationEl != null) {
             String raw = normalizeText(locationEl.text());
@@ -521,6 +569,28 @@ public class BazosParser implements CarSourceParser {
             if (isRealLocation(raw)) {
                 return cleanLocation(raw);
             }
+        }
+
+        return null;
+    }
+
+    private String extractLocationFromDetailTable(Document doc) {
+        for (Element row : doc.select(".listadvlevo tr")) {
+            Elements cells = row.select("td");
+            if (cells.size() < 2) {
+                continue;
+            }
+
+            String label = normalizeText(cells.get(0).text()).toLowerCase(Locale.ROOT);
+            if (!label.startsWith("lokalita")) {
+                continue;
+            }
+
+            String raw = normalizeText(row.text())
+                    .replaceFirst("(?i)^lokalita\\s*:?\\s*", "")
+                    .trim();
+
+            return raw;
         }
 
         return null;
@@ -1956,6 +2026,10 @@ public class BazosParser implements CarSourceParser {
         // remove Czech/Slovak postal code at the end: "Kolín 280 02" -> "Kolín"
         cleaned = cleaned.replaceAll("\\s+\\d{3}\\s?\\d{2}$", "").trim();
 
+        cleaned = cleaned.replaceAll("^\\d{3}\\s?\\d{2}\\s+", "").trim();
+        cleaned = cleaned.replaceAll("(?i)^okoli\\s+", "").trim();
+        cleaned = cleaned.replaceAll("(?i)^okolí\\s+", "").trim();
+        cleaned = cleaned.replaceAll("(?i)^i\\s+prahy$", "Praha").trim();
         cleaned = cleaned.replaceAll("[,;\\-]+$", "").trim();
 
         return cleaned.isBlank() ? null : cleaned;

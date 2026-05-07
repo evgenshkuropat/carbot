@@ -146,7 +146,7 @@ public class SautoParser implements CarSourceParser {
             }
 
             if (priceValue < MIN_VALID_PRICE) {
-                log.warn("SAUTO SKIP url={} reason=cheap_low_quality_listing title={} price={}",
+                log.info("SAUTO SKIP url={} reason=cheap_low_quality_listing title={} price={}",
                         safe(url), safe(title), priceValue);
                 return new ParseResult(null, "cheap_low_quality_listing");
             }
@@ -183,7 +183,7 @@ public class SautoParser implements CarSourceParser {
             String carType = extractCarType(title, analysisText, url);
 
             if (looksCheapLowQualityListing(title, listingText, analysisText, priceValue, year, mileage)) {
-                log.warn("SAUTO SKIP url={} reason=cheap_low_quality_listing title={} price={} year={} mileage={} fuelType={} transmission={} location={}",
+                log.info("SAUTO SKIP url={} reason=cheap_low_quality_listing title={} price={} year={} mileage={} fuelType={} transmission={} location={}",
                         safe(url), safe(title), priceValue, year, mileage, safe(fuelType), safe(transmission), safe(location));
                 return new ParseResult(null, "cheap_low_quality_listing");
             }
@@ -316,7 +316,7 @@ public class SautoParser implements CarSourceParser {
         Integer normalizedVisiblePrice = normalizeSautoPrice(visiblePrice, null, title, listingText);
         Integer normalizedJsonLdPrice = normalizeSautoPrice(jsonLdPrice, null, title, listingText);
 
-        log.info("SAUTO PRICE CHECK title='{}' directPrice={} normalizedDirectPrice={} visiblePrice={} normalizedVisiblePrice={} jsonLdPrice={} normalizedJsonLdPrice={} rawSelector={}",
+        log.debug("SAUTO PRICE CHECK title='{}' directPrice={} normalizedDirectPrice={} visiblePrice={} normalizedVisiblePrice={} jsonLdPrice={} normalizedJsonLdPrice={} rawSelector={}",
                 safe(title),
                 directSelectorPrice,
                 normalizedSelectorPrice,
@@ -327,13 +327,13 @@ public class SautoParser implements CarSourceParser {
                 safe(selectorRaw));
 
         if (looksLikeLeaseTransferOrDeposit(title, listingText, selectorRaw)) {
-            log.warn("SAUTO PRICE REJECTED title='{}' reason=lease_transfer_or_deposit rawSelector={}",
+            log.info("SAUTO PRICE REJECTED title='{}' reason=lease_transfer_or_deposit rawSelector={}",
                     safe(title), safe(selectorRaw));
             return null;
         }
 
         if (normalizedSelectorPrice != null && isFinanceBaitRaw(selectorRaw)) {
-            log.warn("SAUTO PRICE REJECTED title='{}' reason=finance_bait_raw selectorRaw={}",
+            log.info("SAUTO PRICE REJECTED title='{}' reason=finance_bait_raw selectorRaw={}",
                     safe(title), safe(selectorRaw));
             return null;
         }
@@ -353,7 +353,7 @@ public class SautoParser implements CarSourceParser {
             return normalizedJsonLdPrice;
         }
 
-        log.info("SAUTO PRICE REJECTED title='{}' selectorPrice={} visiblePrice={} jsonLdPrice={} reason=finance_bait_or_filtered rawSelector={}",
+        log.debug("SAUTO PRICE REJECTED title='{}' selectorPrice={} visiblePrice={} jsonLdPrice={} reason=finance_bait_or_filtered rawSelector={}",
                 safe(title),
                 normalizedSelectorPrice,
                 normalizedVisiblePrice,
@@ -384,18 +384,18 @@ public class SautoParser implements CarSourceParser {
                     continue;
                 }
 
-                log.info("SAUTO RAW SELECTOR PRICE selector={} raw={}", selector, safe(raw));
+                log.debug("SAUTO RAW SELECTOR PRICE selector={} raw={}", selector, safe(raw));
 
                 List<Integer> prices = extractAllPrices(raw);
                 for (Integer value : prices) {
-                    log.info("SAUTO PARSED SELECTOR PRICE selector={} raw={} parsed={}", selector, safe(raw), value);
+                    log.debug("SAUTO PARSED SELECTOR PRICE selector={} raw={} parsed={}", selector, safe(raw), value);
                     if (value != null) {
                         return new PriceCandidate(value, raw);
                     }
                 }
 
                 Integer fallback = parsePriceToInt(raw);
-                log.info("SAUTO PARSED FALLBACK PRICE selector={} raw={} parsed={}", selector, safe(raw), fallback);
+                log.debug("SAUTO PARSED FALLBACK PRICE selector={} raw={} parsed={}", selector, safe(raw), fallback);
 
                 if (fallback != null) {
                     return new PriceCandidate(fallback, raw);
@@ -413,7 +413,7 @@ public class SautoParser implements CarSourceParser {
             return null;
         }
 
-        log.info("SAUTO JSONLD RAW PRICE={}", safe(raw));
+        log.debug("SAUTO JSONLD RAW PRICE={}", safe(raw));
         return parsePriceToInt(raw);
     }
 
@@ -715,7 +715,7 @@ public class SautoParser implements CarSourceParser {
                 " vadny pohon ",
                 " poškozený pohon ",
                 " poskozeny pohon "
-                );
+        );
     }
 
     private boolean looksCommercialVehicle(String title, String text, String url) {
