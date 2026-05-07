@@ -572,6 +572,16 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             return cleanLocation(detailLocation);
         }
 
+        String locationFromLink = extractLocationFromDetailLink(doc);
+        if (isRealLocation(locationFromLink)) {
+            return cleanLocation(locationFromLink);
+        }
+
+        String locationFromMeta = extractLocationFromMeta(doc);
+        if (isRealLocation(locationFromMeta)) {
+            return cleanLocation(locationFromMeta);
+        }
+
         Element locationEl = doc.selectFirst(".inzeratylokality, .inzeratylok, .lokalita");
         if (locationEl != null) {
             String raw = normalizeText(locationEl.text());
@@ -592,6 +602,43 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
 
             if (isRealLocation(raw)) {
                 return cleanLocation(raw);
+            }
+        }
+
+        return null;
+    }
+
+    private String extractLocationFromDetailLink(Document doc) {
+        Element locationLink = doc.selectFirst(".listadvlevo a[href*=/inzeraty/][href$=/]");
+        if (locationLink == null) {
+            return null;
+        }
+
+        String value = normalizeText(locationLink.text());
+        if (value.matches("\\d{3}\\s?\\d{2}")) {
+            return null;
+        }
+
+        return value;
+    }
+
+    private String extractLocationFromMeta(Document doc) {
+        for (Element meta : doc.select("meta[name=description], meta[property=og:description], meta[property=og:title]")) {
+            String content = normalizeText(meta.attr("content"));
+            if (content.isBlank()) {
+                continue;
+            }
+
+            Matcher matcher = Pattern.compile(
+                    "(?i)\\bLokalita:\\s*([^.,|]{2,60})"
+            ).matcher(content);
+            if (matcher.find()) {
+                return normalizeText(matcher.group(1));
+            }
+
+            matcher = Pattern.compile("\\s-\\s([^|,]{2,60})$").matcher(content);
+            if (matcher.find()) {
+                return normalizeText(matcher.group(1));
             }
         }
 
