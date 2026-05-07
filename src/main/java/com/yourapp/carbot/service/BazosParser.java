@@ -21,11 +21,34 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
 
     private static final Logger log = LoggerFactory.getLogger(BazosParser.class);
 
-    private static final String BASE_URL = "https://auto.bazos.cz/inzeraty/osobni-auta/";
-    private static final String SEARCH_PAGE_URL =
-            "https://auto.bazos.cz/?hledat=osobni+auta&rubriky=auto&hlokalita=&humkreis=25&cenaod=&cenado=&order=&kitx=ne&crp=";
+    private static final List<String> LIST_PAGE_BASE_URLS = List.of(
+            "https://auto.bazos.cz/alfa/",
+            "https://auto.bazos.cz/audi/",
+            "https://auto.bazos.cz/bmw/",
+            "https://auto.bazos.cz/citroen/",
+            "https://auto.bazos.cz/dacia/",
+            "https://auto.bazos.cz/fiat/",
+            "https://auto.bazos.cz/ford/",
+            "https://auto.bazos.cz/honda/",
+            "https://auto.bazos.cz/hyundai/",
+            "https://auto.bazos.cz/chevrolet/",
+            "https://auto.bazos.cz/kia/",
+            "https://auto.bazos.cz/mazda/",
+            "https://auto.bazos.cz/mercedes/",
+            "https://auto.bazos.cz/mitsubishi/",
+            "https://auto.bazos.cz/nissan/",
+            "https://auto.bazos.cz/opel/",
+            "https://auto.bazos.cz/peugeot/",
+            "https://auto.bazos.cz/renault/",
+            "https://auto.bazos.cz/seat/",
+            "https://auto.bazos.cz/suzuki/",
+            "https://auto.bazos.cz/skoda/",
+            "https://auto.bazos.cz/toyota/",
+            "https://auto.bazos.cz/volkswagen/",
+            "https://auto.bazos.cz/volvo/"
+    );
     private static final int REQUEST_TIMEOUT_MS = 20_000;
-    private static final int MAX_LIST_PAGES = 50;
+    private static final int MAX_LIST_PAGES_PER_CATEGORY = 2;
     private static final int MAX_DETAIL_LINKS = 1000;
     private static final int MIN_VALID_PRICE = 30_000;
     private static final int MAX_VALID_PRICE = 10_000_000;
@@ -65,40 +88,46 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         int parseErrorCount = 0;
 
         try {
-            for (int page = 0; page < MAX_LIST_PAGES; page++) {
-                String pageUrl = buildListPageUrl(page);
-
-                try {
-                    Document listDoc = loadDocument(pageUrl);
-
-                    Set<String> pageUrls = extractDetailUrls(listDoc);
-
-                    log.info(
-                            "BAZOS page={} url={} detail links found={}",
-                            page + 1,
-                            pageUrl,
-                            pageUrls.size()
-                    );
-
-                    if (pageUrls.isEmpty()) {
-                        break;
-                    }
-
-                    int before = allDetailUrls.size();
-                    allDetailUrls.addAll(pageUrls);
-                    int added = allDetailUrls.size() - before;
-
-                    if (added == 0) {
-                        log.info("BAZOS pagination stopped page={} reason=no_new_links", page + 1);
-                        break;
-                    }
-
+            for (String listPageBaseUrl : LIST_PAGE_BASE_URLS) {
+                for (int page = 0; page < MAX_LIST_PAGES_PER_CATEGORY; page++) {
                     if (allDetailUrls.size() >= MAX_DETAIL_LINKS) {
                         break;
                     }
 
-                } catch (Exception e) {
-                    log.warn("BAZOS list page parse failed url={} error={}", pageUrl, e.getMessage());
+                    String pageUrl = buildListPageUrl(listPageBaseUrl, page);
+
+                    try {
+                        Document listDoc = loadDocument(pageUrl);
+
+                        Set<String> pageUrls = extractDetailUrls(listDoc);
+
+                        log.info(
+                                "BAZOS page={} url={} detail links found={}",
+                                page + 1,
+                                pageUrl,
+                                pageUrls.size()
+                        );
+
+                        if (pageUrls.isEmpty()) {
+                            break;
+                        }
+
+                        int before = allDetailUrls.size();
+                        allDetailUrls.addAll(pageUrls);
+                        int added = allDetailUrls.size() - before;
+
+                        if (added == 0) {
+                            log.info("BAZOS pagination stopped page={} reason=no_new_links", page + 1);
+                            break;
+                        }
+
+                    } catch (Exception e) {
+                        log.warn("BAZOS list page parse failed url={} error={}", pageUrl, e.getMessage());
+                        break;
+                    }
+                }
+
+                if (allDetailUrls.size() >= MAX_DETAIL_LINKS) {
                     break;
                 }
             }
@@ -173,12 +202,12 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         return detailUrls;
     }
 
-    private String buildListPageUrl(int page) {
+    private String buildListPageUrl(String baseUrl, int page) {
         if (page <= 0) {
-            return BASE_URL;
+            return baseUrl;
         }
 
-        return SEARCH_PAGE_URL + (page * 20);
+        return baseUrl + (page * 20) + "/";
     }
 
     private String extractNextPageUrl(Document doc) {
