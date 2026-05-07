@@ -138,14 +138,14 @@ public class TipCarsParser implements CarSourceParser {
             String location = extractLocation(doc, pageText);
             String imageUrl = extractImageUrl(doc);
             String brand = extractBrand(title, url);
-            String combinedText = title + " " + url;
+            String combinedText = title + " " + url + " " + pageText;
             String fuelType = firstNonBlank(
                     extractFuelType(title),
                     extractFuelType(url),
                     extractFuelType(pageText)
             );
             String transmission = extractTransmission(combinedText);
-            String carType = extractCarType(title, title, url);
+            String carType = extractCarType(title, pageText, url);
 
             CarDto car = new CarDto();
             car.setSource("TIPCARS");
@@ -340,7 +340,16 @@ public class TipCarsParser implements CarSourceParser {
 
         Matcher generic = Pattern.compile("\\b(19\\d{2}|20\\d{2})\\b").matcher(combined);
         while (generic.find()) {
-            Integer year = parseIntSafe(generic.group(1));
+            String rawYear = generic.group(1);
+            String lower = combined.toLowerCase(Locale.ROOT);
+
+            if (("2008".equals(rawYear) && lower.contains("peugeot 2008"))
+                    || ("3008".equals(rawYear) && lower.contains("peugeot 3008"))
+                    || ("5008".equals(rawYear) && lower.contains("peugeot 5008"))) {
+                continue;
+            }
+
+            Integer year = parseIntSafe(rawYear);
             if (isValidYear(year)) {
                 return year;
             }
@@ -548,12 +557,12 @@ public class TipCarsParser implements CarSourceParser {
             return "DIESEL";
         }
 
-        if (containsAny(source,
-                "/lpg/",
-                "/cng/",
-                " lpg ",
-                " cng ")) {
+        if (containsAny(source, "/lpg/", " lpg ")) {
             return "LPG";
+        }
+
+        if (containsAny(source, "/cng/", " cng ")) {
+            return "CNG";
         }
 
         if (compact.contains("tdi")
@@ -586,22 +595,28 @@ public class TipCarsParser implements CarSourceParser {
 
         if (containsAny(normalized,
                 " automat ",
-                " automatická ",
-                " automaticka ",
                 " automatic ",
-                " aut ",
                 " aut. ",
                 " at ",
-                " a/t ",
                 " dsg ",
+                " dsg7 ",
+                " eat8 ",
+                " eat6 ",
+                " e-dcs6 ",
+                " edcs6 ",
+                " 7g-tronic ",
+                " 9g-tronic ",
                 " tiptronic ",
-                " cvt ",
-                " e-cvt ",
-                " ecvt ",
                 " s tronic ",
                 " stronic ",
+                " steptronic ",
+                " multitronic ",
                 " powershift ",
-                " edc ")) {
+                " x-tronic ",
+                " xtronic ",
+                " cvt ",
+                " e-cvt ",
+                " ecvt ")) {
             return "AUTOMATIC";
         }
 
