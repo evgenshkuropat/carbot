@@ -589,19 +589,6 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             return cleanLocation(locationFromLink);
         }
 
-<<<<<<< HEAD
-        String locationFromMeta = extractLocationFromMeta(doc);
-        if (isRealLocation(locationFromMeta)) {
-            return cleanLocation(locationFromMeta);
-        }
-
-        String locationFromTitle = extractLocationFromTitle(doc);
-        if (isRealLocation(locationFromTitle)) {
-            return cleanLocation(locationFromTitle);
-        }
-
-=======
->>>>>>> 6a82c45 (Refine Bazos detail metadata parsing)
         Element locationEl = doc.selectFirst(".inzeratylokality, .inzeratylok, .lokalita");
         if (locationEl != null) {
             String raw = normalizeText(locationEl.text());
@@ -707,9 +694,6 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 continue;
             }
 
-<<<<<<< HEAD
-            String raw = normalizeText(cells.get(cells.size() - 1).text())
-=======
             Element locationLink = row.selectFirst("a[href*='/inzeraty/']");
             if (locationLink != null) {
                 String linkedLocation = normalizeText(locationLink.text());
@@ -719,7 +703,6 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             }
 
             String raw = normalizeText(row.text())
->>>>>>> 6a82c45 (Refine Bazos detail metadata parsing)
                     .replaceFirst("(?i)^lokalita\\s*:?\\s*", "")
                     .replaceFirst("(?i)^mapa\\s*", "")
                     .replaceAll("\\b\\d{3}\\s?\\d{2}\\b", "")
