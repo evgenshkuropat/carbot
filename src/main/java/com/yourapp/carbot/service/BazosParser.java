@@ -280,7 +280,9 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 return ParseResult.skip("non_car_listing");
             }
 
-            if (containsNonCarBrand(title, listingText) && !looksLikeRealCar(title, analysisText)) {
+            if (extractBrand(title, analysisText) == null
+                    && containsNonCarBrand(title, listingText)
+                    && !looksLikeRealCar(title, analysisText)) {
                 log.info("BAZOS SKIP url={} reason=non_car_brand title={}", safe(url), safe(title));
                 return ParseResult.skip("non_car_listing");
             }
@@ -567,16 +569,6 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
     }
 
     private String extractLocation(Document doc, String fullText) {
-        String detailLocation = extractLocationFromDetailTable(doc);
-        if (isRealLocation(detailLocation)) {
-            return cleanLocation(detailLocation);
-        }
-
-        String locationFromLink = extractLocationFromDetailLink(doc);
-        if (isRealLocation(locationFromLink)) {
-            return cleanLocation(locationFromLink);
-        }
-
         String locationFromMeta = extractLocationFromMeta(doc);
         if (isRealLocation(locationFromMeta)) {
             return cleanLocation(locationFromMeta);
@@ -587,6 +579,29 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             return cleanLocation(locationFromTitle);
         }
 
+        String detailLocation = extractLocationFromDetailTable(doc);
+        if (isRealLocation(detailLocation)) {
+            return cleanLocation(detailLocation);
+        }
+
+        String locationFromLink = extractLocationFromDetailLink(doc);
+        if (isRealLocation(locationFromLink)) {
+            return cleanLocation(locationFromLink);
+        }
+
+<<<<<<< HEAD
+        String locationFromMeta = extractLocationFromMeta(doc);
+        if (isRealLocation(locationFromMeta)) {
+            return cleanLocation(locationFromMeta);
+        }
+
+        String locationFromTitle = extractLocationFromTitle(doc);
+        if (isRealLocation(locationFromTitle)) {
+            return cleanLocation(locationFromTitle);
+        }
+
+=======
+>>>>>>> 6a82c45 (Refine Bazos detail metadata parsing)
         Element locationEl = doc.selectFirst(".inzeratylokality, .inzeratylok, .lokalita");
         if (locationEl != null) {
             String raw = normalizeText(locationEl.text());
@@ -692,8 +707,22 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 continue;
             }
 
+<<<<<<< HEAD
             String raw = normalizeText(cells.get(cells.size() - 1).text())
+=======
+            Element locationLink = row.selectFirst("a[href*='/inzeraty/']");
+            if (locationLink != null) {
+                String linkedLocation = normalizeText(locationLink.text());
+                if (isRealLocation(linkedLocation)) {
+                    return linkedLocation;
+                }
+            }
+
+            String raw = normalizeText(row.text())
+>>>>>>> 6a82c45 (Refine Bazos detail metadata parsing)
                     .replaceFirst("(?i)^lokalita\\s*:?\\s*", "")
+                    .replaceFirst("(?i)^mapa\\s*", "")
+                    .replaceAll("\\b\\d{3}\\s?\\d{2}\\b", "")
                     .trim();
 
             return raw;
@@ -704,6 +733,14 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
 
     private Integer extractYear(String title, String text) {
         String source = normalizeText(title + " " + text);
+        String normalizedTitle = normalizeText(title);
+        Matcher explicitMatcher = Pattern.compile(
+                "(?i)(?:vyrobeno|v provozu od)\\s*[:\\-]?\\s*(?:\\d{1,2}\\s*/\\s*)?(19\\d{2}|20\\d{2})"
+        ).matcher(source);
+
+        if (explicitMatcher.find()) {
+            return parseYearCandidate(explicitMatcher.group(1));
+        }
 
         if (containsAny(source, " PRODANO ", " PRODÁNO ", " ZADANO ", " ZADÁNO ")) {
             source = normalizeText(title);
@@ -717,11 +754,11 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             return parseYearCandidate(matcher.group(1));
         }
 
-        matcher = Pattern.compile("\\b(19\\d{2}|20\\d{2})\\b").matcher(source);
+        matcher = Pattern.compile("\\b(19\\d{2}|20\\d{2})\\b").matcher(normalizedTitle);
         while (matcher.find()) {
             String rawYear = matcher.group(1);
 
-            String normalizedLower = normalizeText(source).toLowerCase(Locale.ROOT);
+            String normalizedLower = normalizedTitle.toLowerCase(Locale.ROOT);
 
             if (
                     ("2008".equals(rawYear) && normalizedLower.contains("peugeot 2008")) ||
@@ -733,7 +770,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
 
             Integer year = parseYearCandidate(rawYear);
 
-            if (year != null && !isBadYearContext(source, matcher.start(), matcher.end())) {
+            if (year != null && !isBadYearContext(normalizedTitle, matcher.start(), matcher.end())) {
                 return year;
             }
         }
