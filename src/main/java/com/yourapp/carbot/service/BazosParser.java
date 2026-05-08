@@ -567,11 +567,6 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
     }
 
     private String extractLocation(Document doc, String fullText) {
-        String locationFromTitle = extractLocationFromTitle(doc);
-        if (isRealLocation(locationFromTitle)) {
-            return cleanLocation(locationFromTitle);
-        }
-
         String detailLocation = extractLocationFromDetailTable(doc);
         if (isRealLocation(detailLocation)) {
             return cleanLocation(detailLocation);
@@ -585,6 +580,11 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         String locationFromMeta = extractLocationFromMeta(doc);
         if (isRealLocation(locationFromMeta)) {
             return cleanLocation(locationFromMeta);
+        }
+
+        String locationFromTitle = extractLocationFromTitle(doc);
+        if (isRealLocation(locationFromTitle)) {
+            return cleanLocation(locationFromTitle);
         }
 
         Element locationEl = doc.selectFirst(".inzeratylokality, .inzeratylok, .lokalita");
@@ -864,6 +864,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 || compact.contains("multijet")
                 || compact.contains("bluehdi")
                 || compact.contains("cdti")
+                || compact.contains("20d")
                 || compact.contains("118d")
                 || compact.contains("120d")
                 || compact.contains("220d")
@@ -1026,6 +1027,9 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         String titleSource = " " + normalizeText(title).toLowerCase(Locale.ROOT) + " ";
         String source = titleSource + " " + shortenForCheck(normalizeText(text).toLowerCase(Locale.ROOT), 300);
 
+        if (containsAny(titleSource,
+                " alfa romeo ", " alfa ", " alfu ", " romeo ",
+                " stelvio ", " giulia ", " giulietta ", " mito ", " alfetta ")) return "ALFA_ROMEO";
         if (containsAny(titleSource, " škoda ", " skoda ")) return "SKODA";
         if (containsAny(titleSource, " volkswagen ", " vw ")) return "VOLKSWAGEN";
         if (containsAny(titleSource, " audi ")) return "AUDI";
@@ -1059,6 +1063,9 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         if (containsAny(titleSource, " chevrolet ")) return "CHEVROLET";
         if (containsAny(titleSource, " land rover ", " range rover ")) return "LAND_ROVER";
 
+        if (containsAny(source,
+                " alfa romeo ", " alfa ", " alfu ", " romeo ",
+                " stelvio ", " giulia ", " giulietta ", " mito ", " alfetta ")) return "ALFA_ROMEO";
         if (containsAny(source, " škoda ", " skoda ")) return "SKODA";
         if (containsAny(source, " volkswagen ", " vw ")) return "VOLKSWAGEN";
         if (containsAny(source, " audi ")) return "AUDI";
@@ -1165,8 +1172,16 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         if (source.contains(" c70 ")) return "VOLVO";
 
         if (source.contains(" 540d ") || source.contains(" xdrive ")) return "BMW";
+        if (containsAny(source,
+                " a3 ", " a4 ", " a5 ", " a6 ", " a7 ", " a8 ",
+                " a6c7 ", " q3 ", " q4 ", " q5 ", " sq7 ", " rs3 ", " rs 3 ",
+                " rs6 ", " rs 6 ", " etron ", " e-tron ")) return "AUDI";
         if (source.contains(" q7 ")) return "AUDI";
         if (source.contains(" sq5 ")) return "AUDI";
+        if (source.contains(" 159 ")) return "ALFA_ROMEO";
+        if (source.contains(" 156 ")) return "ALFA_ROMEO";
+        if (source.contains(" 147 ")) return "ALFA_ROMEO";
+        if (source.contains(" brera ")) return "ALFA_ROMEO";
         if (source.contains(" stelvio ")) return "ALFA_ROMEO";
         if (source.contains(" model s ")) return "TESLA";
         if (source.contains(" grand cherokee ")) return "JEEP";
@@ -1849,6 +1864,9 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
 
         boolean severeBroken = containsAny(source,
                 " na díly ", " na dily ", " na nd ",
+                " náhradní díly ", " nahradni dily ",
+                " rozprodej na díly ", " rozprodej na dily ",
+                " rozprodám ", " rozprodam ",
                 " vada motoru ", " závada motoru ", " zavada motoru ",
                 " zadřený motor ", " zadreny motor ",
                 " nepojízdný ", " nepojizdny ",
