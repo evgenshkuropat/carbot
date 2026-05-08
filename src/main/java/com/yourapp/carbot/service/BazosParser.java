@@ -882,6 +882,10 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " plug-in ",
                 " hev ",
                 " phev ",
+                " tfsi e ",
+                " tsi e ",
+                " t8 ",
+                " recharge ",
                 " superb iv ",
                 " ehybrid ",
                 " mhev ",
@@ -941,10 +945,26 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 || compact.contains("gdi")
                 || compact.contains("tgdi")
                 || compact.contains("tce")
+                || compact.contains("puretech")
                 || compact.contains("ecoboost")
                 || compact.contains("skyactivg")
                 || compact.contains("vvti")
-                || compact.contains("vvt")) {
+                || compact.contains("vvt")
+                || compact.contains("10i")
+                || compact.contains("12i")
+                || compact.contains("14i")
+                || compact.contains("15i")
+                || compact.contains("16i")
+                || compact.contains("18i")
+                || compact.contains("20i")
+                || compact.contains("24i")
+                || compact.contains("25i")
+                || compact.contains("28i")
+                || compact.contains("30i")
+                || compact.contains("32i")
+                || compact.contains("35i")
+                || compact.contains("40i")
+                || compact.contains("50i")) {
             return "PETROL";
         }
 
@@ -1337,6 +1357,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " gran tourer ",
                 " galaxy ", " s-max ", " smax ",
                 " sharan ", " alhambra ", " touran ",
+                " sportsvan ",
                 " caddy ", " berlingo ", " rifter ",
                 " proace verso ", " proace city verso ",
                 " partner tepee ", " tepee ", " partner ",
@@ -1359,8 +1380,9 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " kombi ", " combi ", " combi2", " kombi2",
                 " wagon ", " sportwagon ", " avant ", " variant ", " sw ", " allroad ",
                 " touring ", " caravan ", " estate ",
+                " rs6 ", " rs 6 ", " f11 ",
                 " alltrack ", " scout ", " outback ",
-                " v40 ", " v50 ", " v60 ", " v70 ", " v90 ",
+                " v40 ", " v50 ", " v60 ", " v70 ", " v 70 ", " v90 ",
                 " g31 ", " tipo sw ", " 206sw ", " 207sw ", " 307sw ", " 308sw ", " 407sw ", " 508sw ")) {
             return "WAGON";
         }
@@ -1382,7 +1404,10 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " aveo ", " spark ", " picanto ",
                 " c2 ", " c3 ",
                 " clio ", " megane ", " fiesta ",
+                " rs3 ", " rs 3 ",
                 " civic ", " leon ", " swift ", " born ",
+                " f40 ", " řada 1 ", " rada 1 ",
+                " 116i ", " 118i ", " 120i ", " 116d ", " 118d ", " 120d ",
                 " agila ", " 107 ", " 147 ", " 207 ", " 208 ", " 308 ",
                 " sandero ", " logan ", " scala ", " citigo ",
                 " fiat 500 ", " tipo ", " fiat tipo ",
@@ -1419,10 +1444,14 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " cruze ",
                 " octavia ", " superb ", " passat ", " arteon ",
                 " a4 ", " a6 ", " a7 ", " a8 ", " s5 ", " s7 ", " s8 ",
+                " a6c7 ",
                 " s400d ", " s400 ",
-                " e90 ", " e60 ", " e39 ",
+                " e90 ", " e60 ", " e39 ", " f07 ",
                 " 3 series ", " 5 series ", " 7 series ",
                 " řada 3 ", " rada 3 ", " řada 5 ", " rada 5 ", " řada 7 ", " rada 7 ",
+                " 318d ", " 320d ", " 330d ", " 318i ", " 320i ", " 330i ",
+                " 730d ", " 730i ", " 740d ", " 740i ", " 750d ", " 750i ",
+                " 540ix ", " 540i ", " 540d ", " gran turismo ",
                 " c5 ", " mondeo sedan ",
                 " 508 ",
                 " model 3 ", " model s ",
@@ -1615,12 +1644,15 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         String source = " " + normalizeText(title + " " + shortenForCheck(text, 400) + " " + safe(url))
                 .toLowerCase(Locale.ROOT) + " ";
         String titleSource = " " + normalizeText(title).toLowerCase(Locale.ROOT) + " ";
+        String wordSource = compactSearchText(title + " " + shortenForCheck(text, 400) + " " + safe(url));
 
         if (containsAny(titleSource,
                 " trafic ", " traffic ",
                 " master ", " movano ", " boxer ", " jumper ", " ducato ",
                 " expert ", " jumpy ", " scudo ",
-                " proace ")) {
+                " proace ")
+                || containsAny(wordSource,
+                " transporter ", " caravelle ", " carawelle ")) {
             if (containsAny(titleSource, " proace verso ", " proace city verso ")) {
                 return false;
             }
@@ -1644,7 +1676,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
 
         return containsAny(source,
                 " sprinter ", " vito ", " viano ",
-                " transporter ", " caravelle ", " multivan ",
+                " transporter ", " caravelle ", " carawelle ", " multivan ",
                 " trafic ", " traffic ", " vivaro ", " primastar ",
                 " partner l1 ", " partner l2 ",
                 " expert ", " jumpy ", " scudo ", " proace ",
@@ -1677,7 +1709,10 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " chausson ", " bailey ", " beyerland ",
                 " hobby ", " hobby de luxe ", " knaus ",
                 " swift 390 ", " toscane "
-        );
+        ) || containsAny(wordSource,
+                " transporter ", " caravelle ", " carawelle ", " multivan ",
+                " sprinter ", " crafter ", " transit ", " ducato ",
+                " jumper ", " boxer ", " movano ", " master ");
     }
 
     private boolean looksClearlyCommercialBody(String source) {
@@ -1783,6 +1818,13 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         String titleValue = " " + normalizeText(title).toLowerCase(Locale.ROOT) + " ";
         String source = " " + normalizeText(shortenForCheck(text, 450) + " " + safe(url)).toLowerCase(Locale.ROOT) + " ";
         String analysis = " " + shortenForCheck(normalizeText(analysisText).toLowerCase(Locale.ROOT), 900) + " ";
+        String compactTitleValue = compactSearchText(title);
+
+        if (looksLikeRealCar(title, analysisText)
+                && !startsWithAny(compactTitleValue, "predni ", "zadni ", "svetlomety ", "svetla ")
+                && containsAny(compactTitleValue, " svetlomety ", " svetla ")) {
+            return false;
+        }
 
         if (startsWithAny(titleValue,
                 "přední halogenové světlomety ",
