@@ -47,6 +47,7 @@ public class ToyotaProvereneVozyParser implements CarSourceParser {
         int missingPriceCount = 0;
         int invalidPriceCount = 0;
         int missingTitleCount = 0;
+        int commercialVehicleCount = 0;
         int parseExceptionCount = 0;
 
         for (int page = 1; page <= MAX_LIST_PAGES; page++) {
@@ -96,12 +97,31 @@ public class ToyotaProvereneVozyParser implements CarSourceParser {
                 continue;
             }
 
+            if ("VAN".equals(car.getCarType())) {
+                commercialVehicleCount++;
+                log.info("TOYOTA_PROVERENE SKIP url={} reason=commercial_vehicle title={}",
+                        safe(car.getUrl()), safe(car.getTitle()));
+                continue;
+            }
+
+            log.info("TOYOTA_PROVERENE CAR title='{}' price={} location={} year={} mileage={} fuelType={} transmission={} carType={} brand={} url={}",
+                    safe(car.getTitle()),
+                    car.getPriceValue(),
+                    safe(car.getLocation()),
+                    car.getYear(),
+                    car.getMileage(),
+                    safe(car.getFuelType()),
+                    safe(car.getTransmission()),
+                    safe(car.getCarType()),
+                    safe(car.getBrand()),
+                    safe(car.getUrl()));
+
             validCars.add(car);
         }
 
         log.info("TOYOTA_PROVERENE parsed {} cars", validCars.size());
-        log.info("TOYOTA_PROVERENE SUMMARY parsed={} missing_title={} missing_price={} invalid_price={} parse_exception={}",
-                validCars.size(), missingTitleCount, missingPriceCount, invalidPriceCount, parseExceptionCount);
+        log.info("TOYOTA_PROVERENE SUMMARY parsed={} missing_title={} missing_price={} invalid_price={} commercial_vehicle={} parse_exception={}",
+                validCars.size(), missingTitleCount, missingPriceCount, invalidPriceCount, commercialVehicleCount, parseExceptionCount);
 
         return validCars;
     }
@@ -226,7 +246,7 @@ public class ToyotaProvereneVozyParser implements CarSourceParser {
                 mapTransmission(extractValueAfterLabel(combinedText, "PĹ™evodovka")),
                 "ELECTRIC".equals(fuelType) ? "AUTOMATIC" : null
         );
-        carType = firstNonBlank(mapCarType(extractDetailValue(detailDoc, "bodyType")), extractCarType(title, containerText));
+        carType = firstNonBlank(extractCarType(title, combinedText), mapCarType(extractDetailValue(detailDoc, "bodyType")));
         location = firstNonBlank(extractDetailLocation(detailDoc), location);
         imageUrl = firstNonBlank(extractMetaContent(detailDoc, "meta[property=og:image]"), imageUrl);
 
@@ -244,18 +264,6 @@ public class ToyotaProvereneVozyParser implements CarSourceParser {
         car.setFuelType(fuelType);
         car.setTransmission(transmission);
         car.setCarType(carType);
-
-        log.info("TOYOTA_PROVERENE CAR title='{}' price={} location={} year={} mileage={} fuelType={} transmission={} carType={} brand={} url={}",
-                safe(title),
-                priceValue,
-                safe(location),
-                year,
-                mileage,
-                safe(fuelType),
-                safe(transmission),
-                safe(carType),
-                safe(brand),
-                safe(url));
 
         return car;
     }
@@ -615,6 +623,26 @@ public class ToyotaProvereneVozyParser implements CarSourceParser {
     private String extractCarType(String title, String text) {
         String source = " " + normalizeAscii(safe(title) + " " + safe(text)).toLowerCase(Locale.ROOT) + " ";
 
+        if (containsAny(source, " hilux ", " pick-up ", " pickup ", " doublecab ", " double cab ")) {
+            return "PICKUP";
+        }
+        if (containsAny(source, " yaris cross ", " corolla cross ", " rav4 ", " c-hr ", " chr ", " bz4x ",
+                " highlander ", " lexus rx ", " lexus nx ", " sportage ", " touareg ", " vitara ", " 2008 ")) {
+            return "SUV";
+        }
+        if (containsAny(source, " proace verso ", " proace city verso ", " touran ", " roomster ",
+                " berlingo ", " c3 picasso ", " c4 picasso ", " verso ")) {
+            return "MINIVAN";
+        }
+        if (containsAny(source, " yaris ", " aygo ", " aygo x ", " fabia ", " ceed ", " mg3 ", " ds 4 ", " auris ")) {
+            return "HATCHBACK";
+        }
+        if (containsAny(source, " proace max ", " proace city ", " proace ", " movano ", " boxer ", " uzitkove ")) {
+            return "VAN";
+        }
+        if (containsAny(source, " corolla sd ", " sedan ", " liftback ", " toledo ", " insignia ")) {
+            return "SEDAN";
+        }
         if (containsAny(source, " suv ", " crossover ", " rav4 ", " c-hr ", " chr ", " bz4x ", " kuga ", " tiguan ", " kodiaq ", " karoq ", " kamiq ")) {
             return "SUV";
         }
