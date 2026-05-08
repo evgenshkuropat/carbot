@@ -911,6 +911,19 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             return "CNG";
         }
 
+        if (containsAny(source,
+                " giulia qv ",
+                " quadrifoglio ",
+                " 2.9 v6 ",
+                " 29 v6 ")) {
+            return "PETROL";
+        }
+
+        if (source.contains(" stelvio ")
+                && containsAny(source, " 2.2 ", " 22jtd ", " 2,2 ")) {
+            return "DIESEL";
+        }
+
         if (compact.contains("tdi")
                 || compact.contains("tdci")
                 || compact.contains("cdi")
@@ -922,9 +935,12 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 || compact.contains("bluehdi")
                 || compact.contains("cdti")
                 || compact.contains("20d")
+                || compact.contains("116d")
                 || compact.contains("118d")
                 || compact.contains("120d")
+                || compact.contains("218d")
                 || compact.contains("220d")
+                || compact.contains("318d")
                 || compact.contains("320d")
                 || compact.contains("330d")
                 || compact.contains("420d")
@@ -941,6 +957,8 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
 
         if (compact.contains("tsi")
                 || compact.contains("tfsi")
+                || compact.contains("jts")
+                || compact.contains("vr6")
                 || compact.contains("mpi")
                 || compact.contains("gdi")
                 || compact.contains("tgdi")
@@ -964,7 +982,8 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 || compact.contains("32i")
                 || compact.contains("35i")
                 || compact.contains("40i")
-                || compact.contains("50i")) {
+                || compact.contains("50i")
+                || (compact.contains("v6") && !compact.contains("tdi"))) {
             return "PETROL";
         }
 
