@@ -1590,7 +1590,6 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " obytný ", " obytny ", " obytné ", " obytne ",
                 " adria ",
                 " laika ",
-                " matrix ",
                 " kosmo ",
                 " obytný automobil ",
                 " obytny automobil ",
@@ -1702,6 +1701,27 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
     }
 
     private boolean looksNonCarListing(String title, String text, String url, String analysisText) {
+        String strongPartsSource = " " + normalizeText(title + " " + shortenForCheck(analysisText, 500))
+                .toLowerCase(Locale.ROOT) + " ";
+
+        if (containsAny(strongPartsSource,
+                " prodam motor ",
+                " motor na prodej ",
+                " motor z auta ",
+                " motor z vozu ",
+                " nahradni dily ",
+                " nahradni dil ",
+                " na nahradni dily ",
+                " alu disky ",
+                " alu kola ",
+                " sada kol ",
+                " sada pneu ",
+                " svetlomety ",
+                " sedadla ",
+                " stresni lyziny ")) {
+            return true;
+        }
+
         if (looksLikeRealCar(title, analysisText)
                 || extractBrand(title, analysisText) != null) {
             return false;
@@ -2147,6 +2167,13 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " x1 ",
                 " x3 ",
                 " x5 ",
+                " giulia ",
+                " giulietta ",
+                " mito ",
+                " rs3 ",
+                " rs 3 ",
+                " rs6 ",
+                " rs 6 ",
                 " discovery sport ",
                 " range rover ",
                 " evoque ",

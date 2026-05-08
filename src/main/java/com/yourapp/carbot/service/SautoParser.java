@@ -738,6 +738,8 @@ public class SautoParser implements CarSourceParser {
                 " verso ",
                 " roomster ",
                 " vaneo ",
+                " tourneo courier ",
+                " tourneo connect ",
                 " ram ")) {
             return false;
         }
@@ -747,7 +749,6 @@ public class SautoParser implements CarSourceParser {
                 " daily ", " iveco daily ", " vivaro ", " trafic ", " traffic ", " primastar ",
                 " nv300 ", " nv400 ", " expert ", " jumpy ", " scudo ", " proace ",
                 " transit ", " transit custom ", " tourneo custom ",
-                " tourneo courier ", " courier ",
                 " transporter ", " caravelle ", " multivan ",
                 " dodávka ", " dodavka ", " užitkový ", " uzitkovy ", " užitkové ", " uzitkove ",
                 " nákladní ", " nakladni ", " furgon ", " skříň ", " skrin ",
@@ -1462,7 +1463,7 @@ public class SautoParser implements CarSourceParser {
         }
 
         if (containsAny(titleSource, " mpv ", " minivan ", " kangoo ",
-                " kangoo grand ")) {
+                " kangoo grand ", " tourneo courier ", " tourneo connect ")) {
             return "MINIVAN";
         }
 
@@ -1527,7 +1528,8 @@ public class SautoParser implements CarSourceParser {
                 " caddy ", " sharan ", " alhambra ", " touran ", " scenic ", " espace ",
                 " zafira ", " meriva ", " s-max ", " galaxy ", " b-max ", " c-max ",
                 " grand c-max ", " roomster ", " lodgy ", " verso ", " rifter ",
-                " berlingo ", " combo ", " doblo ", " vaneo ")) {
+                " berlingo ", " combo ", " doblo ", " vaneo ",
+                " tourneo courier ", " tourneo connect ")) {
             return "MINIVAN";
         }
 
