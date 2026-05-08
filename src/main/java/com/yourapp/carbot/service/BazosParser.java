@@ -743,6 +743,14 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             }
         }
 
+        matcher = Pattern.compile("(?i)\\bm\\s*(20\\d{2})\\b").matcher(normalizedTitle);
+        while (matcher.find()) {
+            Integer year = parseYearCandidate(matcher.group(1));
+            if (year != null && !isBadYearContext(normalizedTitle, matcher.start(), matcher.end())) {
+                return year;
+            }
+        }
+
         matcher = Pattern.compile("\\b(19\\d{2}|20\\d{2})\\b").matcher(normalizedTitle);
         while (matcher.find()) {
             String rawYear = matcher.group(1);
@@ -1292,7 +1300,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " glc ", " gle ", " gls ", " gla ", " glb ",
                 " kodiaq ", " karoq ", " kamiq ",
                 " tiguan ", " touareg ", " t-roc ", " troc ",
-                " qashqai ", " juke ", " x-trail ",
+                " pajero ", " qashqai ", " juke ", " x-trail ",
                 " patrol ", " peugeot 2008 ", " 3008 ", " 5008 ",
                 " kuga ", " puma ", " ecosport ",
                 " formentor ", " ateca ", " arona ", " tarraco ",
