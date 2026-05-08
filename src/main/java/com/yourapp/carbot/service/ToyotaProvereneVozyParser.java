@@ -334,14 +334,15 @@ public class ToyotaProvereneVozyParser implements CarSourceParser {
     private String mapElectrifiedFuel(String value) {
         if (value == null) return null;
         String v = " " + normalizeAscii(value).toLowerCase(Locale.ROOT) + " ";
+        String tokens = " " + v.replaceAll("[^a-z0-9+]+", " ") + " ";
 
-        if (containsAny(v, " plug-in ", " plugin ", " phev ", " 450h+ ", " 450 h+ ")) {
+        if (containsAny(tokens, " plug in ", " plugin ", " phev ", " 450h+ ", " 450 h+ ")) {
             return "PLUGIN_HYBRID";
         }
-        if (containsAny(v, " electric ", " elektro ", " kwh ", " 500e ", " rz ")) {
+        if (containsAny(tokens, " electric ", " elektro ", " kwh ", " 500e ", " rz ")) {
             return "ELECTRIC";
         }
-        if (containsAny(v, " hybrid ", " hev ", " hsd ", " mhev ", " e-cvt ", " ecvt ",
+        if (containsAny(tokens, " hybrid ", " hev ", " hsd ", " mhev ", " e cvt ", " ecvt ",
                 " 350h ", " 450h ", " 500h ", " 1.5h ", " 1,5h ", " 1.8h ", " 1,8h ",
                 " 2.0h ", " 2,0h ", " 2.5h ", " 2,5h ")) {
             return "HYBRID";
@@ -423,6 +424,9 @@ public class ToyotaProvereneVozyParser implements CarSourceParser {
 
         Matcher compactMatcher = Pattern.compile("(\\d{5,8})\\s*K(?:č|c)", Pattern.CASE_INSENSITIVE).matcher(safe(text));
         while (compactMatcher.find()) {
+            if (isMonthlyPrice(text, compactMatcher.end())) {
+                continue;
+            }
             Integer value = parseIntSafe(compactMatcher.group(1));
             if (value != null && value >= MIN_VALID_PRICE && value <= MAX_REASONABLE_PRICE) {
                 values.add(value);
@@ -431,6 +435,9 @@ public class ToyotaProvereneVozyParser implements CarSourceParser {
 
         Matcher matcher = Pattern.compile("(\\d[\\d\\s\\u00A0]{1,20})\\s*K(?:č|c)(?:\\s*s DPH)?", Pattern.CASE_INSENSITIVE).matcher(safe(text));
         while (matcher.find()) {
+            if (isMonthlyPrice(text, matcher.end())) {
+                continue;
+            }
             Integer value = parseIntSafe(matcher.group(1));
             if (value != null && value >= MIN_VALID_PRICE && value <= MAX_REASONABLE_PRICE) {
                 values.add(value);
@@ -445,6 +452,19 @@ public class ToyotaProvereneVozyParser implements CarSourceParser {
     }
 
     private Integer extractPriceFromTitle(String text) {
+        Integer best = null;
+        Matcher looseMatcher = Pattern.compile("(\\d{5,8}).{0,20}DPH", Pattern.CASE_INSENSITIVE).matcher(safe(text));
+        while (looseMatcher.find()) {
+            Integer value = parseIntSafe(looseMatcher.group(1));
+            if (value != null && value >= MIN_VALID_PRICE && value <= MAX_REASONABLE_PRICE
+                    && (best == null || value > best)) {
+                best = value;
+            }
+        }
+        if (best != null) {
+            return best;
+        }
+
         Matcher matcher = Pattern.compile("(\\d{5,8})\\s*K\\S{0,2}\\s+s\\s+DPH", Pattern.CASE_INSENSITIVE).matcher(safe(text));
         if (matcher.find()) {
             Integer value = parseIntSafe(matcher.group(1));
@@ -454,6 +474,13 @@ public class ToyotaProvereneVozyParser implements CarSourceParser {
         }
 
         return extractMainPrice(text);
+    }
+
+    private boolean isMonthlyPrice(String text, int priceEnd) {
+        String safeText = safe(text);
+        String tail = safeText.substring(Math.min(priceEnd, safeText.length()));
+        tail = normalizeAscii(tail.length() > 32 ? tail.substring(0, 32) : tail).toLowerCase(Locale.ROOT);
+        return tail.contains("/mes") || tail.contains("/mÄ›s") || tail.contains("mes.") || tail.contains("mÄ›s.");
     }
 
     private Integer extractYear(String text) {
