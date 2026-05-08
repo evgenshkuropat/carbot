@@ -246,7 +246,11 @@ public class ToyotaProvereneVozyParser implements CarSourceParser {
                 mapTransmission(extractValueAfterLabel(combinedText, "PĹ™evodovka")),
                 "ELECTRIC".equals(fuelType) ? "AUTOMATIC" : null
         );
-        carType = firstNonBlank(extractCarType(title, combinedText), mapCarType(extractDetailValue(detailDoc, "bodyType")));
+        carType = firstNonBlank(
+                extractCarType(title, ""),
+                mapCarType(extractDetailValue(detailDoc, "bodyType")),
+                extractCarType(title, containerText)
+        );
         location = firstNonBlank(extractDetailLocation(detailDoc), location);
         imageUrl = firstNonBlank(extractMetaContent(detailDoc, "meta[property=og:image]"), imageUrl);
 
@@ -634,11 +638,14 @@ public class ToyotaProvereneVozyParser implements CarSourceParser {
                 " berlingo ", " c3 picasso ", " c4 picasso ", " verso ")) {
             return "MINIVAN";
         }
-        if (containsAny(source, " yaris ", " aygo ", " aygo x ", " fabia ", " ceed ", " mg3 ", " ds 4 ", " auris ")) {
+        if (containsAny(source, " yaris ", " aygo ", " aygo x ", " fabia ", " ceed ", " mg3 ", " ds 4 ", " auris ", " focus ")) {
             return "HATCHBACK";
         }
         if (containsAny(source, " proace max ", " proace city ", " proace ", " movano ", " boxer ", " uzitkove ")) {
             return "VAN";
+        }
+        if (containsAny(source, " corolla touring ", " corolla ts ", " comfort ts ", " sports tourer ", " passat ", " octavia combi ")) {
+            return "WAGON";
         }
         if (containsAny(source, " corolla sd ", " sedan ", " liftback ", " toledo ", " insignia ")) {
             return "SEDAN";
