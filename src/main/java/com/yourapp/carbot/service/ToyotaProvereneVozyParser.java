@@ -199,8 +199,8 @@ public class ToyotaProvereneVozyParser implements CarSourceParser {
         }
 
         Integer priceValue = firstNonNull(
-                extractMainPrice(extractMetaContent(detailDoc, "meta[property=og:title]")),
-                extractMainPrice(detailDoc != null ? detailDoc.title() : null),
+                extractPriceFromTitle(extractMetaContent(detailDoc, "meta[property=og:title]")),
+                extractPriceFromTitle(detailDoc != null ? detailDoc.title() : null),
                 extractMainPrice(detailText),
                 extractMainPrice(containerText)
         );
@@ -214,6 +214,7 @@ public class ToyotaProvereneVozyParser implements CarSourceParser {
         String imageUrl = extractImageUrl(container);
 
         fuelType = firstNonBlank(
+                mapElectrifiedFuel(title),
                 mapFuel(extractDetailValue(detailDoc, "fuelType")),
                 mapFuel(extractValueAfterLabel(containerText, "Palivo")),
                 mapFuel(title),
@@ -330,6 +331,25 @@ public class ToyotaProvereneVozyParser implements CarSourceParser {
         return null;
     }
 
+    private String mapElectrifiedFuel(String value) {
+        if (value == null) return null;
+        String v = " " + normalizeAscii(value).toLowerCase(Locale.ROOT) + " ";
+
+        if (containsAny(v, " plug-in ", " plugin ", " phev ", " 450h+ ", " 450 h+ ")) {
+            return "PLUGIN_HYBRID";
+        }
+        if (containsAny(v, " electric ", " elektro ", " kwh ", " 500e ", " rz ")) {
+            return "ELECTRIC";
+        }
+        if (containsAny(v, " hybrid ", " hev ", " hsd ", " mhev ", " e-cvt ", " ecvt ",
+                " 350h ", " 450h ", " 500h ", " 1.5h ", " 1,5h ", " 1.8h ", " 1,8h ",
+                " 2.0h ", " 2,0h ", " 2.5h ", " 2,5h ")) {
+            return "HYBRID";
+        }
+
+        return null;
+    }
+
     private String cleanupDealerLocation(String value) {
         String text = cleanupLocation(value);
         if (text == null) {
@@ -401,14 +421,6 @@ public class ToyotaProvereneVozyParser implements CarSourceParser {
     private Integer extractMainPrice(String text) {
         List<Integer> values = new ArrayList<>();
 
-        Matcher robustCompactMatcher = Pattern.compile("(\\d{5,8})\\s*K\\S{0,2}", Pattern.CASE_INSENSITIVE).matcher(safe(text));
-        while (robustCompactMatcher.find()) {
-            Integer value = parseIntSafe(robustCompactMatcher.group(1));
-            if (value != null && value >= MIN_VALID_PRICE && value <= MAX_REASONABLE_PRICE) {
-                values.add(value);
-            }
-        }
-
         Matcher compactMatcher = Pattern.compile("(\\d{5,8})\\s*K(?:č|c)", Pattern.CASE_INSENSITIVE).matcher(safe(text));
         while (compactMatcher.find()) {
             Integer value = parseIntSafe(compactMatcher.group(1));
@@ -430,6 +442,18 @@ public class ToyotaProvereneVozyParser implements CarSourceParser {
         }
 
         return values.get(0);
+    }
+
+    private Integer extractPriceFromTitle(String text) {
+        Matcher matcher = Pattern.compile("(\\d{5,8})\\s*K\\S{0,2}\\s+s\\s+DPH", Pattern.CASE_INSENSITIVE).matcher(safe(text));
+        if (matcher.find()) {
+            Integer value = parseIntSafe(matcher.group(1));
+            if (value != null && value >= MIN_VALID_PRICE && value <= MAX_REASONABLE_PRICE) {
+                return value;
+            }
+        }
+
+        return extractMainPrice(text);
     }
 
     private Integer extractYear(String text) {
