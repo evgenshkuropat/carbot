@@ -411,7 +411,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             return true;
         }
 
-        if (year != null && year >= 2020 && priceValue < 150_000) {
+        if (year != null && year >= 2020 && priceValue < 100_000) {
             return true;
         }
 
@@ -1091,7 +1091,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         if (containsAny(titleSource, " nissan ")) return "NISSAN";
         if (containsAny(titleSource, " honda ")) return "HONDA";
         if (containsAny(titleSource, " suzuki ")) return "SUZUKI";
-        if (containsAny(titleSource, " dacia ")) return "DACIA";
+        if (containsAny(titleSource, " dacia ", " dacie ")) return "DACIA";
         if (containsAny(titleSource, " cupra ")) return "CUPRA";
         if (containsAny(titleSource, " jeep ")) return "JEEP";
         if (containsAny(titleSource, " subaru ")) return "SUBARU";
@@ -1131,7 +1131,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         if (containsAny(source, " nissan ")) return "NISSAN";
         if (containsAny(source, " honda ")) return "HONDA";
         if (containsAny(source, " suzuki ")) return "SUZUKI";
-        if (containsAny(source, " dacia ")) return "DACIA";
+        if (containsAny(source, " dacia ", " dacie ")) return "DACIA";
         if (containsAny(source, " cupra ")) return "CUPRA";
         if (containsAny(source, " jeep ")) return "JEEP";
         if (containsAny(source, " subaru ")) return "SUBARU";
@@ -1259,6 +1259,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         if (source.contains(" 5008 ")) return "PEUGEOT";
         if (source.contains(" rifter ")) return "PEUGEOT";
         if (source.contains(" rcz ")) return "PEUGEOT";
+        if (source.contains(" dokker ")) return "DACIA";
         if (source.contains(" mazda 5 ")) return "MAZDA";
         if (source.contains(" favorit ")) return "SKODA";
         if (source.contains(" kangoo ")) return "RENAULT";
@@ -1279,6 +1280,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " suv ", " crossover ",
                 " x1 ", " x2 ", " x3 ", " x4 ", " x5 ", " x6 ", " x7 ",
                 " q2 ", " q3 ", " q4 ", " q5 ", " q7 ", " q8 ",
+                " sq5 ", " sq7 ",
                 " glc ", " gle ", " gls ", " gla ", " glb ",
                 " kodiaq ", " karoq ", " kamiq ",
                 " tiguan ", " touareg ", " t-roc ", " troc ",
@@ -1315,12 +1317,13 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
 
         if (containsAny(titleSource,
                 " mpv ", " minivan ",
-                " scenic ", " espace ",
+                " scenic ", " espace ", " c8 ", " spacetourer ",
+                " gran tourer ",
                 " galaxy ", " s-max ", " smax ",
                 " sharan ", " alhambra ", " touran ",
                 " caddy ", " berlingo ", " rifter ",
                 " partner tepee ", " tepee ", " partner ",
-                " zafira ", " meriva ",
+                " zafira ", " meriva ", " dokker ",
                 " roomster ", " lodgy ", " verso ",
                 " c-max ", " grand c-max ",
                 " tourneo courier ", " tourneo connect ",
@@ -1337,7 +1340,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " shooting brake ", " gran tourer ",
                 " grandtour ", " grand tour ",
                 " kombi ", " combi ", " combi2", " kombi2",
-                " wagon ", " avant ", " variant ", " sw ",
+                " wagon ", " avant ", " variant ", " sw ", " allroad ",
                 " touring ", " caravan ", " estate ",
                 " alltrack ", " scout ", " outback ",
                 " v40 ", " v50 ", " v60 ", " v70 ", " v90 ",
@@ -1362,7 +1365,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " aveo ", " spark ", " picanto ",
                 " c2 ", " c3 ",
                 " clio ", " megane ", " fiesta ",
-                " civic ", " leon ", " swift ",
+                " civic ", " leon ", " swift ", " born ",
                 " agila ", " 107 ", " 207 ", " 208 ", " 308 ",
                 " sandero ", " logan ", " scala ", " citigo ",
                 " fiat 500 ", " tipo ", " fiat tipo ",
@@ -1566,9 +1569,10 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         return switch (titleBrand) {
             case "SKODA" -> containsAny(urlLower, "audi-", "bmw-", "mercedes-", "dacia-", "ford-", "toyota-");
             case "DACIA" -> containsAny(urlLower, "skoda-", "audi-", "bmw-", "mercedes-", "volkswagen-", "seat-");
-            case "BMW" -> containsAny(urlLower, "skoda-", "dacia-", "seat-", "renault-");
+            case "BMW" -> containsAny(urlLower, "skoda-", "dacia-", "seat-", "renault-", "volkswagen-", "vw-");
+            case "AUDI" -> containsAny(urlLower, "skoda-", "dacia-", "seat-", "renault-", "volkswagen-", "vw-", "bmw-");
             case "MERCEDES" -> containsAny(urlLower, "skoda-", "seat-", "dacia-", "ford-");
-            case "SEAT" -> containsAny(urlLower, "dacia-", "mercedes-", "bmw-", "audi-");
+            case "SEAT" -> containsAny(urlLower, "dacia-", "mercedes-", "bmw-", "audi-", "skoda-", "opel-");
             case "VOLKSWAGEN" -> containsAny(urlLower, "skoda-", "audi-", "bmw-", "mercedes-", "dacia-", "seat-", "cupra-");
             case "ALFA_ROMEO" -> containsAny(urlLower, "peugeot-", "boxer-", "citroen-", "fiat-", "ford-", "renault-", "skoda-", "volkswagen-");
             case "PEUGEOT" -> containsAny(urlLower, "alfa-romeo-", "audi-", "bmw-", "skoda-", "volkswagen-");
@@ -1778,6 +1782,8 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         }
 
         if (containsAny(titleValue,
+                " alu ", " alu kola ", " alu disky ", " disky ",
+                " originální alu ", " originalni alu ",
                 " světlomety ", " svetlomety ",
                 " střešní lyžiny ", " stresni lyziny ",
                 " náhradní díly ", " nahradni dily ",
