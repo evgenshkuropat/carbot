@@ -130,10 +130,12 @@ public class ToyotaProvereneVozyParser implements CarSourceParser {
             }
 
             try {
-                CarDto car = parseListItem(titleLink, url);
+                Document detailDoc = connect(url).get();
+                CarDto car = parseListItem(titleLink, url, detailDoc);
                 if (car != null) {
                     cars.add(car);
                 }
+                sleepQuietly(120);
             } catch (Exception e) {
                 log.warn("TOYOTA_PROVERENE list item failed url={} error={}", safe(url), safe(e.getMessage()));
             }
@@ -185,24 +187,46 @@ public class ToyotaProvereneVozyParser implements CarSourceParser {
         return score;
     }
 
-    private CarDto parseListItem(Element titleLink, String url) {
+    private CarDto parseListItem(Element titleLink, String url, Document detailDoc) {
         Element container = findListingContainer(titleLink);
         String containerText = normalizeText(container != null ? container.text() : titleLink.parent().text());
-        String title = extractTitle(titleLink, containerText);
+        String detailText = normalizeText(detailDoc != null ? detailDoc.text() : "");
+        String combinedText = normalizeText(containerText + " " + detailText + " " + extractMetaContent(detailDoc, "meta[property=og:description]"));
+        String title = firstNonBlank(extractDetailTitle(detailDoc), extractTitle(titleLink, containerText));
 
         if (title == null || title.isBlank()) {
             return null;
         }
 
-        Integer priceValue = extractMainPrice(containerText);
-        Integer year = extractYear(containerText);
-        Integer mileage = extractMileage(containerText);
+        Integer priceValue = firstNonNull(
+                extractMainPrice(extractMetaContent(detailDoc, "meta[property=og:title]")),
+                extractMainPrice(detailDoc != null ? detailDoc.title() : null),
+                extractMainPrice(detailText),
+                extractMainPrice(containerText)
+        );
+        Integer year = firstNonNull(parseIntSafe(extractDetailValue(detailDoc, "productionDate")), extractYear(combinedText));
+        Integer mileage = firstNonNull(parseIntSafe(extractDetailValue(detailDoc, "mileageFromOdometer")), extractMileage(combinedText));
         String fuelType = mapFuel(extractValueAfterLabel(containerText, "Palivo"));
         String transmission = mapTransmission(extractValueAfterLabel(containerText, "Převodovka"));
         String carType = extractCarType(title, containerText);
         String location = extractLocation(titleLink, container);
         String brand = extractBrand(title);
         String imageUrl = extractImageUrl(container);
+
+        fuelType = firstNonBlank(
+                mapFuel(extractValueAfterLabel(combinedText, "Palivo")),
+                mapFuel(title),
+                mapFuel(combinedText)
+        );
+        transmission = firstNonBlank(
+                mapTransmission(extractDetailValue(detailDoc, "vehicleTransmission")),
+                mapTransmission(extractValueAfterLabel(combinedText, "Převodovka")),
+                mapTransmission(extractValueAfterLabel(combinedText, "PĹ™evodovka")),
+                "ELECTRIC".equals(fuelType) ? "AUTOMATIC" : null
+        );
+        carType = extractCarType(title, combinedText);
+        location = firstNonBlank(extractDetailLocation(detailDoc), location);
+        imageUrl = firstNonBlank(extractMetaContent(detailDoc, "meta[property=og:image]"), imageUrl);
 
         CarDto car = new CarDto();
         car.setSource(getSourceName());
@@ -232,6 +256,84 @@ public class ToyotaProvereneVozyParser implements CarSourceParser {
                 safe(url));
 
         return car;
+    }
+
+    private String extractDetailTitle(Document doc) {
+        if (doc == null) {
+            return null;
+        }
+
+        Element h1 = doc.selectFirst("h1");
+        if (h1 == null) {
+            return null;
+        }
+
+        String title = normalizeText(h1.text());
+        Element subtitle = h1.parent() != null ? h1.parent().selectFirst("strong") : null;
+        String subtitleText = subtitle != null ? normalizeText(subtitle.text()) : "";
+
+        if (!subtitleText.isBlank() && !title.contains(subtitleText)) {
+            title = normalizeText(title + " " + subtitleText);
+        }
+
+        return title.isBlank() ? null : title;
+    }
+
+    private String extractDetailValue(Document doc, String itemprop) {
+        if (doc == null || itemprop == null || itemprop.isBlank()) {
+            return null;
+        }
+
+        Element value = doc.selectFirst("[itemprop=" + itemprop + "]");
+        if (value == null) {
+            return null;
+        }
+
+        String text = normalizeText(value.text());
+        return text.isBlank() ? null : text;
+    }
+
+    private String extractDetailLocation(Document doc) {
+        if (doc == null) {
+            return null;
+        }
+
+        for (Element strong : doc.select("strong")) {
+            String text = cleanupLocation(strong.text());
+            if (text == null) {
+                continue;
+            }
+
+            String lower = normalizeAscii(text).toLowerCase(Locale.ROOT);
+            if (lower.startsWith("toyota ") || lower.startsWith("lexus ")) {
+                return cleanupLocation(text.replaceFirst("(?i)^(Toyota|Lexus)\\s+", ""));
+            }
+        }
+
+        String title = extractMetaContent(doc, "meta[property=og:title]");
+        Matcher matcher = Pattern.compile("\\d+\\s*K(?:č|c)\\s+s\\s+DPH\\s+(.+?)\\s*\\|", Pattern.CASE_INSENSITIVE).matcher(safe(title));
+        if (matcher.find()) {
+            String dealer = cleanupLocation(matcher.group(1));
+            if (dealer != null) {
+                return cleanupLocation(dealer.replaceFirst("(?i)^(Toyota|Lexus)\\s+", ""));
+            }
+        }
+
+        return null;
+    }
+
+    private String extractMetaContent(Document doc, String selector) {
+        if (doc == null || selector == null || selector.isBlank()) {
+            return null;
+        }
+
+        Element meta = doc.selectFirst(selector);
+        if (meta == null) {
+            return null;
+        }
+
+        String value = normalizeText(meta.attr("content"));
+        return value.isBlank() ? null : value;
     }
 
     private Element findListingContainer(Element titleLink) {
@@ -274,7 +376,15 @@ public class ToyotaProvereneVozyParser implements CarSourceParser {
     private Integer extractMainPrice(String text) {
         List<Integer> values = new ArrayList<>();
 
-        Matcher matcher = Pattern.compile("(\\d[\\d\\s\\u00A0]{1,20})\\s*Kč(?:\\s*s DPH)?", Pattern.CASE_INSENSITIVE).matcher(text);
+        Matcher compactMatcher = Pattern.compile("(\\d{5,8})\\s*K(?:č|c)", Pattern.CASE_INSENSITIVE).matcher(safe(text));
+        while (compactMatcher.find()) {
+            Integer value = parseIntSafe(compactMatcher.group(1));
+            if (value != null && value >= MIN_VALID_PRICE && value <= MAX_REASONABLE_PRICE) {
+                values.add(value);
+            }
+        }
+
+        Matcher matcher = Pattern.compile("(\\d[\\d\\s\\u00A0]{1,20})\\s*K(?:č|c)(?:\\s*s DPH)?", Pattern.CASE_INSENSITIVE).matcher(safe(text));
         while (matcher.find()) {
             Integer value = parseIntSafe(matcher.group(1));
             if (value != null && value >= MIN_VALID_PRICE && value <= MAX_REASONABLE_PRICE) {
@@ -617,6 +727,21 @@ public class ToyotaProvereneVozyParser implements CarSourceParser {
 
         for (String value : values) {
             if (value != null && !value.isBlank()) {
+                return value;
+            }
+        }
+
+        return null;
+    }
+
+    @SafeVarargs
+    private final <T> T firstNonNull(T... values) {
+        if (values == null) {
+            return null;
+        }
+
+        for (T value : values) {
+            if (value != null) {
                 return value;
             }
         }

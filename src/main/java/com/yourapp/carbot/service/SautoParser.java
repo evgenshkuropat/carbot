@@ -177,7 +177,7 @@ public class SautoParser implements CarSourceParser {
             );
 
             if ("ELECTRIC".equals(fuelType)) {
-                transmission = null;
+                transmission = "AUTOMATIC";
             }
 
             String carType = extractCarType(title, analysisText, url);
