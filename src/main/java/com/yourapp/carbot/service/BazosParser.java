@@ -324,7 +324,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
 
             String price = formatPrice(priceValue);
             String location = extractLocation(doc, analysisText);
-            Integer year = extractYear(title, listingText);
+            Integer year = extractYear(title, analysisText);
 
             if (year == null) {
                 year = extractYear("", preview);
@@ -1703,15 +1703,58 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
     private boolean looksNonCarListing(String title, String text, String url, String analysisText) {
         String strongPartsSource = " " + normalizeText(title + " " + shortenForCheck(analysisText, 500))
                 .toLowerCase(Locale.ROOT) + " ";
+        String titleValue = " " + normalizeText(title).toLowerCase(Locale.ROOT) + " ";
+        String source = " " + normalizeText(shortenForCheck(text, 450) + " " + safe(url)).toLowerCase(Locale.ROOT) + " ";
+        String analysis = " " + shortenForCheck(normalizeText(analysisText).toLowerCase(Locale.ROOT), 900) + " ";
 
-        if (containsAny(strongPartsSource,
+        if (startsWithAny(titleValue,
+                "přední halogenové světlomety ",
+                "predni halogenove svetlomety ",
+                "světlomety ",
+                "svetlomety ",
+                "světla ",
+                "svetla ",
+                "sedadla ",
+                "sedačky ",
+                "sedacky ",
+                "střešní lyžiny ",
+                "stresni lyziny ",
+                "střešní nosič ",
+                "stresni nosic ",
+                "náhradní díly ",
+                "nahradni dily ",
+                "rozprodej na díly ",
+                "rozprodej na dily ")) {
+            return true;
+        }
+
+        boolean hasExplicitPartSale = containsAny(strongPartsSource,
                 " prodam motor ",
                 " motor na prodej ",
                 " motor z auta ",
                 " motor z vozu ",
+                " náhradní díly ",
                 " nahradni dily ",
+                " náhradní díl ",
                 " nahradni dil ",
-                " na nahradni dily ",
+                " na náhradní díly ",
+                " na nahradni dily ");
+
+        if (hasExplicitPartSale) {
+            return true;
+        }
+
+        boolean realCar = looksLikeRealCar(title, analysisText);
+
+        if (realCar) {
+            return false;
+        }
+
+        if (looksTyreOrWheelListing(title, text, analysisText)) {
+            return true;
+        }
+
+        if (containsAny(strongPartsSource,
                 " alu disky ",
                 " alu kola ",
                 " sada kol ",
@@ -1722,18 +1765,9 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             return true;
         }
 
-        if (looksLikeRealCar(title, analysisText)
-                || extractBrand(title, analysisText) != null) {
+        if (extractBrand(title, analysisText) != null) {
             return false;
         }
-
-        if (looksTyreOrWheelListing(title, text, analysisText)) {
-            return true;
-        }
-
-        String titleValue = " " + normalizeText(title).toLowerCase(Locale.ROOT) + " ";
-        String source = " " + normalizeText(shortenForCheck(text, 450) + " " + safe(url)).toLowerCase(Locale.ROOT) + " ";
-        String analysis = " " + shortenForCheck(normalizeText(analysisText).toLowerCase(Locale.ROOT), 900) + " ";
 
         if (containsAny(titleValue,
                 " střešní nosič ", " stresni nosic ",
