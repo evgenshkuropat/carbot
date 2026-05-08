@@ -1516,6 +1516,10 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         String source = " " + normalizeText(title + " " + shortenForCheck(text, 400) + " " + safe(url))
                 .toLowerCase(Locale.ROOT) + " ";
 
+        if (looksClearlyCommercialBody(source)) {
+            return true;
+        }
+
         if (looksLikePassengerCarModel(title)) {
             return false;
         }
@@ -1563,6 +1567,17 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " hobby ", " hobby de luxe ", " knaus ",
                 " swift 390 ", " toscane "
         );
+    }
+
+    private boolean looksClearlyCommercialBody(String source) {
+        return containsAny(source,
+                " kasten ", " cargo ", " furgon ", " skrinovy ", " skříňový ",
+                " l1h1 ", " l1 h1 ", " l2h1 ", " l2 h1 ", " l2h2 ", " l2 h2 ",
+                " l3h2 ", " l3 h2 ", " l3h3 ", " l3 h3 ", " l4h2 ", " l4 h2 ",
+                " maxi dodavka ", " dodavka ", " dodávka ",
+                " 2 mista ", " 2 místa ", " 3 mista ", " 3 místa ",
+                " 2-mist", " 3-mist", " 2 mistne ", " 3 mistne ",
+                " pickup pro praci ", " pracovní verze ", " pracovni verze ");
     }
 
     private boolean looksTyreOrWheelListing(String title, String text, String analysisText) {
