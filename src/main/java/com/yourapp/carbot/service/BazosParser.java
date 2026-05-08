@@ -1532,6 +1532,8 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             case "MERCEDES" -> containsAny(urlLower, "skoda-", "seat-", "dacia-", "ford-");
             case "SEAT" -> containsAny(urlLower, "dacia-", "mercedes-", "bmw-", "audi-");
             case "VOLKSWAGEN" -> containsAny(urlLower, "skoda-", "audi-", "bmw-", "mercedes-", "dacia-", "seat-", "cupra-");
+            case "ALFA_ROMEO" -> containsAny(urlLower, "peugeot-", "boxer-", "citroen-", "fiat-", "ford-", "renault-", "skoda-", "volkswagen-");
+            case "PEUGEOT" -> containsAny(urlLower, "alfa-romeo-", "audi-", "bmw-", "skoda-", "volkswagen-");
             default -> false;
         };
     }
@@ -1728,11 +1730,24 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             return true;
         }
 
+        if (containsAny(titleValue,
+                " světlomety ", " svetlomety ",
+                " střešní lyžiny ", " stresni lyziny ",
+                " náhradní díly ", " nahradni dily ",
+                " na díly ", " na dily ")) {
+            return true;
+        }
+
         boolean hasExplicitPartSale = containsAny(strongPartsSource,
+                " prodám motor ",
                 " prodam motor ",
+                " prodám dobrý motor ",
+                " prodam dobry motor ",
                 " motor na prodej ",
                 " motor z auta ",
                 " motor z vozu ",
+                " dobrý motor ",
+                " dobry motor ",
                 " náhradní díly ",
                 " nahradni dily ",
                 " náhradní díl ",
@@ -1754,6 +1769,10 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             return true;
         }
 
+        if (extractBrand(title, analysisText) != null) {
+            return false;
+        }
+
         if (containsAny(strongPartsSource,
                 " alu disky ",
                 " alu kola ",
@@ -1763,10 +1782,6 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " sedadla ",
                 " stresni lyziny ")) {
             return true;
-        }
-
-        if (extractBrand(title, analysisText) != null) {
-            return false;
         }
 
         if (containsAny(titleValue,
@@ -2204,6 +2219,18 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " giulia ",
                 " giulietta ",
                 " mito ",
+                " stelvio ",
+                " tonale ",
+                " brera ",
+                " alfetta ",
+                " alfa 147 ",
+                " alfa 156 ",
+                " alfa 159 ",
+                " alfa 166 ",
+                " romeo 147 ",
+                " romeo 156 ",
+                " romeo 159 ",
+                " romeo 166 ",
                 " rs3 ",
                 " rs 3 ",
                 " rs6 ",
