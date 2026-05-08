@@ -1273,11 +1273,12 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
 
     private String extractCarType(String title, String text, String url) {
         String titleSource = " " + normalizeText(safe(title)).toLowerCase(Locale.ROOT) + " ";
+        titleSource = titleSource + " " + compactSearchText(safe(title));
         String textSource = " " + normalizeText(safe(text)).toLowerCase(Locale.ROOT) + " ";
         String urlSource = " " + normalizeText(safe(url)).toLowerCase(Locale.ROOT) + " ";
 
         if (containsAny(titleSource,
-                " suv ", " crossover ",
+                " suv ", " crossover ", " tonale ",
                 " x1 ", " x2 ", " x3 ", " x4 ", " x5 ", " x6 ", " x7 ",
                 " q2 ", " q3 ", " q4 ", " q5 ", " q7 ", " q8 ",
                 " sq5 ", " sq7 ",
@@ -1376,7 +1377,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         if (containsAny(titleSource,
                 " gran coupe ", " gran coupé ",
                 " coupe ", " coupé ",
-                " mustang ", " amg gt ",
+                " m4 ", " mustang ", " amg gt ",
                 " tt ", " supra ", " brz ",
                 " gt86 ", " gr86 ",
                 " 370z ", " 350z ",
@@ -1398,6 +1399,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " sedan ", " saloon ",
                 " limo ", " limousine ", " limuzína ", " limuzina ",
                 " charger ",
+                " giulia ", " alfa 166 ", " romeo 166 ",
                 " octavia ", " superb ", " passat ", " arteon ",
                 " a4 ", " a6 ", " a7 ", " a8 ", " s5 ", " s7 ", " s8 ",
                 " s400d ", " s400 ",
@@ -1782,8 +1784,6 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         }
 
         if (containsAny(titleValue,
-                " alu ", " alu kola ", " alu disky ", " disky ",
-                " originální alu ", " originalni alu ",
                 " světlomety ", " svetlomety ",
                 " střešní lyžiny ", " stresni lyziny ",
                 " náhradní díly ", " nahradni dily ",
