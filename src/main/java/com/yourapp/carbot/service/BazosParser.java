@@ -914,6 +914,9 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         if (containsAny(source,
                 " giulia qv ",
                 " quadrifoglio ",
+                " rs6 ",
+                " rs 6 ",
+                " m4 competition ",
                 " 2.9 v6 ",
                 " 29 v6 ")) {
             return "PETROL";
@@ -942,6 +945,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 || compact.contains("220d")
                 || compact.contains("318d")
                 || compact.contains("320d")
+                || compact.contains("30d")
                 || compact.contains("330d")
                 || compact.contains("420d")
                 || compact.contains("520d")
