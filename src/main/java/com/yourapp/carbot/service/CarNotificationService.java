@@ -25,6 +25,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.nio.file.Files;
 import java.time.Duration;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -81,12 +82,27 @@ public class CarNotificationService {
 
             Long chatId = subscriber.getChatId();
 
+            resetDailyCounterIfNeeded(subscriber);
+
+            if (subscriber.isNotificationsPaused()) {
+                log.info("Subscriber {} notifications paused", chatId);
+                continue;
+            }
+
             UserFilterEntity filter = userFilterRepository
                     .findByChatId(chatId)
                     .orElse(null);
 
             String lang = resolveLanguage(filter);
             int sentToSubscriber = 0;
+            int remainingToday = remainingNotificationsToday(subscriber);
+
+            if (remainingToday <= 0) {
+                log.info("Subscriber {} daily notification limit reached", chatId);
+                continue;
+            }
+
+            List<CarEntity> matchedCars = new ArrayList<>();
 
             for (CarEntity car : uniqueCars) {
 
@@ -100,11 +116,28 @@ public class CarNotificationService {
                     continue;
                 }
 
-                boolean sent = sendCar(chatId, car, lang);
+                matchedCars.add(car);
 
-                if (sent) {
-                    sentCount++;
-                    sentToSubscriber++;
+                if (matchedCars.size() >= remainingToday) {
+                    break;
+                }
+            }
+
+            if ("DIGEST".equalsIgnoreCase(subscriber.getNotificationMode())) {
+                if (!matchedCars.isEmpty() && sendDigest(chatId, matchedCars, lang)) {
+                    sentToSubscriber = matchedCars.size();
+                    sentCount += sentToSubscriber;
+                    addSentNotifications(subscriber, sentToSubscriber);
+                }
+            } else {
+                for (CarEntity car : matchedCars) {
+                    boolean sent = sendCar(chatId, car, lang);
+
+                    if (sent) {
+                        sentCount++;
+                        sentToSubscriber++;
+                        addSentNotifications(subscriber, 1);
+                    }
                 }
             }
 
@@ -115,6 +148,46 @@ public class CarNotificationService {
         log.info("Notifications finished. Total sent={}", sentCount);
 
         return sentCount;
+    }
+
+    private void resetDailyCounterIfNeeded(TelegramSubscriberEntity subscriber) {
+        LocalDate today = LocalDate.now();
+
+        if (!today.equals(subscriber.getNotificationCountDate())) {
+            subscriber.setNotificationCountDate(today);
+            subscriber.setNotificationsSentToday(0);
+            subscriberRepository.save(subscriber);
+        }
+    }
+
+    private int remainingNotificationsToday(TelegramSubscriberEntity subscriber) {
+        Integer limit = subscriber.getDailyNotificationLimit();
+
+        if (limit == null || limit <= 0) {
+            return Integer.MAX_VALUE;
+        }
+
+        int sentToday = subscriber.getNotificationsSentToday() == null
+                ? 0
+                : subscriber.getNotificationsSentToday();
+
+        return Math.max(0, limit - sentToday);
+    }
+
+    private void addSentNotifications(TelegramSubscriberEntity subscriber, int amount) {
+        if (amount <= 0) {
+            return;
+        }
+
+        resetDailyCounterIfNeeded(subscriber);
+
+        int sentToday = subscriber.getNotificationsSentToday() == null
+                ? 0
+                : subscriber.getNotificationsSentToday();
+
+        subscriber.setNotificationsSentToday(sentToday + amount);
+        subscriber.setUpdatedAt(LocalDateTime.now());
+        subscriberRepository.save(subscriber);
     }
 
     private List<CarEntity> deduplicateCars(List<CarEntity> cars) {
@@ -250,6 +323,91 @@ public class CarNotificationService {
 
             return false;
         }
+    }
+
+    private boolean sendDigest(Long chatId, List<CarEntity> cars, String lang) {
+        if (cars == null || cars.isEmpty()) {
+            return false;
+        }
+
+        try {
+            SendMessage message = SendMessage.builder()
+                    .chatId(chatId.toString())
+                    .text(limitLength(buildDigestText(cars, lang), MAX_MESSAGE_LENGTH))
+                    .build();
+
+            telegramClient.execute(message);
+
+            log.info("Sent digest notification. chatId={} cars={}", chatId, cars.size());
+            return true;
+
+        } catch (BotBlockedException e) {
+            return false;
+        } catch (Exception e) {
+            removeBlockedSubscriber(chatId, e);
+
+            log.error("Failed to send digest notification. chatId={}", chatId, e);
+            return false;
+        }
+    }
+
+    private String buildDigestText(List<CarEntity> cars, String lang) {
+        String title = switch (lang) {
+            case "ru" -> "🔔 Новые объявления по вашему фильтру";
+            case "uk" -> "🔔 Нові оголошення за вашим фільтром";
+            case "cs" -> "🔔 Nové inzeráty podle vašeho filtru";
+            default -> "🔔 New listings matching your filter";
+        };
+
+        StringBuilder sb = new StringBuilder();
+        sb.append(title).append(": ").append(cars.size()).append("\n\n");
+
+        int index = 1;
+        for (CarEntity car : cars) {
+            sb.append(index++).append(". ").append(formatDigestCar(car)).append("\n");
+
+            if (car.getUrl() != null && !car.getUrl().isBlank()) {
+                sb.append(car.getUrl().trim()).append("\n");
+            }
+
+            sb.append("\n");
+        }
+
+        return sb.toString().trim();
+    }
+
+    private String formatDigestCar(CarEntity car) {
+        StringBuilder sb = new StringBuilder();
+        sb.append(formatTitleForDigest(car.getTitle()));
+
+        String price = formatPrice(car);
+        if (price != null) {
+            sb.append(" | ").append(price);
+        }
+
+        if (car.getYear() != null) {
+            sb.append(" | ").append(car.getYear());
+        }
+
+        if (car.getMileage() != null) {
+            sb.append(" | ").append(safeMileage(car.getMileage()));
+        }
+
+        String location = safeOrNull(car.getLocation());
+        if (location != null) {
+            sb.append(" | ").append(location);
+        }
+
+        return sb.toString();
+    }
+
+    private String formatTitleForDigest(String rawTitle) {
+        if (rawTitle == null || rawTitle.isBlank()) {
+            return "-";
+        }
+
+        String cleaned = rawTitle.replaceAll("\\s+", " ").trim();
+        return cleaned.length() <= 70 ? cleaned : cleaned.substring(0, 67).trim() + "...";
     }
 
     private boolean sendPhotoByUrl(Long chatId,

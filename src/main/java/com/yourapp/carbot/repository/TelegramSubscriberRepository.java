@@ -12,6 +12,8 @@ public interface TelegramSubscriberRepository
 
     Optional<TelegramSubscriberEntity> findByChatId(Long chatId);
 
+    long countByNotificationsPausedFalse();
+
     @Modifying
     @Transactional
     void deleteByChatId(Long chatId);

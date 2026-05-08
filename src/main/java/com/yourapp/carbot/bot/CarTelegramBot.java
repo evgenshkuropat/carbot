@@ -1,6 +1,7 @@
 package com.yourapp.carbot.bot;
 
 import com.yourapp.carbot.entity.CarEntity;
+import com.yourapp.carbot.entity.TelegramSubscriberEntity;
 import com.yourapp.carbot.entity.UserFilterEntity;
 import com.yourapp.carbot.i18n.MessageService;
 import com.yourapp.carbot.repository.CarRepository;
@@ -191,7 +192,7 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
             case "/help" -> handleHelp(chatId);
             case "/filter" -> startNewFilterSetup(chatId);
             case "/myfilter" -> showCurrentFilter(chatId);
-            case "/resetfilter" -> resetFilter(chatId);
+            case "/resetfilter" -> confirmResetFilter(chatId);
             case "/language" -> handleLanguage(chatId);
             case "/admin" -> handleAdmin(chatId);
             default -> sendMessage(
@@ -237,21 +238,22 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
                 || filter.getYearFrom() != null;
     }
 
+    private boolean isEditingStep(BotStep step) {
+        return step == BotStep.EDITING_CAR_TYPE
+                || step == BotStep.EDITING_BRAND
+                || step == BotStep.EDITING_MAX_PRICE
+                || step == BotStep.EDITING_LOCATION
+                || step == BotStep.EDITING_MAX_MILEAGE
+                || step == BotStep.EDITING_TRANSMISSION
+                || step == BotStep.EDITING_FUEL_TYPE
+                || step == BotStep.EDITING_YEAR_FROM;
+    }
+
     private void startNewFilterSetup(Long chatId) {
         String currentLang = lang(chatId);
 
-        userFilterService.clearFilter(chatId);
-
         UserFilterEntity filter = userFilterService.getOrCreate(chatId);
         filter.setLanguageCode(currentLang);
-        filter.setCarType(null);
-        filter.setBrand(null);
-        filter.setFuelType(null);
-        filter.setTransmission(null);
-        filter.setLocation(null);
-        filter.setMaxPrice(null);
-        filter.setMaxMileage(null);
-        filter.setYearFrom(null);
         userFilterService.save(filter);
 
         userStateService.setStep(chatId, BotStep.WAITING_CAR_TYPE);
@@ -312,8 +314,46 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
             return;
         }
 
+        if (data.startsWith("edit_field:")) {
+            handleEditField(chatId, data.substring("edit_field:".length()));
+            return;
+        }
+
         if ("myfilter_reset".equals(data)) {
+            confirmResetFilter(chatId);
+            return;
+        }
+
+        if ("myfilter_reset_confirm".equals(data)) {
             resetFilter(chatId);
+            return;
+        }
+
+        if ("myfilter_reset_cancel".equals(data)) {
+            showCurrentFilter(chatId);
+            return;
+        }
+
+        if ("notif_settings".equals(data)) {
+            showNotificationSettings(chatId);
+            return;
+        }
+
+        if ("notif_pause_toggle".equals(data)) {
+            subscriberService.toggleNotificationsPaused(chatId);
+            showNotificationSettings(chatId);
+            return;
+        }
+
+        if (data.startsWith("notif_mode:")) {
+            subscriberService.setNotificationMode(chatId, data.substring("notif_mode:".length()));
+            showNotificationSettings(chatId);
+            return;
+        }
+
+        if (data.startsWith("notif_limit:")) {
+            subscriberService.setDailyNotificationLimit(chatId, Integer.parseInt(data.substring("notif_limit:".length())));
+            showNotificationSettings(chatId);
             return;
         }
 
@@ -406,6 +446,12 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
         UserFilterEntity filter = userFilterService.getOrCreate(chatId);
         String lang = lang(chatId);
 
+        if (isEditingStep(userStateService.getStep(chatId))) {
+            userStateService.setStep(chatId, BotStep.NONE);
+            showCurrentFilter(chatId);
+            return;
+        }
+
         switch (targetStep) {
             case "menu" -> {
                 userStateService.setStep(chatId, BotStep.NONE);
@@ -490,6 +536,79 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
         }
     }
 
+    private void handleEditField(Long chatId, String field) {
+        UserFilterEntity filter = userFilterService.getOrCreate(chatId);
+        String lang = lang(chatId);
+
+        switch (field) {
+            case "car_type" -> {
+                userStateService.setStep(chatId, BotStep.EDITING_CAR_TYPE);
+                sendMessage(
+                        chatId,
+                        buildCarTypeSelectionText(chatId, filter.getCarType()),
+                        keyboardFactory.carTypeKeyboard(lang, filter.getCarType(), true)
+                );
+            }
+            case "brand" -> {
+                userStateService.setStep(chatId, BotStep.EDITING_BRAND);
+                sendMessage(
+                        chatId,
+                        buildBrandSelectionText(chatId, parseValues(filter.getBrand())),
+                        keyboardFactory.brandKeyboard(lang, filter.getBrand(), true)
+                );
+            }
+            case "max_price" -> {
+                userStateService.setStep(chatId, BotStep.EDITING_MAX_PRICE);
+                sendMessage(
+                        chatId,
+                        messages.get(lang, "price.choose") + "\n\n" + buildFilterProgress(filter),
+                        keyboardFactory.maxPriceKeyboard(lang, true)
+                );
+            }
+            case "location" -> {
+                userStateService.setStep(chatId, BotStep.EDITING_LOCATION);
+                sendMessage(
+                        chatId,
+                        messages.get(lang, "location.choose") + "\n\n" + buildFilterProgress(filter),
+                        keyboardFactory.locationKeyboard(lang, true)
+                );
+            }
+            case "max_mileage" -> {
+                userStateService.setStep(chatId, BotStep.EDITING_MAX_MILEAGE);
+                sendMessage(
+                        chatId,
+                        messages.get(lang, "mileage.choose") + "\n\n" + buildFilterProgress(filter),
+                        keyboardFactory.mileageKeyboard(lang, true)
+                );
+            }
+            case "transmission" -> {
+                userStateService.setStep(chatId, BotStep.EDITING_TRANSMISSION);
+                sendMessage(
+                        chatId,
+                        messages.get(lang, "transmission.choose") + "\n\n" + buildFilterProgress(filter),
+                        keyboardFactory.transmissionKeyboard(lang, true)
+                );
+            }
+            case "fuel_type" -> {
+                userStateService.setStep(chatId, BotStep.EDITING_FUEL_TYPE);
+                sendMessage(
+                        chatId,
+                        messages.get(lang, "fuelType.choose") + "\n\n" + buildFilterProgress(filter),
+                        keyboardFactory.fuelTypeKeyboard(lang, true)
+                );
+            }
+            case "year_from" -> {
+                userStateService.setStep(chatId, BotStep.EDITING_YEAR_FROM);
+                sendMessage(
+                        chatId,
+                        messages.get(lang, "yearFrom.choose") + "\n\n" + buildFilterProgress(filter),
+                        keyboardFactory.yearFromKeyboard(lang, true)
+                );
+            }
+            default -> showCurrentFilter(chatId);
+        }
+    }
+
     private void handleCarTypeToggle(Update update, Long chatId, String carTypeValue) {
         UserFilterEntity filter = userFilterService.getOrCreate(chatId);
 
@@ -510,8 +629,16 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
     private void handleCarTypeAny(Long chatId) {
         UserFilterEntity filter = userFilterService.getOrCreate(chatId);
         filter.setCarType(null);
-        filter.setBrand(null);
+        if (!isEditingStep(userStateService.getStep(chatId))) {
+            filter.setBrand(null);
+        }
         userFilterService.save(filter);
+
+        if (isEditingStep(userStateService.getStep(chatId))) {
+            userStateService.setStep(chatId, BotStep.NONE);
+            showCurrentFilter(chatId);
+            return;
+        }
 
         userStateService.setStep(chatId, BotStep.WAITING_BRAND);
 
@@ -539,8 +666,17 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
             return;
         }
 
-        filter.setBrand(null);
+        if (!isEditingStep(userStateService.getStep(chatId))) {
+            filter.setBrand(null);
+        }
         userFilterService.save(filter);
+
+        if (isEditingStep(userStateService.getStep(chatId))) {
+            userStateService.setStep(chatId, BotStep.NONE);
+            showCurrentFilter(chatId);
+            return;
+        }
+
         userStateService.setStep(chatId, BotStep.WAITING_BRAND);
 
         sendMessage(
@@ -594,6 +730,12 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
         filter.setBrand(null);
         userFilterService.save(filter);
 
+        if (isEditingStep(userStateService.getStep(chatId))) {
+            userStateService.setStep(chatId, BotStep.NONE);
+            showCurrentFilter(chatId);
+            return;
+        }
+
         userStateService.setStep(chatId, BotStep.WAITING_MAX_PRICE);
 
         sendMessage(
@@ -620,6 +762,13 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
         }
 
         userFilterService.save(filter);
+
+        if (isEditingStep(userStateService.getStep(chatId))) {
+            userStateService.setStep(chatId, BotStep.NONE);
+            showCurrentFilter(chatId);
+            return;
+        }
+
         userStateService.setStep(chatId, BotStep.WAITING_MAX_PRICE);
 
         sendMessage(
@@ -640,6 +789,12 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
         filter.setMaxPrice(maxPrice == 0 ? null : maxPrice);
         userFilterService.save(filter);
 
+        if (isEditingStep(userStateService.getStep(chatId))) {
+            userStateService.setStep(chatId, BotStep.NONE);
+            showCurrentFilter(chatId);
+            return;
+        }
+
         userStateService.setStep(chatId, BotStep.WAITING_LOCATION);
 
         sendMessage(
@@ -657,6 +812,12 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
         UserFilterEntity filter = userFilterService.getOrCreate(chatId);
         filter.setLocation("ANY".equals(value) ? null : value);
         userFilterService.save(filter);
+
+        if (isEditingStep(userStateService.getStep(chatId))) {
+            userStateService.setStep(chatId, BotStep.NONE);
+            showCurrentFilter(chatId);
+            return;
+        }
 
         userStateService.setStep(chatId, BotStep.WAITING_MAX_MILEAGE);
 
@@ -678,6 +839,12 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
         filter.setMaxMileage(maxMileage == 0 ? null : maxMileage);
         userFilterService.save(filter);
 
+        if (isEditingStep(userStateService.getStep(chatId))) {
+            userStateService.setStep(chatId, BotStep.NONE);
+            showCurrentFilter(chatId);
+            return;
+        }
+
         userStateService.setStep(chatId, BotStep.WAITING_TRANSMISSION);
 
         sendMessage(
@@ -696,6 +863,12 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
         filter.setTransmission("ANY".equals(value) ? null : value);
         userFilterService.save(filter);
 
+        if (isEditingStep(userStateService.getStep(chatId))) {
+            userStateService.setStep(chatId, BotStep.NONE);
+            showCurrentFilter(chatId);
+            return;
+        }
+
         userStateService.setStep(chatId, BotStep.WAITING_FUEL_TYPE);
 
         sendMessage(
@@ -713,6 +886,12 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
         UserFilterEntity filter = userFilterService.getOrCreate(chatId);
         filter.setFuelType("ANY".equals(value) ? null : value);
         userFilterService.save(filter);
+
+        if (isEditingStep(userStateService.getStep(chatId))) {
+            userStateService.setStep(chatId, BotStep.NONE);
+            showCurrentFilter(chatId);
+            return;
+        }
 
         userStateService.setStep(chatId, BotStep.WAITING_YEAR_FROM);
 
@@ -733,6 +912,12 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
         UserFilterEntity filter = userFilterService.getOrCreate(chatId);
         filter.setYearFrom(yearFrom == 0 ? null : yearFrom);
         userFilterService.save(filter);
+
+        if (isEditingStep(userStateService.getStep(chatId))) {
+            userStateService.setStep(chatId, BotStep.NONE);
+            showCurrentFilter(chatId);
+            return;
+        }
 
         userStateService.setStep(chatId, BotStep.COMPLETED);
 
@@ -1128,6 +1313,27 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
         );
     }
 
+    private void confirmResetFilter(Long chatId) {
+        String lang = lang(chatId);
+
+        sendMessage(
+                chatId,
+                resetConfirmText(lang),
+                keyboardFactory.resetConfirmKeyboard(lang)
+        );
+    }
+
+    private void showNotificationSettings(Long chatId) {
+        TelegramSubscriberEntity subscriber = subscriberService.getOrCreate(chatId);
+        String lang = lang(chatId);
+
+        sendMessage(
+                chatId,
+                notificationSettingsText(lang, subscriber),
+                keyboardFactory.notificationSettingsKeyboard(lang, subscriber)
+        );
+    }
+
     private void resetFilter(Long chatId) {
         String currentLang = lang(chatId);
 
@@ -1177,6 +1383,100 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
                 messages.get(lang, "label.fuelType"), formatFuelType(lang, filter.getFuelType()),
                 messages.get(lang, "label.yearFrom"), filter.getYearFrom() == null ? messages.get(lang, "common.notImportant") : filter.getYearFrom().toString()
         );
+    }
+
+    private String resetConfirmText(String lang) {
+        return switch (lang) {
+            case "ru" -> """
+                    Сбросить фильтр?
+
+                    Текущие настройки поиска будут очищены.
+                    """;
+            case "uk" -> """
+                    Скинути фільтр?
+
+                    Поточні налаштування пошуку буде очищено.
+                    """;
+            case "cs" -> """
+                    Resetovat filtr?
+
+                    Aktuální nastavení hledání bude vymazáno.
+                    """;
+            default -> """
+                    Reset filter?
+
+                    Your current search settings will be cleared.
+                    """;
+        };
+    }
+
+    private String notificationSettingsText(String lang, TelegramSubscriberEntity subscriber) {
+        boolean paused = subscriber != null && subscriber.isNotificationsPaused();
+        String mode = subscriber == null || subscriber.getNotificationMode() == null
+                ? "INSTANT"
+                : subscriber.getNotificationMode();
+        Integer limit = subscriber == null ? null : subscriber.getDailyNotificationLimit();
+        Integer sentToday = subscriber == null || subscriber.getNotificationsSentToday() == null
+                ? 0
+                : subscriber.getNotificationsSentToday();
+
+        String status = switch (lang) {
+            case "ru" -> paused ? "на паузе" : "активны";
+            case "uk" -> paused ? "на паузі" : "активні";
+            case "cs" -> paused ? "pozastaveno" : "aktivní";
+            default -> paused ? "paused" : "active";
+        };
+
+        String modeLabel = switch (lang) {
+            case "ru" -> "DIGEST".equalsIgnoreCase(mode) ? "дайджест" : "сразу";
+            case "uk" -> "DIGEST".equalsIgnoreCase(mode) ? "дайджест" : "одразу";
+            case "cs" -> "DIGEST".equalsIgnoreCase(mode) ? "souhrn" : "ihned";
+            default -> "DIGEST".equalsIgnoreCase(mode) ? "digest" : "instant";
+        };
+
+        String limitLabel = limit == null
+                ? switch (lang) {
+                    case "ru" -> "без лимита";
+                    case "uk" -> "без ліміту";
+                    case "cs" -> "bez limitu";
+                    default -> "no limit";
+                }
+                : limit + " / day";
+
+        return switch (lang) {
+            case "ru" -> """
+                    🔔 Уведомления
+
+                    Статус: %s
+                    Режим: %s
+                    Лимит: %s
+                    Сегодня отправлено: %s
+                    """.formatted(status, modeLabel, limitLabel, sentToday);
+            case "uk" -> """
+                    🔔 Сповіщення
+
+                    Статус: %s
+                    Режим: %s
+                    Ліміт: %s
+                    Сьогодні надіслано: %s
+                    """.formatted(status, modeLabel, limitLabel, sentToday);
+            case "cs" -> """
+                    🔔 Upozornění
+
+                    Stav: %s
+                    Režim: %s
+                    Limit: %s
+                    Dnes odesláno: %s
+                    """.formatted(status, modeLabel, limitLabel, sentToday);
+            default -> """
+                    🔔 Notifications
+
+                    Status: %s
+                    Mode: %s
+                    Limit: %s
+                    Sent today: %s
+                    """.formatted(status, modeLabel, limitLabel, sentToday);
+        };
     }
 
     private String buildFilterProgress(UserFilterEntity filter) {

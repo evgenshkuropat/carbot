@@ -1,6 +1,7 @@
 package com.yourapp.carbot.bot;
 
 import com.yourapp.carbot.i18n.MessageService;
+import com.yourapp.carbot.entity.TelegramSubscriberEntity;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboard;
@@ -85,10 +86,91 @@ public class CarBotKeyboardFactory {
         ));
 
         rows.add(twoButtonsRow(
+                messages.get(lang, "label.carType"),
+                "edit_field:car_type",
+                messages.get(lang, "label.brand"),
+                "edit_field:brand"
+        ));
+
+        rows.add(twoButtonsRow(
+                messages.get(lang, "label.maxPrice"),
+                "edit_field:max_price",
+                messages.get(lang, "label.location"),
+                "edit_field:location"
+        ));
+
+        rows.add(twoButtonsRow(
+                messages.get(lang, "label.maxMileage"),
+                "edit_field:max_mileage",
+                messages.get(lang, "label.transmission"),
+                "edit_field:transmission"
+        ));
+
+        rows.add(twoButtonsRow(
+                messages.get(lang, "label.fuelType"),
+                "edit_field:fuel_type",
+                messages.get(lang, "label.yearFrom"),
+                "edit_field:year_from"
+        ));
+
+        rows.add(singleButtonRow(
+                notificationButtonText(lang),
+                "notif_settings"
+        ));
+
+        rows.add(twoButtonsRow(
                 "✏️ " + messages.get(lang, "button.editFilter"),
                 "myfilter_edit",
                 "♻️ " + messages.get(lang, "button.resetFilter"),
                 "myfilter_reset"
+        ));
+
+        return InlineKeyboardMarkup.builder()
+                .keyboard(rows)
+                .build();
+    }
+
+    public InlineKeyboardMarkup resetConfirmKeyboard(String lang) {
+        List<InlineKeyboardRow> rows = new ArrayList<>();
+
+        rows.add(twoButtonsRow(
+                resetConfirmText(lang),
+                "myfilter_reset_confirm",
+                cancelText(lang),
+                "myfilter_reset_cancel"
+        ));
+
+        return InlineKeyboardMarkup.builder()
+                .keyboard(rows)
+                .build();
+    }
+
+    public InlineKeyboardMarkup notificationSettingsKeyboard(String lang, TelegramSubscriberEntity subscriber) {
+        List<InlineKeyboardRow> rows = new ArrayList<>();
+
+        boolean paused = subscriber != null && subscriber.isNotificationsPaused();
+        String mode = subscriber == null || subscriber.getNotificationMode() == null
+                ? "INSTANT"
+                : subscriber.getNotificationMode();
+
+        rows.add(singleButtonRow(
+                (paused ? resumeNotificationsText(lang) : pauseNotificationsText(lang)),
+                "notif_pause_toggle"
+        ));
+
+        rows.add(twoButtonsRow(
+                selectableText("INSTANT".equalsIgnoreCase(mode), instantModeText(lang)),
+                "notif_mode:INSTANT",
+                selectableText("DIGEST".equalsIgnoreCase(mode), digestModeText(lang)),
+                "notif_mode:DIGEST"
+        ));
+
+        rows.add(twoButtonsRow("5 / day", "notif_limit:5", "10 / day", "notif_limit:10"));
+        rows.add(twoButtonsRow("20 / day", "notif_limit:20", noDailyLimitText(lang), "notif_limit:0"));
+
+        rows.add(singleButtonRow(
+                "⬅️ " + messages.get(lang, "button.prev"),
+                "show_myfilter"
         ));
 
         return InlineKeyboardMarkup.builder()
@@ -300,6 +382,8 @@ public class CarBotKeyboardFactory {
         rows.add(twoButtonsRow("80 000 Kč", "max_price:80000", "100 000 Kč", "max_price:100000"));
         rows.add(twoButtonsRow("150 000 Kč", "max_price:150000", "200 000 Kč", "max_price:200000"));
         rows.add(twoButtonsRow("300 000 Kč", "max_price:300000", "500 000 Kč", "max_price:500000"));
+        rows.add(twoButtonsRow("700 000 Kč", "max_price:700000", "1 000 000 Kč", "max_price:1000000"));
+        rows.add(singleButtonRow("1 500 000 Kč", "max_price:1500000"));
 
         rows.add(singleButtonRow(
                 "🔘 " + messages.get(lang, "common.noLimit"),
@@ -479,6 +563,7 @@ public class CarBotKeyboardFactory {
         rows.add(twoButtonsRow("2010+", "year_from:2010", "2015+", "year_from:2015"));
         rows.add(twoButtonsRow("2018+", "year_from:2018", "2020+", "year_from:2020"));
         rows.add(twoButtonsRow("2022+", "year_from:2022", "2023+", "year_from:2023"));
+        rows.add(twoButtonsRow("2024+", "year_from:2024", "2025+", "year_from:2025"));
 
         rows.add(singleButtonRow(
                 "🔘 " + messages.get(lang, "common.notImportant"),
@@ -608,6 +693,82 @@ public class CarBotKeyboardFactory {
 
     private String buildSelectableText(boolean selected, String label) {
         return (selected ? "✅ " : "▫️ ") + label;
+    }
+
+    private String selectableText(boolean selected, String label) {
+        return (selected ? "✅ " : "▫️ ") + label;
+    }
+
+    private String notificationButtonText(String lang) {
+        return switch (lang) {
+            case "ru" -> "🔔 Уведомления";
+            case "uk" -> "🔔 Сповіщення";
+            case "cs" -> "🔔 Upozornění";
+            default -> "🔔 Notifications";
+        };
+    }
+
+    private String resetConfirmText(String lang) {
+        return switch (lang) {
+            case "ru" -> "Да, сбросить";
+            case "uk" -> "Так, скинути";
+            case "cs" -> "Ano, resetovat";
+            default -> "Yes, reset";
+        };
+    }
+
+    private String cancelText(String lang) {
+        return switch (lang) {
+            case "ru" -> "Отмена";
+            case "uk" -> "Скасувати";
+            case "cs" -> "Zrušit";
+            default -> "Cancel";
+        };
+    }
+
+    private String pauseNotificationsText(String lang) {
+        return switch (lang) {
+            case "ru" -> "⏸ Поставить на паузу";
+            case "uk" -> "⏸ Поставити на паузу";
+            case "cs" -> "⏸ Pozastavit";
+            default -> "⏸ Pause";
+        };
+    }
+
+    private String resumeNotificationsText(String lang) {
+        return switch (lang) {
+            case "ru" -> "▶️ Возобновить";
+            case "uk" -> "▶️ Відновити";
+            case "cs" -> "▶️ Obnovit";
+            default -> "▶️ Resume";
+        };
+    }
+
+    private String instantModeText(String lang) {
+        return switch (lang) {
+            case "ru" -> "Сразу";
+            case "uk" -> "Одразу";
+            case "cs" -> "Ihned";
+            default -> "Instant";
+        };
+    }
+
+    private String digestModeText(String lang) {
+        return switch (lang) {
+            case "ru" -> "Дайджест";
+            case "uk" -> "Дайджест";
+            case "cs" -> "Souhrn";
+            default -> "Digest";
+        };
+    }
+
+    private String noDailyLimitText(String lang) {
+        return switch (lang) {
+            case "ru" -> "Без лимита";
+            case "uk" -> "Без ліміту";
+            case "cs" -> "Bez limitu";
+            default -> "No limit";
+        };
     }
 
     private Set<String> parseSelectedValues(String raw) {

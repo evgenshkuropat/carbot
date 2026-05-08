@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 @Service
 public class TelegramSubscriberService {
@@ -24,7 +25,12 @@ public class TelegramSubscriberService {
 
     public void subscribe(Long chatId, String username) {
 
-        if (repository.findByChatId(chatId).isPresent()) {
+        Optional<TelegramSubscriberEntity> existing = repository.findByChatId(chatId);
+        if (existing.isPresent()) {
+            TelegramSubscriberEntity entity = existing.get();
+            entity.setUsername(username);
+            entity.setUpdatedAt(LocalDateTime.now());
+            repository.save(entity);
             return;
         }
 
@@ -34,6 +40,7 @@ public class TelegramSubscriberService {
         entity.setChatId(chatId);
         entity.setUsername(username);
         entity.setCreatedAt(LocalDateTime.now());
+        entity.setUpdatedAt(LocalDateTime.now());
 
         repository.save(entity);
 
@@ -52,6 +59,41 @@ public class TelegramSubscriberService {
     }
 
     public long countActiveSubscribers() {
-        return repository.count();
+        return repository.countByNotificationsPausedFalse();
+    }
+
+    public Optional<TelegramSubscriberEntity> findByChatId(Long chatId) {
+        return repository.findByChatId(chatId);
+    }
+
+    public TelegramSubscriberEntity getOrCreate(Long chatId) {
+        return repository.findByChatId(chatId).orElseGet(() -> {
+            TelegramSubscriberEntity entity = new TelegramSubscriberEntity();
+            entity.setChatId(chatId);
+            entity.setCreatedAt(LocalDateTime.now());
+            entity.setUpdatedAt(LocalDateTime.now());
+            return repository.save(entity);
+        });
+    }
+
+    public TelegramSubscriberEntity toggleNotificationsPaused(Long chatId) {
+        TelegramSubscriberEntity entity = getOrCreate(chatId);
+        entity.setNotificationsPaused(!entity.isNotificationsPaused());
+        entity.setUpdatedAt(LocalDateTime.now());
+        return repository.save(entity);
+    }
+
+    public TelegramSubscriberEntity setNotificationMode(Long chatId, String mode) {
+        TelegramSubscriberEntity entity = getOrCreate(chatId);
+        entity.setNotificationMode("DIGEST".equalsIgnoreCase(mode) ? "DIGEST" : "INSTANT");
+        entity.setUpdatedAt(LocalDateTime.now());
+        return repository.save(entity);
+    }
+
+    public TelegramSubscriberEntity setDailyNotificationLimit(Long chatId, Integer limit) {
+        TelegramSubscriberEntity entity = getOrCreate(chatId);
+        entity.setDailyNotificationLimit(limit == null || limit <= 0 ? null : limit);
+        entity.setUpdatedAt(LocalDateTime.now());
+        return repository.save(entity);
     }
 }
