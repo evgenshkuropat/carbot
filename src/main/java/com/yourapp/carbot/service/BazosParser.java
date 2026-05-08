@@ -692,7 +692,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 continue;
             }
 
-            String raw = normalizeText(row.text())
+            String raw = normalizeText(cells.get(cells.size() - 1).text())
                     .replaceFirst("(?i)^lokalita\\s*:?\\s*", "")
                     .trim();
 
@@ -747,7 +747,19 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
 
         String context = text.substring(from, to).toLowerCase(Locale.ROOT);
 
-        return context.contains("stk")
+        return context.matches(".*\\[?\\d{1,2}\\.\\d{1,2}\\.\\s*20\\d{2}\\]?.*")
+                || context.contains("plati do")
+                || context.contains("platĂ­ do")
+                || context.contains("vlozen")
+                || context.contains("vloĹľen")
+                || context.contains("vloĹľeno")
+                || context.contains("vlozeno")
+                || context.contains("pridano")
+                || context.contains("pĹ™idĂˇno")
+                || context.contains("aktualiz")
+                || context.contains("inzerat")
+                || context.contains("inzerĂˇt")
+                || context.contains("stk")
                 || context.contains("stk:")
                 || context.contains("stk do")
                 || context.contains("tk ")
@@ -1233,9 +1245,11 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " discovery ", " discovery sport ", " defender ",
                 " compass ", " cherokee ", " grand cherokee ",
                 " grand vitara ", " vitara ",
+                " captiva ", " tahoe ", " suburban ",
                 " model y ",
                 " xv ", " forester ",
                 " mokka ",
+                " xceed ",
                 " ix35 ",
                 " stelvio ",
                 " durango ",
@@ -1279,6 +1293,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " hatchback ", " hatch ", " spaceback ",
                 " fabia ", " focus ", " golf ", " polo ",
                 " i20 ", " i30 ", " ceed ",
+                " aveo ", " spark ", " picanto ",
                 " c2 ", " c3 ",
                 " clio ", " megane ", " fiesta ",
                 " civic ", " leon ", " swift ",
