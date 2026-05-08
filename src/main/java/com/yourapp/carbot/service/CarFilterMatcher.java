@@ -479,7 +479,88 @@ public class CarFilterMatcher {
                 || (a.contains("MLADA BOLESLAV") && b.contains("STREDOCESK"))
                 || (b.contains("MLADA BOLESLAV") && a.contains("STREDOCESK"))
                 || (a.contains("KOLIN") && b.contains("STREDOCESK"))
-                || (b.contains("KOLIN") && a.contains("STREDOCESK"));
+                || (b.contains("KOLIN") && a.contains("STREDOCESK"))
+                || cityBelongsToRegion(a, b)
+                || cityBelongsToRegion(b, a);
+    }
+
+    private boolean cityBelongsToRegion(String city, String region) {
+        if (region.contains("STREDOCESK")) {
+            return containsAny(city,
+                    "BENESOV", "BEROUN", "KLADNO", "KOLIN", "KUTNA HORA",
+                    "MELNIK", "MLADA BOLESLAV", "NYMBURK", "PRIBRAM",
+                    "RAKOVNIK", "SLANY");
+        }
+
+        if (region.contains("USTECK")) {
+            return containsAny(city,
+                    "USTI NAD LABEM", "MOST", "TEPLICE", "CHOMUTOV",
+                    "DECIN", "LITOMERICE", "LOUNY", "RUMBURK");
+        }
+
+        if (region.contains("KRALOVEHRADECK")) {
+            return containsAny(city,
+                    "HRADEC KRALOVE", "NACHOD", "TRUTNOV", "JICIN",
+                    "RYCHNOV NAD KNEZNOU", "DVUR KRALOVE");
+        }
+
+        if (region.contains("JIHOMORAV")) {
+            return containsAny(city,
+                    "BRNO", "BLANSKO", "BRECLAV", "HODONIN",
+                    "VYSKOV", "ZNOJMO");
+        }
+
+        if (region.contains("MORAVSKOSLEZ")) {
+            return containsAny(city,
+                    "OSTRAVA", "OPAVA", "KARVINA", "FRYDEK MISTEK",
+                    "NOVY JICIN", "BRUNTAL", "HAVIROV", "TRINEC");
+        }
+
+        if (region.contains("PLZENSK")) {
+            return containsAny(city,
+                    "PLZEN", "DOMAZLICE", "KLATOVY", "ROKYCANY",
+                    "TACHOV");
+        }
+
+        if (region.contains("JIHOCESK")) {
+            return containsAny(city,
+                    "CESKE BUDEJOVICE", "CESKY KRUMLOV", "JINDRICHUV HRADEC",
+                    "PISEK", "PRACHATICE", "STRAKONICE", "TABOR");
+        }
+
+        if (region.contains("LIBERECK")) {
+            return containsAny(city,
+                    "LIBEREC", "CESKA LIPA", "JABLONEC NAD NISOU",
+                    "SEMILY", "TURNOV");
+        }
+
+        if (region.contains("OLOMOUCK")) {
+            return containsAny(city,
+                    "OLOMOUC", "PROSTEJOV", "PREROV", "SUMPERK", "JESENIK");
+        }
+
+        if (region.contains("PARDUBICK")) {
+            return containsAny(city,
+                    "PARDUBICE", "CHRUDIM", "SVITAVY", "USTI NAD ORLICI");
+        }
+
+        if (region.contains("ZLINSK")) {
+            return containsAny(city,
+                    "ZLIN", "KROMERIZ", "UHERSKE HRADISTE", "VSETIN");
+        }
+
+        if (region.contains("VYSOCINA")) {
+            return containsAny(city,
+                    "JIHLAVA", "HAVLICKUV BROD", "PELHRIMOV",
+                    "TREBIC", "ZDAR NAD SAZAVOU");
+        }
+
+        if (region.contains("KARLOVAR")) {
+            return containsAny(city,
+                    "KARLOVY VARY", "CHEB", "SOKOLOV");
+        }
+
+        return false;
     }
 
     private boolean matchesMaxMileage(CarEntity car, UserFilterEntity filter) {
@@ -634,7 +715,7 @@ public class CarFilterMatcher {
         Integer carYear = car.getYear();
 
         if (carYear == null) {
-            return true;
+            return false;
         }
 
         return carYear >= yearFrom;
