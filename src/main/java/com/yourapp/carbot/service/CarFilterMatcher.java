@@ -63,9 +63,12 @@ public class CarFilterMatcher {
         }
 
         String storedType = normalizeToken(car.getCarType());
+        String detectedType = detectCarTypeFromTitle(car.getTitle());
 
         if (storedType == null || storedType.isBlank()) {
-            storedType = detectCarTypeFromTitle(car.getTitle());
+            storedType = detectedType;
+        } else if (!isBlank(detectedType) && shouldPreferDetectedCarType(storedType, detectedType)) {
+            storedType = detectedType;
         }
 
         if (storedType == null || storedType.isBlank()) {
@@ -83,10 +86,42 @@ public class CarFilterMatcher {
         return false;
     }
 
+    private boolean shouldPreferDetectedCarType(String storedType, String detectedType) {
+        return "SUV".equals(storedType) && !"SUV".equals(detectedType);
+    }
+
     private String detectCarTypeFromTitle(String rawTitle) {
         String title = " " + normalizeText(rawTitle) + " ";
 
         // ВАЖНО: SUV раньше MINIVAN/WAGON/SEDAN
+        if (containsAny(title, " YARIS CROSS ", " COROLLA CROSS ")) {
+            return "SUV";
+        }
+
+        if (containsAny(title, " PROACE VERSO ", " PROACE CITY VERSO ")) {
+            return "MINIVAN";
+        }
+
+        if (containsAny(title,
+                " COROLLA TS ",
+                " COROLLA TOURING ",
+                " COROLLA KOMBI ",
+                " COROLLA COMBI ",
+                " COROLLA WAGON ",
+                " AVENSIS KOMBI ",
+                " AVENSIS COMBI ",
+                " AVENSIS WAGON ")) {
+            return "WAGON";
+        }
+
+        if (containsAny(title, " YARIS ", " AYGO ", " AYGO X ", " AURIS ")) {
+            return "HATCHBACK";
+        }
+
+        if (containsAny(title, " COROLLA ", " AVENSIS ")) {
+            return "SEDAN";
+        }
+
         if (containsAny(title,
                 " SUV ",
                 " CROSSOVER ",
