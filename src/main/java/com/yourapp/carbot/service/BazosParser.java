@@ -722,7 +722,10 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         ).matcher(source);
 
         if (explicitMatcher.find()) {
-            return parseYearCandidate(explicitMatcher.group(1));
+            Integer year = parseYearCandidate(explicitMatcher.group(1));
+            if (year != null && !isBadYearContext(source, explicitMatcher.start(), explicitMatcher.end())) {
+                return year;
+            }
         }
 
         if (containsAny(source, " PRODANO ", " PRODÁNO ", " ZADANO ", " ZADÁNO ")) {
@@ -734,7 +737,10 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         ).matcher(source);
 
         if (matcher.find()) {
-            return parseYearCandidate(matcher.group(1));
+            Integer year = parseYearCandidate(matcher.group(1));
+            if (year != null && !isBadYearContext(source, matcher.start(), matcher.end())) {
+                return year;
+            }
         }
 
         matcher = Pattern.compile("\\b(19\\d{2}|20\\d{2})\\b").matcher(normalizedTitle);
@@ -1057,6 +1063,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
 
     private String extractBrand(String title, String text) {
         String titleSource = " " + normalizeText(title).toLowerCase(Locale.ROOT) + " ";
+        String compactTitleSource = compactSearchText(title);
         String source = titleSource + " " + shortenForCheck(normalizeText(text).toLowerCase(Locale.ROOT), 300);
 
         if (containsAny(titleSource,
@@ -1094,6 +1101,10 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         if (containsAny(titleSource, " tesla ")) return "TESLA";
         if (containsAny(titleSource, " chevrolet ")) return "CHEVROLET";
         if (containsAny(titleSource, " land rover ", " range rover ")) return "LAND_ROVER";
+        if (containsAny(compactTitleSource, " nissan ")) return "NISSAN";
+        if (containsAny(compactTitleSource, " peugeot ")) return "PEUGEOT";
+        if (containsAny(compactTitleSource, " renault ")) return "RENAULT";
+        if (containsAny(compactTitleSource, " suzuki ")) return "SUZUKI";
 
         if (containsAny(source,
                 " alfa romeo ", " alfa ", " alfu ", " romeo ",
@@ -1165,6 +1176,11 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         if (source.contains(" clio ")) return "RENAULT";
         if (source.contains(" thalia ")) return "RENAULT";
         if (source.contains(" kangoo ")) return "RENAULT";
+        if (source.contains(" espace ")) return "RENAULT";
+        if (source.contains(" koleos ")) return "RENAULT";
+        if (source.contains(" kadjar ")) return "RENAULT";
+        if (source.contains(" arkana ")) return "RENAULT";
+        if (source.contains(" austral ")) return "RENAULT";
 
         if (source.contains(" berlingo ")) return "CITROEN";
         if (source.contains(" picasso ")) return "CITROEN";
@@ -1224,6 +1240,25 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         if (source.contains(" mazda 3 ")) return "MAZDA";
         if (source.contains(" mazda 6 ")) return "MAZDA";
         if (source.contains(" partner ")) return "PEUGEOT";
+        if (source.contains(" qashqai ")) return "NISSAN";
+        if (source.contains(" juke ")) return "NISSAN";
+        if (source.contains(" x-trail ")) return "NISSAN";
+        if (source.contains(" navara ")) return "NISSAN";
+        if (source.contains(" micra ")) return "NISSAN";
+        if (source.contains(" leaf ")) return "NISSAN";
+        if (source.contains(" primera ")) return "NISSAN";
+        if (source.contains(" swift ")) return "SUZUKI";
+        if (source.contains(" vitara ")) return "SUZUKI";
+        if (source.contains(" sx4 ")) return "SUZUKI";
+        if (source.contains(" 1007 ")) return "PEUGEOT";
+        if (source.contains(" 107 ")) return "PEUGEOT";
+        if (source.contains(" 207 ")) return "PEUGEOT";
+        if (source.contains(" 208 ")) return "PEUGEOT";
+        if (source.contains(" 308 ")) return "PEUGEOT";
+        if (source.contains(" 3008 ")) return "PEUGEOT";
+        if (source.contains(" 5008 ")) return "PEUGEOT";
+        if (source.contains(" rifter ")) return "PEUGEOT";
+        if (source.contains(" rcz ")) return "PEUGEOT";
         if (source.contains(" mazda 5 ")) return "MAZDA";
         if (source.contains(" favorit ")) return "SKODA";
         if (source.contains(" kangoo ")) return "RENAULT";
@@ -1248,6 +1283,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " kodiaq ", " karoq ", " kamiq ",
                 " tiguan ", " touareg ", " t-roc ", " troc ",
                 " qashqai ", " juke ", " x-trail ",
+                " patrol ", " 2008 ", " 3008 ", " 5008 ",
                 " kuga ", " puma ", " ecosport ",
                 " formentor ", " ateca ", " arona ", " tarraco ",
                 " xc40 ", " xc60 ", " xc90 ",
@@ -1283,7 +1319,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " galaxy ", " s-max ", " smax ",
                 " sharan ", " alhambra ", " touran ",
                 " caddy ", " berlingo ", " rifter ",
-                " partner tepee ",
+                " partner tepee ", " partner ",
                 " zafira ", " meriva ",
                 " roomster ", " lodgy ", " verso ",
                 " c-max ", " grand c-max ",
@@ -1553,10 +1589,6 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         String source = " " + normalizeText(title + " " + shortenForCheck(text, 400) + " " + safe(url))
                 .toLowerCase(Locale.ROOT) + " ";
 
-        if (looksClearlyCommercialBody(source)) {
-            return true;
-        }
-
         if (looksLikePassengerCarModel(title)) {
             return false;
         }
@@ -1568,10 +1600,15 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             return false;
         }
 
+        if (looksClearlyCommercialBody(source)) {
+            return true;
+        }
+
         return containsAny(source,
                 " sprinter ", " vito ", " viano ",
                 " transporter ", " caravelle ", " multivan ",
                 " trafic ", " traffic ", " vivaro ", " primastar ",
+                " partner l1 ", " partner l2 ",
                 " expert ", " jumpy ", " scudo ", " proace ",
                 " tourneo custom ", " transit custom ",
                 " iveco ", " daily ", " boxer ", " ducato ", " jumper ",
@@ -2257,9 +2294,29 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " karoq ",
                 " rav ",
                 " qashqai ",
+                " juke ",
+                " x-trail ",
+                " patrol ",
+                " 2008 ",
+                " 3008 ",
+                " 5008 ",
+                " koleos ",
+                " kadjar ",
+                " austral ",
+                " arkana ",
+                " ateca ",
+                " arona ",
                 " cx-5 ",
                 " cx5 "
         );
+    }
+
+    private String compactSearchText(String value) {
+        String compact = normalizeText(value).toLowerCase(Locale.ROOT)
+                .replaceAll("[^\\p{L}\\p{Nd}]+", " ")
+                .replaceAll("\\s+", " ")
+                .trim();
+        return compact.isBlank() ? " " : " " + compact + " ";
     }
 
     private String safe(String value) {
