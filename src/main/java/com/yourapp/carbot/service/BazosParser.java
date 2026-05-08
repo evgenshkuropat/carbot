@@ -836,6 +836,14 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             }
         }
 
+        matcher = Pattern.compile("(?i)\\b([0-9]{1,3})\\s*(?:tis(?:\\.|ic|íc|\\s)|tkm)\\b").matcher(source);
+        while (matcher.find()) {
+            Integer value = parseMileageCandidate(matcher.group(1) + "000");
+            if (value != null) {
+                return value;
+            }
+        }
+
         return null;
     }
 
@@ -850,7 +858,6 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " elektroauto ",
                 " electric vehicle ",
                 " electric ",
-                " ev ",
                 " kwh ",
                 " bev ",
                 " enyaq ", " id.3 ", " id.4 ", " id.5 ", " tesla ", " leaf ", " kona electric ")) {
@@ -1367,7 +1374,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " c2 ", " c3 ",
                 " clio ", " megane ", " fiesta ",
                 " civic ", " leon ", " swift ", " born ",
-                " agila ", " 107 ", " 207 ", " 208 ", " 308 ",
+                " agila ", " 107 ", " 147 ", " 207 ", " 208 ", " 308 ",
                 " sandero ", " logan ", " scala ", " citigo ",
                 " fiat 500 ", " tipo ", " fiat tipo ",
                 " corsa ", " mazda 3 ", " rapid ", " yaris ")) {
@@ -1399,7 +1406,8 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " sedan ", " saloon ",
                 " limo ", " limousine ", " limuzína ", " limuzina ",
                 " charger ",
-                " giulia ", " alfa 166 ", " romeo 166 ",
+                " giulia ", " alfa 156 ", " romeo 156 ", " alfa 159 ", " romeo 159 ", " alfa 166 ", " romeo 166 ",
+                " cruze ",
                 " octavia ", " superb ", " passat ", " arteon ",
                 " a4 ", " a6 ", " a7 ", " a8 ", " s5 ", " s7 ", " s8 ",
                 " s400d ", " s400 ",
