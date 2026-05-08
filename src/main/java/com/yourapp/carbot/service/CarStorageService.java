@@ -365,7 +365,7 @@ public class CarStorageService {
                     "TESLA", "CUPRA", "DODGE", "SUBARU", "NISSAN", "SUZUKI",
                     "JEEP", "MINI", "LEXUS", "PORSCHE", "MITSUBISHI", "BYD",
                     "MG", "DS", "LAND_ROVER", "ALFA_ROMEO", "CHEVROLET",
-                    "LOTUS", "LAMBORGHINI"
+                    "LOTUS", "LAMBORGHINI", "FERRARI"
             );
 
             if (allowed.contains(upper)) {
@@ -388,6 +388,7 @@ public class CarStorageService {
         if (t.contains("chevrolet") || t.contains("corvette") || t.contains("camaro")) return "CHEVROLET";
         if (t.contains("lotus") || t.contains("emira")) return "LOTUS";
         if (t.contains("lamborghini") || t.contains("hurac")) return "LAMBORGHINI";
+        if (t.contains("ferrari") || t.contains("california")) return "FERRARI";
         if (t.contains("peugeot")) return "PEUGEOT";
         if (t.contains("opel")) return "OPEL";
         if (t.contains("mazda")) return "MAZDA";

@@ -491,6 +491,8 @@ public class TipCarsParser implements CarSourceParser {
                 " lotus ", " emira ")) return "LOTUS";
         if (containsAny(" " + source.toLowerCase(Locale.ROOT) + " ",
                 " lamborghini ", " huracán ", " huracan ")) return "LAMBORGHINI";
+        if (containsAny(" " + source.toLowerCase(Locale.ROOT) + " ",
+                " ferrari ", " california ")) return "FERRARI";
 
         return normalizeBrand(words[0]);
     }
@@ -729,6 +731,7 @@ public class TipCarsParser implements CarSourceParser {
                 " mpv ",
                 " minivan ",
                 " meriva ",
+                " vito ",
                 " combo ",
                 " touran ",
                 " sharan ",
@@ -912,6 +915,7 @@ public class TipCarsParser implements CarSourceParser {
         if (value.startsWith("CHEVROLET")) return "CHEVROLET";
         if (value.startsWith("LOTUS")) return "LOTUS";
         if (value.startsWith("LAMBORGHINI")) return "LAMBORGHINI";
+        if (value.startsWith("FERRARI")) return "FERRARI";
         if (value.startsWith("MINI")) return "MINI";
         if (value.startsWith("JAECOO")) return "JAECOO";
 
