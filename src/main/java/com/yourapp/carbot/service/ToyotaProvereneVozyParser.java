@@ -204,7 +204,7 @@ public class ToyotaProvereneVozyParser implements CarSourceParser {
                 extractMainPrice(detailText),
                 extractMainPrice(containerText)
         );
-        Integer year = firstNonNull(parseIntSafe(extractDetailValue(detailDoc, "productionDate")), extractYear(combinedText));
+        Integer year = firstNonNull(validYear(parseIntSafe(extractDetailValue(detailDoc, "productionDate"))), extractYear(combinedText));
         Integer mileage = firstNonNull(parseIntSafe(extractDetailValue(detailDoc, "mileageFromOdometer")), extractMileage(combinedText));
         String fuelType = mapFuel(extractValueAfterLabel(containerText, "Palivo"));
         String transmission = mapTransmission(extractValueAfterLabel(containerText, "Převodovka"));
@@ -214,9 +214,10 @@ public class ToyotaProvereneVozyParser implements CarSourceParser {
         String imageUrl = extractImageUrl(container);
 
         fuelType = firstNonBlank(
-                mapFuel(extractValueAfterLabel(combinedText, "Palivo")),
+                mapFuel(extractDetailValue(detailDoc, "fuelType")),
+                mapFuel(extractValueAfterLabel(containerText, "Palivo")),
                 mapFuel(title),
-                mapFuel(combinedText)
+                mapFuel(extractMetaContent(detailDoc, "meta[property=og:title]"))
         );
         transmission = firstNonBlank(
                 mapTransmission(extractDetailValue(detailDoc, "vehicleTransmission")),
@@ -224,7 +225,7 @@ public class ToyotaProvereneVozyParser implements CarSourceParser {
                 mapTransmission(extractValueAfterLabel(combinedText, "PĹ™evodovka")),
                 "ELECTRIC".equals(fuelType) ? "AUTOMATIC" : null
         );
-        carType = extractCarType(title, combinedText);
+        carType = firstNonBlank(mapCarType(extractDetailValue(detailDoc, "bodyType")), extractCarType(title, containerText));
         location = firstNonBlank(extractDetailLocation(detailDoc), location);
         imageUrl = firstNonBlank(extractMetaContent(detailDoc, "meta[property=og:image]"), imageUrl);
 
@@ -298,6 +299,13 @@ public class ToyotaProvereneVozyParser implements CarSourceParser {
             return null;
         }
 
+        for (Element strong : doc.select(".vdp-dealer strong, section[aria-labelledby=dealerInfo-heading] strong")) {
+            String dealer = cleanupDealerLocation(strong.text());
+            if (dealer != null) {
+                return dealer;
+            }
+        }
+
         for (Element strong : doc.select("strong")) {
             String text = cleanupLocation(strong.text());
             if (text == null) {
@@ -320,6 +328,23 @@ public class ToyotaProvereneVozyParser implements CarSourceParser {
         }
 
         return null;
+    }
+
+    private String cleanupDealerLocation(String value) {
+        String text = cleanupLocation(value);
+        if (text == null) {
+            return null;
+        }
+
+        String normalized = normalizeAscii(text).toLowerCase(Locale.ROOT);
+        if (normalized.startsWith("toyota ")) {
+            return cleanupLocation(text.replaceFirst("(?i)^Toyota\\s+", ""));
+        }
+        if (normalized.startsWith("lexus ")) {
+            return cleanupLocation(text.replaceFirst("(?i)^Lexus\\s+", ""));
+        }
+
+        return text;
     }
 
     private String extractMetaContent(Document doc, String selector) {
@@ -375,6 +400,14 @@ public class ToyotaProvereneVozyParser implements CarSourceParser {
 
     private Integer extractMainPrice(String text) {
         List<Integer> values = new ArrayList<>();
+
+        Matcher robustCompactMatcher = Pattern.compile("(\\d{5,8})\\s*K\\S{0,2}", Pattern.CASE_INSENSITIVE).matcher(safe(text));
+        while (robustCompactMatcher.find()) {
+            Integer value = parseIntSafe(robustCompactMatcher.group(1));
+            if (value != null && value >= MIN_VALID_PRICE && value <= MAX_REASONABLE_PRICE) {
+                values.add(value);
+            }
+        }
 
         Matcher compactMatcher = Pattern.compile("(\\d{5,8})\\s*K(?:č|c)", Pattern.CASE_INSENSITIVE).matcher(safe(text));
         while (compactMatcher.find()) {
@@ -489,12 +522,31 @@ public class ToyotaProvereneVozyParser implements CarSourceParser {
         String v = normalizeAscii(value).toLowerCase(Locale.ROOT);
 
         if (v.contains("plug-in") || v.contains("plugin")) return "PLUGIN_HYBRID";
-        if (v.contains("hybrid")) return "HYBRID";
-        if (v.contains("elektro") || v.contains("vodik")) return "ELECTRIC";
-        if (v.contains("diesel") || v.contains("nafta")) return "DIESEL";
+        if (v.contains("hybrid") || v.contains(" hsd") || v.contains(" hev") || v.contains(" mhev")) return "HYBRID";
+        if (v.contains("elektro") || v.contains("electric") || v.contains("vodik")) return "ELECTRIC";
+        if (v.contains("diesel") || v.contains("nafta") || v.contains(" d-4d") || v.contains(" d4d")) return "DIESEL";
         if (v.contains("lpg")) return "LPG";
         if (v.contains("cng")) return "CNG";
-        if (v.contains("benzin")) return "PETROL";
+        if (v.contains("benzin") || v.contains("puretech") || v.contains("vvt-i")
+                || v.contains("valvematic") || v.contains("boosterjet") || v.contains("t-gdi")
+                || v.contains(" tgdi") || v.contains("turbo")) return "PETROL";
+
+        return null;
+    }
+
+    private String mapCarType(String value) {
+        if (value == null) return null;
+        String v = normalizeAscii(value).toLowerCase(Locale.ROOT);
+
+        if (v.contains("suv")) return "SUV";
+        if (v.contains("kombi") || v.contains("wagon") || v.contains("combi")) return "WAGON";
+        if (v.contains("sedan")) return "SEDAN";
+        if (v.contains("hatchback")) return "HATCHBACK";
+        if (v.contains("mpv") || v.contains("minivan")) return "MINIVAN";
+        if (v.contains("van")) return "VAN";
+        if (v.contains("pickup") || v.contains("pick-up")) return "PICKUP";
+        if (v.contains("coupe")) return "COUPE";
+        if (v.contains("cabrio")) return "CABRIO";
 
         return null;
     }
@@ -653,6 +705,14 @@ public class ToyotaProvereneVozyParser implements CarSourceParser {
         } catch (NumberFormatException e) {
             return null;
         }
+    }
+
+    private Integer validYear(Integer year) {
+        if (year != null && year >= 1990 && year <= CURRENT_YEAR + 1) {
+            return year;
+        }
+
+        return null;
     }
 
     private String formatPrice(Integer priceValue) {
