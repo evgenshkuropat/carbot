@@ -1340,6 +1340,27 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         String textSource = " " + normalizeText(safe(text)).toLowerCase(Locale.ROOT) + " ";
         String urlSource = " " + normalizeText(safe(url)).toLowerCase(Locale.ROOT) + " ";
 
+        if (containsAny(titleSource, " giulia ", " alfa 156 ", " romeo 156 ", " alfa 159 ", " romeo 159 ",
+                " alfa 166 ", " romeo 166 ")) {
+            return "SEDAN";
+        }
+
+        if (containsAny(titleSource, " sportwagon ")) {
+            return "WAGON";
+        }
+
+        if (containsAny(titleSource, " alfa gt ", " brera ")) {
+            return "COUPE";
+        }
+
+        if (containsAny(titleSource, " giulietta ", " mito ")) {
+            return "HATCHBACK";
+        }
+
+        if (containsAny(titleSource, " stelvio ")) {
+            return "SUV";
+        }
+
         if (containsAny(titleSource,
                 " suv ", " crossover ", " tonale ",
                 " x1 ", " x2 ", " x3 ", " x4 ", " x5 ", " x6 ", " x7 ",
