@@ -1570,7 +1570,8 @@ public class SautoParser implements CarSourceParser {
         if (containsAny(titleSource,
                 " charger ", " octavia ", " superb ", " passat ", " arteon ", " a4 ",
                 " a6 ", " a8 ", " e90 ", " e60 ", " e39 ", " 3 series ", " 5 series ",
-                " c5 ", " mondeo sedan ", " model 3 ", " model s ", " cordoba ")) {
+                " c5 ", " mondeo sedan ", " model 3 ", " model s ", " cordoba ",
+                " s60 ", " s80 ", " s90 ")) {
             return "SEDAN";
         }
 
