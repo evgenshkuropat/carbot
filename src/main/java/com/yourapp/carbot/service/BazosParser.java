@@ -936,6 +936,12 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             return "DIESEL";
         }
 
+        if ((source.contains(" volvo ")
+                || containsAny(source, " xc40 ", " xc60 ", " xc70 ", " xc90 ", " v40 ", " v60 ", " v70 ", " v90 "))
+                && containsAny(source, " d3 ", " d4 ", " d5 ")) {
+            return "DIESEL";
+        }
+
         if (compact.contains("tdi")
                 || compact.contains("tdci")
                 || compact.contains("cdi")
