@@ -154,6 +154,13 @@ public class SautoParser implements CarSourceParser {
             Integer year = extractYearSafely(title, description, analysisText);
             Integer mileage = extractMileage(analysisText);
 
+            Integer correctedInflatedPrice = correctLikelyInflatedOldCarPrice(priceValue, title, analysisText, analysisText);
+            if (correctedInflatedPrice != null) {
+                log.info("SAUTO PRICE CORRECTED title='{}' rawPrice={} correctedPrice={} year={} mileage={} reason=inflated_old_car_price",
+                        safe(title), priceValue, correctedInflatedPrice, year, mileage);
+                priceValue = correctedInflatedPrice;
+            }
+
             if (isClearlyFakeModernCarPrice(priceValue, year, mileage, title, analysisText)) {
                 log.warn("SAUTO SKIP url={} reason=invalid_price title={} price={} year={} mileage={}",
                         safe(url), safe(title), priceValue, year, mileage);
