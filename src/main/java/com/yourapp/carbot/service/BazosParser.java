@@ -883,6 +883,8 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " hybrid ",
                 " hybridní ",
                 " hybridni ",
+                " hybryd ",
+                " hybrydni ",
                 " plug-in hybrid ",
                 " plugin hybrid ",
                 " plug in ",
@@ -944,6 +946,8 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 || compact.contains("multijet")
                 || compact.contains("bluehdi")
                 || compact.contains("cdti")
+                || compact.contains("d4d")
+                || compact.matches(".*\\dtd.*")
                 || compact.contains("20d")
                 || compact.contains("116d")
                 || compact.contains("118d")
@@ -1493,7 +1497,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " gran coupe ", " gran coupé ",
                 " coupe ", " coupé ",
                 " alfa gt ", " brera ", " m4 ", " mustang ", " amg gt ",
-                " tt ", " supra ", " brz ",
+                " tt ", " scirocco ", " supra ", " brz ",
                 " gt86 ", " gr86 ",
                 " 370z ", " 350z ",
                 " rc f ", " rc 300h ", " lexus rc ",
