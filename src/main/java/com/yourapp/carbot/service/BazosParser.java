@@ -871,9 +871,11 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " elektroauto ",
                 " electric vehicle ",
                 " electric ",
+                " ev ",
                 " kwh ",
                 " bev ",
-                " enyaq ", " id.3 ", " id.4 ", " id.5 ", " tesla ", " leaf ", " kona electric ")) {
+                " enyaq ", " id.3 ", " id.4 ", " id.5 ", " tesla ", " leaf ",
+                " kona electric ", " kona elektric ", " ioniq ", " ioniq 5 ", " ioniq 6 ")) {
             return "ELECTRIC";
         }
 
@@ -1361,6 +1363,29 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             return "SUV";
         }
 
+        if (containsAny(titleSource, " silverado ")) {
+            return "PICKUP";
+        }
+
+        if (containsAny(titleSource, " aveo sedan ")) {
+            return "SEDAN";
+        }
+
+        if (containsAny(titleSource, " camaro ", " corvette ", " corveta ")) {
+            if (containsAny(titleSource, " cabrio ", " convertible ", " t-top ", " targa ")) {
+                return "CABRIO";
+            }
+            return "COUPE";
+        }
+
+        if (containsAny(titleSource, " ix20 ", " orlando ", " hhr ")) {
+            return "MINIVAN";
+        }
+
+        if (containsAny(titleSource, " i10 ", " rio ")) {
+            return "HATCHBACK";
+        }
+
         if (containsAny(titleSource,
                 " suv ", " crossover ", " tonale ",
                 " x1 ", " x2 ", " x3 ", " x4 ", " x5 ", " x6 ", " x7 ",
@@ -1787,6 +1812,39 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         if (containsAny(source, " x6 ")) return "x6";
         if (containsAny(source, " x7 ")) return "x7";
 
+        if (containsAny(source, " ceed ")) return "ceed";
+        if (containsAny(source, " sportage ")) return "sportage";
+        if (containsAny(source, " sorento ")) return "sorento";
+        if (containsAny(source, " stonic ")) return "stonic";
+        if (containsAny(source, " xceed ")) return "xceed";
+        if (containsAny(source, " rio ")) return "rio";
+        if (containsAny(source, " picanto ")) return "picanto";
+        if (containsAny(source, " carens ")) return "carens";
+
+        if (containsAny(source, " i10 ")) return "i10";
+        if (containsAny(source, " i20 ")) return "i20";
+        if (containsAny(source, " i30 ")) return "i30";
+        if (containsAny(source, " i40 ")) return "i40";
+        if (containsAny(source, " ix20 ")) return "ix20";
+        if (containsAny(source, " ix35 ")) return "ix35";
+        if (containsAny(source, " tucson ")) return "tucson";
+        if (containsAny(source, " kona ")) return "kona";
+        if (containsAny(source, " ioniq ", " ionig ")) return "ioniq";
+
+        if (containsAny(source, " aveo ")) return "aveo";
+        if (containsAny(source, " camaro ")) return "camaro";
+        if (containsAny(source, " corvette ", " corveta ")) return "corvette";
+        if (containsAny(source, " silverado ")) return "silverado";
+        if (containsAny(source, " orlando ")) return "orlando";
+        if (containsAny(source, " captiva ")) return "captiva";
+        if (containsAny(source, " cruze ")) return "cruze";
+        if (containsAny(source, " malibu ")) return "malibu";
+        if (containsAny(source, " suburban ")) return "suburban";
+        if (containsAny(source, " tahoe ")) return "tahoe";
+        if (containsAny(source, " hhr ")) return "hhr";
+        if (containsAny(source, " spark ")) return "spark";
+        if (containsAny(source, " lacetti ")) return "lacetti";
+
         return null;
     }
 
@@ -1795,6 +1853,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             case "id4" -> slug.contains("-id4-") || slug.contains("-id-4-");
             case "rav4" -> slug.contains("-rav4-") || slug.contains("-rav-4-");
             case "chr" -> slug.contains("-chr-") || slug.contains("-c-hr-");
+            case "corvette" -> slug.contains("-corvette-") || slug.contains("-corveta-");
             default -> slug.contains("-" + model + "-");
         };
     }
@@ -2313,6 +2372,9 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
 
     private boolean looksSuspiciousListing(String title, String text) {
         String cleanTitle = normalizeText(title).toLowerCase(Locale.ROOT);
+        if (containsAny(cleanTitle, "prodam nebo vymenim", "prodám nebo vyměním")) {
+            return true;
+        }
 
         if (cleanTitle.equals("prodam")
                 || cleanTitle.equals("prodám")
