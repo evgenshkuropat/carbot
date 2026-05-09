@@ -312,6 +312,11 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 return ParseResult.skip("non_car_listing");
             }
 
+            if (titleUrlMismatch || looksModelUrlMismatch(title, url)) {
+                log.info("BAZOS SKIP url={} reason=model_url_mismatch title={}", safe(url), safe(title));
+                return ParseResult.skip("non_car_listing");
+            }
+
             Integer priceValue = extractPrice(doc, priceText);
             if (priceValue == null) {
                 log.info("BAZOS SKIP url={} reason=missing_price title={}", safe(url), safe(title));
@@ -1637,6 +1642,11 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             return false;
         }
 
+        String urlBrand = extractBrandFromUrl(urlLower);
+        if (urlBrand != null && !titleBrand.equals(urlBrand)) {
+            return true;
+        }
+
         return switch (titleBrand) {
             case "SKODA" -> containsAny(urlLower, "audi-", "bmw-", "mercedes-", "dacia-", "ford-", "toyota-");
             case "DACIA" -> containsAny(urlLower, "skoda-", "audi-", "bmw-", "mercedes-", "volkswagen-", "seat-");
@@ -1645,10 +1655,126 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             case "MERCEDES" -> containsAny(urlLower, "skoda-", "seat-", "dacia-", "ford-");
             case "SEAT" -> containsAny(urlLower, "dacia-", "mercedes-", "bmw-", "audi-", "skoda-", "opel-");
             case "VOLKSWAGEN" -> containsAny(urlLower, "skoda-", "audi-", "bmw-", "mercedes-", "dacia-", "seat-", "cupra-");
+            case "VOLVO" -> containsAny(urlLower, "mercedes-", "mb-", "bmw-", "audi-", "volkswagen-", "vw-", "skoda-");
             case "ALFA_ROMEO" -> containsAny(urlLower, "peugeot-", "boxer-", "citroen-", "fiat-", "ford-", "renault-", "skoda-", "volkswagen-");
             case "TOYOTA" -> containsAny(urlLower, "volkswagen-", "vw-", "sharan-", "passat-", "golf-", "skoda-", "audi-", "bmw-");
             case "PEUGEOT" -> containsAny(urlLower, "alfa-romeo-", "audi-", "bmw-", "skoda-", "volkswagen-");
             default -> false;
+        };
+    }
+
+    private boolean looksModelUrlMismatch(String title, String url) {
+        String titleBrand = extractBrand(title, title);
+        String urlBrand = extractBrandFromUrl(url);
+
+        if (titleBrand == null || urlBrand == null || !titleBrand.equals(urlBrand)) {
+            return false;
+        }
+
+        String model = extractModelForUrlCheck(title);
+        if (model == null) {
+            return false;
+        }
+
+        String slug = "-" + normalizeText(url).toLowerCase(Locale.ROOT)
+                .replace('_', '-')
+                .replaceAll("[^a-z0-9]+", "-") + "-";
+
+        return !urlContainsModel(slug, model);
+    }
+
+    private String extractBrandFromUrl(String rawUrl) {
+        String url = "-" + normalizeText(rawUrl).toLowerCase(Locale.ROOT)
+                .replace('_', '-')
+                .replaceAll("[^a-z0-9]+", "-") + "-";
+
+        if (url.contains("-skoda-")) return "SKODA";
+        if (url.contains("-volkswagen-") || url.contains("-vw-")) return "VOLKSWAGEN";
+        if (url.contains("-audi-")) return "AUDI";
+        if (url.contains("-bmw-")) return "BMW";
+        if (url.contains("-mercedes-") || url.contains("-mercedes-benz-") || url.contains("-mb-")) return "MERCEDES";
+        if (url.contains("-volvo-")) return "VOLVO";
+        if (url.contains("-toyota-")) return "TOYOTA";
+        if (url.contains("-lexus-")) return "LEXUS";
+        if (url.contains("-ford-")) return "FORD";
+        if (url.contains("-renault-")) return "RENAULT";
+        if (url.contains("-seat-")) return "SEAT";
+        if (url.contains("-peugeot-")) return "PEUGEOT";
+        if (url.contains("-opel-")) return "OPEL";
+        if (url.contains("-hyundai-")) return "HYUNDAI";
+        if (url.contains("-kia-")) return "KIA";
+        if (url.contains("-mazda-")) return "MAZDA";
+        if (url.contains("-citroen-") || url.contains("-citreon-")) return "CITROEN";
+        if (url.contains("-fiat-")) return "FIAT";
+        if (url.contains("-nissan-")) return "NISSAN";
+        if (url.contains("-honda-")) return "HONDA";
+        if (url.contains("-suzuki-")) return "SUZUKI";
+        if (url.contains("-dacia-")) return "DACIA";
+        if (url.contains("-cupra-")) return "CUPRA";
+        if (url.contains("-jeep-")) return "JEEP";
+        if (url.contains("-subaru-")) return "SUBARU";
+        if (url.contains("-mitsubishi-")) return "MITSUBISHI";
+        if (url.contains("-porsche-")) return "PORSCHE";
+        return null;
+    }
+
+    private String extractModelForUrlCheck(String title) {
+        String source = " " + normalizeText(title).toLowerCase(Locale.ROOT) + " ";
+
+        if (containsAny(source, " passat ")) return "passat";
+        if (containsAny(source, " golf ")) return "golf";
+        if (containsAny(source, " tiguan ")) return "tiguan";
+        if (containsAny(source, " touran ")) return "touran";
+        if (containsAny(source, " caddy ")) return "caddy";
+        if (containsAny(source, " id.4 ", " id4 ")) return "id4";
+        if (containsAny(source, " beetle ")) return "beetle";
+        if (containsAny(source, " scirocco ")) return "scirocco";
+
+        if (containsAny(source, " xc40 ")) return "xc40";
+        if (containsAny(source, " xc60 ")) return "xc60";
+        if (containsAny(source, " xc70 ")) return "xc70";
+        if (containsAny(source, " xc90 ")) return "xc90";
+        if (containsAny(source, " v40 ")) return "v40";
+        if (containsAny(source, " v60 ")) return "v60";
+        if (containsAny(source, " v70 ")) return "v70";
+        if (containsAny(source, " v90 ")) return "v90";
+        if (containsAny(source, " c70 ")) return "c70";
+
+        if (containsAny(source, " q3 ")) return "q3";
+        if (containsAny(source, " q4 ")) return "q4";
+        if (containsAny(source, " q5 ")) return "q5";
+        if (containsAny(source, " q7 ")) return "q7";
+        if (containsAny(source, " q8 ")) return "q8";
+        if (containsAny(source, " a4 ")) return "a4";
+        if (containsAny(source, " a5 ")) return "a5";
+        if (containsAny(source, " a6 ")) return "a6";
+        if (containsAny(source, " a8 ")) return "a8";
+        if (containsAny(source, " tt ")) return "tt";
+
+        if (containsAny(source, " yaris ")) return "yaris";
+        if (containsAny(source, " corolla ")) return "corolla";
+        if (containsAny(source, " rav4 ", " rav 4 ")) return "rav4";
+        if (containsAny(source, " auris ")) return "auris";
+        if (containsAny(source, " aygo ")) return "aygo";
+        if (containsAny(source, " c-hr ", " chr ")) return "chr";
+        if (containsAny(source, " hilux ")) return "hilux";
+
+        if (containsAny(source, " x1 ")) return "x1";
+        if (containsAny(source, " x3 ")) return "x3";
+        if (containsAny(source, " x4 ")) return "x4";
+        if (containsAny(source, " x5 ")) return "x5";
+        if (containsAny(source, " x6 ")) return "x6";
+        if (containsAny(source, " x7 ")) return "x7";
+
+        return null;
+    }
+
+    private boolean urlContainsModel(String slug, String model) {
+        return switch (model) {
+            case "id4" -> slug.contains("-id4-") || slug.contains("-id-4-");
+            case "rav4" -> slug.contains("-rav4-") || slug.contains("-rav-4-");
+            case "chr" -> slug.contains("-chr-") || slug.contains("-c-hr-");
+            default -> slug.contains("-" + model + "-");
         };
     }
 

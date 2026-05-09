@@ -476,6 +476,13 @@ public class SautoParser implements CarSourceParser {
         String raw = normalizeText(safe(rawPriceText)).toLowerCase(Locale.ROOT);
         String text = normalizeText(safe(title) + " " + safe(listingText)).toLowerCase(Locale.ROOT);
 
+        Integer correctedInflatedPrice = correctLikelyInflatedOldCarPrice(priceValue, title, listingText, text);
+        if (correctedInflatedPrice != null) {
+            log.info("SAUTO PRICE CORRECTED title='{}' rawPrice={} correctedPrice={} reason=inflated_old_car_price",
+                    safe(title), priceValue, correctedInflatedPrice);
+            return correctedInflatedPrice;
+        }
+
         if (priceValue >= 25_000) {
             return priceValue;
         }
@@ -509,6 +516,42 @@ public class SautoParser implements CarSourceParser {
         }
 
         return priceValue;
+    }
+
+    private Integer correctLikelyInflatedOldCarPrice(Integer priceValue, String title, String listingText, String text) {
+        if (priceValue == null || priceValue < 1_000_000 || priceValue % 100 != 0) {
+            return null;
+        }
+
+        Integer corrected = priceValue / 100;
+        if (corrected < MIN_VALID_PRICE || corrected > 300_000) {
+            return null;
+        }
+
+        Integer year = extractYearSafely(title, listingText, text);
+        Integer mileage = extractMileage(text);
+
+        if ((year == null || year > 2012) && (mileage == null || mileage < 150_000)) {
+            return null;
+        }
+
+        if (containsAny(" " + normalizeText(title).toLowerCase(Locale.ROOT) + " ",
+                " porsche ", " ferrari ", " lamborghini ", " bentley ", " rolls-royce ",
+                " aston martin ", " maserati ", " alpina ")) {
+            return null;
+        }
+
+        boolean oldEverydayCar = looksClearlyOldCarTitle(title)
+                || containsAny(" " + normalizeText(title).toLowerCase(Locale.ROOT) + " ",
+                " octavia ", " fabia ", " passat ", " golf ", " polo ", " astra ", " corsa ",
+                " focus ", " mondeo ", " fiesta ", " megane ", " clio ", " scenic ",
+                " 206 ", " 307 ", " punto ", " yaris ");
+
+        if (!oldEverydayCar && (year == null || year > 2010)) {
+            return null;
+        }
+
+        return corrected;
     }
 
     private boolean isFinanceBaitRaw(String rawPriceText) {
