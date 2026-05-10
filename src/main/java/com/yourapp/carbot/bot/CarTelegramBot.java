@@ -620,7 +620,6 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
 
         switch (field) {
             case "car_type" -> {
-                userStateService.setStep(chatId, BotStep.EDITING_CAR_TYPE);
                 sendMessage(
                         chatId,
                         buildCarTypeSelectionText(chatId, filter.getCarType()),
@@ -628,7 +627,6 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
                 );
             }
             case "brand" -> {
-                userStateService.setStep(chatId, BotStep.EDITING_BRAND);
                 sendMessage(
                         chatId,
                         buildBrandSelectionText(chatId, parseValues(filter.getBrand())),
@@ -636,7 +634,6 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
                 );
             }
             case "max_price" -> {
-                userStateService.setStep(chatId, BotStep.EDITING_MAX_PRICE);
                 sendMessage(
                         chatId,
                         messages.get(lang, "price.choose") + "\n\n" + buildFilterProgress(filter),
@@ -644,7 +641,6 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
                 );
             }
             case "location" -> {
-                userStateService.setStep(chatId, BotStep.EDITING_LOCATION);
                 sendMessage(
                         chatId,
                         messages.get(lang, "location.choose") + "\n\n" + buildFilterProgress(filter),
@@ -652,7 +648,6 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
                 );
             }
             case "max_mileage" -> {
-                userStateService.setStep(chatId, BotStep.EDITING_MAX_MILEAGE);
                 sendMessage(
                         chatId,
                         messages.get(lang, "mileage.choose") + "\n\n" + buildFilterProgress(filter),
@@ -660,7 +655,6 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
                 );
             }
             case "transmission" -> {
-                userStateService.setStep(chatId, BotStep.EDITING_TRANSMISSION);
                 sendMessage(
                         chatId,
                         messages.get(lang, "transmission.choose") + "\n\n" + buildFilterProgress(filter),
@@ -668,7 +662,6 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
                 );
             }
             case "fuel_type" -> {
-                userStateService.setStep(chatId, BotStep.EDITING_FUEL_TYPE);
                 sendMessage(
                         chatId,
                         messages.get(lang, "fuelType.choose") + "\n\n" + buildFilterProgress(filter),
@@ -676,7 +669,6 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
                 );
             }
             case "year_from" -> {
-                userStateService.setStep(chatId, BotStep.EDITING_YEAR_FROM);
                 sendMessage(
                         chatId,
                         messages.get(lang, "yearFrom.choose") + "\n\n" + buildFilterProgress(filter),
