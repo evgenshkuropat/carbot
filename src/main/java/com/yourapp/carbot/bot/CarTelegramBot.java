@@ -285,6 +285,10 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
             return;
         }
 
+        sendFilterEditFieldsMenu(chatId);
+    }
+
+    private void sendFilterEditFieldsMenu(Long chatId) {
         String currentLang = lang(chatId);
 
         sendMessage(
@@ -293,6 +297,12 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
                 keyboardFactory.myFilterEditFieldsKeyboard(currentLang)
         );
     }
+
+    private void finishEditField(Long chatId) {
+        userStateService.setStep(chatId, BotStep.NONE);
+        sendFilterEditFieldsMenu(chatId);
+    }
+
     private void handleCallback(Update update) throws Exception {
         String data = update.getCallbackQuery().getData();
         Long chatId = update.getCallbackQuery().getMessage().getChatId();
@@ -463,8 +473,7 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
         String lang = lang(chatId);
 
         if (isEditingStep(userStateService.getStep(chatId))) {
-            userStateService.setStep(chatId, BotStep.NONE);
-            showCurrentFilter(chatId);
+            finishEditField(chatId);
             return;
         }
 
@@ -651,8 +660,7 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
         userFilterService.save(filter);
 
         if (isEditingStep(userStateService.getStep(chatId))) {
-            userStateService.setStep(chatId, BotStep.NONE);
-            showCurrentFilter(chatId);
+            finishEditField(chatId);
             return;
         }
 
@@ -688,8 +696,7 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
         userFilterService.save(filter);
 
         if (isEditingStep(userStateService.getStep(chatId))) {
-            userStateService.setStep(chatId, BotStep.NONE);
-            showCurrentFilter(chatId);
+            finishEditField(chatId);
             return;
         }
 
@@ -747,8 +754,7 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
         userFilterService.save(filter);
 
         if (isEditingStep(userStateService.getStep(chatId))) {
-            userStateService.setStep(chatId, BotStep.NONE);
-            showCurrentFilter(chatId);
+            finishEditField(chatId);
             return;
         }
 
@@ -780,8 +786,7 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
         userFilterService.save(filter);
 
         if (isEditingStep(userStateService.getStep(chatId))) {
-            userStateService.setStep(chatId, BotStep.NONE);
-            showCurrentFilter(chatId);
+            finishEditField(chatId);
             return;
         }
 
@@ -806,8 +811,7 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
         userFilterService.save(filter);
 
         if (isEditingStep(userStateService.getStep(chatId))) {
-            userStateService.setStep(chatId, BotStep.NONE);
-            showCurrentFilter(chatId);
+            finishEditField(chatId);
             return;
         }
 
@@ -830,8 +834,7 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
         userFilterService.save(filter);
 
         if (isEditingStep(userStateService.getStep(chatId))) {
-            userStateService.setStep(chatId, BotStep.NONE);
-            showCurrentFilter(chatId);
+            finishEditField(chatId);
             return;
         }
 
@@ -856,8 +859,7 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
         userFilterService.save(filter);
 
         if (isEditingStep(userStateService.getStep(chatId))) {
-            userStateService.setStep(chatId, BotStep.NONE);
-            showCurrentFilter(chatId);
+            finishEditField(chatId);
             return;
         }
 
@@ -880,8 +882,7 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
         userFilterService.save(filter);
 
         if (isEditingStep(userStateService.getStep(chatId))) {
-            userStateService.setStep(chatId, BotStep.NONE);
-            showCurrentFilter(chatId);
+            finishEditField(chatId);
             return;
         }
 
@@ -904,8 +905,7 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
         userFilterService.save(filter);
 
         if (isEditingStep(userStateService.getStep(chatId))) {
-            userStateService.setStep(chatId, BotStep.NONE);
-            showCurrentFilter(chatId);
+            finishEditField(chatId);
             return;
         }
 
@@ -930,8 +930,7 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
         userFilterService.save(filter);
 
         if (isEditingStep(userStateService.getStep(chatId))) {
-            userStateService.setStep(chatId, BotStep.NONE);
-            showCurrentFilter(chatId);
+            finishEditField(chatId);
             return;
         }
 
