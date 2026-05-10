@@ -53,13 +53,13 @@ public class CarBotKeyboardFactory {
                 "https://t.me/zhytloCZ_bot"
         ));
 
-        rows.add(singleButtonRow(
+        rows.add(singleUrlButtonRow(
                 "✉️ " + messages.get(lang, "services.feedback"),
-                "services_feedback"
+                "https://t.me/evzen_cz"
         ));
 
         rows.add(singleUrlButtonRow(
-                "❤️ " + messages.get(lang, "services.supportProject"),
+                "💳 " + messages.get(lang, "services.supportProject"),
                 "https://revolut.me/evzen13"
         ));
 
@@ -67,6 +67,7 @@ public class CarBotKeyboardFactory {
                 .keyboard(rows)
                 .build();
     }
+
     public InlineKeyboardMarkup languageKeyboard() {
         InlineKeyboardRow row1 = new InlineKeyboardRow();
         row1.add(InlineKeyboardButton.builder().text("🇺🇦 Українська").callbackData("lang:uk").build());

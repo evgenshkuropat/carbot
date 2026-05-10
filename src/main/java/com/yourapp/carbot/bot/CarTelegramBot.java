@@ -131,11 +131,6 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
                 return;
             }
 
-            if (userStateService.getStep(chatId) == BotStep.WAITING_FEEDBACK) {
-                handleFeedbackMessage(chatId, username, text);
-                return;
-            }
-
             sendMessage(
                     chatId,
                     messages.get(lang(chatId), "command.unknown"),
@@ -344,11 +339,6 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
 
         if ("find_stop".equals(data)) {
             handleFindStop(chatId);
-            return;
-        }
-
-        if ("services_feedback".equals(data)) {
-            startFeedback(chatId);
             return;
         }
         if ("myfilter_find".equals(data)) {
@@ -1003,42 +993,6 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
                 chatId,
                 messages.get(lang(chatId), "services.text"),
                 keyboardFactory.servicesKeyboard(lang(chatId))
-        );
-    }
-
-    private void startFeedback(Long chatId) {
-        userStateService.setStep(chatId, BotStep.WAITING_FEEDBACK);
-        sendMessage(
-                chatId,
-                messages.get(lang(chatId), "feedback.prompt"),
-                keyboardFactory.mainMenuKeyboard(lang(chatId))
-        );
-    }
-
-    private void handleFeedbackMessage(Long chatId, String username, String text) {
-        userStateService.setStep(chatId, BotStep.NONE);
-
-        String author = username == null || username.isBlank()
-                ? "-"
-                : "@" + username;
-
-        String adminText = "Feedback from AutoCZ\n"
-                + "chatId: " + chatId + "\n"
-                + "username: " + author + "\n\n"
-                + text;
-
-        if (adminChatIds.isEmpty()) {
-            log.warn("Feedback received but no admin chat ids configured. chatId={} username={} text={}", chatId, author, text);
-        } else {
-            for (Long adminChatId : adminChatIds) {
-                sendMessage(adminChatId, adminText);
-            }
-        }
-
-        sendMessage(
-                chatId,
-                messages.get(lang(chatId), "feedback.thanks"),
-                keyboardFactory.mainMenuKeyboard(lang(chatId))
         );
     }
     private void handleLatest(Long chatId) {
