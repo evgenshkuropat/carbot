@@ -85,6 +85,26 @@ public class CarBotKeyboardFactory {
                 "myfilter_find"
         ));
 
+        rows.add(singleButtonRow(
+                notificationButtonText(lang),
+                "notif_settings"
+        ));
+
+        rows.add(twoButtonsRow(
+                "✏️ " + messages.get(lang, "button.editFilter"),
+                "myfilter_edit",
+                "♻️ " + messages.get(lang, "button.resetFilter"),
+                "myfilter_reset"
+        ));
+
+        return InlineKeyboardMarkup.builder()
+                .keyboard(rows)
+                .build();
+    }
+
+    public InlineKeyboardMarkup myFilterEditFieldsKeyboard(String lang) {
+        List<InlineKeyboardRow> rows = new ArrayList<>();
+
         rows.add(twoButtonsRow(
                 messages.get(lang, "label.carType"),
                 "edit_field:car_type",
@@ -114,15 +134,8 @@ public class CarBotKeyboardFactory {
         ));
 
         rows.add(singleButtonRow(
-                notificationButtonText(lang),
-                "notif_settings"
-        ));
-
-        rows.add(twoButtonsRow(
-                "✏️ " + messages.get(lang, "button.editFilter"),
-                "myfilter_edit",
-                "♻️ " + messages.get(lang, "button.resetFilter"),
-                "myfilter_reset"
+                "⬅️ " + messages.get(lang, "button.prev"),
+                "show_myfilter"
         ));
 
         return InlineKeyboardMarkup.builder()

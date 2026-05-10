@@ -277,6 +277,22 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
         );
     }
 
+    private void showFilterEditMenu(Long chatId) {
+        UserFilterEntity filter = userFilterService.findByChatId(chatId).orElse(null);
+
+        if (!isFilterConfigured(filter)) {
+            editFilterSetup(chatId);
+            return;
+        }
+
+        String currentLang = lang(chatId);
+
+        sendMessage(
+                chatId,
+                "✏️ " + messages.get(currentLang, "button.editFilter"),
+                keyboardFactory.myFilterEditFieldsKeyboard(currentLang)
+        );
+    }
     private void handleCallback(Update update) throws Exception {
         String data = update.getCallbackQuery().getData();
         Long chatId = update.getCallbackQuery().getMessage().getChatId();
@@ -310,7 +326,7 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
         }
 
         if ("myfilter_edit".equals(data)) {
-            editFilterSetup(chatId);
+            showFilterEditMenu(chatId);
             return;
         }
 
