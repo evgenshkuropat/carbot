@@ -59,7 +59,7 @@ public class CarBotKeyboardFactory {
         ));
 
         rows.add(singleUrlButtonRow(
-                "💳 " + messages.get(lang, "services.supportProject"),
+                "☕ " + messages.get(lang, "services.supportProject"),
                 "https://revolut.me/evzen13"
         ));
 
