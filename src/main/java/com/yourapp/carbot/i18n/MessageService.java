@@ -10,72 +10,72 @@ public class MessageService {
     private final Map<String, Map<String, String>> messages = Map.of(
             "ru", Map.ofEntries(
                     Map.entry("start.welcome", """
-                            🚗 Поиск авто по всей Чехии
+                            \uD83D\uDE97 \u041F\u043E\u0438\u0441\u043A \u0430\u0432\u0442\u043E \u043F\u043E \u0432\u0441\u0435\u0439 \u0427\u0435\u0445\u0438\u0438
                             
-                            Я собираю объявления с:
-                            • Bazoš.cz
-                            • Sauto.cz
-                            • TipCars.cz
+                            \u042F \u0441\u043E\u0431\u0438\u0440\u0430\u044E \u043E\u0431\u044A\u044F\u0432\u043B\u0435\u043D\u0438\u044F \u0441:
+                            \u2022 Bazo\u0161.cz
+                            \u2022 Sauto.cz
+                            \u2022 TipCars.cz
                             
-                            Помогу вам:
+                            \u041F\u043E\u043C\u043E\u0433\u0443 \u0432\u0430\u043C:
                             
-                            🔍 найти авто по фильтру
-                            ⭐ сохранять избранные объявления
-                            🆕 получать новые объявления автоматически
+                            \uD83D\uDD0D \u043D\u0430\u0439\u0442\u0438 \u0430\u0432\u0442\u043E \u043F\u043E \u0444\u0438\u043B\u044C\u0442\u0440\u0443
+                            \u2B50 \u0441\u043E\u0445\u0440\u0430\u043D\u0438\u0442\u044C \u0438\u0437\u0431\u0440\u0430\u043D\u043D\u044B\u0435 \u043E\u0431\u044A\u044F\u0432\u043B\u0435\u043D\u0438\u044F
+                            \uD83C\uDD95 \u043F\u043E\u043B\u0443\u0447\u0430\u0442\u044C \u043D\u043E\u0432\u044B\u0435 \u043E\u0431\u044A\u044F\u0432\u043B\u0435\u043D\u0438\u044F \u0430\u0432\u0442\u043E\u043C\u0430\u0442\u0438\u0447\u0435\u0441\u043A\u0438
                             
-                            Выберите действие ниже 👇
+                            \u0412\u044B\u0431\u0435\u0440\u0438\u0442\u0435 \u0434\u0435\u0439\u0441\u0442\u0432\u0438\u0435 \u043D\u0438\u0436\u0435 \uD83D\uDC47
                             """),
                     Map.entry("start.welcomeBack", """
-                            С возвращением! 👋
-
-                            Ваш фильтр уже настроен.
+                            \u0421 \u0432\u043E\u0437\u0432\u0440\u0430\u0449\u0435\u043D\u0438\u0435\u043C! \uD83D\uDC4B
+                            
+                            \u0412\u0430\u0448 \u0444\u0438\u043B\u044C\u0442\u0440 \u0443\u0436\u0435 \u043D\u0430\u0441\u0442\u0440\u043E\u0435\u043D.
                             """),
 
                     Map.entry("carType.choose", """
-                            Шаг 1/8 · Тип кузова
-                            Можно выбрать несколько вариантов.
+                            \u0428\u0430\u0433 1/8 \u00B7 \u0422\u0438\u043F \u043A\u0443\u0437\u043E\u0432\u0430
+                            \u041C\u043E\u0436\u043D\u043E \u0432\u044B\u0431\u0440\u0430\u0442\u044C \u043D\u0435\u0441\u043A\u043E\u043B\u044C\u043A\u043E \u0432\u0430\u0440\u0438\u0430\u043D\u0442\u043E\u0432.
                             """),
-                    Map.entry("carType.selected", "Выбраны типы кузова:"),
-                    Map.entry("carType.chooseAtLeastOne", "Выберите хотя бы один тип кузова или нажмите «Любой»."),
+                    Map.entry("carType.selected", "\u0412\u044B\u0431\u0440\u0430\u043D\u043D\u044B\u0435 \u0442\u0438\u043F\u044B \u043A\u0443\u0437\u043E\u0432\u0430:"),
+                    Map.entry("carType.chooseAtLeastOne", "\u0412\u044B\u0431\u0435\u0440\u0438\u0442\u0435 \u0445\u043E\u0442\u044F \u0431\u044B \u043E\u0434\u0438\u043D \u0442\u0438\u043F \u043A\u0443\u0437\u043E\u0432\u0430 \u0438\u043B\u0438 \u043D\u0430\u0436\u043C\u0438\u0442\u0435 \u00AB\u041B\u044E\u0431\u043E\u0439\u00BB."),
 
-                    Map.entry("filter.carType.saved", "✅ Тип кузова сохранён"),
-                    Map.entry("filter.brand.saved", "✅ Марка сохранена"),
-                    Map.entry("filter.price.saved", "✅ Максимальная цена сохранена"),
-                    Map.entry("filter.location.saved", "✅ Регион поиска сохранён"),
-                    Map.entry("filter.mileage.saved", "✅ Максимальный пробег сохранён"),
-                    Map.entry("filter.transmission.saved", "✅ Тип коробки передач сохранён"),
-                    Map.entry("filter.fuelType.saved", "✅ Тип топлива сохранён"),
-                    Map.entry("filter.saved", "✅ Фильтр сохранён"),
+                    Map.entry("filter.carType.saved", "\u2705 \u0422\u0438\u043F \u043A\u0443\u0437\u043E\u0432\u0430 \u0441\u043E\u0445\u0440\u0430\u043D\u0435\u043D"),
+                    Map.entry("filter.brand.saved", "\u2705 \u041C\u0430\u0440\u043A\u0430 \u0441\u043E\u0445\u0440\u0430\u043D\u0435\u043D\u0430"),
+                    Map.entry("filter.price.saved", "\u2705 \u041C\u0430\u043A\u0441\u0438\u043C\u0430\u043B\u044C\u043D\u0430\u044F \u0446\u0435\u043D\u0430 \u0441\u043E\u0445\u0440\u0430\u043D\u0435\u043D\u0430"),
+                    Map.entry("filter.location.saved", "\u2705 \u0420\u0435\u0433\u0438\u043E\u043D \u043F\u043E\u0438\u0441\u043A\u0430 \u0441\u043E\u0445\u0440\u0430\u043D\u0435\u043D"),
+                    Map.entry("filter.mileage.saved", "\u2705 \u041C\u0430\u043A\u0441\u0438\u043C\u0430\u043B\u044C\u043D\u044B\u0439 \u043F\u0440\u043E\u0431\u0435\u0433 \u0441\u043E\u0445\u0440\u0430\u043D\u0435\u043D"),
+                    Map.entry("filter.transmission.saved", "\u2705 \u0422\u0438\u043F \u043A\u043E\u0440\u043E\u0431\u043A\u0438 \u043F\u0435\u0440\u0435\u0434\u0430\u0447 \u0441\u043E\u0445\u0440\u0430\u043D\u0435\u043D"),
+                    Map.entry("filter.fuelType.saved", "\u2705 \u0422\u0438\u043F \u0442\u043E\u043F\u043B\u0438\u0432\u0430 \u0441\u043E\u0445\u0440\u0430\u043D\u0435\u043D"),
+                    Map.entry("filter.saved", "\u2705 \u0424\u0438\u043B\u044C\u0442\u0440 \u0441\u043E\u0445\u0440\u0430\u043D\u0435\u043D"),
                     Map.entry("filter.saved.next", """
-                            ✅ Фильтр сохранён.
-
-                            Что хотите сделать дальше?
+                            \u2705 \u0424\u0438\u043B\u044C\u0442\u0440 \u0441\u043E\u0445\u0440\u0430\u043D\u0435\u043D.
+                            
+                            \u0427\u0442\u043E \u0445\u043E\u0442\u0438\u0442\u0435 \u0441\u0434\u0435\u043B\u0430\u0442\u044C \u0434\u0430\u043B\u044C\u0448\u0435?
                             """),
 
                     Map.entry("help.text", """
-                            ℹ️ Что умеет бот:
-                    
-                            /filter — настроить фильтр поиска
-                            /myfilter — показать текущий фильтр
-                            /find — найти подходящие авто
-                            /latest — показать новые объявления
-                            /favorites — открыть избранное
-                            /language — сменить язык
-                            /resetfilter — сбросить фильтр
-                            /start — начать заново
-                    
-                            Новые объявления будут приходить автоматически.
+                            \u2139\uFE0F \u0427\u0442\u043E \u0443\u043C\u0435\u0435\u0442 \u0431\u043E\u0442:
+                            
+                            /filter \u2014 \u043D\u0430\u0441\u0442\u0440\u043E\u0438\u0442\u044C \u0444\u0438\u043B\u044C\u0442\u0440 \u043F\u043E\u0438\u0441\u043A\u0430
+                            /myfilter \u2014 \u043F\u043E\u043A\u0430\u0437\u0430\u0442\u044C \u0442\u0435\u043A\u0443\u0449\u0438\u0439 \u0444\u0438\u043B\u044C\u0442\u0440
+                            /find \u2014 \u043D\u0430\u0439\u0442\u0438 \u043F\u043E\u0434\u0445\u043E\u0434\u044F\u0449\u0438\u0435 \u0430\u0432\u0442\u043E
+                            /services \u2014 \u043E\u0442\u043A\u0440\u044B\u0442\u044C \u0441\u0435\u0440\u0432\u0438\u0441\u044B \u0438 \u043F\u043E\u0434\u0434\u0435\u0440\u0436\u043A\u0443
+                            /favorites \u2014 \u043E\u0442\u043A\u0440\u044B\u0442\u044C \u0438\u0437\u0431\u0440\u0430\u043D\u043D\u043E\u0435
+                            /language \u2014 \u0438\u0437\u043C\u0435\u043D\u0438\u0442\u044C \u044F\u0437\u044B\u043A
+                            /resetfilter \u2014 \u0441\u0431\u0440\u043E\u0441\u0438\u0442\u044C \u0444\u0438\u043B\u044C\u0442\u0440
+                            /start \u2014 \u043D\u0430\u0447\u0430\u0442\u044C \u0437\u0430\u043D\u043E\u0432\u043E
+                            
+                            \u041D\u043E\u0432\u044B\u0435 \u043F\u043E\u0434\u0445\u043E\u0434\u044F\u0449\u0438\u0435 \u043E\u0431\u044A\u044F\u0432\u043B\u0435\u043D\u0438\u044F \u0431\u0443\u0434\u0443\u0442 \u043F\u0440\u0438\u0445\u043E\u0434\u0438\u0442\u044C \u0430\u0432\u0442\u043E\u043C\u0430\u0442\u0438\u0447\u0435\u0441\u043A\u0438.
                             """),
 
                     Map.entry("command.unknown", """
-                            Я не понял эту команду.
-
-                            Доступные команды:
+                            \u042F \u043D\u0435 \u043F\u043E\u043D\u044F\u043B \u044D\u0442\u0443 \u043A\u043E\u043C\u0430\u043D\u0434\u0443.
+                            
+                            \u0414\u043E\u0441\u0442\u0443\u043F\u043D\u044B\u0435 \u043A\u043E\u043C\u0430\u043D\u0434\u044B:
                             /start
                             /filter
                             /myfilter
                             /resetfilter
-                            /latest
+                            /services
                             /find
                             /favorites
                             /language
@@ -83,14 +83,14 @@ public class MessageService {
                             """),
 
                     Map.entry("menu.ready", """
-                            🚗 Бот готов к работе.
-
-                            Я буду присылать новые объявления по вашему фильтру.
-                            Можно начать поиск прямо сейчас 👇
+                            \uD83D\uDE97 \u0411\u043E\u0442 \u0433\u043E\u0442\u043E\u0432 \u043A \u0440\u0430\u0431\u043E\u0442\u0435.
+                            
+                            \u042F \u0431\u0443\u0434\u0443 \u043F\u0440\u0438\u0441\u044B\u043B\u0430\u0442\u044C \u043D\u043E\u0432\u044B\u0435 \u043E\u0431\u044A\u044F\u0432\u043B\u0435\u043D\u0438\u044F \u043F\u043E \u0432\u0430\u0448\u0435\u043C\u0443 \u0444\u0438\u043B\u044C\u0442\u0440\u0443.
+                            \u041C\u043E\u0436\u043D\u043E \u043D\u0430\u0447\u0430\u0442\u044C \u043F\u043E\u0438\u0441\u043A \u043F\u0440\u044F\u043C\u043E \u0441\u0435\u0439\u0447\u0430\u0441 \uD83D\uDC47
                             """),
-                    Map.entry("menu.search", "Найти авто"),
-                    Map.entry("menu.filter", "Настроить фильтр"),
-                    Map.entry("menu.myFilter", "Мой фильтр"),
+                    Map.entry("menu.search", "\u041D\u0430\u0439\u0442\u0438 \u0430\u0432\u0442\u043E"),
+                    Map.entry("menu.filter", "\u041D\u0430\u0441\u0442\u0440\u043E\u0438\u0442\u044C \u0444\u0438\u043B\u044C\u0442\u0440"),
+                    Map.entry("menu.myFilter", "\u041C\u043E\u0439 \u0444\u0438\u043B\u044C\u0442\u0440"),
                     Map.entry("menu.latest", "Новые объявления"),
                     Map.entry("menu.services", "\u0421\u0435\u0440\u0432\u0438\u0441\u044B"),
                     Map.entry("services.text", "\uD83E\uDDF0 \u0421\u0435\u0440\u0432\u0438\u0441\u044B"),
@@ -100,31 +100,31 @@ public class MessageService {
                     Map.entry("menu.favorites", "Избранное"),
                     Map.entry("menu.language", "Язык"),
 
-                    Map.entry("button.showFilter", "Показать фильтр"),
-                    Map.entry("button.findCars", "Найти авто"),
-                    Map.entry("button.editFilter", "Изменить фильтр"),
-                    Map.entry("button.resetFilter", "Сбросить фильтр"),
-                    Map.entry("button.createNewFilter", "Создать новый фильтр"),
-                    Map.entry("button.open", "Открыть объявление"),
-                    Map.entry("button.addFavorite", "Добавить в избранное"),
-                    Map.entry("button.removeFavorite", "Удалить из избранного"),
-                    Map.entry("button.prev", "Назад"),
-                    Map.entry("button.next", "Далее"),
-                    Map.entry("button.restart", "Новый поиск"),
-                    Map.entry("button.stop", "В меню"),
-                    Map.entry("button.skip", "Пропустить"),
-                    Map.entry("button.backToMenu", "В меню"),
-                    Map.entry("button.newSearch", "Новый поиск"),
+                    Map.entry("button.showFilter", "\u041F\u043E\u043A\u0430\u0437\u0430\u0442\u044C \u0444\u0438\u043B\u044C\u0442\u0440"),
+                    Map.entry("button.findCars", "\u041D\u0430\u0439\u0442\u0438 \u0430\u0432\u0442\u043E"),
+                    Map.entry("button.editFilter", "\u0418\u0437\u043C\u0435\u043D\u0438\u0442\u044C \u0444\u0438\u043B\u044C\u0442\u0440"),
+                    Map.entry("button.resetFilter", "\u0421\u0431\u0440\u043E\u0441\u0438\u0442\u044C \u0444\u0438\u043B\u044C\u0442\u0440"),
+                    Map.entry("button.createNewFilter", "\u0421\u043E\u0437\u0434\u0430\u0442\u044C \u043D\u043E\u0432\u044B\u0439 \u0444\u0438\u043B\u044C\u0442\u0440"),
+                    Map.entry("button.open", "\u041E\u0442\u043A\u0440\u044B\u0442\u044C \u043E\u0431\u044A\u044F\u0432\u043B\u0435\u043D\u0438\u0435"),
+                    Map.entry("button.addFavorite", "\u0414\u043E\u0431\u0430\u0432\u0438\u0442\u044C \u0432 \u0438\u0437\u0431\u0440\u0430\u043D\u043D\u043E\u0435"),
+                    Map.entry("button.removeFavorite", "\u0423\u0434\u0430\u043B\u0438\u0442\u044C \u0438\u0437 \u0438\u0437\u0431\u0440\u0430\u043D\u043D\u043E\u0433\u043E"),
+                    Map.entry("button.prev", "\u041D\u0430\u0437\u0430\u0434"),
+                    Map.entry("button.next", "\u0414\u0430\u043B\u0435\u0435"),
+                    Map.entry("button.restart", "\u041D\u043E\u0432\u044B\u0439 \u043F\u043E\u0438\u0441\u043A"),
+                    Map.entry("button.stop", "\u0412 \u043C\u0435\u043D\u044E"),
+                    Map.entry("button.skip", "\u041F\u0440\u043E\u043F\u0443\u0441\u0442\u0438\u0442\u044C"),
+                    Map.entry("button.backToMenu", "\u0412 \u043C\u0435\u043D\u044E"),
+                    Map.entry("button.newSearch", "\u041D\u043E\u0432\u044B\u0439 \u043F\u043E\u0438\u0441\u043A"),
 
                     Map.entry("filter.notConfigured", """
-                            Фильтр пока не настроен.
-
-                            Нажмите /filter и я помогу настроить поиск шаг за шагом.
+                            \u0424\u0438\u043B\u044C\u0442\u0440 \u043F\u043E\u043A\u0430 \u043D\u0435 \u043D\u0430\u0441\u0442\u0440\u043E\u0435\u043D.
+                            
+                            \u041D\u0430\u0436\u043C\u0438\u0442\u0435 /filter, \u0438 \u044F \u043F\u043E\u043C\u043E\u0433\u0443 \u043D\u0430\u0441\u0442\u0440\u043E\u0438\u0442\u044C \u043F\u043E\u0438\u0441\u043A \u0448\u0430\u0433 \u0437\u0430 \u0448\u0430\u0433\u043E\u043C.
                             """),
                     Map.entry("filter.reset", """
-                            ♻️ Фильтр сброшен.
-
-                            Давайте настроим новый.
+                            \u267B\uFE0F \u0424\u0438\u043B\u044C\u0442\u0440 \u0441\u0431\u0440\u043E\u0448\u0435\u043D.
+                            
+                            \u0414\u0430\u0432\u0430\u0439\u0442\u0435 \u043D\u0430\u0441\u0442\u0440\u043E\u0438\u043C \u043D\u043E\u0432\u044B\u0439.
                             """),
 
                     Map.entry("cars.empty", """
@@ -196,36 +196,36 @@ public class MessageService {
                             """),
 
                     Map.entry("brand.choose", """
-                            Шаг 2/8 · Марка
-                            Можно выбрать несколько вариантов.
+                            \u0428\u0430\u0433 2/8 \u00B7 \u041C\u0430\u0440\u043A\u0430
+                            \u041C\u043E\u0436\u043D\u043E \u0432\u044B\u0431\u0440\u0430\u0442\u044C \u043D\u0435\u0441\u043A\u043E\u043B\u044C\u043A\u043E \u0432\u0430\u0440\u0438\u0430\u043D\u0442\u043E\u0432.
                             """),
                     Map.entry("price.choose", """
-                            Шаг 3/8 · Бюджет
-                            Выберите максимальную цену.
+                            \u0428\u0430\u0433 3/8 \u00B7 \u0411\u044E\u0434\u0436\u0435\u0442
+                            \u0412\u044B\u0431\u0435\u0440\u0438\u0442\u0435 \u043C\u0430\u043A\u0441\u0438\u043C\u0430\u043B\u044C\u043D\u0443\u044E \u0446\u0435\u043D\u0443.
                             """),
                     Map.entry("location.choose", """
-                            Шаг 4/8 · Регион
-                            Выберите регион поиска.
+                            \u0428\u0430\u0433 4/8 \u00B7 \u0420\u0435\u0433\u0438\u043E\u043D
+                            \u0412\u044B\u0431\u0435\u0440\u0438\u0442\u0435 \u0440\u0435\u0433\u0438\u043E\u043D \u043F\u043E\u0438\u0441\u043A\u0430.
                             """),
                     Map.entry("mileage.choose", """
-                            Шаг 5/8 · Пробег
-                            Выберите максимальный пробег.
+                            \u0428\u0430\u0433 5/8 \u00B7 \u041F\u0440\u043E\u0431\u0435\u0433
+                            \u0412\u044B\u0431\u0435\u0440\u0438\u0442\u0435 \u043C\u0430\u043A\u0441\u0438\u043C\u0430\u043B\u044C\u043D\u044B\u0439 \u043F\u0440\u043E\u0431\u0435\u0433.
                             """),
                     Map.entry("transmission.choose", """
-                            Шаг 6/8 · Коробка
-                            Выберите тип коробки передач.
+                            \u0428\u0430\u0433 6/8 \u00B7 \u041A\u043E\u0440\u043E\u0431\u043A\u0430
+                            \u0412\u044B\u0431\u0435\u0440\u0438\u0442\u0435 \u0442\u0438\u043F \u043A\u043E\u0440\u043E\u0431\u043A\u0438 \u043F\u0435\u0440\u0435\u0434\u0430\u0447.
                             """),
                     Map.entry("fuelType.choose", """
-                            Шаг 7/8 · Топливо
-                            Выберите тип топлива.
+                            \u0428\u0430\u0433 7/8 \u00B7 \u0422\u043E\u043F\u043B\u0438\u0432\u043E
+                            \u0412\u044B\u0431\u0435\u0440\u0438\u0442\u0435 \u0442\u0438\u043F \u0442\u043E\u043F\u043B\u0438\u0432\u0430.
                             """),
                     Map.entry("yearFrom.choose", """
-                            Шаг 8/8 · Год выпуска
-                            Выберите минимальный год.
+                            \u0428\u0430\u0433 8/8 \u00B7 \u0413\u043E\u0434 \u0432\u044B\u043F\u0443\u0441\u043A\u0430
+                            \u0412\u044B\u0431\u0435\u0440\u0438\u0442\u0435 \u043C\u0438\u043D\u0438\u043C\u0430\u043B\u044C\u043D\u044B\u0439 \u0433\u043E\u0434.
                             """),
 
-                    Map.entry("brand.chooseAtLeastOne", "Выберите хотя бы одну марку или нажмите «Любая»."),
-                    Map.entry("brand.selected", "Выбраны марки:"),
+                    Map.entry("brand.chooseAtLeastOne", "\u0412\u044B\u0431\u0435\u0440\u0438\u0442\u0435 \u0445\u043E\u0442\u044F \u0431\u044B \u043E\u0434\u043D\u0443 \u043C\u0430\u0440\u043A\u0443 \u0438\u043B\u0438 \u043D\u0430\u0436\u043C\u0438\u0442\u0435 \u00AB\u041B\u044E\u0431\u0430\u044F\u00BB."),
+                    Map.entry("brand.selected", "\u0412\u044B\u0431\u0440\u0430\u043D\u043D\u044B\u0435 \u043C\u0430\u0440\u043A\u0438:"),
                     Map.entry("summary.settings", "Ваш фильтр:"),
                     Map.entry("summary.currentFilter", "Текущий фильтр"),
 
@@ -320,72 +320,72 @@ public class MessageService {
 
             "uk", Map.ofEntries(
                     Map.entry("start.welcome", """
-                            🚗 Пошук авто по всій Чехії
+                            \uD83D\uDE97 \u041F\u043E\u0448\u0443\u043A \u0430\u0432\u0442\u043E \u043F\u043E \u0432\u0441\u0456\u0439 \u0427\u0435\u0445\u0456\u0457
                             
-                            Я збираю оголошення з:
-                            • Bazoš.cz
-                            • Sauto.cz
-                            • TipCars.cz
+                            \u042F \u0437\u0431\u0438\u0440\u0430\u044E \u043E\u0433\u043E\u043B\u043E\u0448\u0435\u043D\u043D\u044F \u0437:
+                            \u2022 Bazo\u0161.cz
+                            \u2022 Sauto.cz
+                            \u2022 TipCars.cz
                             
-                            Допоможу вам:
+                            \u0414\u043E\u043F\u043E\u043C\u043E\u0436\u0443 \u0432\u0430\u043C:
                             
-                            🔍 знайти авто за фільтром
-                            ⭐ зберігати обрані оголошення
-                            🆕 отримувати нові пропозиції автоматично
+                            \uD83D\uDD0D \u0437\u043D\u0430\u0439\u0442\u0438 \u0430\u0432\u0442\u043E \u0437\u0430 \u0444\u0456\u043B\u044C\u0442\u0440\u043E\u043C
+                            \u2B50 \u0437\u0431\u0435\u0440\u0456\u0433\u0430\u0442\u0438 \u043E\u0431\u0440\u0430\u043D\u0456 \u043E\u0433\u043E\u043B\u043E\u0448\u0435\u043D\u043D\u044F
+                            \uD83C\uDD95 \u043E\u0442\u0440\u0438\u043C\u0443\u0432\u0430\u0442\u0438 \u043D\u043E\u0432\u0456 \u043E\u0433\u043E\u043B\u043E\u0448\u0435\u043D\u043D\u044F \u0430\u0432\u0442\u043E\u043C\u0430\u0442\u0438\u0447\u043D\u043E
                             
-                            Оберіть дію нижче 👇
+                            \u041E\u0431\u0435\u0440\u0456\u0442\u044C \u0434\u0456\u044E \u043D\u0438\u0436\u0447\u0435 \uD83D\uDC47
                             """),
                     Map.entry("start.welcomeBack", """
-                            З поверненням! 👋
-
-                            Ваш фільтр уже налаштований.
+                            \u0420\u0430\u0434\u0438\u0439 \u0431\u0430\u0447\u0438\u0442\u0438 \u0432\u0430\u0441 \u0437\u043D\u043E\u0432\u0443! \uD83D\uDC4B
+                            
+                            \u0412\u0430\u0448 \u0444\u0456\u043B\u044C\u0442\u0440 \u0443\u0436\u0435 \u043D\u0430\u043B\u0430\u0448\u0442\u043E\u0432\u0430\u043D\u0438\u0439.
                             """),
 
                     Map.entry("carType.choose", """
-                            Крок 1/8 · Тип кузова
-                            Можна вибрати кілька варіантів.
+                            \u041A\u0440\u043E\u043A 1/8 \u00B7 \u0422\u0438\u043F \u043A\u0443\u0437\u043E\u0432\u0430
+                            \u041C\u043E\u0436\u043D\u0430 \u0432\u0438\u0431\u0440\u0430\u0442\u0438 \u043A\u0456\u043B\u044C\u043A\u0430 \u0432\u0430\u0440\u0456\u0430\u043D\u0442\u0456\u0432.
                             """),
-                    Map.entry("carType.selected", "Обрані типи кузова:"),
-                    Map.entry("carType.chooseAtLeastOne", "Оберіть хоча б один тип кузова або натисніть «Будь-який»."),
+                    Map.entry("carType.selected", "\u041E\u0431\u0440\u0430\u043D\u0456 \u0442\u0438\u043F\u0438 \u043A\u0443\u0437\u043E\u0432\u0430:"),
+                    Map.entry("carType.chooseAtLeastOne", "\u041E\u0431\u0435\u0440\u0456\u0442\u044C \u0445\u043E\u0447\u0430 \u0431 \u043E\u0434\u0438\u043D \u0442\u0438\u043F \u043A\u0443\u0437\u043E\u0432\u0430 \u0430\u0431\u043E \u043D\u0430\u0442\u0438\u0441\u043D\u0456\u0442\u044C \u00AB\u0411\u0443\u0434\u044C-\u044F\u043A\u0438\u0439\u00BB."),
 
-                    Map.entry("filter.carType.saved", "✅ Тип кузова збережено"),
-                    Map.entry("filter.brand.saved", "✅ Марку збережено"),
-                    Map.entry("filter.price.saved", "✅ Максимальну ціну збережено"),
-                    Map.entry("filter.location.saved", "✅ Регіон пошуку збережено"),
-                    Map.entry("filter.mileage.saved", "✅ Максимальний пробіг збережено"),
-                    Map.entry("filter.transmission.saved", "✅ Тип коробки передач збережено"),
-                    Map.entry("filter.fuelType.saved", "✅ Тип пального збережено"),
-                    Map.entry("filter.saved", "✅ Фільтр збережено"),
+                    Map.entry("filter.carType.saved", "\u2705 \u0422\u0438\u043F \u043A\u0443\u0437\u043E\u0432\u0430 \u0437\u0431\u0435\u0440\u0435\u0436\u0435\u043D\u043E"),
+                    Map.entry("filter.brand.saved", "\u2705 \u041C\u0430\u0440\u043A\u0443 \u0437\u0431\u0435\u0440\u0435\u0436\u0435\u043D\u043E"),
+                    Map.entry("filter.price.saved", "\u2705 \u041C\u0430\u043A\u0441\u0438\u043C\u0430\u043B\u044C\u043D\u0443 \u0446\u0456\u043D\u0443 \u0437\u0431\u0435\u0440\u0435\u0436\u0435\u043D\u043E"),
+                    Map.entry("filter.location.saved", "\u2705 \u0420\u0435\u0433\u0456\u043E\u043D \u043F\u043E\u0448\u0443\u043A\u0443 \u0437\u0431\u0435\u0440\u0435\u0436\u0435\u043D\u043E"),
+                    Map.entry("filter.mileage.saved", "\u2705 \u041C\u0430\u043A\u0441\u0438\u043C\u0430\u043B\u044C\u043D\u0438\u0439 \u043F\u0440\u043E\u0431\u0456\u0433 \u0437\u0431\u0435\u0440\u0435\u0436\u0435\u043D\u043E"),
+                    Map.entry("filter.transmission.saved", "\u2705 \u0422\u0438\u043F \u043A\u043E\u0440\u043E\u0431\u043A\u0438 \u043F\u0435\u0440\u0435\u0434\u0430\u0447 \u0437\u0431\u0435\u0440\u0435\u0436\u0435\u043D\u043E"),
+                    Map.entry("filter.fuelType.saved", "\u2705 \u0422\u0438\u043F \u043F\u0430\u043B\u044C\u043D\u043E\u0433\u043E \u0437\u0431\u0435\u0440\u0435\u0436\u0435\u043D\u043E"),
+                    Map.entry("filter.saved", "\u2705 \u0424\u0456\u043B\u044C\u0442\u0440 \u0437\u0431\u0435\u0440\u0435\u0436\u0435\u043D\u043E"),
                     Map.entry("filter.saved.next", """
-                            ✅ Фільтр збережено.
-
-                            Що хочете зробити далі?
+                            \u2705 \u0424\u0456\u043B\u044C\u0442\u0440 \u0437\u0431\u0435\u0440\u0435\u0436\u0435\u043D\u043E.
+                            
+                            \u0429\u043E \u0445\u043E\u0447\u0435\u0442\u0435 \u0437\u0440\u043E\u0431\u0438\u0442\u0438 \u0434\u0430\u043B\u0456?
                             """),
 
                     Map.entry("help.text", """
-                            ℹ️ Що вміє бот:
-                    
-                            /filter — налаштувати фільтр пошуку
-                            /myfilter — показати поточний фільтр
-                            /find — знайти відповідні авто
-                            /latest — показати нові оголошення
-                            /favorites — відкрити обране
-                            /language — змінити мову
-                            /resetfilter — скинути фільтр
-                            /start — почати заново
-                    
-                            Нові відповідні оголошення приходитимуть автоматично.
+                            \u2139\uFE0F \u0429\u043E \u0432\u043C\u0456\u0454 \u0431\u043E\u0442:
+                            
+                            /filter \u2014 \u043D\u0430\u043B\u0430\u0448\u0442\u0443\u0432\u0430\u0442\u0438 \u0444\u0456\u043B\u044C\u0442\u0440 \u043F\u043E\u0448\u0443\u043A\u0443
+                            /myfilter \u2014 \u043F\u043E\u043A\u0430\u0437\u0430\u0442\u0438 \u043F\u043E\u0442\u043E\u0447\u043D\u0438\u0439 \u0444\u0456\u043B\u044C\u0442\u0440
+                            /find \u2014 \u0437\u043D\u0430\u0439\u0442\u0438 \u0432\u0456\u0434\u043F\u043E\u0432\u0456\u0434\u043D\u0456 \u0430\u0432\u0442\u043E
+                            /services \u2014 \u0432\u0456\u0434\u043A\u0440\u0438\u0442\u0438 \u0441\u0435\u0440\u0432\u0456\u0441\u0438 \u0442\u0430 \u043F\u0456\u0434\u0442\u0440\u0438\u043C\u043A\u0443
+                            /favorites \u2014 \u0432\u0456\u0434\u043A\u0440\u0438\u0442\u0438 \u043E\u0431\u0440\u0430\u043D\u0435
+                            /language \u2014 \u0437\u043C\u0456\u043D\u0438\u0442\u0438 \u043C\u043E\u0432\u0443
+                            /resetfilter \u2014 \u0441\u043A\u0438\u043D\u0443\u0442\u0438 \u0444\u0456\u043B\u044C\u0442\u0440
+                            /start \u2014 \u043F\u043E\u0447\u0430\u0442\u0438 \u0437\u0430\u043D\u043E\u0432\u043E
+                            
+                            \u041D\u043E\u0432\u0456 \u0432\u0456\u0434\u043F\u043E\u0432\u0456\u0434\u043D\u0456 \u043E\u0433\u043E\u043B\u043E\u0448\u0435\u043D\u043D\u044F \u043D\u0430\u0434\u0445\u043E\u0434\u0438\u0442\u0438\u043C\u0443\u0442\u044C \u0430\u0432\u0442\u043E\u043C\u0430\u0442\u0438\u0447\u043D\u043E.
                             """),
 
                     Map.entry("command.unknown", """
-                            Я не зрозумів цю команду.
-
-                            Доступні команди:
+                            \u042F \u043D\u0435 \u0437\u0440\u043E\u0437\u0443\u043C\u0456\u0432 \u0446\u044E \u043A\u043E\u043C\u0430\u043D\u0434\u0443.
+                            
+                            \u0414\u043E\u0441\u0442\u0443\u043F\u043D\u0456 \u043A\u043E\u043C\u0430\u043D\u0434\u0438:
                             /start
                             /filter
                             /myfilter
                             /resetfilter
-                            /latest
+                            /services
                             /find
                             /favorites
                             /language
@@ -393,48 +393,48 @@ public class MessageService {
                             """),
 
                     Map.entry("menu.ready", """
-                            🚗 Бот готовий до роботи.
-
-                            Я надсилатиму нові оголошення за вашим фільтром.
-                            Можна почати пошук прямо зараз 👇
+                            \uD83D\uDE97 \u0411\u043E\u0442 \u0433\u043E\u0442\u043E\u0432\u0438\u0439 \u0434\u043E \u0440\u043E\u0431\u043E\u0442\u0438.
+                            
+                            \u042F \u043D\u0430\u0434\u0441\u0438\u043B\u0430\u0442\u0438\u043C\u0443 \u043D\u043E\u0432\u0456 \u043E\u0433\u043E\u043B\u043E\u0448\u0435\u043D\u043D\u044F \u0437\u0430 \u0432\u0430\u0448\u0438\u043C \u0444\u0456\u043B\u044C\u0442\u0440\u043E\u043C.
+                            \u041C\u043E\u0436\u043D\u0430 \u043F\u043E\u0447\u0430\u0442\u0438 \u043F\u043E\u0448\u0443\u043A \u043F\u0440\u044F\u043C\u043E \u0437\u0430\u0440\u0430\u0437 \uD83D\uDC47
                             """),
-                    Map.entry("menu.search", "Знайти авто"),
-                    Map.entry("menu.filter", "Налаштувати фільтр"),
-                    Map.entry("menu.myFilter", "Мій фільтр"),
+                    Map.entry("menu.search", "\u0417\u043D\u0430\u0439\u0442\u0438 \u0430\u0432\u0442\u043E"),
+                    Map.entry("menu.filter", "\u041D\u0430\u043B\u0430\u0448\u0442\u0443\u0432\u0430\u0442\u0438 \u0444\u0456\u043B\u044C\u0442\u0440"),
+                    Map.entry("menu.myFilter", "\u041C\u0456\u0439 \u0444\u0456\u043B\u044C\u0442\u0440"),
                     Map.entry("menu.latest", "Нові оголошення"),
                     Map.entry("menu.services", "\u0421\u0435\u0440\u0432\u0456\u0441\u0438"),
                     Map.entry("services.text", "\uD83E\uDDF0 \u0421\u0435\u0440\u0432\u0456\u0441\u0438"),
                     Map.entry("services.housingBot", "\u041F\u043E\u0448\u0443\u043A \u0436\u0438\u0442\u043B\u0430 \u0432 \u0427\u0435\u0445\u0456\u0457"),
                     Map.entry("services.feedback", "\u0417\u0432\u043E\u0440\u043E\u0442\u043D\u0438\u0439 \u0437\u0432\u2019\u044F\u0437\u043E\u043A"),
-                    Map.entry("services.supportProject", "\u041F\u0456\u0434\u0442\u0440\u0438\u043C\u0430\u0442\u0438 \u043F\u0440\u043E\u0435\u043A\u0442"),
+                    Map.entry("services.supportProject", "\u041F\u0456\u0434\u0442\u0440\u0438\u043C\u0430\u0442\u0438 \u043F\u0440\u043E\u0454\u043A\u0442"),
                     Map.entry("menu.favorites", "Обране"),
                     Map.entry("menu.language", "Мова"),
 
-                    Map.entry("button.showFilter", "Показати фільтр"),
-                    Map.entry("button.findCars", "Знайти авто"),
-                    Map.entry("button.editFilter", "Змінити фільтр"),
-                    Map.entry("button.resetFilter", "Скинути фільтр"),
-                    Map.entry("button.createNewFilter", "Створити новий фільтр"),
-                    Map.entry("button.open", "Відкрити оголошення"),
-                    Map.entry("button.addFavorite", "Додати в обране"),
-                    Map.entry("button.removeFavorite", "Видалити з обраного"),
-                    Map.entry("button.prev", "Назад"),
-                    Map.entry("button.next", "Далі"),
-                    Map.entry("button.restart", "Новий пошук"),
-                    Map.entry("button.stop", "У меню"),
-                    Map.entry("button.skip", "Пропустити"),
-                    Map.entry("button.backToMenu", "У меню"),
-                    Map.entry("button.newSearch", "Новий пошук"),
+                    Map.entry("button.showFilter", "\u041F\u043E\u043A\u0430\u0437\u0430\u0442\u0438 \u0444\u0456\u043B\u044C\u0442\u0440"),
+                    Map.entry("button.findCars", "\u0417\u043D\u0430\u0439\u0442\u0438 \u0430\u0432\u0442\u043E"),
+                    Map.entry("button.editFilter", "\u0417\u043C\u0456\u043D\u0438\u0442\u0438 \u0444\u0456\u043B\u044C\u0442\u0440"),
+                    Map.entry("button.resetFilter", "\u0421\u043A\u0438\u043D\u0443\u0442\u0438 \u0444\u0456\u043B\u044C\u0442\u0440"),
+                    Map.entry("button.createNewFilter", "\u0421\u0442\u0432\u043E\u0440\u0438\u0442\u0438 \u043D\u043E\u0432\u0438\u0439 \u0444\u0456\u043B\u044C\u0442\u0440"),
+                    Map.entry("button.open", "\u0412\u0456\u0434\u043A\u0440\u0438\u0442\u0438 \u043E\u0433\u043E\u043B\u043E\u0448\u0435\u043D\u043D\u044F"),
+                    Map.entry("button.addFavorite", "\u0414\u043E\u0434\u0430\u0442\u0438 \u0432 \u043E\u0431\u0440\u0430\u043D\u0435"),
+                    Map.entry("button.removeFavorite", "\u0412\u0438\u0434\u0430\u043B\u0438\u0442\u0438 \u0437 \u043E\u0431\u0440\u0430\u043D\u043E\u0433\u043E"),
+                    Map.entry("button.prev", "\u041D\u0430\u0437\u0430\u0434"),
+                    Map.entry("button.next", "\u0414\u0430\u043B\u0456"),
+                    Map.entry("button.restart", "\u041D\u043E\u0432\u0438\u0439 \u043F\u043E\u0448\u0443\u043A"),
+                    Map.entry("button.stop", "\u0423 \u043C\u0435\u043D\u044E"),
+                    Map.entry("button.skip", "\u041F\u0440\u043E\u043F\u0443\u0441\u0442\u0438\u0442\u0438"),
+                    Map.entry("button.backToMenu", "\u0423 \u043C\u0435\u043D\u044E"),
+                    Map.entry("button.newSearch", "\u041D\u043E\u0432\u0438\u0439 \u043F\u043E\u0448\u0443\u043A"),
 
                     Map.entry("filter.notConfigured", """
-                            Фільтр ще не налаштований.
-
-                            Натисніть /filter і я допоможу налаштувати пошук крок за кроком.
+                            \u0424\u0456\u043B\u044C\u0442\u0440 \u0449\u0435 \u043D\u0435 \u043D\u0430\u043B\u0430\u0448\u0442\u043E\u0432\u0430\u043D\u0438\u0439.
+                            
+                            \u041D\u0430\u0442\u0438\u0441\u043D\u0456\u0442\u044C /filter, \u0456 \u044F \u0434\u043E\u043F\u043E\u043C\u043E\u0436\u0443 \u043D\u0430\u043B\u0430\u0448\u0442\u0443\u0432\u0430\u0442\u0438 \u043F\u043E\u0448\u0443\u043A \u043A\u0440\u043E\u043A \u0437\u0430 \u043A\u0440\u043E\u043A\u043E\u043C.
                             """),
                     Map.entry("filter.reset", """
-                            ♻️ Фільтр скинуто.
-
-                            Давайте налаштуємо новий.
+                            \u267B\uFE0F \u0424\u0456\u043B\u044C\u0442\u0440 \u0441\u043A\u0438\u043D\u0443\u0442\u043E.
+                            
+                            \u0414\u0430\u0432\u0430\u0439\u0442\u0435 \u043D\u0430\u043B\u0430\u0448\u0442\u0443\u0454\u043C\u043E \u043D\u043E\u0432\u0438\u0439.
                             """),
 
                     Map.entry("cars.empty", """
@@ -506,36 +506,36 @@ public class MessageService {
                             """),
 
                     Map.entry("brand.choose", """
-                            Крок 2/8 · Марка
-                            Можна вибрати кілька варіантів.
+                            \u041A\u0440\u043E\u043A 2/8 \u00B7 \u041C\u0430\u0440\u043A\u0430
+                            \u041C\u043E\u0436\u043D\u0430 \u0432\u0438\u0431\u0440\u0430\u0442\u0438 \u043A\u0456\u043B\u044C\u043A\u0430 \u0432\u0430\u0440\u0456\u0430\u043D\u0442\u0456\u0432.
                             """),
                     Map.entry("price.choose", """
-                            Крок 3/8 · Бюджет
-                            Оберіть максимальну ціну.
+                            \u041A\u0440\u043E\u043A 3/8 \u00B7 \u0411\u044E\u0434\u0436\u0435\u0442
+                            \u041E\u0431\u0435\u0440\u0456\u0442\u044C \u043C\u0430\u043A\u0441\u0438\u043C\u0430\u043B\u044C\u043D\u0443 \u0446\u0456\u043D\u0443.
                             """),
                     Map.entry("location.choose", """
-                            Крок 4/8 · Регіон
-                            Оберіть регіон пошуку.
+                            \u041A\u0440\u043E\u043A 4/8 \u00B7 \u0420\u0435\u0433\u0456\u043E\u043D
+                            \u041E\u0431\u0435\u0440\u0456\u0442\u044C \u0440\u0435\u0433\u0456\u043E\u043D \u043F\u043E\u0448\u0443\u043A\u0443.
                             """),
                     Map.entry("mileage.choose", """
-                            Крок 5/8 · Пробіг
-                            Оберіть максимальний пробіг.
+                            \u041A\u0440\u043E\u043A 5/8 \u00B7 \u041F\u0440\u043E\u0431\u0456\u0433
+                            \u041E\u0431\u0435\u0440\u0456\u0442\u044C \u043C\u0430\u043A\u0441\u0438\u043C\u0430\u043B\u044C\u043D\u0438\u0439 \u043F\u0440\u043E\u0431\u0456\u0433.
                             """),
                     Map.entry("transmission.choose", """
-                            Крок 6/8 · Коробка
-                            Оберіть тип коробки передач.
+                            \u041A\u0440\u043E\u043A 6/8 \u00B7 \u041A\u043E\u0440\u043E\u0431\u043A\u0430
+                            \u041E\u0431\u0435\u0440\u0456\u0442\u044C \u0442\u0438\u043F \u043A\u043E\u0440\u043E\u0431\u043A\u0438 \u043F\u0435\u0440\u0435\u0434\u0430\u0447.
                             """),
                     Map.entry("fuelType.choose", """
-                            Крок 7/8 · Пальне
-                            Оберіть тип пального.
+                            \u041A\u0440\u043E\u043A 7/8 \u00B7 \u041F\u0430\u043B\u044C\u043D\u0435
+                            \u041E\u0431\u0435\u0440\u0456\u0442\u044C \u0442\u0438\u043F \u043F\u0430\u043B\u044C\u043D\u043E\u0433\u043E.
                             """),
                     Map.entry("yearFrom.choose", """
-                            Крок 8/8 · Рік випуску
-                            Оберіть мінімальний рік.
+                            \u041A\u0440\u043E\u043A 8/8 \u00B7 \u0420\u0456\u043A \u0432\u0438\u043F\u0443\u0441\u043A\u0443
+                            \u041E\u0431\u0435\u0440\u0456\u0442\u044C \u043C\u0456\u043D\u0456\u043C\u0430\u043B\u044C\u043D\u0438\u0439 \u0440\u0456\u043A.
                             """),
 
-                    Map.entry("brand.chooseAtLeastOne", "Оберіть хоча б одну марку або натисніть «Будь-яка»."),
-                    Map.entry("brand.selected", "Обрані марки:"),
+                    Map.entry("brand.chooseAtLeastOne", "\u041E\u0431\u0435\u0440\u0456\u0442\u044C \u0445\u043E\u0447\u0430 \u0431 \u043E\u0434\u043D\u0443 \u043C\u0430\u0440\u043A\u0443 \u0430\u0431\u043E \u043D\u0430\u0442\u0438\u0441\u043D\u0456\u0442\u044C \u00AB\u0411\u0443\u0434\u044C-\u044F\u043A\u0430\u00BB."),
+                    Map.entry("brand.selected", "\u041E\u0431\u0440\u0430\u043D\u0456 \u043C\u0430\u0440\u043A\u0438:"),
                     Map.entry("summary.settings", "Ваш фільтр:"),
                     Map.entry("summary.currentFilter", "Поточний фільтр"),
 
@@ -630,72 +630,72 @@ public class MessageService {
 
             "cs", Map.ofEntries(
                     Map.entry("start.welcome", """
-                            🚗 Vyhledávání aut po celé ČR
+                            \uD83D\uDE97 Vyhled\u00E1v\u00E1n\u00ED aut po cel\u00E9 \u010CR
                             
-                            Sbírám inzeráty z:
-                            • Bazoš.cz
-                            • Sauto.cz
-                            • TipCars.cz
+                            Sb\u00EDr\u00E1m inzer\u00E1ty z:
+                            \u2022 Bazo\u0161.cz
+                            \u2022 Sauto.cz
+                            \u2022 TipCars.cz
                             
-                            Pomohu vám:
+                            Pomohu v\u00E1m:
                             
-                            🔍 najít auto podle filtru
-                            ⭐ ukládat oblíbené inzeráty
-                            🆕 sledovat nové nabídky automaticky
+                            \uD83D\uDD0D naj\u00EDt auto podle filtru
+                            \u2B50 ukl\u00E1dat obl\u00EDben\u00E9 inzer\u00E1ty
+                            \uD83C\uDD95 automaticky sledovat nov\u00E9 inzer\u00E1ty
                             
-                            Vyberte akci níže 👇
+                            Vyberte akci n\u00ED\u017Ee \uD83D\uDC47
                             """),
                     Map.entry("start.welcomeBack", """
-                            Vítejte zpět! 👋
-
-                            Váš filtr je už nastaven.
+                            V\u00EDtejte zp\u011Bt! \uD83D\uDC4B
+                            
+                            V\u00E1\u0161 filtr je u\u017E nastaven.
                             """),
 
                     Map.entry("carType.choose", """
-                            Krok 1/8 · Karoserie
-                            Můžete vybrat více možností.
+                            Krok 1/8 \u00B7 Karoserie
+                            M\u016F\u017Eete vybrat v\u00EDce mo\u017Enost\u00ED.
                             """),
-                    Map.entry("carType.selected", "Vybrané typy karoserie:"),
-                    Map.entry("carType.chooseAtLeastOne", "Vyberte alespoň jeden typ karoserie nebo stiskněte „Libovolný“."),
+                    Map.entry("carType.selected", "Vybran\u00E9 typy karoserie:"),
+                    Map.entry("carType.chooseAtLeastOne", "Vyberte alespo\u0148 jeden typ karoserie nebo stiskn\u011Bte \u201ELibovoln\u00FD\u201C."),
 
-                    Map.entry("filter.carType.saved", "✅ Typ karoserie byl uložen"),
-                    Map.entry("filter.brand.saved", "✅ Značka byla uložena"),
-                    Map.entry("filter.price.saved", "✅ Maximální cena byla uložena"),
-                    Map.entry("filter.location.saved", "✅ Region hledání byl uložen"),
-                    Map.entry("filter.mileage.saved", "✅ Maximální nájezd byl uložen"),
-                    Map.entry("filter.transmission.saved", "✅ Typ převodovky byl uložen"),
-                    Map.entry("filter.fuelType.saved", "✅ Typ paliva byl uložen"),
-                    Map.entry("filter.saved", "✅ Filtr byl uložen"),
+                    Map.entry("filter.carType.saved", "\u2705 Typ karoserie byl ulo\u017Een"),
+                    Map.entry("filter.brand.saved", "\u2705 Zna\u010Dka byla ulo\u017Eena"),
+                    Map.entry("filter.price.saved", "\u2705 Maxim\u00E1ln\u00ED cena byla ulo\u017Eena"),
+                    Map.entry("filter.location.saved", "\u2705 Region hled\u00E1n\u00ED byl ulo\u017Een"),
+                    Map.entry("filter.mileage.saved", "\u2705 Maxim\u00E1ln\u00ED n\u00E1jezd byl ulo\u017Een"),
+                    Map.entry("filter.transmission.saved", "\u2705 Typ p\u0159evodovky byl ulo\u017Een"),
+                    Map.entry("filter.fuelType.saved", "\u2705 Typ paliva byl ulo\u017Een"),
+                    Map.entry("filter.saved", "\u2705 Filtr byl ulo\u017Een"),
                     Map.entry("filter.saved.next", """
-                            ✅ Filtr byl uložen.
-
-                            Co chcete udělat dál?
+                            \u2705 Filtr byl ulo\u017Een.
+                            
+                            Co chcete ud\u011Blat d\u00E1l?
                             """),
 
                     Map.entry("help.text", """
-                            ℹ️ Co bot umí:
-                    
-                            /filter — nastavit filtr hledání
-                            /myfilter — zobrazit aktuální filtr
-                            /find — najít vhodná auta z databáze
-                            /latest — ukázat nové inzeráty
-                            /favorites — otevřít oblíbené
-                            /language — změnit jazyk
-                            /resetfilter — resetovat filtr
-                            /start — začít znovu
-                    
-                            Nové vhodné inzeráty budete dostávat automaticky.
+                            \u2139\uFE0F Co bot um\u00ED:
+                            
+                            /filter \u2014 nastavit filtr hled\u00E1n\u00ED
+                            /myfilter \u2014 zobrazit aktu\u00E1ln\u00ED filtr
+                            /find \u2014 naj\u00EDt vhodn\u00E1 auta z datab\u00E1ze
+                            /services \u2014 otev\u0159\u00EDt slu\u017Eby a podporu
+                            /favorites \u2014 otev\u0159\u00EDt obl\u00EDben\u00E9
+                            /language \u2014 zm\u011Bnit jazyk
+                            /resetfilter \u2014 resetovat filtr
+                            /start \u2014 za\u010D\u00EDt znovu
+                            
+                            Nov\u00E9 vhodn\u00E9 inzer\u00E1ty budete dost\u00E1vat automaticky.
                             """),
 
                     Map.entry("command.unknown", """
-                            Tomuto příkazu nerozumím.
-
-                            Dostupné příkazy:
+                            Tomuto p\u0159\u00EDkazu nerozum\u00EDm.
+                            
+                            Dostupn\u00E9 p\u0159\u00EDkazy:
                             /start
                             /filter
                             /myfilter
                             /resetfilter
-                            /latest
+                            /services
                             /find
                             /favorites
                             /language
@@ -703,14 +703,14 @@ public class MessageService {
                             """),
 
                     Map.entry("menu.ready", """
-                            🚗 Bot je připraven.
-
-                            Budu posílat nové inzeráty podle vašeho filtru.
-                            Můžete začít hledat hned teď 👇
+                            \uD83D\uDE97 Bot je p\u0159ipraven.
+                            
+                            Budu pos\u00EDlat nov\u00E9 inzer\u00E1ty podle va\u0161eho filtru.
+                            M\u016F\u017Eete za\u010D\u00EDt hledat hned te\u010F \uD83D\uDC47
                             """),
-                    Map.entry("menu.search", "Najít auto"),
+                    Map.entry("menu.search", "Naj\u00EDt auto"),
                     Map.entry("menu.filter", "Nastavit filtr"),
-                    Map.entry("menu.myFilter", "Můj filtr"),
+                    Map.entry("menu.myFilter", "M\u016Fj filtr"),
                     Map.entry("menu.latest", "Nové inzeráty"),
                     Map.entry("menu.services", "Slu\u017Eby"),
                     Map.entry("services.text", "\uD83E\uDDF0 Slu\u017Eby"),
@@ -721,30 +721,30 @@ public class MessageService {
                     Map.entry("menu.language", "Jazyk"),
 
                     Map.entry("button.showFilter", "Zobrazit filtr"),
-                    Map.entry("button.findCars", "Najít auta"),
+                    Map.entry("button.findCars", "Naj\u00EDt auta"),
                     Map.entry("button.editFilter", "Upravit filtr"),
                     Map.entry("button.resetFilter", "Resetovat filtr"),
-                    Map.entry("button.createNewFilter", "Vytvořit nový filtr"),
-                    Map.entry("button.open", "Otevřít inzerát"),
-                    Map.entry("button.addFavorite", "Přidat do oblíbených"),
-                    Map.entry("button.removeFavorite", "Odebrat z oblíbených"),
-                    Map.entry("button.prev", "Zpět"),
-                    Map.entry("button.next", "Další"),
-                    Map.entry("button.restart", "Nové hledání"),
+                    Map.entry("button.createNewFilter", "Vytvo\u0159it nov\u00FD filtr"),
+                    Map.entry("button.open", "Otev\u0159\u00EDt inzer\u00E1t"),
+                    Map.entry("button.addFavorite", "P\u0159idat do obl\u00EDben\u00FDch"),
+                    Map.entry("button.removeFavorite", "Odebrat z obl\u00EDben\u00FDch"),
+                    Map.entry("button.prev", "Zp\u011Bt"),
+                    Map.entry("button.next", "Dal\u0161\u00ED"),
+                    Map.entry("button.restart", "Nov\u00E9 hled\u00E1n\u00ED"),
                     Map.entry("button.stop", "Do menu"),
-                    Map.entry("button.skip", "Přeskočit"),
+                    Map.entry("button.skip", "P\u0159esko\u010Dit"),
                     Map.entry("button.backToMenu", "Do menu"),
-                    Map.entry("button.newSearch", "Nové hledání"),
+                    Map.entry("button.newSearch", "Nov\u00E9 hled\u00E1n\u00ED"),
 
                     Map.entry("filter.notConfigured", """
-                            Filtr ještě není nastaven.
-
-                            Stiskněte /filter a nastavíme hledání krok za krokem.
+                            Filtr je\u0161t\u011B nen\u00ED nastaven.
+                            
+                            Stiskn\u011Bte /filter a nastav\u00EDme hled\u00E1n\u00ED krok za krokem.
                             """),
                     Map.entry("filter.reset", """
-                            ♻️ Filtr byl resetován.
-
-                            Nastavíme nový.
+                            \u267B\uFE0F Filtr byl resetov\u00E1n.
+                            
+                            Nastav\u00EDme nov\u00FD.
                             """),
 
                     Map.entry("cars.empty", """
@@ -816,36 +816,36 @@ public class MessageService {
                             """),
 
                     Map.entry("brand.choose", """
-                            Krok 2/8 · Značka
-                            Můžete vybrat více možností.
+                            Krok 2/8 \u00B7 Zna\u010Dka
+                            M\u016F\u017Eete vybrat v\u00EDce mo\u017Enost\u00ED.
                             """),
                     Map.entry("price.choose", """
-                            Krok 3/8 · Rozpočet
-                            Vyberte maximální cenu.
+                            Krok 3/8 \u00B7 Rozpo\u010Det
+                            Vyberte maxim\u00E1ln\u00ED cenu.
                             """),
                     Map.entry("location.choose", """
-                            Krok 4/8 · Region
-                            Vyberte region hledání.
+                            Krok 4/8 \u00B7 Region
+                            Vyberte region hled\u00E1n\u00ED.
                             """),
                     Map.entry("mileage.choose", """
-                            Krok 5/8 · Nájezd
-                            Vyberte maximální nájezd.
+                            Krok 5/8 \u00B7 N\u00E1jezd
+                            Vyberte maxim\u00E1ln\u00ED n\u00E1jezd.
                             """),
                     Map.entry("transmission.choose", """
-                            Krok 6/8 · Převodovka
-                            Vyberte typ převodovky.
+                            Krok 6/8 \u00B7 P\u0159evodovka
+                            Vyberte typ p\u0159evodovky.
                             """),
                     Map.entry("fuelType.choose", """
-                            Krok 7/8 · Palivo
+                            Krok 7/8 \u00B7 Palivo
                             Vyberte typ paliva.
                             """),
                     Map.entry("yearFrom.choose", """
-                            Krok 8/8 · Rok výroby
-                            Vyberte minimální rok.
+                            Krok 8/8 \u00B7 Rok v\u00FDroby
+                            Vyberte minim\u00E1ln\u00ED rok.
                             """),
 
-                    Map.entry("brand.chooseAtLeastOne", "Vyberte alespoň jednu značku nebo stiskněte „Libovolná“."),
-                    Map.entry("brand.selected", "Vybrané značky:"),
+                    Map.entry("brand.chooseAtLeastOne", "Vyberte alespo\u0148 jednu zna\u010Dku nebo stiskn\u011Bte \u201ELibovoln\u00E1\u201C."),
+                    Map.entry("brand.selected", "Vybran\u00E9 zna\u010Dky:"),
                     Map.entry("summary.settings", "Váš filtr:"),
                     Map.entry("summary.currentFilter", "Aktuální filtr"),
 
@@ -940,72 +940,72 @@ public class MessageService {
 
             "en", Map.ofEntries(
                     Map.entry("start.welcome", """
-                            🚗 Car search across the Czech Republic
+                            \uD83D\uDE97 Car search across the Czech Republic
                             
                             I collect listings from:
-                            • Bazoš.cz
-                            • Sauto.cz
-                            • TipCars.cz
+                            \u2022 Bazo\u0161.cz
+                            \u2022 Sauto.cz
+                            \u2022 TipCars.cz
                             
                             I can help you:
                             
-                            🔍 find cars using filters
-                            ⭐ save favorite listings
-                            🆕 receive new listings automatically
+                            \uD83D\uDD0D find cars using filters
+                            \u2B50 save favorite listings
+                            \uD83C\uDD95 receive new matching listings automatically
                             
-                            Choose an action below 👇
+                            Choose an action below \uD83D\uDC47
                             """),
                     Map.entry("start.welcomeBack", """
-                            Welcome back! 👋
-
+                            Welcome back! \uD83D\uDC4B
+                            
                             Your filter is already configured.
                             """),
 
                     Map.entry("carType.choose", """
-                            Step 1/8 · Body type
+                            Step 1/8 \u00B7 Body type
                             You can choose multiple options.
                             """),
                     Map.entry("carType.selected", "Selected body types:"),
-                    Map.entry("carType.chooseAtLeastOne", "Choose at least one body type or press “Any”."),
+                    Map.entry("carType.chooseAtLeastOne", "Choose at least one body type or press \u201CAny\u201D."),
 
-                    Map.entry("filter.carType.saved", "✅ Body type saved"),
-                    Map.entry("filter.brand.saved", "✅ Brand saved"),
-                    Map.entry("filter.price.saved", "✅ Maximum price saved"),
-                    Map.entry("filter.location.saved", "✅ Search region saved"),
-                    Map.entry("filter.mileage.saved", "✅ Maximum mileage saved"),
-                    Map.entry("filter.transmission.saved", "✅ Transmission type saved"),
-                    Map.entry("filter.fuelType.saved", "✅ Fuel type saved"),
-                    Map.entry("filter.saved", "✅ Filter saved"),
+                    Map.entry("filter.carType.saved", "\u2705 Body type saved"),
+                    Map.entry("filter.brand.saved", "\u2705 Brand saved"),
+                    Map.entry("filter.price.saved", "\u2705 Maximum price saved"),
+                    Map.entry("filter.location.saved", "\u2705 Search region saved"),
+                    Map.entry("filter.mileage.saved", "\u2705 Maximum mileage saved"),
+                    Map.entry("filter.transmission.saved", "\u2705 Transmission type saved"),
+                    Map.entry("filter.fuelType.saved", "\u2705 Fuel type saved"),
+                    Map.entry("filter.saved", "\u2705 Filter saved"),
                     Map.entry("filter.saved.next", """
-                            ✅ Filter saved.
-
+                            \u2705 Filter saved.
+                            
                             What would you like to do next?
                             """),
 
                     Map.entry("help.text", """
-                            ℹ️ What this bot can do:
-                    
-                            /filter — set up your search filter
-                            /myfilter — show current filter
-                            /find — find matching cars from database
-                            /latest — show new listings
-                            /favorites — open favorites
-                            /language — change language
-                            /resetfilter — reset filter
-                            /start — start again
-                    
-                            New matching listings will be sent automatically.
+                            \u2139\uFE0F What this bot can do:
+                            
+                            /filter \u2014 set up a search filter
+                            /myfilter \u2014 show your current filter
+                            /find \u2014 find matching cars
+                            /services \u2014 open services and support
+                            /favorites \u2014 open favorites
+                            /language \u2014 change language
+                            /resetfilter \u2014 reset filter
+                            /start \u2014 start over
+                            
+                            New matching listings will arrive automatically.
                             """),
 
                     Map.entry("command.unknown", """
-                            I didn't understand that command.
-
+                            I did not understand that command.
+                            
                             Available commands:
                             /start
                             /filter
                             /myfilter
                             /resetfilter
-                            /latest
+                            /services
                             /find
                             /favorites
                             /language
@@ -1013,10 +1013,10 @@ public class MessageService {
                             """),
 
                     Map.entry("menu.ready", """
-                            🚗 Bot is ready.
-
+                            \uD83D\uDE97 Bot is ready.
+                            
                             I will send new listings matching your filter.
-                            You can start searching right now 👇
+                            You can start searching right now \uD83D\uDC47
                             """),
                     Map.entry("menu.search", "Find cars"),
                     Map.entry("menu.filter", "Set filter"),
@@ -1048,12 +1048,12 @@ public class MessageService {
 
                     Map.entry("filter.notConfigured", """
                             Filter is not configured yet.
-
+                            
                             Press /filter and I will help you set it up step by step.
                             """),
                     Map.entry("filter.reset", """
-                            ♻️ Filter has been reset.
-
+                            \u267B\uFE0F Filter has been reset.
+                            
                             Let's set up a new one.
                             """),
 
@@ -1126,35 +1126,35 @@ public class MessageService {
                             """),
 
                     Map.entry("brand.choose", """
-                            Step 2/8 · Brand
+                            Step 2/8 \u00B7 Brand
                             You can choose multiple options.
                             """),
                     Map.entry("price.choose", """
-                            Step 3/8 · Budget
+                            Step 3/8 \u00B7 Budget
                             Choose the maximum price.
                             """),
                     Map.entry("location.choose", """
-                            Step 4/8 · Region
+                            Step 4/8 \u00B7 Region
                             Choose the search region.
                             """),
                     Map.entry("mileage.choose", """
-                            Step 5/8 · Mileage
+                            Step 5/8 \u00B7 Mileage
                             Choose the maximum mileage.
                             """),
                     Map.entry("transmission.choose", """
-                            Step 6/8 · Transmission
+                            Step 6/8 \u00B7 Transmission
                             Choose the transmission type.
                             """),
                     Map.entry("fuelType.choose", """
-                            Step 7/8 · Fuel
+                            Step 7/8 \u00B7 Fuel
                             Choose the fuel type.
                             """),
                     Map.entry("yearFrom.choose", """
-                            Step 8/8 · Year
+                            Step 8/8 \u00B7 Year
                             Choose the minimum year.
                             """),
 
-                    Map.entry("brand.chooseAtLeastOne", "Choose at least one brand or press “Any”."),
+                    Map.entry("brand.chooseAtLeastOne", "Choose at least one brand or press \u201CAny\u201D."),
                     Map.entry("brand.selected", "Selected brands:"),
                     Map.entry("summary.settings", "Your filter:"),
                     Map.entry("summary.currentFilter", "Current filter"),
