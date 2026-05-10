@@ -1153,7 +1153,17 @@ public class SautoParser implements CarSourceParser {
             return false;
         }
 
+        if (looksModernZafiraVariant(normalizedTitle) && year < 2015) {
+            return false;
+        }
+
         return true;
+    }
+
+    private boolean looksModernZafiraVariant(String normalizedTitle) {
+        return normalizedTitle != null
+                && normalizedTitle.contains(" zafira ")
+                && containsAny(normalizedTitle, " crosscamp ", " life ", " flex ");
     }
 
     private boolean isValidYearExtended(Integer year) {
