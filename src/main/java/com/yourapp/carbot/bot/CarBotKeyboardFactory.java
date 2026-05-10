@@ -85,15 +85,10 @@ public class CarBotKeyboardFactory {
                 "myfilter_find"
         ));
 
-        rows.add(singleButtonRow(
-                notificationButtonText(lang),
-                "notif_settings"
-        ));
-
         rows.add(twoButtonsRow(
                 "✏️ " + messages.get(lang, "button.editFilter"),
                 "myfilter_edit",
-                "♻️ " + messages.get(lang, "button.resetFilter"),
+                "↩️ " + messages.get(lang, "button.resetFilter"),
                 "myfilter_reset"
         ));
 
