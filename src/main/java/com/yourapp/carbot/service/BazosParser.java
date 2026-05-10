@@ -340,13 +340,11 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             Integer mileage = extractMileage(title, analysisText);
             String fuelType = firstNonBlank(
                     extractFuelType(title),
-                    extractFuelType(listingText),
-                    extractFuelType(analysisText)
+                    extractFuelType(listingText)
             );
             String transmission = firstNonBlank(
                     extractTransmission(title),
-                    extractTransmission(listingText),
-                    extractTransmission(analysisText)
+                    extractTransmission(listingText)
             );
             String brand = extractBrand(title, analysisText);
             String carType = extractCarType(title, listingText, url);
@@ -1004,6 +1002,12 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 || compact.contains("35i")
                 || compact.contains("40i")
                 || compact.contains("50i")
+                || compact.contains("318ci")
+                || compact.contains("320ci")
+                || compact.contains("325ci")
+                || compact.contains("330ci")
+                || compact.contains("448v")
+                || compact.contains("44v8")
                 || (compact.contains("v6") && !compact.contains("tdi"))) {
             return "PETROL";
         }
@@ -1037,6 +1041,8 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " 3.5i ",
                 " 4.0i ",
                 " 5.0i ",
+                " 4.4 ",
+                " 4,4 ",
                 " mustang ",
                 " v8 ",
                 " 330i ",
@@ -1904,6 +1910,10 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         String titleSource = " " + normalizeText(title).toLowerCase(Locale.ROOT) + " ";
         String wordSource = compactSearchText(title + " " + shortenForCheck(text, 400) + " " + safe(url));
 
+        if (looksLikePassengerCarModel(title)) {
+            return false;
+        }
+
         if (containsAny(titleSource,
                 " trafic ", " traffic ",
                 " master ", " movano ", " boxer ", " jumper ", " ducato ",
@@ -1911,15 +1921,11 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " proace ")
                 || containsAny(wordSource,
                 " transporter ", " caravelle ", " carawelle ")) {
-            if (containsAny(titleSource, " proace verso ", " proace city verso ")
-                    || containsAny(wordSource, " proace verso ", " proace city verso ")) {
+            if (containsAny(titleSource, " proace verso ", " proace city verso ", " spacetourer ")
+                    || containsAny(wordSource, " proace verso ", " proace city verso ", " spacetourer ")) {
                 return false;
             }
             return true;
-        }
-
-        if (looksLikePassengerCarModel(title)) {
-            return false;
         }
 
         String detectedBrand = extractBrand(title, text);
@@ -1938,7 +1944,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " transporter ", " caravelle ", " carawelle ", " multivan ",
                 " trafic ", " traffic ", " vivaro ", " primastar ",
                 " partner l1 ", " partner l2 ",
-                " expert ", " jumpy ", " scudo ", " proace ",
+                " expert ", " scudo ", " proace ",
                 " tourneo custom ", " transit custom ",
                 " iveco ", " daily ", " boxer ", " ducato ", " jumper ",
                 " master ", " movano ", " crafter ", " transit ",
