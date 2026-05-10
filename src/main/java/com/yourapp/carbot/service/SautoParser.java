@@ -1456,7 +1456,34 @@ public class SautoParser implements CarSourceParser {
     }
 
     private String extractTransmission(String text) {
-        String normalized = " " + normalizeText(text).toLowerCase(Locale.ROOT) + " ";
+        String normalized = " " + normalizeText(text).toLowerCase(Locale.ROOT)
+                .replace('-', ' ')
+                .replace('/', ' ')
+                .replace(',', ' ')
+                + " ";
+        String compact = normalized.replaceAll("[^a-z0-9]+", "");
+
+        if (containsAny(normalized,
+                " manuál ",
+                " manual ",
+                " manuální ",
+                " manualni ",
+                " manuální převodovka ",
+                " manualni prevodovka ",
+                " 5mt ",
+                " 6mt ",
+                " mt5 ",
+                " mt6 ",
+                " mt 5 ",
+                " mt 6 ",
+                " 5m t ",
+                " 6m t ")
+                || compact.contains("5mt")
+                || compact.contains("6mt")
+                || compact.contains("mt5")
+                || compact.contains("mt6")) {
+            return "MANUAL";
+        }
 
         if (containsAny(normalized,
                 " dsg ",
@@ -1471,28 +1498,14 @@ public class SautoParser implements CarSourceParser {
                 " stronic ",
                 " powershift ",
                 " edc ",
-                " 7g-tronic ",
-                " 9g-tronic ",
-                " g-tronic ",
+                " 7g tronic ",
+                " 9g tronic ",
+                " g tronic ",
                 " 7dct ",
                 " 8at ",
                 " 6at ",
                 " 5at ")) {
             return "AUTOMATIC";
-        }
-
-        if (containsAny(normalized,
-                " manuál ",
-                " manual ",
-                " manuální ",
-                " manualni ",
-                " manuální převodovka ",
-                " manualni prevodovka ",
-                " 5mt ",
-                " 6mt ",
-                " manuál, ",
-                " manual, ")) {
-            return "MANUAL";
         }
 
         return null;

@@ -415,6 +415,15 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             return true;
         }
 
+        String source = " " + normalizeText(title + " " + shortenForCheck(text, 500)).toLowerCase(Locale.ROOT) + " ";
+
+        if (year != null
+                && year >= 2020
+                && priceValue < 500_000
+                && containsAny(source, " land cruiser ", " landcruiser ", " lc300 ", " lc 300 ")) {
+            return true;
+        }
+
         if (year != null && year >= 2015 && priceValue < 80_000) {
             return true;
         }
@@ -851,6 +860,8 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " ev ",
                 " kwh ",
                 " bev ",
+                " bz4x ",
+                " bz 4x ",
                 " enyaq ", " id.3 ", " id.4 ", " id.5 ", " tesla ", " leaf ",
                 " kona electric ", " kona elektric ", " ioniq ", " ioniq 5 ", " ioniq 6 ")) {
             return "ELECTRIC";
@@ -1274,7 +1285,12 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
 
         if (source.contains(" rav4 ")) return "TOYOTA";
         if (source.contains(" land cruiser ")) return "TOYOTA";
+        if (source.contains(" landcruiser ")) return "TOYOTA";
+        if (source.contains(" prius ")) return "TOYOTA";
+        if (source.contains(" corolla ")) return "TOYOTA";
+        if (source.contains(" auris ")) return "TOYOTA";
         if (source.contains(" aygo ")) return "TOYOTA";
+        if (source.contains(" bz4x ") || source.contains(" bz 4x ")) return "TOYOTA";
 
         if (source.contains(" xc60 ")) return "VOLVO";
         if (source.contains(" xc90 ")) return "VOLVO";
@@ -1895,7 +1911,8 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " proace ")
                 || containsAny(wordSource,
                 " transporter ", " caravelle ", " carawelle ")) {
-            if (containsAny(titleSource, " proace verso ", " proace city verso ")) {
+            if (containsAny(titleSource, " proace verso ", " proace city verso ")
+                    || containsAny(wordSource, " proace verso ", " proace city verso ")) {
                 return false;
             }
             return true;
