@@ -107,30 +107,30 @@ public class CarBotKeyboardFactory {
 
         rows.add(twoButtonsRow(
                 messages.get(lang, "label.carType"),
-                "edit_field:car_type",
+                "myfilter_field:car_type",
                 messages.get(lang, "label.brand"),
-                "edit_field:brand"
+                "myfilter_field:brand"
         ));
 
         rows.add(twoButtonsRow(
                 messages.get(lang, "label.maxPrice"),
-                "edit_field:max_price",
+                "myfilter_field:max_price",
                 messages.get(lang, "label.location"),
-                "edit_field:location"
+                "myfilter_field:location"
         ));
 
         rows.add(twoButtonsRow(
                 messages.get(lang, "label.maxMileage"),
-                "edit_field:max_mileage",
+                "myfilter_field:max_mileage",
                 messages.get(lang, "label.transmission"),
-                "edit_field:transmission"
+                "myfilter_field:transmission"
         ));
 
         rows.add(twoButtonsRow(
                 messages.get(lang, "label.fuelType"),
-                "edit_field:fuel_type",
+                "myfilter_field:fuel_type",
                 messages.get(lang, "label.yearFrom"),
-                "edit_field:year_from"
+                "myfilter_field:year_from"
         ));
 
         rows.add(singleButtonRow(
