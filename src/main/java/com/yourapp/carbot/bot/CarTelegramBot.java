@@ -131,6 +131,11 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
                 return;
             }
 
+            if (userStateService.getStep(chatId) == BotStep.WAITING_FEEDBACK) {
+                handleFeedbackMessage(chatId, username, text);
+                return;
+            }
+
             sendMessage(
                     chatId,
                     messages.get(lang(chatId), "command.unknown"),
@@ -151,6 +156,7 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
                 .replace("📋 ", "")
                 .replace("📝 ", "")
                 .replace("🆕 ", "")
+                .replace("🧰 ", "")
                 .replace("⭐ ", "")
                 .replace("🌐 ", "")
                 .trim();
@@ -170,8 +176,8 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
             return true;
         }
 
-        if (normalized.equals(messages.get(lang, "menu.latest")) || text.equals("/latest")) {
-            handleLatest(chatId);
+        if (normalized.equals(messages.get(lang, "menu.services")) || normalized.equals(messages.get(lang, "menu.latest")) || text.equals("/services") || text.equals("/latest")) {
+            showServices(chatId);
             return true;
         }
 
@@ -191,7 +197,7 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
     private void handleCommand(Long chatId, String username, String telegramLanguageCode, String text) {
         switch (text.split("\\s+")[0].toLowerCase()) {
             case "/start" -> handleStart(chatId, username, telegramLanguageCode);
-            case "/latest" -> handleLatest(chatId);
+            case "/latest", "/services" -> showServices(chatId);
             case "/find" -> handleFind(chatId);
             case "/favorites" -> handleFavorites(chatId);
             case "/help" -> handleHelp(chatId);
@@ -341,6 +347,10 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
             return;
         }
 
+        if ("services_feedback".equals(data)) {
+            startFeedback(chatId);
+            return;
+        }
         if ("myfilter_find".equals(data)) {
             handleFind(chatId);
             return;
@@ -988,6 +998,49 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
         );
     }
 
+    private void showServices(Long chatId) {
+        sendMessage(
+                chatId,
+                messages.get(lang(chatId), "services.text"),
+                keyboardFactory.servicesKeyboard(lang(chatId))
+        );
+    }
+
+    private void startFeedback(Long chatId) {
+        userStateService.setStep(chatId, BotStep.WAITING_FEEDBACK);
+        sendMessage(
+                chatId,
+                messages.get(lang(chatId), "feedback.prompt"),
+                keyboardFactory.mainMenuKeyboard(lang(chatId))
+        );
+    }
+
+    private void handleFeedbackMessage(Long chatId, String username, String text) {
+        userStateService.setStep(chatId, BotStep.NONE);
+
+        String author = username == null || username.isBlank()
+                ? "-"
+                : "@" + username;
+
+        String adminText = "Feedback from AutoCZ\n"
+                + "chatId: " + chatId + "\n"
+                + "username: " + author + "\n\n"
+                + text;
+
+        if (adminChatIds.isEmpty()) {
+            log.warn("Feedback received but no admin chat ids configured. chatId={} username={} text={}", chatId, author, text);
+        } else {
+            for (Long adminChatId : adminChatIds) {
+                sendMessage(adminChatId, adminText);
+            }
+        }
+
+        sendMessage(
+                chatId,
+                messages.get(lang(chatId), "feedback.thanks"),
+                keyboardFactory.mainMenuKeyboard(lang(chatId))
+        );
+    }
     private void handleLatest(Long chatId) {
         List<CarEntity> cars = carRepository.findTop5ByOrderByCreatedAtDesc();
 

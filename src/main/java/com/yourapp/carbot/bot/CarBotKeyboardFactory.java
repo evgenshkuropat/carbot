@@ -32,7 +32,7 @@ public class CarBotKeyboardFactory {
 
         KeyboardRow row2 = new KeyboardRow();
         row2.add(new KeyboardButton("📋 " + messages.get(lang, "menu.myFilter")));
-        row2.add(new KeyboardButton("🆕 " + messages.get(lang, "menu.latest")));
+        row2.add(new KeyboardButton("🧰 " + messages.get(lang, "menu.services")));
 
         KeyboardRow row3 = new KeyboardRow();
         row3.add(new KeyboardButton("⭐ " + messages.get(lang, "menu.favorites")));
@@ -45,6 +45,28 @@ public class CarBotKeyboardFactory {
                 .build();
     }
 
+    public InlineKeyboardMarkup servicesKeyboard(String lang) {
+        List<InlineKeyboardRow> rows = new ArrayList<>();
+
+        rows.add(singleUrlButtonRow(
+                "🏠 " + messages.get(lang, "services.housingBot"),
+                "https://t.me/zhytloCZ_bot"
+        ));
+
+        rows.add(singleButtonRow(
+                "✉️ " + messages.get(lang, "services.feedback"),
+                "services_feedback"
+        ));
+
+        rows.add(singleUrlButtonRow(
+                "❤️ " + messages.get(lang, "services.supportProject"),
+                "https://revolut.me/evzen13"
+        ));
+
+        return InlineKeyboardMarkup.builder()
+                .keyboard(rows)
+                .build();
+    }
     public InlineKeyboardMarkup languageKeyboard() {
         InlineKeyboardRow row1 = new InlineKeyboardRow();
         row1.add(InlineKeyboardButton.builder().text("🇺🇦 Українська").callbackData("lang:uk").build());
