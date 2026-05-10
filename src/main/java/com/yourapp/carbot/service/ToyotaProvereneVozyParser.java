@@ -354,6 +354,11 @@ public class ToyotaProvereneVozyParser implements CarSourceParser {
         if (containsAny(tokens, " electric ", " elektro ", " kwh ", " 500e ", " rz ")) {
             return "ELECTRIC";
         }
+        if (tokens.contains(" lexus ")
+                && containsAny(tokens, " rx ", " nx ")
+                && containsAny(tokens, " 2 5 ", " 25 ")) {
+            return "HYBRID";
+        }
         if (containsAny(tokens, " hybrid ", " hev ", " hsd ", " mhev ", " e cvt ", " ecvt ",
                 " 350h ", " 450h ", " 500h ", " 1.5h ", " 1,5h ", " 1.8h ", " 1,8h ",
                 " 2.0h ", " 2,0h ", " 2.5h ", " 2,5h ")) {
