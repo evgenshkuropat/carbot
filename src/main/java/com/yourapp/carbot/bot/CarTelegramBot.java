@@ -352,12 +352,12 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
         }
 
         if (data.startsWith("myfilter_field:")) {
-            handleEditField(chatId, data.substring("myfilter_field:".length()));
+            handleEditFieldSafely(chatId, data.substring("myfilter_field:".length()));
             return;
         }
 
         if (data.startsWith("edit_field:")) {
-            handleEditField(chatId, data.substring("edit_field:".length()));
+            handleEditFieldSafely(chatId, data.substring("edit_field:".length()));
             return;
         }
 
@@ -486,7 +486,7 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
 
         String legacyEditField = legacyEditField(data);
         if (legacyEditField != null) {
-            handleEditField(chatId, legacyEditField);
+            handleEditFieldSafely(chatId, legacyEditField);
             return;
         }
 
@@ -600,6 +600,19 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
         }
     }
 
+    private void handleEditFieldSafely(Long chatId, String field) {
+        try {
+            log.info("BOT FILTER FIELD chatId={} field={}", chatId, field);
+            handleEditField(chatId, field);
+        } catch (Exception e) {
+            log.error("BOT FILTER FIELD failed chatId={} field={}", chatId, field, e);
+            sendMessage(
+                    chatId,
+                    "Не смог открыть настройку фильтра. Поле: " + field,
+                    keyboardFactory.myFilterEditFieldsKeyboard(lang(chatId))
+            );
+        }
+    }
     private void handleEditField(Long chatId, String field) {
         UserFilterEntity filter = userFilterService.getOrCreate(chatId);
         String lang = lang(chatId);
