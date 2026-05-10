@@ -85,6 +85,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         int brokenOrForPartsCount = 0;
         int suspiciousListingCount = 0;
         int invalidPriceCount = 0;
+        int missingPriceCount = 0;
         int parseErrorCount = 0;
 
         try {
@@ -155,6 +156,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                             case "broken_or_for_parts" -> brokenOrForPartsCount++;
                             case "suspicious_listing" -> suspiciousListingCount++;
                             case "invalid_price" -> invalidPriceCount++;
+                            case "missing_price" -> missingPriceCount++;
                             case "parse_error" -> parseErrorCount++;
                         }
                     }
@@ -173,7 +175,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
 
         log.info("BAZOS parsed {} cars", cars.size());
         log.info(
-                "BAZOS SUMMARY parsed={} empty_title={} demand_listing={} commercial_vehicle={} non_car_listing={} broken_or_for_parts={} suspicious_listing={} invalid_price={} parse_error={}",
+                "BAZOS SUMMARY parsed={} empty_title={} demand_listing={} commercial_vehicle={} non_car_listing={} broken_or_for_parts={} suspicious_listing={} invalid_price={} missing_price={} parse_error={}",
                 cars.size(),
                 emptyTitleCount,
                 demandListingCount,
@@ -182,6 +184,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 brokenOrForPartsCount,
                 suspiciousListingCount,
                 invalidPriceCount,
+                missingPriceCount,
                 parseErrorCount
         );
 
@@ -320,7 +323,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             Integer priceValue = extractPrice(doc, priceText);
             if (priceValue == null) {
                 log.info("BAZOS SKIP url={} reason=missing_price title={}", safe(url), safe(title));
-                return ParseResult.skip("invalid_price");
+                return ParseResult.skip("missing_price");
             }
             if (!isValidBazosPrice(priceValue)) {
                 log.info("BAZOS SKIP url={} reason=invalid_price title={}", safe(url), safe(title));
@@ -467,34 +470,8 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             return detailPrice;
         }
 
-        Element priceEl = doc.selectFirst(".inzeratycena, .price, b[class*=price], strong[class*=price]");
-
-        if (priceEl != null) {
-            String raw = normalizeText(priceEl.text());
-            Integer price = parseNumber(raw);
-            log.debug("BAZOS PRICE HTML raw='{}' parsed={}", safe(raw), price);
-
-            if (isValidBazosPrice(price)) {
-                return price;
-            }
-
-            String rawLower = raw.toLowerCase(Locale.ROOT);
-
-            if (containsAny(rawLower, "v textu", "dohodou", "nabidnete", "nabídněte")) {
-                Integer fromCenaLabel = extractPriceFromCenaLabel(text);
-                if (isValidBazosPrice(fromCenaLabel)) {
-                    return fromCenaLabel;
-                }
-
-                Integer fromKcPattern = extractPriceFromKcPattern(text);
-                if (isValidBazosPrice(fromKcPattern)) {
-                    return fromKcPattern;
-                }
-            }
-        } else {
-            log.debug("BAZOS PRICE HTML raw=-");
-        }
-
+        // Avoid global .inzeratycena on detail pages: it can belong to recommended listings,
+        // which causes unrelated cars to inherit the same price.
         Integer fromCenaLabel = extractPriceFromCenaLabel(text);
         if (isValidBazosPrice(fromCenaLabel)) {
             return fromCenaLabel;
