@@ -1412,19 +1412,50 @@ public class SautoParser implements CarSourceParser {
     private Integer extractMileage(String text) {
         String normalized = normalizeText(text);
 
+        Matcher labeledKmMatcher = Pattern.compile(
+                "(tachometr|najeto|najetých km|najetych km|stav tachometru)\\s*[:\\- ]*([0-9]{1,3}(?:[ \\u00A0][0-9]{3})+|[0-9]{4,7})\\s*km",
+                Pattern.CASE_INSENSITIVE
+        ).matcher(normalized);
+
+        while (labeledKmMatcher.find()) {
+            Integer km = parseIntSafe(labeledKmMatcher.group(2));
+            if (km != null && km >= 1000 && km <= 1_500_000) {
+                return km;
+            }
+        }
+
         Matcher kmMatcher = Pattern.compile(
-                "(tachometr|najeto|najetých km|najetych km|stav tachometru)?\\s*[:\\- ]*([0-9]{1,3}(?:[ \\u00A0][0-9]{3})+|[0-9]{4,7})\\s*km",
+                "([0-9]{1,3}(?:[ \\u00A0][0-9]{3})+|[0-9]{4,7})\\s*km",
                 Pattern.CASE_INSENSITIVE
         ).matcher(normalized);
 
         while (kmMatcher.find()) {
-            Integer km = parseIntSafe(kmMatcher.group(2));
+            if (looksLikeWarrantyOrLimitContext(normalized, kmMatcher.start(), kmMatcher.end())) {
+                continue;
+            }
+
+            Integer km = parseIntSafe(kmMatcher.group(1));
             if (km != null && km >= 1000 && km <= 1_500_000) {
                 return km;
             }
         }
 
         return null;
+    }
+
+    private boolean looksLikeWarrantyOrLimitContext(String text, int start, int end) {
+        int from = Math.max(0, start - 80);
+        int to = Math.min(text.length(), end + 80);
+        String context = " " + normalizeText(text.substring(from, to)).toLowerCase(Locale.ROOT) + " ";
+
+        return containsAny(context,
+                " záruka ", " zaruka ",
+                " garance ",
+                " limit ",
+                " nebo ",
+                " až ", " az ",
+                " servisní interval ", " servisni interval ",
+                " prodloužená ", " prodlouzena ");
     }
 
     private String extractFuelType(String text) {
