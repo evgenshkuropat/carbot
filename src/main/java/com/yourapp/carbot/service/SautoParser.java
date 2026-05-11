@@ -183,7 +183,7 @@ public class SautoParser implements CarSourceParser {
                     extractTransmission(analysisText)
             );
 
-            if ("ELECTRIC".equals(fuelType)) {
+            if ("ELECTRIC".equals(fuelType) || isAutomaticHybridTitle(title, fuelType)) {
                 transmission = "AUTOMATIC";
             }
 
@@ -1484,6 +1484,18 @@ public class SautoParser implements CarSourceParser {
         }
 
         return null;
+    }
+
+    private boolean isAutomaticHybridTitle(String title, String fuelType) {
+        if (!"HYBRID".equals(fuelType) && !"PLUGIN_HYBRID".equals(fuelType)) {
+            return false;
+        }
+
+        String normalized = " " + normalizeText(safe(title)).toLowerCase(Locale.ROOT) + " ";
+        return containsAny(normalized,
+                " e-tech ", " etech ",
+                " full hybrid ",
+                " plug-in-hybrid ", " plug in hybrid ");
     }
 
     private String extractTransmission(String text) {
