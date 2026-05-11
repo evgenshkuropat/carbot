@@ -45,6 +45,7 @@ public class TipCarsParser implements CarSourceParser {
         int missingPriceCount = 0;
         int invalidPriceCount = 0;
         int brokenCount = 0;
+        int commercialVehicleCount = 0;
         int parseExceptionCount = 0;
 
         try {
@@ -87,6 +88,7 @@ public class TipCarsParser implements CarSourceParser {
                         case "missing_price" -> missingPriceCount++;
                         case "invalid_price" -> invalidPriceCount++;
                         case "broken_listing" -> brokenCount++;
+                        case "commercial_vehicle" -> commercialVehicleCount++;
                         case "parse_exception" -> parseExceptionCount++;
                         default -> brokenCount++;
                     }
@@ -100,8 +102,8 @@ public class TipCarsParser implements CarSourceParser {
         }
 
         log.info("TIPCARS parsed {} cars", cars.size());
-        log.info("TIPCARS SUMMARY parsed={} broken_listing={} missing_price={} invalid_price={} parse_exception={}",
-                cars.size(), brokenCount, missingPriceCount, invalidPriceCount, parseExceptionCount);
+        log.info("TIPCARS SUMMARY parsed={} broken_listing={} commercial_vehicle={} missing_price={} invalid_price={} parse_exception={}",
+                cars.size(), brokenCount, commercialVehicleCount, missingPriceCount, invalidPriceCount, parseExceptionCount);
 
         return cars;
     }
@@ -121,6 +123,11 @@ public class TipCarsParser implements CarSourceParser {
                 return new ParseResult(null, "broken_listing");
             }
 
+            if (looksCommercialOrCamperListing(title, url, pageText)) {
+                log.info("TIPCARS SKIP url={} reason=commercial_vehicle title={}", safe(url), safe(title));
+                return new ParseResult(null, "commercial_vehicle");
+            }
+
             Integer priceValue = extractPriceValue(doc, pageText);
             if (priceValue == null) {
                 log.warn("TIPCARS SKIP url={} reason=missing_price title={}", safe(url), safe(title));
@@ -138,14 +145,14 @@ public class TipCarsParser implements CarSourceParser {
             String location = extractLocation(doc, pageText);
             String imageUrl = extractImageUrl(doc);
             String brand = extractBrand(title, url);
-            String combinedText = title + " " + url + " " + pageText;
+            String combinedText = title + " " + url;
             String fuelType = firstNonBlank(
                     extractFuelType(title),
                     extractFuelType(url),
                     extractFuelType(pageText)
             );
             String transmission = extractTransmission(combinedText);
-            String carType = extractCarType(title, pageText, url);
+            String carType = extractCarType(title, "", url);
 
             CarDto car = new CarDto();
             car.setSource("TIPCARS");
@@ -646,6 +653,19 @@ public class TipCarsParser implements CarSourceParser {
         String source = " " + normalizeText(safe(title) + " " + safe(text) + " " + safe(url)).toLowerCase(Locale.ROOT) + " ";
         String normalizedUrl = url == null ? "" : url.toLowerCase(Locale.ROOT);
 
+        String titleSource = " " + normalizeText(safe(title)).toLowerCase(Locale.ROOT) + " ";
+
+        if (containsAny(titleSource,
+                " q3 ", " q5 ", " q7 ", " q8 ",
+                " touareg ", " qashqai ", " kona ", " crossland ", " range rover ", " glc ", " actyon ")) {
+            return "SUV";
+        }
+
+        if (containsAny(titleSource,
+                " fiesta ", " ibiza ", " up! ", " up ", " golf ", " scala ", " fabia ", " i30 ")) {
+            return "HATCHBACK";
+        }
+
         // URL от TipCars самый надежный — проверяем первым
         if (normalizedUrl.contains("/suv/")) {
             return "SUV";
@@ -838,6 +858,15 @@ public class TipCarsParser implements CarSourceParser {
                 "/tiskove-zpravy/");
     }
 
+    private boolean looksCommercialOrCamperListing(String title, String url, String text) {
+        String source = " " + normalizeText(safe(title) + " " + safe(url) + " " + shortenForCheck(text, 500)).toLowerCase(Locale.ROOT) + " ";
+        return containsAny(source,
+                " obytný vůz ", " obytny vuz ", " obytný automobil ", " obytny automobil ",
+                " obytna dodavka ", " obytná dodávka ", " camper ", " karavan ", " caravan ",
+                " užitkové vozy ", " uzitkove vozy ", " dodávka ", " dodavka ",
+                " l1h1 ", " l2h2 ", " l3h2 ", " l3h3 ", " valník ", " valnik ");
+    }
+
     private boolean isJunkText(String text) {
         String normalized = " " + normalizeText(text).toLowerCase(Locale.ROOT) + " ";
         return containsAny(normalized,
@@ -975,6 +1004,14 @@ public class TipCarsParser implements CarSourceParser {
 
     private String safe(String value) {
         return value == null || value.isBlank() ? "-" : value;
+    }
+
+    private String shortenForCheck(String value, int maxLen) {
+        String normalized = normalizeText(value);
+        if (normalized.length() <= maxLen) {
+            return normalized;
+        }
+        return normalized.substring(0, maxLen);
     }
 
     private void sleepQuietly(long millis) {

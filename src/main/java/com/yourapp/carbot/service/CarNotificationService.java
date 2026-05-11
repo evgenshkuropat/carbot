@@ -95,6 +95,11 @@ public class CarNotificationService {
 
             String lang = resolveLanguage(filter);
             int sentToSubscriber = 0;
+
+            if (!hasActiveNotificationFilter(filter)) {
+                log.info("Subscriber {} notifications skipped reason=empty_filter", chatId);
+                continue;
+            }
             int remainingToday = remainingNotificationsToday(subscriber);
 
             if (remainingToday <= 0) {
@@ -148,6 +153,25 @@ public class CarNotificationService {
         log.info("Notifications finished. Total sent={}", sentCount);
 
         return sentCount;
+    }
+
+    private boolean hasActiveNotificationFilter(UserFilterEntity filter) {
+        if (filter == null) {
+            return false;
+        }
+
+        return hasText(filter.getCarType())
+                || hasText(filter.getBrand())
+                || filter.getMaxPrice() != null
+                || filter.getMaxMileage() != null
+                || hasText(filter.getLocation())
+                || hasText(filter.getFuelType())
+                || hasText(filter.getTransmission())
+                || filter.getYearFrom() != null;
+    }
+
+    private boolean hasText(String value) {
+        return value != null && !value.isBlank();
     }
 
     private void resetDailyCounterIfNeeded(TelegramSubscriberEntity subscriber) {
