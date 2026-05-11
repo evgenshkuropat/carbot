@@ -242,8 +242,8 @@ public class ToyotaProvereneVozyParser implements CarSourceParser {
         );
         transmission = firstNonBlank(
                 mapTransmission(extractDetailValue(detailDoc, "vehicleTransmission")),
-                mapTransmission(extractValueAfterLabel(combinedText, "Převodovka")),
-                mapTransmission(extractValueAfterLabel(combinedText, "PĹ™evodovka")),
+                mapTransmission(extractValueAfterLabel(containerText, "Převodovka")),
+                mapTransmission(title),
                 "ELECTRIC".equals(fuelType) ? "AUTOMATIC" : null
         );
         carType = firstNonBlank(
@@ -590,7 +590,7 @@ public class ToyotaProvereneVozyParser implements CarSourceParser {
         String v = normalizeAscii(value).toLowerCase(Locale.ROOT);
 
         if (v.contains("plug-in") || v.contains("plugin")) return "PLUGIN_HYBRID";
-        if (v.contains("hybrid") || v.contains(" hsd") || v.contains(" hev") || v.contains(" mhev")) return "HYBRID";
+        if (v.contains("hybrid") || v.contains(" hsd") || v.contains(" hev") || v.contains(" mhev") || v.contains(" ima")) return "HYBRID";
         if (v.contains("elektro") || v.contains("electric") || v.contains("vodik")) return "ELECTRIC";
         if (v.contains("diesel") || v.contains("nafta") || v.contains(" d-4d") || v.contains(" d4d")) return "DIESEL";
         if (v.contains("lpg")) return "LPG";
@@ -636,14 +636,14 @@ public class ToyotaProvereneVozyParser implements CarSourceParser {
             return "PICKUP";
         }
         if (containsAny(source, " yaris cross ", " corolla cross ", " rav4 ", " c-hr ", " chr ", " bz4x ",
-                " highlander ", " lexus rx ", " lexus nx ", " sportage ", " touareg ", " vitara ", " 2008 ")) {
+                " highlander ", " lexus rx ", " lexus nx ", " sportage ", " touareg ", " vitara ", " cr-v ", " crv ", " 2008 ")) {
             return "SUV";
         }
         if (containsAny(source, " proace verso ", " proace city verso ", " touran ", " roomster ",
                 " berlingo ", " c3 picasso ", " c4 picasso ", " verso ")) {
             return "MINIVAN";
         }
-        if (containsAny(source, " yaris ", " aygo ", " aygo x ", " fabia ", " ceed ", " mg3 ", " ds 4 ", " auris ", " focus ")) {
+        if (containsAny(source, " yaris ", " aygo ", " aygo x ", " fabia ", " ceed ", " mg3 ", " ds 4 ", " auris ", " focus ", " insight ", " 307 ")) {
             return "HATCHBACK";
         }
         if (containsAny(source, " proace max ", " proace city ", " proace ", " movano ", " boxer ", " uzitkove ")) {
