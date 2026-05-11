@@ -1995,12 +1995,6 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         String titleSource = " " + normalizeText(title).toLowerCase(Locale.ROOT) + " ";
         String source = " " + normalizeText(title + " " + text + " " + shortenForCheck(analysisText, 700))
                 .toLowerCase(Locale.ROOT) + " ";
-
-        if (looksLikeRealCar(title, analysisText)
-                || extractBrand(title, analysisText) != null) {
-            return false;
-        }
-
         if (containsAny(titleSource,
                 " pneu ",
                 " pneumatiky ",
@@ -2054,6 +2048,11 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             return true;
         }
 
+        if (looksLikeRealCar(title, analysisText)
+                || extractBrand(title, analysisText) != null) {
+            return false;
+        }
+
         boolean hasRimSpec = RIM_SPEC_PATTERN.matcher(source).find();
         if (hasRimSpec && hasWheelWords) {
             return true;
@@ -2101,6 +2100,15 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 "sedadla ",
                 "sedačky ",
                 "sedacky ",
+                "kožené sedačky ",
+                "kozene sedacky ",
+                "klika ",
+                "levý práh ",
+                "levy prah ",
+                "pravý práh ",
+                "pravy prah ",
+                "středový panel ",
+                "stredovy panel ",
                 "střešní lyžiny ",
                 "stresni lyziny ",
                 "střešní nosič ",
@@ -2114,6 +2122,10 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
 
         if (containsAny(titleValue,
                 " světlomety ", " svetlomety ",
+                " klika ",
+                " práh ", " prah ",
+                " středový panel ", " stredovy panel ",
+                " sedačky ", " sedacky ",
                 " střešní lyžiny ", " stresni lyziny ",
                 " náhradní díly ", " nahradni dily ",
                 " na díly ", " na dily ")) {
