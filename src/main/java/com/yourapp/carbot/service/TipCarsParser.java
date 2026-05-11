@@ -859,12 +859,14 @@ public class TipCarsParser implements CarSourceParser {
     }
 
     private boolean looksCommercialOrCamperListing(String title, String url, String text) {
-        String source = " " + normalizeText(safe(title) + " " + safe(url) + " " + shortenForCheck(text, 500)).toLowerCase(Locale.ROOT) + " ";
+        String source = " " + normalizeText(safe(title) + " " + safe(url)).toLowerCase(Locale.ROOT) + " ";
         return containsAny(source,
                 " obytný vůz ", " obytny vuz ", " obytný automobil ", " obytny automobil ",
+                " obytné ", " obytne ",
                 " obytna dodavka ", " obytná dodávka ", " camper ", " karavan ", " caravan ",
-                " užitkové vozy ", " uzitkove vozy ", " dodávka ", " dodavka ",
-                " l1h1 ", " l2h2 ", " l3h2 ", " l3h3 ", " valník ", " valnik ");
+                " dodávka ", " dodavka ",
+                " l1h1 ", " l2h2 ", " l3h2 ", " l3h3 ", " valník ", " valnik ",
+                "/uzitkove/", "/uzitkova/", "/dodavky/");
     }
 
     private boolean isJunkText(String text) {
