@@ -834,7 +834,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             }
         }
 
-        matcher = Pattern.compile("(?i)\\b([0-9]{1,3})\\s*(?:tis(?:\\.|ic|íc|\\s)|tkm)\\b").matcher(source);
+        matcher = Pattern.compile("(?i)\\b([0-9]{1,3})\\s*(?:tis(?:\\.|ic|Ă­c|\\s)|t\\s*km|tkm)\\b").matcher(source);
         while (matcher.find()) {
             Integer value = parseMileageCandidate(matcher.group(1) + "000");
             if (value != null) {
@@ -935,6 +935,9 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 || compact.contains("dci")
                 || compact.contains("hdi")
                 || compact.contains("crdi")
+                || compact.contains("dtec")
+                || compact.contains("idtec")
+                || compact.contains("ictdi")
                 || compact.contains("jtd")
                 || compact.contains("multijet")
                 || compact.contains("bluehdi")
@@ -1430,7 +1433,31 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             return "MINIVAN";
         }
 
-        if (containsAny(titleSource, " i10 ", " rio ")) {
+        if (containsAny(titleSource, " i10 ", " jazz ", " rio ")) {
+            return "HATCHBACK";
+        }
+
+        if (containsAny(titleSource, " civic coupe ", " civic coupĂ© ", " crx ")) {
+            return "COUPE";
+        }
+
+        if (containsAny(titleSource, " accord ")) {
+            return "SEDAN";
+        }
+
+        if (containsAny(titleSource, " i30 wg ", " i30 wagon ", " i30 kombi ", " i30 combi ")) {
+            return "WAGON";
+        }
+
+        if (containsAny(titleSource, " h1 ", " h-1 ", " h 1 ")) {
+            return "MINIVAN";
+        }
+
+        if (containsAny(titleSource, " ioniq 5 ", " ionig 5 ")) {
+            return "SUV";
+        }
+
+        if (containsAny(titleSource, " ioniq ", " ionig ")) {
             return "HATCHBACK";
         }
 
@@ -1454,7 +1481,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " sportage ", " sorento ", " stonic ",
                 " tucson ", " santa fe ", " kona ",
                 " duster ", " koleos ", " kadjar ",
-                " cr-v ", " hr-v ", " rav4 ", " c-hr ", " chr ",
+                " cr-v ", " crv ", " hr-v ", " hrv ", " rav4 ", " c-hr ", " chr ",
                 " cx-3 ", " cx3 ", " cx-5 ", " cx5 ",
                 " macan ", " cayenne ",
                 " ux ", " nx ", " rx ",
@@ -2649,6 +2676,13 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " romeo 166 ",
                 " rs3 ",
                 " rs 3 ",
+                " accord ",
+                " civic ",
+                " jazz ",
+                " cr-v ",
+                " crv ",
+                " hr-v ",
+                " hrv ",
                 " rs6 ",
                 " rs 6 ",
                 " discovery sport ",
