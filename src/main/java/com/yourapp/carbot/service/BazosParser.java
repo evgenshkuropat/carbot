@@ -344,7 +344,8 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             );
             String transmission = firstNonBlank(
                     extractTransmission(title),
-                    extractTransmission(listingText)
+                    extractTransmission(listingText),
+                    "ELECTRIC".equals(fuelType) ? "AUTOMATIC" : null
             );
             String brand = extractBrand(title, analysisText);
             String carType = extractCarType(title, listingText, url);
@@ -1398,7 +1399,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             return "WAGON";
         }
 
-        if (containsAny(titleSource, " alfa gt ", " brera ")) {
+        if (containsAny(titleSource, " alfa gt ", " romeo gt ", " gtv ", " brera ")) {
             return "COUPE";
         }
 
@@ -2144,7 +2145,6 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " klika ",
                 " práh ", " prah ",
                 " středový panel ", " stredovy panel ",
-                " sedačky ", " sedacky ",
                 " střešní lyžiny ", " stresni lyziny ",
                 " náhradní díly ", " nahradni dily ",
                 " na díly ", " na dily ")) {
