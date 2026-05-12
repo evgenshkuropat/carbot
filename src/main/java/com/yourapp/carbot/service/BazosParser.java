@@ -1128,6 +1128,12 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " e-cvt ",
                 " ecvt ",
                 " dsg ",
+                " dct ",
+                " 7dct ",
+                " 8g-dct ",
+                " 8g dct ",
+                " e-dcs ",
+                " edcs ",
                 " s tronic ",
                 " stronic ",
                 " tiptronic ",
@@ -1370,6 +1376,18 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         titleSource = titleSource + " " + compactSearchText(safe(title));
         String textSource = " " + normalizeText(safe(text)).toLowerCase(Locale.ROOT) + " ";
         String urlSource = " " + normalizeText(safe(url)).toLowerCase(Locale.ROOT) + " ";
+
+        if (containsAny(titleSource, " corolla sedan ", " corolla sd ")) {
+            return "SEDAN";
+        }
+
+        if (titleSource.contains(" a3 ") && titleSource.contains(" sportback ")) {
+            return "HATCHBACK";
+        }
+
+        if (containsAny(titleSource, " multivan ", " nv 200 ", " nv200 ")) {
+            return "MINIVAN";
+        }
 
         if (containsAny(titleSource, " giulia ", " alfa 156 ", " romeo 156 ", " alfa 159 ", " romeo 159 ",
                 " alfa 166 ", " romeo 166 ")) {

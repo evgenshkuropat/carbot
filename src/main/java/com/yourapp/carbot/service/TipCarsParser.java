@@ -618,6 +618,12 @@ public class TipCarsParser implements CarSourceParser {
                 " eat6 ",
                 " e-dcs6 ",
                 " edcs6 ",
+                " e-dcs ",
+                " edcs ",
+                " dct ",
+                " 7dct ",
+                " 8g-dct ",
+                " 8g dct ",
                 " 7g-tronic ",
                 " 9g-tronic ",
                 " tiptronic ",
@@ -655,9 +661,18 @@ public class TipCarsParser implements CarSourceParser {
 
         String titleSource = " " + normalizeText(safe(title)).toLowerCase(Locale.ROOT) + " ";
 
+        if (containsAny(titleSource, " corolla sedan ", " corolla sd ")) {
+            return "SEDAN";
+        }
+
+        if (titleSource.contains(" a3 ") && titleSource.contains(" sportback ")) {
+            return "HATCHBACK";
+        }
+
         if (containsAny(titleSource,
                 " q3 ", " q5 ", " q7 ", " q8 ",
-                " touareg ", " qashqai ", " kona ", " crossland ", " range rover ", " glc ", " actyon ")) {
+                " touareg ", " qashqai ", " kona ", " crossland ", " range rover ", " glc ",
+                " gla ", " glb ", " gle ", " gls ", " yaris cross ", " stonic ", " omoda 5 ", " actyon ")) {
             return "SUV";
         }
 

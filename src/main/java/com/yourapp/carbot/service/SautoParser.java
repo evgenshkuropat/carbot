@@ -1541,6 +1541,11 @@ public class SautoParser implements CarSourceParser {
                 " stronic ",
                 " powershift ",
                 " edc ",
+                " e dcs ",
+                " edcs ",
+                " dct ",
+                " 7dct ",
+                " 8g dct ",
                 " 7g tronic ",
                 " 9g tronic ",
                 " g tronic ",
@@ -1558,6 +1563,14 @@ public class SautoParser implements CarSourceParser {
         String titleSource = " " + normalizeText(safe(title)).toLowerCase(Locale.ROOT) + " ";
         String textSource = " " + normalizeText(safe(text)).toLowerCase(Locale.ROOT) + " ";
         String urlSource = " " + normalizeText(safe(url)).toLowerCase(Locale.ROOT) + " ";
+
+        if (containsAny(titleSource, " corolla sedan ", " corolla sd ")) {
+            return "SEDAN";
+        }
+
+        if (titleSource.contains(" a3 ") && titleSource.contains(" sportback ")) {
+            return "HATCHBACK";
+        }
 
         if (containsAny(titleSource,
                 " kombi ", " combi ", " wagon ", " estate ", " touring ", " avant ", " variant ",

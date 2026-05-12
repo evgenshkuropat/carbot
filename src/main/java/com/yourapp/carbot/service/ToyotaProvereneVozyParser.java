@@ -244,6 +244,7 @@ public class ToyotaProvereneVozyParser implements CarSourceParser {
                 mapTransmission(extractDetailValue(detailDoc, "vehicleTransmission")),
                 mapTransmission(extractValueAfterLabel(containerText, "Převodovka")),
                 mapTransmission(title),
+                isAutomaticHybridTitle(title, fuelType) ? "AUTOMATIC" : null,
                 "ELECTRIC".equals(fuelType) ? "AUTOMATIC" : null
         );
         carType = firstNonBlank(
@@ -623,15 +624,32 @@ public class ToyotaProvereneVozyParser implements CarSourceParser {
         if (value == null) return null;
         String v = normalizeAscii(value).toLowerCase(Locale.ROOT);
 
-        if (v.contains("automat")) return "AUTOMATIC";
+        if (v.contains("automat")
+                || v.contains("e-cvt")
+                || v.contains("ecvt")
+                || v.contains("dct")
+                || v.contains("dsg")
+                || v.contains("e-dcs")
+                || v.contains("edcs")) return "AUTOMATIC";
         if (v.contains("manual")) return "MANUAL";
 
         return null;
     }
 
+    private boolean isAutomaticHybridTitle(String title, String fuelType) {
+        if (!"HYBRID".equals(fuelType) && !"PLUGIN_HYBRID".equals(fuelType)) {
+            return false;
+        }
+        String source = " " + normalizeAscii(safe(title)).toLowerCase(Locale.ROOT) + " ";
+        return containsAny(source, " hev ", " hybrid ", " e-cvt ", " ecvt ", " dct ", " dsg ", " e-dcs ", " edcs ");
+    }
+
     private String extractCarType(String title, String text) {
         String source = " " + normalizeAscii(safe(title) + " " + safe(text)).toLowerCase(Locale.ROOT) + " ";
 
+        if (containsAny(source, " corolla sedan ", " corolla sd ")) {
+            return "SEDAN";
+        }
         if (containsAny(source, " hilux ", " pick-up ", " pickup ", " doublecab ", " double cab ")) {
             return "PICKUP";
         }
