@@ -357,17 +357,10 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             String carType = extractCarType(title, listingText, url);
             String imageUrl = extractImageUrl(doc);
 
-            if (isSuspiciousCheapCar(title, analysisText, priceValue, year, mileage, brand, carType)) {
-                log.info(
-                        "BAZOS SKIP url={} reason=suspicious_cheap_car title={} price={} year={} brand={} carType={}",
-                        safe(url),
-                        safe(title),
-                        priceValue,
-                        year,
-                        safe(brand),
-                        safe(carType)
-                );
-                return ParseResult.skip("suspicious_listing");
+            if (brand == null && carType == null && !looksLikeRealCar(title, analysisText)) {
+                log.info("BAZOS SKIP url={} reason=not_enough_car_signals title={}",
+                        safe(url), safe(title));
+                return ParseResult.skip("non_car_listing");
             }
 
             CarDto car = new CarDto();
@@ -437,7 +430,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             return true;
         }
 
-        if (priceValue < 70_000 && mileage != null && mileage >= 250_000) {
+        if (priceValue < 40_000 && mileage != null && mileage >= 300_000) {
             return true;
         }
 
@@ -1874,6 +1867,10 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         if (url.contains("-subaru-")) return "SUBARU";
         if (url.contains("-mitsubishi-")) return "MITSUBISHI";
         if (url.contains("-porsche-")) return "PORSCHE";
+        if (url.contains("-tesla-")) return "TESLA";
+        if (url.contains("-chevrolet-")) return "CHEVROLET";
+        if (url.contains("-land-rover-") || url.contains("-range-rover-")) return "LAND_ROVER";
+        if (url.contains("-mini-")) return "MINI";
         return null;
     }
 
