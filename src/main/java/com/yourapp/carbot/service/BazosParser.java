@@ -166,6 +166,8 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                     log.warn("BAZOS SKIP url={} reason=parse_error", safe(url));
                 }
 
+                sleepBetweenDetailRequests();
+
                 count++;
             }
 
@@ -262,6 +264,10 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             String listingText = normalizeText(title + " " + preview);
             String analysisText = normalizeText(title + " " + preview + " " + detailInfo);
             String priceText = normalizeText(preview + " " + detailInfo);
+
+            if (title.isBlank()) {
+                title = titleFromUrl(url);
+            }
 
             if (title.isBlank()) {
                 log.info("BAZOS SKIP url={} reason=empty_title title={}", safe(url), safe(title));
@@ -444,10 +450,35 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
 
     private String extractTitle(Document doc) {
         Element h1 = doc.selectFirst("h1.nadpisdetail, h1");
-        if (h1 != null) {
+        if (h1 != null && !normalizeText(h1.text()).isBlank()) {
             return normalizeText(h1.text());
         }
+
+        Element ogTitle = doc.selectFirst("meta[property=og:title]");
+        if (ogTitle != null && !normalizeText(ogTitle.attr("content")).isBlank()) {
+            return cleanBazosTitle(ogTitle.attr("content"));
+        }
+
+        if (!normalizeText(doc.title()).isBlank()) {
+            return cleanBazosTitle(doc.title());
+        }
+
         return "";
+    }
+
+    private String cleanBazosTitle(String raw) {
+        String title = normalizeText(raw);
+
+        title = title.replaceFirst("(?i)\\s*-\\s*Bazoš\\.cz\\s*$", "");
+        title = title.replaceFirst("(?i)\\s*\\|\\s*Bazoš\\.cz\\s*$", "");
+        title = title.replaceFirst("(?i)\\s*-\\s*auto\\s*$", "");
+
+        int separator = title.lastIndexOf(" - ");
+        if (separator > 5) {
+            title = title.substring(0, separator).trim();
+        }
+
+        return title.trim();
     }
 
     private String extractPreview(Document doc) {
@@ -2766,5 +2797,32 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         cleaned = cleaned.replaceAll("[,;\\-]+$", "").trim();
 
         return cleaned.isBlank() ? null : cleaned;
+    }
+
+    private String titleFromUrl(String url) {
+        if (url == null || url.isBlank()) {
+            return "";
+        }
+
+        String slug = url.substring(url.lastIndexOf("/") + 1);
+
+        slug = slug.replaceFirst("(?i)\\.php$", "");
+        slug = slug.replaceAll("^\\d+[-_]?", "");
+
+        String title = slug
+                .replace("-", " ")
+                .replace("_", " ")
+                .replaceAll("\\s+", " ")
+                .trim();
+
+        return normalizeText(title);
+    }
+
+    private void sleepBetweenDetailRequests() {
+        try {
+            Thread.sleep(400 + java.util.concurrent.ThreadLocalRandom.current().nextInt(600));
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
     }
 }
