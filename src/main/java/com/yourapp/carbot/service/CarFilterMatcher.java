@@ -87,7 +87,7 @@ public class CarFilterMatcher {
     }
 
     private boolean shouldPreferDetectedCarType(String storedType, String detectedType) {
-        return "SUV".equals(storedType) && !"SUV".equals(detectedType);
+        return isBlank(storedType) && !isBlank(detectedType);
     }
 
     private String detectCarTypeFromTitle(String rawTitle) {
@@ -608,7 +608,7 @@ public class CarFilterMatcher {
         Integer carMileage = car.getMileage();
 
         if (carMileage == null) {
-            return false;
+            return true; // unknown mileage не отбрасываем
         }
 
         return carMileage <= maxMileage;
@@ -734,7 +734,7 @@ public class CarFilterMatcher {
         }
 
         if (carTransmission.isBlank()) {
-            return false;
+            return true; // unknown transmission не отбрасываем
         }
 
         return carTransmission.equals(wanted);
@@ -750,7 +750,7 @@ public class CarFilterMatcher {
         Integer carYear = car.getYear();
 
         if (carYear == null) {
-            return false;
+            return true; // unknown year не отбрасываем
         }
 
         return carYear >= yearFrom;

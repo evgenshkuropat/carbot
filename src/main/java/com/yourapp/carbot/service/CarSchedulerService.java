@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.UUID;
 
 @Service
 public class CarSchedulerService {
@@ -31,12 +32,14 @@ public class CarSchedulerService {
     @Scheduled(initialDelay = 30_000, fixedDelay = 30 * 60 * 1000)
     public void fetchAndStoreCarsScheduled() {
 
+        String runId = UUID.randomUUID().toString().substring(0, 8);
+
         if (!running.compareAndSet(false, true)) {
-            log.warn("Scheduler skipped: previous run still in progress");
+            log.warn("[{}] Scheduler skipped: previous run still in progress", runId);
             return;
         }
 
-        log.info("Scheduler started");
+        log.info("[{}] Scheduler started", runId);
 
         try {
 
@@ -44,10 +47,11 @@ public class CarSchedulerService {
 
             int newCarsCount = newCars == null ? 0 : newCars.size();
 
-            log.info("Scheduler finished parsing/storing. New cars saved={}", newCarsCount);
+            log.info("[{}] Scheduler finished parsing/storing. New cars saved={}",
+                    runId, newCarsCount);
 
             if (newCarsCount == 0) {
-                log.info("No new cars found, notifications skipped");
+                log.info("[{}] No new cars found, notifications skipped", runId);
                 return;
             }
 
@@ -55,22 +59,23 @@ public class CarSchedulerService {
 
                 int sentCount = carNotificationService.notifySubscribers(newCars);
 
-                log.info("Notifications sent={}", sentCount);
+                log.info("[{}] Notifications sent={}", runId, sentCount);
 
             } catch (Exception e) {
 
-                log.error("Notification step failed", e);
+                log.error("[{}] Notification step failed", runId, e);
 
             }
 
         } catch (Exception e) {
 
-            log.error("Scheduler failed", e);
+            log.error("[{}] Scheduler failed", runId, e);
 
         } finally {
 
             running.set(false);
 
+            log.info("[{}] Scheduler unlocked", runId);
         }
     }
 }
