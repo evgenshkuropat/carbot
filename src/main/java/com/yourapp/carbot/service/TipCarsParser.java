@@ -153,8 +153,7 @@ public class TipCarsParser implements CarSourceParser {
 
             String transmission = firstNonBlank(
                     extractTransmission(title),
-                    extractTransmission(url),
-                    extractTransmission(pageText)
+                    extractTransmission(url)
             );
 
             String carType = extractCarType(title, "", url);
