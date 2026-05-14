@@ -886,6 +886,13 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         String source = " " + normalizeText(text).toLowerCase(Locale.ROOT) + " ";
         String compact = source.replaceAll("[^a-z0-9]", "");
 
+        if (compact.contains("64kwh")
+                || compact.contains("kwh")
+                || compact.contains("electric")
+                || compact.contains("elektro")) {
+            return "ELECTRIC";
+        }
+
         if (containsAny(source,
                 " palivo: elektro ",
                 " palivo elektro ",
@@ -899,7 +906,9 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " bz4x ",
                 " bz 4x ",
                 " enyaq ", " id.3 ", " id.4 ", " id.5 ", " tesla ", " leaf ",
-                " kona electric ", " kona elektric ", " ioniq ", " ioniq 5 ", " ioniq 6 ")) {
+                " kona electric ", " kona elektric ",
+                " ioniq ", " ioniq 5 ", " ioniq 6 ",
+                " e-tron ", " etron ")) {
             return "ELECTRIC";
         }
 
@@ -936,7 +945,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             return "HYBRID";
         }
 
-        if (containsAny(source, " lpg ")) {
+        if (containsAny(source, " lpg ") || compact.contains("lpg")) {
             return "LPG";
         }
 
@@ -1404,6 +1413,18 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         if (source.contains(" mazda 5 ")) return "MAZDA";
         if (source.contains(" favorit ")) return "SKODA";
         if (source.contains(" kangoo ")) return "RENAULT";
+        if (source.contains(" tucson ")) return "HYUNDAI";
+        if (source.contains(" santa fe ")) return "HYUNDAI";
+        if (source.contains(" ix20 ")) return "HYUNDAI";
+        if (source.contains(" ix35 ")) return "HYUNDAI";
+        if (source.contains(" i20 ")) return "HYUNDAI";
+        if (source.contains(" i30 ")) return "HYUNDAI";
+        if (source.contains(" i40 ")) return "HYUNDAI";
+        if (source.contains(" kona ")) return "HYUNDAI";
+        if (source.contains(" bayon ")) return "HYUNDAI";
+        if (source.contains(" ioniq ") || source.contains(" ionig ")) return "HYUNDAI";
+
+        if (source.contains(" soul ")) return "KIA";
 
         return null;
     }
@@ -1535,7 +1556,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " ix35 ",
                 " stelvio ",
                 " durango ",
-                " g trieda ", " g-trieda ", " g class ", " g-class ")) {
+                " g trieda ", " g-trieda ", " g class ", " g-class ", " bayon ")) {
             return "SUV";
         }
 
@@ -1572,7 +1593,8 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " rs6 ", " rs 6 ", " f11 ",
                 " alltrack ", " scout ", " outback ",
                 " v40 ", " v50 ", " v60 ", " v70 ", " v 70 ", " v90 ",
-                " g31 ", " tipo sw ", " 206sw ", " 207sw ", " 307sw ", " 308sw ", " 407sw ", " 508sw ")) {
+                " g31 ", " tipo sw ", " 206sw ", " 207sw ", " 307sw ", " 308sw ", " 407sw ", " 508sw ",
+                " i40 wg ", " i40 wagon ", " i40 kombi ")) {
             return "WAGON";
         }
 
@@ -1602,7 +1624,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " agila ", " 107 ", " 147 ", " 207 ", " 208 ", " 308 ",
                 " sandero ", " logan ", " scala ", " citigo ",
                 " fiat 500 ", " tipo ", " fiat tipo ",
-                " auris ", " prius ", " corolla ", " corsa ", " mazda 3 ", " rapid ", " yaris ")) {
+                " auris ", " prius ", " corolla ", " corsa ", " mazda 3 ", " rapid ", " yaris ", " getz ", " soul ")) {
             return "HATCHBACK";
         }
 
@@ -2507,7 +2529,8 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
 
     private boolean looksSuspiciousListing(String title, String text) {
         String cleanTitle = normalizeText(title).toLowerCase(Locale.ROOT);
-        if (containsAny(cleanTitle, "prodam nebo vymenim", "prodám nebo vyměním")) {
+        if (containsAny(cleanTitle, "prodam nebo vymenim", "prodám nebo vyměním", " rezervováno ", " rezervovano ",
+                " rezervace ")) {
             return true;
         }
 
@@ -2537,6 +2560,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " jen celek ",
                 " prodáno ", " prodano ",
                 " zálohováno ", " zalohovano ",
+                " rezervováno ", " rezervovano ", " rezervace ",
                 " zadáno ", " zadano ");
     }
 
