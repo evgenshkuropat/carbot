@@ -2112,11 +2112,19 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
     }
 
     private boolean looksTyreOrWheelListing(String title, String text, String analysisText) {
-        if (looksLikeRealCar(title, analysisText)) {
+        String titleSource = " " + normalizeText(title).toLowerCase(Locale.ROOT) + " ";
+
+        if (containsAny(titleSource,
+                " q7 ", " rs3 ", " stelvio ", " giulia ", " giulietta ",
+                " a3 ", " a4 ", " a5 ", " a6 ", " q3 ", " q5 ",
+                " x1 ", " x3 ", " x5 ",
+                " octavia ", " superb ", " passat ")) {
             return false;
         }
 
-        String titleSource = " " + normalizeText(title).toLowerCase(Locale.ROOT) + " ";
+        if (looksLikeRealCar(title, analysisText)) {
+            return false;
+        }
         String source = " " + normalizeText(title + " " + text + " " + shortenForCheck(analysisText, 700))
                 .toLowerCase(Locale.ROOT) + " ";
 
@@ -2204,6 +2212,17 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         String analysis = " " + shortenForCheck(normalizeText(analysisText).toLowerCase(Locale.ROOT), 900) + " ";
         String compactTitleValue = compactSearchText(title);
 
+        if (startsWithAny(titleValue,
+                "motor ",
+                "motor alfa ",
+                "motor bmw ",
+                "motor audi ",
+                "motor mercedes ",
+                "motor škoda ",
+                "motor skoda ")) {
+            return true;
+        }
+
         if (looksLikeRealCar(title, analysisText)
                 && !startsWithAny(compactTitleValue, "predni ", "zadni ", "svetlomety ", "svetla ")
                 && containsAny(compactTitleValue, " svetlomety ", " svetla ")) {
@@ -2236,7 +2255,14 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 "náhradní díly ",
                 "nahradni dily ",
                 "rozprodej na díly ",
-                "rozprodej na dily ")) {
+                "rozprodej na dily ",
+                "motor ",
+                "motor alfa ",
+                "motor bmw ",
+                "motor audi ",
+                "motor mercedes ",
+                "motor škoda ",
+                "motor skoda ")){
             return true;
         }
 
