@@ -363,6 +363,19 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 return ParseResult.skip("non_car_listing");
             }
 
+            if (isSuspiciousCheapCar(title, analysisText, priceValue, year, mileage, brand, carType)) {
+                log.info(
+                        "BAZOS SKIP url={} reason=suspicious_cheap_car title={} price={} year={} brand={} carType={}",
+                        safe(url),
+                        safe(title),
+                        priceValue,
+                        year,
+                        safe(brand),
+                        safe(carType)
+                );
+                return ParseResult.skip("suspicious_listing");
+            }
+
             CarDto car = new CarDto();
             car.setSource("BAZOS");
             car.setTitle(title);
@@ -2067,9 +2080,14 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
     }
 
     private boolean looksTyreOrWheelListing(String title, String text, String analysisText) {
+        if (looksLikeRealCar(title, analysisText)) {
+            return false;
+        }
+
         String titleSource = " " + normalizeText(title).toLowerCase(Locale.ROOT) + " ";
         String source = " " + normalizeText(title + " " + text + " " + shortenForCheck(analysisText, 700))
                 .toLowerCase(Locale.ROOT) + " ";
+
         if (containsAny(titleSource,
                 " pneu ",
                 " pneumatiky ",
@@ -2121,11 +2139,6 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
 
         if (hasTyreSize && hasWheelWords) {
             return true;
-        }
-
-        if (looksLikeRealCar(title, analysisText)
-                || extractBrand(title, analysisText) != null) {
-            return false;
         }
 
         boolean hasRimSpec = RIM_SPEC_PATTERN.matcher(source).find();
