@@ -145,13 +145,18 @@ public class TipCarsParser implements CarSourceParser {
             String location = extractLocation(doc, pageText);
             String imageUrl = extractImageUrl(doc);
             String brand = extractBrand(title, url);
-            String combinedText = title + " " + url;
             String fuelType = firstNonBlank(
-                    extractFuelType(title),
                     extractFuelType(url),
+                    extractFuelType(title),
                     extractFuelType(pageText)
             );
-            String transmission = extractTransmission(combinedText);
+
+            String transmission = firstNonBlank(
+                    extractTransmission(title),
+                    extractTransmission(url),
+                    extractTransmission(pageText)
+            );
+
             String carType = extractCarType(title, "", url);
 
             CarDto car = new CarDto();
@@ -540,23 +545,6 @@ public class TipCarsParser implements CarSourceParser {
         }
 
         if (containsAny(source,
-                "/benzin/",
-                " benzin ",
-                " benzín ",
-                " tsi ",
-                " tfsi ",
-                " mpi ",
-                " gdi ",
-                " tgdi ",
-                " t-gdi ",
-                " tce ",
-                " ecoboost ",
-                " skyactiv-g ",
-                " vvt-i ")) {
-            return "PETROL";
-        }
-
-        if (containsAny(source,
                 "/nafta/",
                 " nafta ",
                 " diesel ",
@@ -571,14 +559,6 @@ public class TipCarsParser implements CarSourceParser {
             return "DIESEL";
         }
 
-        if (containsAny(source, "/lpg/", " lpg ")) {
-            return "LPG";
-        }
-
-        if (containsAny(source, "/cng/", " cng ")) {
-            return "CNG";
-        }
-
         if (compact.contains("tdi")
                 || compact.contains("tdci")
                 || compact.contains("cdi")
@@ -588,6 +568,40 @@ public class TipCarsParser implements CarSourceParser {
                 || compact.contains("cdti")
                 || compact.contains("bluehdi")) {
             return "DIESEL";
+        }
+
+        if (compact.contains("220d")
+                || compact.contains("200d")
+                || compact.contains("300d")
+                || compact.contains("530d")
+                || compact.contains("520d")
+                || compact.contains("d4d")) {
+            return "DIESEL";
+        }
+
+        if (containsAny(source, "/lpg/", " lpg ")) {
+            return "LPG";
+        }
+
+        if (containsAny(source, "/cng/", " cng ")) {
+            return "CNG";
+        }
+
+        if (containsAny(source,
+                "/benzin/",
+                " benzin ",
+                " benzín ",
+                " tsi ",
+                " tfsi ",
+                " mpi ",
+                " gdi ",
+                " tgdi ",
+                " t-gdi ",
+                " tce ",
+                " ecoboost ",
+                " skyactiv-g ",
+                " vvt-i ")) {
+            return "PETROL";
         }
 
         if (compact.contains("tsi")
@@ -777,6 +791,16 @@ public class TipCarsParser implements CarSourceParser {
                 " caddy ",
                 " berlingo ",
                 " roomster ")) {
+            return "MINIVAN";
+        }
+
+        if (containsAny(source,
+                " proace verso ",
+                " proace city verso ",
+                " spacetourer ",
+                " traveller ",
+                " třídy v ",
+                " tridy v ")) {
             return "MINIVAN";
         }
 
