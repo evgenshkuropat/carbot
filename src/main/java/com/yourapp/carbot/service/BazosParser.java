@@ -1463,12 +1463,20 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             return "SEDAN";
         }
 
-        if (titleSource.contains(" a3 ") && titleSource.contains(" sportback ")) {
+        if (containsAny(titleSource, " a3 ", " a5 ", " a7 ") && titleSource.contains(" sportback ")) {
             return "HATCHBACK";
         }
 
         if (containsAny(titleSource, " multivan ", " nv 200 ", " nv200 ")) {
             return "MINIVAN";
+        }
+
+        if (containsAny(titleSource, " 730d ", " 730ld ", " 730i ", " 740d ", " 740i ", " 750d ", " 750i ", " 7 series ", " rada 7 ", " 7er ")) {
+            return "SEDAN";
+        }
+
+        if (containsAny(titleSource, " gran coupe ", " gran coup\u00e9 ")) {
+            return "SEDAN";
         }
 
         if (containsAny(titleSource, " giulia ", " alfa 156 ", " romeo 156 ", " alfa 159 ", " romeo 159 ",
@@ -2026,6 +2034,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             case "rav4" -> slug.contains("-rav4-") || slug.contains("-rav-4-");
             case "chr" -> slug.contains("-chr-") || slug.contains("-c-hr-");
             case "corvette" -> slug.contains("-corvette-") || slug.contains("-corveta-");
+            case "a8" -> slug.contains("-a8-") || slug.contains("-a8l-");
             default -> slug.contains("-" + model + "-");
         };
     }
