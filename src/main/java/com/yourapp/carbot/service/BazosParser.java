@@ -1190,6 +1190,8 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " a/t ",
                 " at6 ",
                 " at8 ",
+                " eat8 ",
+                " e-eat8 ",
                 " cvt ",
                 " e-cvt ",
                 " ecvt ",
@@ -1473,6 +1475,18 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
 
         if (containsAny(titleSource, " 730d ", " 730ld ", " 730i ", " 740d ", " 740i ", " 750d ", " 750i ", " 7 series ", " rada 7 ", " 7er ")) {
             return "SEDAN";
+        }
+
+        if (containsAny(titleSource, " logan mcv ", " logan combi ", " logan kombi ")) {
+            return "WAGON";
+        }
+
+        if (containsAny(titleSource, " jogger ")) {
+            return "MINIVAN";
+        }
+
+        if (containsAny(titleSource, " ford ka ", " fordka ")) {
+            return "HATCHBACK";
         }
 
         if (containsAny(titleSource, " gran coupe ", " gran coup\u00e9 ")) {
