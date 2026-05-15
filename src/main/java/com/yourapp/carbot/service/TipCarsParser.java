@@ -153,7 +153,7 @@ public class TipCarsParser implements CarSourceParser {
 
             String transmission = firstNonBlank(
                     extractTransmission(title),
-                    extractTransmission(pageText),
+                    extractTransmissionFromSpecs(doc),
                     extractTransmission(url),
                     "ELECTRIC".equals(fuelType) ? "AUTOMATIC" : null
             );
@@ -614,6 +614,29 @@ public class TipCarsParser implements CarSourceParser {
                 || compact.contains("ecoboost")
                 || compact.contains("skyactivg")) {
             return "PETROL";
+        }
+
+        return null;
+    }
+
+    private String extractTransmissionFromSpecs(Document doc) {
+        for (Element el : doc.select("tr, li, dl, [class*=param], [class*=spec], [class*=tech], [class*=info], [class*=data], [class*=attr]")) {
+            String text = normalizeText(el.text());
+            if (text.isBlank() || text.length() > 140) {
+                continue;
+            }
+
+            String lower = text.toLowerCase(Locale.ROOT);
+            if (containsAny(lower,
+                    "p\u0159evodovka",
+                    "prevodovka",
+                    "p\u0159evod",
+                    "prevod")) {
+                String transmission = extractTransmission(text);
+                if (transmission != null) {
+                    return transmission;
+                }
+            }
         }
 
         return null;
