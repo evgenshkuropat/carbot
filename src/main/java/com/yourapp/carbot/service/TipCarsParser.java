@@ -153,7 +153,9 @@ public class TipCarsParser implements CarSourceParser {
 
             String transmission = firstNonBlank(
                     extractTransmission(title),
-                    extractTransmission(url)
+                    extractTransmission(pageText),
+                    extractTransmission(url),
+                    "ELECTRIC".equals(fuelType) ? "AUTOMATIC" : null
             );
 
             String carType = extractCarType(title, "", url);
@@ -619,12 +621,11 @@ public class TipCarsParser implements CarSourceParser {
 
     private String extractTransmission(String text) {
         String normalized = " " + normalizeText(text).toLowerCase(Locale.ROOT) + " ";
+        String tokens = " " + normalized.replaceAll("[^a-z0-9]+", " ").replaceAll("\\s+", " ").trim() + " ";
 
         if (containsAny(normalized,
                 " automat ",
                 " automatic ",
-                " aut. ",
-                " at ",
                 " dsg ",
                 " dsg7 ",
                 " eat8 ",
@@ -649,19 +650,34 @@ public class TipCarsParser implements CarSourceParser {
                 " xtronic ",
                 " cvt ",
                 " e-cvt ",
-                " ecvt ")) {
+                " ecvt ")
+                || containsAny(tokens,
+                " aut ",
+                " autom ",
+                " at ",
+                " at6 ",
+                " at7 ",
+                " at8 ",
+                " at9 ",
+                " 6at ",
+                " 7at ",
+                " 8at ",
+                " 9at ")) {
             return "AUTOMATIC";
         }
 
         if (containsAny(normalized,
-                " manuál ",
+                " manu\u00e1l ",
                 " manual ",
-                " manuální ",
-                " manualni ",
+                " manu\u00e1ln\u00ed ",
+                " manualni ")
+                || containsAny(tokens,
                 " man ",
-                " man. ",
+                " mt ",
                 " 5mt ",
-                " 6mt ")) {
+                " 6mt ",
+                " mt5 ",
+                " mt6 ")) {
             return "MANUAL";
         }
 
