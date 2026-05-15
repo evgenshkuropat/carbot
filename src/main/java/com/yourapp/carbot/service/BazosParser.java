@@ -1035,6 +1035,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 || compact.contains("igt")
                 || compact.contains("mivec")
                 || compact.contains("tce")
+                || compact.contains("tjet")
                 || compact.contains("puretech")
                 || compact.contains("ecoboost")
                 || compact.contains("skyactivg")
@@ -1318,6 +1319,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         if (source.contains(" galaxy ")) return "FORD";
         if (source.contains(" ranger ")) return "FORD";
         if (source.contains(" mustang ")) return "FORD";
+        if (source.contains(" tourneo ")) return "FORD";
 
         if (source.contains(" megane ")) return "RENAULT";
         if (source.contains(" scenic ")) return "RENAULT";
@@ -1340,6 +1342,8 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         if (source.contains(" xsara ")) return "CITROEN";
 
         if (source.contains(" tipo ")) return "FIAT";
+        if (source.contains(" doblo ")) return "FIAT";
+        if (source.contains(" 500l ") || source.contains(" 500 l ")) return "FIAT";
         if (source.contains(" panda ")) return "FIAT";
         if (source.contains(" ducato ")) return "FIAT";
         if (source.contains(" fiat 500 ") || source.contains(" 500 lounge ")) return "FIAT";
@@ -1407,6 +1411,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         if (source.contains(" swift ")) return "SUZUKI";
         if (source.contains(" vitara ")) return "SUZUKI";
         if (source.contains(" sx 4 ") || source.contains(" sx4 ")) return "SUZUKI";
+        if (containsAny(source, " civic ", " jazz ", " accord ", " cr-v ", " crv ", " hr-v ", " hrv ")) return "HONDA";
 
         if (source.contains(" 1007 ")) return "PEUGEOT";
         if (source.contains(" 107 ")) return "PEUGEOT";
@@ -1589,8 +1594,8 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " zafira ", " meriva ", " dokker ",
                 " roomster ", " lodgy ", " verso ",
                 " c-max ", " grand c-max ",
-                " tourneo courier ", " tourneo connect ",
-                " doblo ", " combo ", " vaneo ",
+                " tourneo custom ", " tourneo courier ", " tourneo connect ",
+                " doblo ", " 500l ", " fiat 500l ", " combo ", " vaneo ",
                 " picasso ", " grand c4 picasso ", " c4 picasso ",
                 " b 200 ", " b200 ",
                 " mazda 5 ",
@@ -1604,7 +1609,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " grandtour ", " grand tour ",
                 " kombi ", " combi ", " combi2", " kombi2",
                 " wagon ", " sportwagon ", " avant ", " variant ", " sw ", " allroad ",
-                " touring ", " caravan ", " estate ",
+                " touring ", " turnier ", " caravan ", " estate ",
                 " rs6 ", " rs 6 ", " f11 ",
                 " alltrack ", " scout ", " outback ",
                 " v40 ", " v50 ", " v60 ", " v70 ", " v 70 ", " v90 ",
