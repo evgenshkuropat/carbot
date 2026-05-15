@@ -886,6 +886,13 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         String source = " " + normalizeText(text).toLowerCase(Locale.ROOT) + " ";
         String compact = source.replaceAll("[^a-z0-9]", "");
 
+        if (source.contains(" stelvio ")
+                && (containsAny(source, " 2.0t ", " 2,0t ", " 2.0 t ", " 2,0 t ", " 2.0 turbo ", " 2,0 turbo ", " turbo ")
+                || compact.contains("20tq4")
+                || compact.contains("20turbo"))) {
+            return "PETROL";
+        }
+
         if (Pattern.compile("\\b\\d{2,3}\\s*kwh\\b", Pattern.CASE_INSENSITIVE)
                 .matcher(source).find()
                 || compact.contains("64kwh")
