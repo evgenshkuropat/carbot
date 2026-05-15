@@ -608,7 +608,7 @@ public class CarFilterMatcher {
         Integer carMileage = car.getMileage();
 
         if (carMileage == null) {
-            return true; // unknown mileage не отбрасываем
+            return false;
         }
 
         return carMileage <= maxMileage;
@@ -750,7 +750,7 @@ public class CarFilterMatcher {
         Integer carYear = car.getYear();
 
         if (carYear == null) {
-            return true; // unknown year не отбрасываем
+            return false;
         }
 
         return carYear >= yearFrom;
