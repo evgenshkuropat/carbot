@@ -1038,6 +1038,10 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 || compact.contains("puretech")
                 || compact.contains("ecoboost")
                 || compact.contains("skyactivg")
+                || compact.contains("ivtec")
+                || compact.contains("vtec")
+                || compact.contains("benzinovy")
+                || compact.contains("benzinove")
                 || compact.contains("vvti")
                 || compact.contains("vvt")
                 || compact.contains("10i")
@@ -1045,6 +1049,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 || compact.contains("14i")
                 || compact.contains("15i")
                 || compact.contains("16i")
+                || compact.contains("16v")
                 || compact.contains("18i")
                 || compact.contains("20i")
                 || compact.contains("24i")
@@ -1501,7 +1506,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             return "MINIVAN";
         }
 
-        if (containsAny(titleSource, " i10 ", " jazz ", " rio ")) {
+        if (containsAny(titleSource, " i10 ", " jazz ", " rio ", " ds3 ", " punto ", " panda ", " grande punto ")) {
             return "HATCHBACK";
         }
 
@@ -1626,7 +1631,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " c2 ", " c3 ",
                 " clio ", " megane ", " fiesta ",
                 " rs3 ", " rs 3 ",
-                " civic ", " leon ", " swift ", " born ",
+                " civic ", " leon ", " swift ", " born ", " punto ", " panda ",
                 " leaf ", " micra ", " colt ", " spacestar ", " space star ",
                 " f40 ", " řada 1 ", " rada 1 ",
                 " a180 ", " a180d ", " a200 ", " a200d ",
@@ -2118,6 +2123,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " q7 ", " rs3 ", " stelvio ", " giulia ", " giulietta ",
                 " a3 ", " a4 ", " a5 ", " a6 ", " q3 ", " q5 ",
                 " x1 ", " x3 ", " x5 ",
+                " civic ", " duster ", " panda ", " punto ", " mustang ",
                 " octavia ", " superb ", " passat ")) {
             return false;
         }
@@ -2510,7 +2516,13 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
     }
 
     private boolean looksBrokenOrForPartsListing(String title, String text) {
+        String titleSource = " " + normalizeText(title).toLowerCase(Locale.ROOT) + " ";
         String source = " " + normalizeText(title + " " + shortenForCheck(text, 500)).toLowerCase(Locale.ROOT) + " ";
+
+        if (containsAny(titleSource, " mustang ", " civic type r ", " duster ")
+                && !containsAny(titleSource, " na dily ", " na nd ", " nahradni dily ", " nepojizdny ", " nepojizdne ", " vadny ", " vadne ")) {
+            return false;
+        }
 
         boolean explicitlyDriveable = containsAny(source,
                 " plně pojízdný ", " plne pojizdny ",
