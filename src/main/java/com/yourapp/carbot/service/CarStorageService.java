@@ -365,7 +365,7 @@ public class CarStorageService {
                     "TESLA", "CUPRA", "DODGE", "SUBARU", "NISSAN", "SUZUKI",
                     "JEEP", "MINI", "LEXUS", "PORSCHE", "MITSUBISHI", "BYD",
                     "MG", "DS", "LAND_ROVER", "ALFA_ROMEO", "CHEVROLET",
-                    "LOTUS", "LAMBORGHINI", "FERRARI"
+                    "SSANGYONG", "CHRYSLER", "LOTUS", "LAMBORGHINI", "FERRARI"
             );
 
             if (allowed.contains(upper)) {
@@ -386,6 +386,8 @@ public class CarStorageService {
         if (t.contains("hyundai")) return "HYUNDAI";
         if (t.contains("kia")) return "KIA";
         if (t.contains("chevrolet") || t.contains("corvette") || t.contains("camaro")) return "CHEVROLET";
+        if (t.contains("ssangyong") || t.contains("ssang yong") || t.contains("korando")) return "SSANGYONG";
+        if (t.contains("chrysler") || t.contains("pacifica")) return "CHRYSLER";
         if (t.contains("lotus") || t.contains("emira")) return "LOTUS";
         if (t.contains("lamborghini") || t.contains("hurac")) return "LAMBORGHINI";
         if (t.contains("ferrari") || t.contains("california")) return "FERRARI";
@@ -493,6 +495,28 @@ public class CarStorageService {
     }
 
     private String normalizeCarType(String carType, String title) {
+        String lower = safe(title).toLowerCase(Locale.ROOT);
+
+        if (containsAny(lower, "touran")) {
+            return "MINIVAN";
+        }
+
+        if (containsAny(lower, "land cruiser", "korando")) {
+            return "SUV";
+        }
+
+        if (containsAny(lower, "f-150", "f150")) {
+            return "PICKUP";
+        }
+
+        if (containsAny(lower, "3000gt", "3000 gt")) {
+            return "COUPE";
+        }
+
+        if (containsAny(lower, "peugeot 106")) {
+            return "HATCHBACK";
+        }
+
         String value = clean(carType);
         if (value != null) {
             String upper = value.toUpperCase(Locale.ROOT)
@@ -503,8 +527,6 @@ public class CarStorageService {
                 return upper;
             }
         }
-
-        String lower = safe(title).toLowerCase(Locale.ROOT);
 
         if (containsAny(lower, "combi", "kombi", "avant", "variant", "touring", "wagon")) {
             return "WAGON";
