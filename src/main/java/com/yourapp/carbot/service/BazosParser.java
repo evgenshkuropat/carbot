@@ -1420,7 +1420,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         if (source.contains(" swift ")) return "SUZUKI";
         if (source.contains(" vitara ")) return "SUZUKI";
         if (source.contains(" sx 4 ") || source.contains(" sx4 ")) return "SUZUKI";
-        if (containsAny(source, " civic ", " jazz ", " accord ", " cr-v ", " crv ", " hr-v ", " hrv ")) return "HONDA";
+        if (containsAny(source, " civic ", " jazz ", " accord ", " cr-v ", " cr v ", " crv ", " hr-v ", " hr v ", " hrv ", " fr-v ", " fr v ", " frv ")) return "HONDA";
 
         if (source.contains(" 1007 ")) return "PEUGEOT";
         if (source.contains(" 107 ")) return "PEUGEOT";
@@ -1588,7 +1588,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " sportage ", " sorento ", " stonic ",
                 " tucson ", " santa fe ", " kona ",
                 " duster ", " koleos ", " kadjar ",
-                " cr-v ", " crv ", " hr-v ", " hrv ", " rav4 ", " c-hr ", " chr ",
+                " cr-v ", " cr v ", " crv ", " hr-v ", " hr v ", " hrv ", " rav4 ", " c-hr ", " chr ",
                 " cx-3 ", " cx3 ", " cx-5 ", " cx5 ",
                 " macan ", " cayenne ",
                 " ux ", " nx ", " rx ",
@@ -1629,7 +1629,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " b 200 ", " b200 ",
                 " mazda 5 ",
                 " grand scenic ", " grand scénic ",
-                " kangoo ", " carens ")) {
+                " kangoo ", " carens ", " fr-v ", " fr v ", " frv ")) {
             return "MINIVAN";
         }
 
