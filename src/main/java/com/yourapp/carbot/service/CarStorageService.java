@@ -497,11 +497,11 @@ public class CarStorageService {
     private String normalizeCarType(String carType, String title) {
         String lower = safe(title).toLowerCase(Locale.ROOT);
 
-        if (containsAny(lower, "touran")) {
+        if (containsAny(lower, "touran", "v 250l", "v250l")) {
             return "MINIVAN";
         }
 
-        if (containsAny(lower, "land cruiser", "korando")) {
+        if (containsAny(lower, "land cruiser", "korando", "cx-5", "cx 5", "cx5", "cx-7", "cx 7", "cx7", "niro")) {
             return "SUV";
         }
 
@@ -513,7 +513,11 @@ public class CarStorageService {
             return "COUPE";
         }
 
-        if (containsAny(lower, "peugeot 106")) {
+        if (containsAny(lower, "proceed", "pro ceed")) {
+            return "WAGON";
+        }
+
+        if (containsAny(lower, "peugeot 106", "mazda 2")) {
             return "HATCHBACK";
         }
 

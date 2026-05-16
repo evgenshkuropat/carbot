@@ -1589,7 +1589,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " tucson ", " santa fe ", " kona ",
                 " duster ", " koleos ", " kadjar ",
                 " cr-v ", " cr v ", " crv ", " hr-v ", " hr v ", " hrv ", " rav4 ", " c-hr ", " chr ",
-                " cx-3 ", " cx3 ", " cx-5 ", " cx5 ",
+                " cx-3 ", " cx3 ", " cx-5 ", " cx 5 ", " cx5 ", " cx-7 ", " cx 7 ", " cx7 ",
                 " macan ", " cayenne ",
                 " ux ", " nx ", " rx ",
                 " enyaq ", " id.4 ", " id.5 ",
@@ -1601,7 +1601,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " model y ",
                 " xv ", " forester ",
                 " mokka ",
-                " xceed ",
+                " xceed ", " niro ",
                 " ix35 ",
                 " stelvio ",
                 " durango ",
@@ -1618,7 +1618,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " sportsvan ",
                 " caddy ", " berlingo ", " rifter ",
                 " proace verso ", " proace city verso ",
-                " v 250 ", " v250 ", " v 250d ", " v250d ", " v300d ",
+                " v 250 ", " v250 ", " v 250l ", " v250l ", " v 250d ", " v250d ", " v300d ",
                 " partner tepee ", " tepee ", " partner ",
                 " zafira ", " meriva ", " dokker ",
                 " roomster ", " lodgy ", " verso ",
@@ -1641,6 +1641,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " touring ", " turnier ", " caravan ", " estate ",
                 " rs6 ", " rs 6 ", " f11 ", " f31 ",
                 " alltrack ", " scout ", " outback ",
+                " proceed ", " pro ceed ",
                 " v40 ", " v50 ", " v60 ", " v70 ", " v 70 ", " v90 ",
                 " g31 ", " tipo sw ", " 206sw ", " 207sw ", " 307sw ", " 308sw ", " 407sw ", " 508sw ",
                 " i40 wg ", " i40 wagon ", " i40 kombi ")) {
@@ -1660,7 +1661,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         if (containsAny(titleSource,
                 " hatchback ", " hatch ", " spaceback ",
                 " fabia ", " focus ", " golf ", " polo ",
-                " i20 ", " i30 ", " ceed ",
+                " i20 ", " i30 ", " ceed ", " mazda 2 ",
                 " aveo ", " spark ", " picanto ",
                 " c2 ", " c3 ",
                 " clio ", " megane ", " fiesta ",
@@ -2016,6 +2017,13 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         if (containsAny(source, " picanto ")) return "picanto";
         if (containsAny(source, " carens ")) return "carens";
 
+        if (containsAny(source, " mazda 2 ")) return "mazda2";
+        if (containsAny(source, " mazda 3 ")) return "mazda3";
+        if (containsAny(source, " mazda 5 ")) return "mazda5";
+        if (containsAny(source, " mazda 6 ")) return "mazda6";
+        if (containsAny(source, " cx-5 ", " cx 5 ", " cx5 ")) return "cx5";
+        if (containsAny(source, " cx-7 ", " cx 7 ", " cx7 ")) return "cx7";
+
         if (containsAny(source, " i10 ")) return "i10";
         if (containsAny(source, " i20 ")) return "i20";
         if (containsAny(source, " i30 ")) return "i30";
@@ -2049,6 +2057,12 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             case "rav4" -> slug.contains("-rav4-") || slug.contains("-rav-4-");
             case "chr" -> slug.contains("-chr-") || slug.contains("-c-hr-");
             case "corvette" -> slug.contains("-corvette-") || slug.contains("-corveta-");
+            case "mazda2" -> slug.contains("-mazda-2-") || slug.contains("-mazda2-");
+            case "mazda3" -> slug.contains("-mazda-3-") || slug.contains("-mazda3-");
+            case "mazda5" -> slug.contains("-mazda-5-") || slug.contains("-mazda5-");
+            case "mazda6" -> slug.contains("-mazda-6-") || slug.contains("-mazda6-");
+            case "cx5" -> slug.contains("-cx-5-") || slug.contains("-cx5-");
+            case "cx7" -> slug.contains("-cx-7-") || slug.contains("-cx7-");
             case "a8" -> slug.contains("-a8-") || slug.contains("-a8l-");
             default -> slug.contains("-" + model + "-");
         };
@@ -2620,7 +2634,8 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
 
         if (cleanTitle.equals("prodam")
                 || cleanTitle.equals("prodám")
-                || cleanTitle.equals("prodej")) {
+                || cleanTitle.equals("prodej")
+                || cleanTitle.equals("na prodej")) {
             return true;
         }
 
