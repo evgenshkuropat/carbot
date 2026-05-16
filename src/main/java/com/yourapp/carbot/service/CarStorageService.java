@@ -420,18 +420,25 @@ public class CarStorageService {
     }
 
     private String normalizeFuelType(String fuelType, String title) {
+        String lower = (safe(fuelType) + " " + safe(title)).toLowerCase(Locale.ROOT);
+        String titleLower = safe(title).toLowerCase(Locale.ROOT);
         String value = clean(fuelType);
         if (value != null) {
             String upper = value.toUpperCase(Locale.ROOT)
                     .replace('-', '_')
                     .replace(' ', '_');
 
+            if (containsAny(titleLower, "plug-in hybrid", "plugin hybrid", "phev")) {
+                return "PLUGIN_HYBRID";
+            }
+            if ("PETROL".equals(upper) && containsAny(titleLower, "hybrid", "hev", "mhev", "mild hybrid", "e-tec")) {
+                return "HYBRID";
+            }
+
             if (Set.of("PETROL", "DIESEL", "HYBRID", "PLUGIN_HYBRID", "ELECTRIC", "LPG", "CNG").contains(upper)) {
                 return upper;
             }
         }
-
-        String lower = (safe(fuelType) + " " + safe(title)).toLowerCase(Locale.ROOT);
 
         if (containsAny(lower, "plug-in hybrid", "plugin hybrid", "phev")) {
             return "PLUGIN_HYBRID";
@@ -501,7 +508,7 @@ public class CarStorageService {
             return "MINIVAN";
         }
 
-        if (containsAny(lower, "land cruiser", "korando", "cx-5", "cx 5", "cx5", "cx-7", "cx 7", "cx7", "niro")) {
+        if (containsAny(lower, "land cruiser", "korando", "cx-5", "cx 5", "cx5", "cx-7", "cx 7", "cx7", "niro", "eqa", "mustang mach-e", "mustang mache")) {
             return "SUV";
         }
 
@@ -517,7 +524,7 @@ public class CarStorageService {
             return "WAGON";
         }
 
-        if (containsAny(lower, "peugeot 106", "mazda 2")) {
+        if (containsAny(lower, "peugeot 106", "mazda 2", "nissan note")) {
             return "HATCHBACK";
         }
 
