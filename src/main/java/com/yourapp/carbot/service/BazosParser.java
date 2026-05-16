@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -1535,13 +1536,13 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             return "SEDAN";
         }
 
+        if (containsAny(titleSource, " sportwagon ")) {
+            return "WAGON";
+        }
+
         if (containsAny(titleSource, " giulia ", " alfa 156 ", " romeo 156 ", " alfa 159 ", " romeo 159 ",
                 " alfa 166 ", " romeo 166 ")) {
             return "SEDAN";
-        }
-
-        if (containsAny(titleSource, " sportwagon ")) {
-            return "WAGON";
         }
 
         if (containsAny(titleSource, " alfa gt ", " romeo gt ", " gtv ", " brera ")) {
@@ -2344,6 +2345,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         String source = " " + normalizeText(shortenForCheck(text, 450) + " " + safe(url)).toLowerCase(Locale.ROOT) + " ";
         String analysis = " " + shortenForCheck(normalizeText(analysisText).toLowerCase(Locale.ROOT), 900) + " ";
         String compactTitleValue = compactSearchText(title);
+        String asciiTitleValue = asciiSearchText(title);
 
         if (startsWithAny(titleValue,
                 "motor ",
@@ -2362,6 +2364,10 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " klouby ", " kloub ",
                 " svetlo ", " světlo ",
                 " zrcatko ", " zrcĂˇtko ")) {
+            return true;
+        }
+
+        if (containsAny(asciiTitleValue, " dily z ", " dil z ", " na dily ", " nahradni dily ")) {
             return true;
         }
 
@@ -2718,22 +2724,26 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
 
     private boolean looksSuspiciousListing(String title, String text) {
         String cleanTitle = normalizeText(title).toLowerCase(Locale.ROOT);
+        String cleanTitleAscii = asciiSearchText(title);
         if (containsAny(cleanTitle, "prodam nebo vymenim", "prodám nebo vyměním", " rezervováno ", " rezervovano ",
-                " rezervace ")) {
+                " rezervace ")
+                || containsAny(cleanTitleAscii, " prodam nebo vymenim ", " rezervovano ", " rezervace ")) {
             return true;
         }
 
         if (cleanTitle.equals("prodam")
                 || cleanTitle.equals("prodám")
                 || cleanTitle.equals("prodej")
-                || cleanTitle.equals("na prodej")) {
+                || cleanTitle.equals("na prodej")
+                || cleanTitle.equals("auto")) {
             return true;
         }
 
         String source = " " + normalizeText(title + " " + shortenForCheck(text, 500)).toLowerCase(Locale.ROOT) + " ";
+        String sourceAscii = asciiSearchText(title + " " + shortenForCheck(text, 500));
 
         if (looksLikePassengerCarModel(title)
-                && !containsAny(cleanTitle, "prodano", "prodĂˇno", "zalohovano", "zĂˇlohovĂˇno", "rezervace", "rezervovano", "rezervovĂˇno")) {
+                && !containsAny(cleanTitleAscii, " prodano ", " zalohovano ", " rezervace ", " rezervovano ", " zadano ")) {
             return false;
         }
 
@@ -2756,7 +2766,26 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " prodáno ", " prodano ",
                 " zálohováno ", " zalohovano ",
                 " rezervováno ", " rezervovano ", " rezervace ",
-                " zadáno ", " zadano ");
+                " zadáno ", " zadano ")
+                || containsAny(sourceAscii,
+                " na splatky ",
+                " bez registru ",
+                " akontace ",
+                " exekuce ",
+                " insolvence ",
+                " drazba ",
+                " prenecham splatky ",
+                " prevezmu leasing ",
+                " leasing prevezmu ",
+                " bez prepisu ",
+                " bez stk ",
+                " bez tp ",
+                " soubor nahradnich dilu ",
+                " jen celek ",
+                " prodano ",
+                " zalohovano ",
+                " rezervovano ", " rezervace ",
+                " zadano ");
     }
 
     private Integer parseYearCandidate(String raw) {
@@ -3006,6 +3035,16 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
     private String compactSearchText(String value) {
         String compact = normalizeText(value).toLowerCase(Locale.ROOT)
                 .replaceAll("[^\\p{L}\\p{Nd}]+", " ")
+                .replaceAll("\\s+", " ")
+                .trim();
+        return compact.isBlank() ? " " : " " + compact + " ";
+    }
+
+    private String asciiSearchText(String value) {
+        String withoutMarks = Normalizer.normalize(normalizeText(value).toLowerCase(Locale.ROOT), Normalizer.Form.NFD)
+                .replaceAll("\\p{M}+", "");
+        String compact = withoutMarks
+                .replaceAll("[^a-z0-9]+", " ")
                 .replaceAll("\\s+", " ")
                 .trim();
         return compact.isBlank() ? " " : " " + compact + " ";

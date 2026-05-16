@@ -541,6 +541,10 @@ public class CarStorageService {
             return "HATCHBACK";
         }
 
+        if (containsAny(lower, "sportwagon")) {
+            return "WAGON";
+        }
+
         String value = clean(carType);
         if (value != null) {
             String upper = value.toUpperCase(Locale.ROOT)
