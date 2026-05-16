@@ -532,7 +532,12 @@ public class CarStorageService {
             return "SEDAN";
         }
 
-        if (containsAny(lower, "peugeot 106", "mazda 2", "nissan note", "nissan micra", "micra", "ceed", "cee´d", "cee'd", "cee d", "seat leon", "citroen c4", "citroën c4")) {
+        if (containsAny(lower, "ceed", "ceeÂ´d", "cee'd", "cee d")
+                && containsAny(lower, " sw", "sw ", "wagon", "kombi", "combi")) {
+            return "WAGON";
+        }
+
+        if (containsAny(lower, "peugeot 106", "mazda 2", "nissan note", "nissan micra", "micra", "kalos", "ceed", "cee´d", "cee'd", "cee d", "seat leon", "citroen c4", "citroën c4")) {
             return "HATCHBACK";
         }
 
@@ -549,6 +554,10 @@ public class CarStorageService {
 
         if (containsAny(lower, "combi", "kombi", "avant", "variant", "touring", "wagon", "f31")) {
             return "WAGON";
+        }
+
+        if (containsAny(lower, "mazda 6", "oktavia")) {
+            return "SEDAN";
         }
 
         if (containsAny(lower, "hatchback")) {
