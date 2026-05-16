@@ -440,6 +440,11 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         }
 
         if (year != null && year >= 2015 && priceValue < 80_000) {
+            if (year <= 2016
+                    && priceValue >= 40_000
+                    && containsAny(source, " sandero ", " logan ", " punto ", " panda ", " aveo ", " spark ", " c2 ", " c3 ")) {
+                return false;
+            }
             return true;
         }
 
@@ -1073,6 +1078,8 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 || compact.contains("mivec")
                 || compact.contains("tce")
                 || compact.contains("tjet")
+                || compact.contains("sce")
+                || compact.contains("benz")
                 || compact.contains("puretech")
                 || compact.contains("ecoboost")
                 || compact.contains("skyactivg")
@@ -1287,7 +1294,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         if (containsAny(titleSource, " nissan ")) return "NISSAN";
         if (containsAny(titleSource, " honda ", " acura ")) return "HONDA";
         if (containsAny(titleSource, " suzuki ")) return "SUZUKI";
-        if (containsAny(titleSource, " dacia ", " dacie ")) return "DACIA";
+        if (containsAny(titleSource, " dacia ", " dacie ", " duster ", " sandero ", " logan ", " dokker ", " lodgy ", " jogger ")) return "DACIA";
         if (containsAny(titleSource, " cupra ")) return "CUPRA";
         if (containsAny(titleSource, " jeep ")) return "JEEP";
         if (containsAny(titleSource, " subaru ")) return "SUBARU";
@@ -1327,7 +1334,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         if (containsAny(source, " nissan ")) return "NISSAN";
         if (containsAny(source, " honda ", " acura ")) return "HONDA";
         if (containsAny(source, " suzuki ")) return "SUZUKI";
-        if (containsAny(source, " dacia ", " dacie ")) return "DACIA";
+        if (containsAny(source, " dacia ", " dacie ", " duster ", " sandero ", " logan ", " dokker ", " lodgy ", " jogger ")) return "DACIA";
         if (containsAny(source, " cupra ")) return "CUPRA";
         if (containsAny(source, " jeep ")) return "JEEP";
         if (containsAny(source, " subaru ")) return "SUBARU";
@@ -1522,6 +1529,10 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
 
         if (containsAny(titleSource, " logan mcv ", " logan combi ", " logan kombi ")) {
             return "WAGON";
+        }
+
+        if (containsAny(titleSource, " logan ")) {
+            return "SEDAN";
         }
 
         if (containsAny(titleSource, " jogger ")) {
@@ -2170,6 +2181,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         if (containsAny(titleSource,
                 " trafic ", " traffic ",
                 " master ", " movano ", " peugeot boxer ", " jumper ", " ducato ",
+                " fiorino ",
                 " expert ", " jumpy ", " scudo ",
                 " proace ")
                 || containsAny(wordSource,
@@ -2367,7 +2379,9 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             return true;
         }
 
-        if (containsAny(asciiTitleValue, " dily z ", " dil z ", " na dily ", " nahradni dily ")) {
+        if (containsAny(asciiTitleValue,
+                " dily z ", " dil z ", " na dily ", " nahradni dily ",
+                " stresni nosic ", " stresni box ", " nosic ", " pricniky ", " nd ")) {
             return true;
         }
 

@@ -397,7 +397,7 @@ public class CarStorageService {
         if (t.contains("honda") || t.contains("acura") || t.contains("rdx")) return "HONDA";
         if (t.contains("volvo")) return "VOLVO";
         if (t.contains("seat")) return "SEAT";
-        if (t.contains("dacia")) return "DACIA";
+        if (t.contains("dacia") || t.contains("duster") || t.contains("sandero") || t.contains("logan") || t.contains("dokker") || t.contains("lodgy") || t.contains("jogger")) return "DACIA";
         if (t.contains("fiat")) return "FIAT";
         if (t.contains("tesla")) return "TESLA";
         if (t.contains("cupra")) return "CUPRA";
@@ -465,7 +465,7 @@ public class CarStorageService {
             return "DIESEL";
         }
 
-        if (containsAny(lower, "petrol", "benzin", "benzinovy", "benzín", "benzínový", "tsi", "tfsi", "fsi", "gdi", "tgdi", "ecoboost", "camaro", "corvette", "chevrolet ssr")) {
+        if (containsAny(lower, "petrol", "benzin", "benz", "benzinovy", "benzín", "benzínový", "tsi", "tfsi", "fsi", "gdi", "tgdi", "sce", "ecoboost", "camaro", "corvette", "chevrolet ssr")) {
             return "PETROL";
         }
 
@@ -535,6 +535,14 @@ public class CarStorageService {
         if (containsAny(lower, "ceed", "ceeÂ´d", "cee'd", "cee d")
                 && containsAny(lower, " sw", "sw ", "wagon", "kombi", "combi")) {
             return "WAGON";
+        }
+
+        if (containsAny(lower, "logan mcv", "logan combi", "logan kombi")) {
+            return "WAGON";
+        }
+
+        if (containsAny(lower, "logan")) {
+            return "SEDAN";
         }
 
         if (containsAny(lower, "peugeot 106", "mazda 2", "nissan note", "nissan micra", "micra", "kalos", "ceed", "cee´d", "cee'd", "cee d", "seat leon", "citroen c4", "citroën c4")) {
