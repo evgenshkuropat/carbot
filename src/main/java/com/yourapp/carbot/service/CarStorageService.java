@@ -394,7 +394,7 @@ public class CarStorageService {
         if (t.contains("peugeot")) return "PEUGEOT";
         if (t.contains("opel")) return "OPEL";
         if (t.contains("mazda")) return "MAZDA";
-        if (t.contains("honda")) return "HONDA";
+        if (t.contains("honda") || t.contains("acura") || t.contains("rdx")) return "HONDA";
         if (t.contains("volvo")) return "VOLVO";
         if (t.contains("seat")) return "SEAT";
         if (t.contains("dacia")) return "DACIA";
@@ -512,7 +512,7 @@ public class CarStorageService {
             return "MINIVAN";
         }
 
-        if (containsAny(lower, "land cruiser", "korando", "e-tron", "etron", "cx-5", "cx 5", "cx5", "cx-7", "cx 7", "cx7", "niro", "eqa", "mustang mach-e", "mustang mache")) {
+        if (containsAny(lower, "land cruiser", "korando", "rdx", "e-tron", "etron", "cx-5", "cx 5", "cx5", "cx-7", "cx 7", "cx7", "niro", "eqa", "mustang mach-e", "mustang mache")) {
             return "SUV";
         }
 
@@ -556,7 +556,7 @@ public class CarStorageService {
             return "WAGON";
         }
 
-        if (containsAny(lower, "mazda 6", "oktavia")) {
+        if (containsAny(lower, "mazda 6", "oktavia", "mondeo")) {
             return "SEDAN";
         }
 

@@ -900,6 +900,11 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             return "DIESEL";
         }
 
+        if (containsAny(source, " civic type r ", " vtec ", " v-tec ", " i-vtec ", " ivtec ")
+                && !containsAny(source, " dtec ", " d-tec ", " i-dtec ", " idtec ", " ctdi ", " ctdi ")) {
+            return "PETROL";
+        }
+
         if (source.contains(" orlando ") && containsAny(source, " 2.0 ", " 2,0 ", " 20vcdi ", " vcdi ", " cdti ")) {
             return "DIESEL";
         }
@@ -1275,7 +1280,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         if (containsAny(titleSource, " fiat ")) return "FIAT";
         if (containsAny(titleSource, " dodge ")) return "DODGE";
         if (containsAny(titleSource, " nissan ")) return "NISSAN";
-        if (containsAny(titleSource, " honda ")) return "HONDA";
+        if (containsAny(titleSource, " honda ", " acura ")) return "HONDA";
         if (containsAny(titleSource, " suzuki ")) return "SUZUKI";
         if (containsAny(titleSource, " dacia ", " dacie ")) return "DACIA";
         if (containsAny(titleSource, " cupra ")) return "CUPRA";
@@ -1315,7 +1320,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         if (containsAny(source, " fiat ")) return "FIAT";
         if (containsAny(source, " dodge ")) return "DODGE";
         if (containsAny(source, " nissan ")) return "NISSAN";
-        if (containsAny(source, " honda ")) return "HONDA";
+        if (containsAny(source, " honda ", " acura ")) return "HONDA";
         if (containsAny(source, " suzuki ")) return "SUZUKI";
         if (containsAny(source, " dacia ", " dacie ")) return "DACIA";
         if (containsAny(source, " cupra ")) return "CUPRA";
@@ -1360,6 +1365,8 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         if (source.contains(" ranger ")) return "FORD";
         if (source.contains(" mustang ")) return "FORD";
         if (source.contains(" tourneo ")) return "FORD";
+
+        if (source.contains(" rdx ")) return "HONDA";
 
         if (source.contains(" megane ")) return "RENAULT";
         if (source.contains(" scenic ")) return "RENAULT";
@@ -1624,6 +1631,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " ex30 ", " ex40 ", " ex90 ",
                 " captur ", " austral ", " arkana ", " rafale ",
                 " sportage ", " sorento ", " stonic ",
+                " rdx ",
                 " tucson ", " santa fe ", " kona ",
                 " duster ", " koleos ", " kadjar ",
                 " cr-v ", " cr v ", " crv ", " hr-v ", " hr v ", " hrv ", " rav4 ", " c-hr ", " chr ",
@@ -1760,7 +1768,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " 318d ", " 320d ", " 330d ", " 318i ", " 320i ", " 330i ",
                 " 730d ", " 730i ", " 740d ", " 740i ", " 750d ", " 750i ",
                 " 540ix ", " 540i ", " 540d ", " gran turismo ",
-                " c5 ", " mondeo sedan ",
+                " c5 ", " mondeo ", " mondeo sedan ",
                 " 508 ",
                 " model 3 ", " model s ",
                 " cordoba ", " ds5 ",
@@ -2350,6 +2358,11 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             return false;
         }
 
+        if (looksLikePassengerCarModel(title)
+                && !containsAny(titleValue, " na dily ", " na nd ", " nahradni dily ", " rezervace ", " rezervovano ", " prodano ")) {
+            return false;
+        }
+
         if (startsWithAny(titleValue,
                 "přední halogenové světlomety ",
                 "predni halogenove svetlomety ",
@@ -2705,6 +2718,11 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         }
 
         String source = " " + normalizeText(title + " " + shortenForCheck(text, 500)).toLowerCase(Locale.ROOT) + " ";
+
+        if (looksLikePassengerCarModel(title)
+                && !containsAny(cleanTitle, "prodano", "prodĂˇno", "zalohovano", "zĂˇlohovĂˇno", "rezervace", "rezervovano", "rezervovĂˇno")) {
+            return false;
+        }
 
         return containsAny(source,
                 " na splátky ", " na splatky ",
