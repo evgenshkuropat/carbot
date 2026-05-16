@@ -1684,6 +1684,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " tt ", " scirocco ", " supra ", " brz ",
                 " gt86 ", " gr86 ",
                 " 370z ", " 350z ",
+                " e92 ", " e93 ", " 335i ", " 335d ", " 220d coupe ", " 220i coupe ",
                 " rc f ", " rc 300h ", " lexus rc ",
                 " r8 ", " camaro ")) {
             return "COUPE";
