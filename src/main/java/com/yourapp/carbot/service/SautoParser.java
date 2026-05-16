@@ -1622,6 +1622,7 @@ public class SautoParser implements CarSourceParser {
                 " santa fe ", " sportage ", " sorento ", " stonic ", " x1 ", " x2 ", " x3 ",
                 " x4 ", " x5 ", " x6 ", " x7 ", " gla ", " glb ", " glc ", " gle ", " gls ",
                 " q2 ", " q3 ", " q4 ", " q5 ", " q7 ", " q8 ", " xc40 ", " xc60 ",
+                " grand vitara ", " vitara ", " sx4 ", " sx 4 ",
                 " xc90 ", " ex30 ", " ex40 ", " ex90 ", " ux ", " nx ", " rx ",
                 " duster ", " macan ", " cayenne ", " model x ", " model y ", " defender ",
                 " ateca ", " ev6 ", " 2008 ", " eqs suv ", " eqb ", " enyq ", " terramar ")) {
