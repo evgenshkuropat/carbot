@@ -460,7 +460,8 @@ public class CarStorageService {
             return "CNG";
         }
 
-        if (containsAny(lower, "diesel", "nafta", "tdi", "tdci", "cdi", "crdi", "hdi", "dci", "multijet")) {
+        if (containsAny(lower, "diesel", "nafta", "tdi", "tdci", "cdi", "crdi", "hdi", "dci", "multijet")
+                || Pattern.compile("\\b\\d[\\.,]\\d\\s*d\\b", Pattern.CASE_INSENSITIVE).matcher(lower).find()) {
             return "DIESEL";
         }
 
@@ -472,6 +473,19 @@ public class CarStorageService {
     }
 
     private String normalizeTransmission(String transmission, String title, String fuelType) {
+        String lower = (safe(transmission) + " " + safe(title)).toLowerCase(Locale.ROOT);
+        String tokens = " " + lower.replaceAll("[^a-z0-9]+", " ") + " ";
+
+        if (containsAny(tokens, " 6mt ", " 5mt ", " mt ")
+                || containsAny(lower, "manual", "manuĂˇl", "manualni", "manuĂˇlnĂ­")) {
+            return "MANUAL";
+        }
+
+        if (containsAny(tokens, " aut ", " at ", " mta ")
+                || containsAny(lower, "automat", "automatic", "dsg", "tiptronic", "s tronic", "stronic", "cvt")) {
+            return "AUTOMATIC";
+        }
+
         String value = clean(transmission);
         if (value != null) {
             String upper = value.toUpperCase(Locale.ROOT)
@@ -486,16 +500,6 @@ public class CarStorageService {
         String normalizedFuel = normalizeFuelType(fuelType, title);
         if ("ELECTRIC".equals(normalizedFuel)) {
             return null;
-        }
-
-        String lower = (safe(transmission) + " " + safe(title)).toLowerCase(Locale.ROOT);
-
-        if (containsAny(lower, "automat", "automatic", "dsg", "tiptronic", "s tronic", "stronic", "cvt")) {
-            return "AUTOMATIC";
-        }
-
-        if (containsAny(lower, "manual", "manuál", "manualni", "manuální")) {
-            return "MANUAL";
         }
 
         return null;
@@ -528,7 +532,7 @@ public class CarStorageService {
             return "SEDAN";
         }
 
-        if (containsAny(lower, "peugeot 106", "mazda 2", "nissan note", "ceed", "cee´d", "cee'd", "cee d", "seat leon", "citroen c4", "citroën c4")) {
+        if (containsAny(lower, "peugeot 106", "mazda 2", "nissan note", "nissan micra", "micra", "ceed", "cee´d", "cee'd", "cee d", "seat leon", "citroen c4", "citroën c4")) {
             return "HATCHBACK";
         }
 
@@ -768,7 +772,11 @@ public class CarStorageService {
                 || t.contains("půjčení")
                 || t.contains("pujceni")
                 || t.contains("hledám")
-                || t.contains("hledam");
+                || t.contains("hledam")
+                || t.contains("motorku")
+                || t.contains("motorka")
+                || t.contains("motocykl")
+                || t.contains("skutr");
     }
 
     private <T> boolean updateIfDifferent(ValueSupplier<T> getter,
