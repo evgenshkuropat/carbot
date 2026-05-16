@@ -1502,7 +1502,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             return "HATCHBACK";
         }
 
-        if (containsAny(titleSource, " gran coupe ", " gran coup\u00e9 ")) {
+        if (containsAny(titleSource, " gran coupe ", " grand coupe ", " gran coup\u00e9 ", " grand coup\u00e9 ")) {
             return "SEDAN";
         }
 
@@ -1680,7 +1680,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " fabia ", " focus ", " golf ", " polo ",
                 " i20 ", " i30 ", " ceed ", " mazda 2 ",
                 " aveo ", " spark ", " picanto ",
-                " c2 ", " c3 ",
+                " c2 ", " c3 ", " c4 ",
                 " clio ", " megane ", " fiesta ",
                 " rs3 ", " rs 3 ",
                 " civic ", " leon ", " swift ", " born ", " punto ", " panda ",

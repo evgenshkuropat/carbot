@@ -524,7 +524,11 @@ public class CarStorageService {
             return "WAGON";
         }
 
-        if (containsAny(lower, "peugeot 106", "mazda 2", "nissan note", "ceed", "cee´d", "cee'd", "cee d", "seat leon")) {
+        if (containsAny(lower, "gran coupe", "grand coupe", "gran coupé", "grand coupé")) {
+            return "SEDAN";
+        }
+
+        if (containsAny(lower, "peugeot 106", "mazda 2", "nissan note", "ceed", "cee´d", "cee'd", "cee d", "seat leon", "citroen c4", "citroën c4")) {
             return "HATCHBACK";
         }
 
