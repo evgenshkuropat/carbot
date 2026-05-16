@@ -528,7 +528,7 @@ public class CarStorageService {
             }
         }
 
-        if (containsAny(lower, "combi", "kombi", "avant", "variant", "touring", "wagon")) {
+        if (containsAny(lower, "combi", "kombi", "avant", "variant", "touring", "wagon", "f31")) {
             return "WAGON";
         }
 

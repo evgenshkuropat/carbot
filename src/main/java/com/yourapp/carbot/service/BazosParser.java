@@ -1639,7 +1639,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " kombi ", " combi ", " combi2", " kombi2",
                 " wagon ", " sportwagon ", " avant ", " variant ", " sw ", " allroad ",
                 " touring ", " turnier ", " caravan ", " estate ",
-                " rs6 ", " rs 6 ", " f11 ",
+                " rs6 ", " rs 6 ", " f11 ", " f31 ",
                 " alltrack ", " scout ", " outback ",
                 " v40 ", " v50 ", " v60 ", " v70 ", " v 70 ", " v90 ",
                 " g31 ", " tipo sw ", " 206sw ", " 207sw ", " 307sw ", " 308sw ", " 407sw ", " 508sw ",
