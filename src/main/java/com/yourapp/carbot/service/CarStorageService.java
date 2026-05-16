@@ -524,7 +524,7 @@ public class CarStorageService {
             return "WAGON";
         }
 
-        if (containsAny(lower, "peugeot 106", "mazda 2", "nissan note")) {
+        if (containsAny(lower, "peugeot 106", "mazda 2", "nissan note", "ceed", "cee´d", "cee'd", "cee d", "seat leon")) {
             return "HATCHBACK";
         }
 
