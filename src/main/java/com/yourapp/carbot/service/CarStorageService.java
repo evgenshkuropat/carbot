@@ -512,7 +512,7 @@ public class CarStorageService {
             return "MINIVAN";
         }
 
-        if (containsAny(lower, "land cruiser", "korando", "cx-5", "cx 5", "cx5", "cx-7", "cx 7", "cx7", "niro", "eqa", "mustang mach-e", "mustang mache")) {
+        if (containsAny(lower, "land cruiser", "korando", "e-tron", "etron", "cx-5", "cx 5", "cx5", "cx-7", "cx 7", "cx7", "niro", "eqa", "mustang mach-e", "mustang mache")) {
             return "SUV";
         }
 
@@ -736,7 +736,7 @@ public class CarStorageService {
                 || t.contains("crafter")
                 || t.contains("jumper")
                 || t.contains("ducato")
-                || t.contains("boxer")
+                || t.contains("peugeot boxer")
                 || t.contains("master")
                 || t.contains("vivaro")
                 || t.contains("trafic")

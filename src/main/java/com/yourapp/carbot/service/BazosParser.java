@@ -353,6 +353,9 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                     extractTransmission(listingText),
                     "ELECTRIC".equals(fuelType) ? "AUTOMATIC" : null
             );
+            if (looksLikelyFalseAutomatic(title, transmission)) {
+                transmission = null;
+            }
             String brand = extractBrand(title, analysisText);
             String carType = extractCarType(title, listingText, url);
             String imageUrl = extractImageUrl(doc);
@@ -1170,6 +1173,16 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         return null;
     }
 
+    private boolean looksLikelyFalseAutomatic(String title, String transmission) {
+        if (!"AUTOMATIC".equals(transmission)) {
+            return false;
+        }
+
+        String source = " " + normalizeText(title).toLowerCase(Locale.ROOT) + " ";
+        return containsAny(source, " twin spark ")
+                && !containsAny(source, " selespeed ", " automat ", " automaticka ", " automatickĂˇ ", " automatic ", " aut. ", " a/t ", " at6 ", " at8 ", " at/8 ", " dsg ", " cvt ");
+    }
+
     private String extractTransmission(String text) {
         String source = " " + normalizeText(text).toLowerCase(Locale.ROOT) + " ";
 
@@ -1203,6 +1216,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " a/t ",
                 " at6 ",
                 " at8 ",
+                " at/8 ",
                 " eat8 ",
                 " e-eat8 ",
                 " cvt ",
@@ -1519,11 +1533,11 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             return "COUPE";
         }
 
-        if (containsAny(titleSource, " giulietta ", " mito ")) {
+        if (containsAny(titleSource, " giulietta ", " mito ", " alfa 145 ", " romeo 145 ", " alfa 146 ", " romeo 146 ")) {
             return "HATCHBACK";
         }
 
-        if (containsAny(titleSource, " stelvio ", " sx4 ", " sx 4 ",
+        if (containsAny(titleSource, " stelvio ", " e-tron ", " etron ", " sx4 ", " sx 4 ",
                 " aircross ",
                 " c3 aircross ",
                 " c5 aircross ",
@@ -2131,7 +2145,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
 
         if (containsAny(titleSource,
                 " trafic ", " traffic ",
-                " master ", " movano ", " boxer ", " jumper ", " ducato ",
+                " master ", " movano ", " peugeot boxer ", " jumper ", " ducato ",
                 " expert ", " jumpy ", " scudo ",
                 " proace ")
                 || containsAny(wordSource,
@@ -2161,7 +2175,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " partner l1 ", " partner l2 ",
                 " expert ", " scudo ", " proace ",
                 " tourneo custom ", " transit custom ",
-                " iveco ", " daily ", " boxer ", " ducato ", " jumper ",
+                " iveco ", " daily ", " peugeot boxer ", " ducato ", " jumper ",
                 " master ", " movano ", " crafter ", " transit ",
                 " dodávka ", " dodavka ", " užitkové ", " uzitkove ",
                 " nákladní ", " nakladni ", " autobus ", " mikrobus ",
@@ -2192,7 +2206,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         ) || containsAny(wordSource,
                 " transporter ", " caravelle ", " carawelle ", " multivan ",
                 " sprinter ", " crafter ", " transit ", " ducato ",
-                " jumper ", " boxer ", " movano ", " master ");
+                " jumper ", " peugeot boxer ", " movano ", " master ");
     }
 
     private boolean looksClearlyCommercialBody(String source) {
@@ -2609,7 +2623,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         String titleSource = " " + normalizeText(title).toLowerCase(Locale.ROOT) + " ";
         String source = " " + normalizeText(title + " " + shortenForCheck(text, 500)).toLowerCase(Locale.ROOT) + " ";
 
-        if (containsAny(titleSource, " mustang ", " civic type r ", " duster ")
+        if (containsAny(titleSource, " mustang ", " civic type r ", " duster ", " stelvio ")
                 && !containsAny(titleSource, " na dily ", " na nd ", " nahradni dily ", " nepojizdny ", " nepojizdne ", " vadny ", " vadne ")) {
             return false;
         }
@@ -2870,10 +2884,14 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " tonale ",
                 " brera ",
                 " alfetta ",
+                " alfa 145 ",
+                " alfa 146 ",
                 " alfa 147 ",
                 " alfa 156 ",
                 " alfa 159 ",
                 " alfa 166 ",
+                " romeo 145 ",
+                " romeo 146 ",
                 " romeo 147 ",
                 " romeo 156 ",
                 " romeo 159 ",
@@ -2929,6 +2947,8 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " clio ",
                 " talisman ",
                 " thalia ",
+                " e-tron ",
+                " etron ",
                 " q7 ",
                 " q5 ",
                 " q4 ",
