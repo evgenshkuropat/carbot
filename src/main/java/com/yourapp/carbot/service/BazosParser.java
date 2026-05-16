@@ -1671,6 +1671,10 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             return "CABRIO";
         }
 
+        if (containsAny(titleSource, " audi a5 ", " a5 s-line ", " a5 s line ")) {
+            return "COUPE";
+        }
+
         if (containsAny(titleSource,
                 " hatchback ", " hatch ", " spaceback ",
                 " fabia ", " focus ", " golf ", " polo ",
@@ -2038,6 +2042,16 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         if (containsAny(source, " cx-5 ", " cx 5 ", " cx5 ")) return "cx5";
         if (containsAny(source, " cx-7 ", " cx 7 ", " cx7 ")) return "cx7";
 
+        if (containsAny(source, " grand c4 picasso ", " c4 grand picasso ", " grand c4 spacetourer ", " c4 grand spacetourer ")) return "grandc4picasso";
+        if (containsAny(source, " c4 picasso ", " picasso ")) return "c4picasso";
+        if (containsAny(source, " berlingo ")) return "berlingo";
+        if (containsAny(source, " c5 aircross ")) return "c5aircross";
+        if (containsAny(source, " c3 aircross ")) return "c3aircross";
+        if (containsAny(source, " ds3 ")) return "ds3";
+        if (containsAny(source, " c3 ")) return "c3";
+        if (containsAny(source, " c4 ")) return "c4";
+        if (containsAny(source, " c5 ")) return "c5";
+
         if (containsAny(source, " i10 ")) return "i10";
         if (containsAny(source, " i20 ")) return "i20";
         if (containsAny(source, " i30 ")) return "i30";
@@ -2079,6 +2093,16 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             case "mazda6" -> slug.contains("-mazda-6-") || slug.contains("-mazda6-");
             case "cx5" -> slug.contains("-cx-5-") || slug.contains("-cx5-");
             case "cx7" -> slug.contains("-cx-7-") || slug.contains("-cx7-");
+            case "grandc4picasso" -> (slug.contains("-grand-c4-") && (slug.contains("-picasso-") || slug.contains("-spacetourer-")))
+                    || slug.contains("-c4-grand-picasso-") || slug.contains("-c4-grand-spacetourer-");
+            case "c4picasso" -> slug.contains("-c4-picasso-") || slug.contains("-picasso-");
+            case "berlingo" -> slug.contains("-berlingo-");
+            case "c5aircross" -> slug.contains("-c5-aircross-");
+            case "c3aircross" -> slug.contains("-c3-aircross-");
+            case "ds3" -> slug.contains("-ds3-") || slug.contains("-ds-3-");
+            case "c3" -> slug.contains("-c3-");
+            case "c4" -> slug.contains("-c4-");
+            case "c5" -> slug.contains("-c5-");
             case "a8" -> slug.contains("-a8-") || slug.contains("-a8l-");
             default -> slug.contains("-" + model + "-");
         };
