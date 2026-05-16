@@ -913,8 +913,12 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             return "DIESEL";
         }
 
-        if (containsAny(source, " camaro ", " corvette ", " spark ", " aveo ", " kalos ")
-                && containsAny(source, " v8 ", " v6 ", " ls3 ", " 6.2 ", " 6,2 ", " 5.7 ", " 5,7 ", " 3.8 ", " 3,8 ", " 3.6 ", " 3,6 ", " 1.2 ", " 1,2 ", " 1.4 ", " 1,4 ")) {
+        if (containsAny(source, " camaro ", " corvette ", " ssr ")) {
+            return "PETROL";
+        }
+
+        if (containsAny(source, " spark ", " aveo ", " kalos ", " cruze ")
+                && containsAny(source, " v8 ", " v6 ", " ls3 ", " 6.2 ", " 6,2 ", " 5.7 ", " 5,7 ", " 3.8 ", " 3,8 ", " 3.6 ", " 3,6 ", " 1.6 ", " 1,6 ", " 1.4 ", " 1,4 ", " 1.2 ", " 1,2 ")) {
             return "PETROL";
         }
 
@@ -2352,6 +2356,15 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             return true;
         }
 
+        if (containsAny(titleValue,
+                " podtlaky ", " podtlak ",
+                " vlnovec ",
+                " klouby ", " kloub ",
+                " svetlo ", " světlo ",
+                " zrcatko ", " zrcĂˇtko ")) {
+            return true;
+        }
+
         if (looksLikeRealCar(title, analysisText)
                 && !startsWithAny(compactTitleValue, "predni ", "zadni ", "svetlomety ", "svetla ")
                 && containsAny(compactTitleValue, " svetlomety ", " svetla ")) {
@@ -2647,7 +2660,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         String titleSource = " " + normalizeText(title).toLowerCase(Locale.ROOT) + " ";
         String source = " " + normalizeText(title + " " + shortenForCheck(text, 500)).toLowerCase(Locale.ROOT) + " ";
 
-        if (containsAny(titleSource, " mustang ", " civic type r ", " duster ", " stelvio ")
+        if (containsAny(titleSource, " mustang ", " civic type r ", " duster ", " stelvio ", " chevrolet ssr ", " spark ")
                 && !containsAny(titleSource, " na dily ", " na nd ", " nahradni dily ", " nepojizdny ", " nepojizdne ", " vadny ", " vadne ")) {
             return false;
         }

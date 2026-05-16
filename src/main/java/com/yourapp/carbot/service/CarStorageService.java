@@ -385,7 +385,7 @@ public class CarStorageService {
         if (t.contains("renault")) return "RENAULT";
         if (t.contains("hyundai")) return "HYUNDAI";
         if (t.contains("kia")) return "KIA";
-        if (t.contains("chevrolet") || t.contains("corvette") || t.contains("camaro")) return "CHEVROLET";
+        if (t.contains("chevrolet") || t.contains("corvette") || t.contains("camaro") || t.contains("ssr")) return "CHEVROLET";
         if (t.contains("ssangyong") || t.contains("ssang yong") || t.contains("korando")) return "SSANGYONG";
         if (t.contains("chrysler") || t.contains("pacifica")) return "CHRYSLER";
         if (t.contains("lotus") || t.contains("emira")) return "LOTUS";
@@ -465,7 +465,7 @@ public class CarStorageService {
             return "DIESEL";
         }
 
-        if (containsAny(lower, "petrol", "benzin", "benzinovy", "benzín", "benzínový", "tsi", "tfsi", "fsi", "gdi", "tgdi", "ecoboost")) {
+        if (containsAny(lower, "petrol", "benzin", "benzinovy", "benzín", "benzínový", "tsi", "tfsi", "fsi", "gdi", "tgdi", "ecoboost", "camaro", "corvette", "chevrolet ssr")) {
             return "PETROL";
         }
 
