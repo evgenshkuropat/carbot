@@ -893,6 +893,19 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             return "PETROL";
         }
 
+        if (source.contains(" carens ") && containsAny(source, " 1.7 ", " 1,7 ", " 17crdi ", " crdi ")) {
+            return "DIESEL";
+        }
+
+        if (source.contains(" orlando ") && containsAny(source, " 2.0 ", " 2,0 ", " 20vcdi ", " vcdi ", " cdti ")) {
+            return "DIESEL";
+        }
+
+        if (containsAny(source, " camaro ", " corvette ", " spark ", " aveo ", " kalos ")
+                && containsAny(source, " v8 ", " v6 ", " ls3 ", " 6.2 ", " 6,2 ", " 5.7 ", " 5,7 ", " 3.8 ", " 3,8 ", " 3.6 ", " 3,6 ", " 1.2 ", " 1,2 ", " 1.4 ", " 1,4 ")) {
+            return "PETROL";
+        }
+
         if (Pattern.compile("\\b\\d{2,3}\\s*kwh\\b", Pattern.CASE_INSENSITIVE)
                 .matcher(source).find()
                 || compact.contains("64kwh")
@@ -1940,7 +1953,8 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         if (url.contains("-peugeot-")) return "PEUGEOT";
         if (url.contains("-opel-")) return "OPEL";
         if (url.contains("-hyundai-")) return "HYUNDAI";
-        if (url.contains("-kia-")) return "KIA";
+        if (url.contains("-kia-")
+                || containsAny(url, "-ceed-", "-proceed-", "-pro-ceed-", "-sportage-", "-sorento-", "-stonic-", "-xceed-", "-rio-", "-picanto-", "-carens-", "-soul-", "-niro-")) return "KIA";
         if (url.contains("-mazda-")) return "MAZDA";
         if (url.contains("-citroen-") || url.contains("-citreon-")) return "CITROEN";
         if (url.contains("-fiat-")) return "FIAT";
@@ -2057,6 +2071,8 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             case "rav4" -> slug.contains("-rav4-") || slug.contains("-rav-4-");
             case "chr" -> slug.contains("-chr-") || slug.contains("-c-hr-");
             case "corvette" -> slug.contains("-corvette-") || slug.contains("-corveta-");
+            case "ceed" -> slug.contains("-ceed-") || slug.contains("-cee-d-");
+            case "xceed" -> slug.contains("-xceed-") || slug.contains("-x-ceed-");
             case "mazda2" -> slug.contains("-mazda-2-") || slug.contains("-mazda2-");
             case "mazda3" -> slug.contains("-mazda-3-") || slug.contains("-mazda3-");
             case "mazda5" -> slug.contains("-mazda-5-") || slug.contains("-mazda5-");
