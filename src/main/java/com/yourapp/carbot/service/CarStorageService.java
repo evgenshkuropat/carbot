@@ -465,7 +465,7 @@ public class CarStorageService {
             return "DIESEL";
         }
 
-        if (containsAny(lower, "petrol", "benzin", "benz", "benzinovy", "benzín", "benzínový", "tsi", "tfsi", "fsi", "gdi", "tgdi", "sce", "ecoboost", "camaro", "corvette", "chevrolet ssr")) {
+        if (containsAny(lower, "petrol", "benzin", "benz", "benzinovy", "benzín", "benzínový", "tsi", "tfsi", "fsi", "gdi", "tgdi", "sce", "puretech", "ecoboost", "camaro", "corvette", "chevrolet ssr")) {
             return "PETROL";
         }
 
@@ -512,7 +512,7 @@ public class CarStorageService {
             return "MINIVAN";
         }
 
-        if (containsAny(lower, "land cruiser", "korando", "rdx", "e-tron", "etron", "cx-5", "cx 5", "cx5", "cx-7", "cx 7", "cx7", "niro", "eqa", "mustang mach-e", "mustang mache")) {
+        if (containsAny(lower, "land cruiser", "korando", "rdx", "e-tron", "etron", "x-trail", "x trail", "pathfinder", "grandland", "grandal", "cx-5", "cx 5", "cx5", "cx-7", "cx 7", "cx7", "niro", "eqa", "mustang mach-e", "mustang mache")) {
             return "SUV";
         }
 
@@ -545,7 +545,7 @@ public class CarStorageService {
             return "SEDAN";
         }
 
-        if (containsAny(lower, "peugeot 106", "mazda 2", "nissan note", "nissan micra", "micra", "kalos", "ceed", "cee´d", "cee'd", "cee d", "seat leon", "citroen c4", "citroën c4")) {
+        if (containsAny(lower, "opel karl", "astra k", "astra j", "opel astra", "opel corsa", "peugeot 1007", "peugeot 106", "peugeot 206", "peugeot 207", "peugeot 208", "peugeot 308", "mazda 2", "nissan note", "nissan micra", "micra", "kalos", "ceed", "cee´d", "cee'd", "cee d", "seat leon", "citroen c4", "citroën c4")) {
             return "HATCHBACK";
         }
 
@@ -564,11 +564,11 @@ public class CarStorageService {
             }
         }
 
-        if (containsAny(lower, "combi", "kombi", "avant", "variant", "touring", "wagon", "f31")) {
+        if (containsAny(lower, "sports tourer", "sport tourer", "combi", "kombi", "avant", "variant", "touring", "wagon", "f31")) {
             return "WAGON";
         }
 
-        if (containsAny(lower, "mazda 6", "oktavia", "mondeo")) {
+        if (containsAny(lower, "mazda 6", "oktavia", "mondeo", "insignia", "insignie", "peugeot 408")) {
             return "SEDAN";
         }
 

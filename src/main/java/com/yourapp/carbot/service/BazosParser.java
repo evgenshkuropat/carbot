@@ -915,6 +915,19 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             return "DIESEL";
         }
 
+        if (containsAny(source, " ampera ", " plug-in hybrid ", " plugin hybrid ", " plug in ", " plug-in ", " phev ")) {
+            return "HYBRID";
+        }
+
+        if (containsAny(source, " grandland ", " grandal ", " mokka ")
+                && containsAny(source, " 1.2 ", " 1,2 ", " 1.4t ", " 1,4t ", " 12t ", " 14t ")) {
+            return "PETROL";
+        }
+
+        if (source.contains(" peugeot 308 ") && containsAny(source, " 1.2 ", " 1,2 ", " puretech ", " pt ")) {
+            return "PETROL";
+        }
+
         if (source.contains(" mazda ") && containsAny(source, " 2.2 cd ", " 2,2 cd ", " 22cd ")) {
             return "DIESEL";
         }
@@ -1206,6 +1219,10 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
 
     private String extractTransmission(String text) {
         String source = " " + normalizeText(text).toLowerCase(Locale.ROOT) + " ";
+        String tokens = " " + normalizeText(text).toLowerCase(Locale.ROOT)
+                .replaceAll("[^a-z0-9]+", " ")
+                .replaceAll("\\s+", " ")
+                .trim() + " ";
 
         if (containsAny(source,
                 " manuální převodovka ",
@@ -1222,6 +1239,10 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " řazení manuální ",
                 " razeni manualni ")) {
             return "MANUAL";
+        }
+
+        if (containsAny(tokens, " automat ", " aut ", " at ", " a t ", " mta ")) {
+            return "AUTOMATIC";
         }
 
         if (containsAny(source,
@@ -1515,12 +1536,29 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             return "SEDAN";
         }
 
+        if (containsAny(titleSource, " insignia st ", " insignia sports tourer ", " insignia sport tourer ",
+                " astra sports tourer ", " astra sport tourer ", " astra sw ", " astra combi ", " astra kombi ", " 308 sw ", " peugeot 308 sw ")) {
+            return "WAGON";
+        }
+
+        if (containsAny(titleSource, " insignia ", " insignie ")) {
+            return "SEDAN";
+        }
+
+        if (containsAny(titleSource, " astra k ", " astra j ", " opel astra ", " astra hatchback ", " opel karl ")) {
+            return "HATCHBACK";
+        }
+
         if (containsAny(titleSource, " a3 ", " a5 ", " a7 ") && titleSource.contains(" sportback ")) {
             return "HATCHBACK";
         }
 
-        if (containsAny(titleSource, " multivan ", " nv 200 ", " nv200 ")) {
+        if (containsAny(titleSource, " multivan ", " nv 200 ", " nv200 ", " almera tino ")) {
             return "MINIVAN";
+        }
+
+        if (containsAny(titleSource, " pathfinder ", " x-trail ", " x trail ", " grandland ", " grandal ")) {
+            return "SUV";
         }
 
         if (containsAny(titleSource, " 730d ", " 730ld ", " 730i ", " 740d ", " 740i ", " 750d ", " 750i ", " 7 series ", " rada 7 ", " 7er ")) {
@@ -1639,7 +1677,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " kodiaq ", " karoq ", " kamiq ",
                 " tiguan ", " touareg ", " t-roc ", " troc ",
                 " pajero ", " outlander ", " eclipse cross ", " asx ",
-                " qashqai ", " juke ", " x-trail ",
+                " qashqai ", " juke ", " x-trail ", " x trail ", " pathfinder ",
                 " land cruiser ", " landcruiser ", " patrol ", " peugeot 2008 ", " 3008 ", " 5008 ",
                 " kuga ", " puma ", " ecosport ",
                 " formentor ", " ateca ", " arona ", " tarraco ",
@@ -1663,6 +1701,8 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " model y ",
                 " xv ", " forester ",
                 " mokka ",
+                " grandland ",
+                " grandal ",
                 " xceed ", " niro ",
                 " ix35 ",
                 " stelvio ",
@@ -1737,7 +1777,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " f40 ", " řada 1 ", " rada 1 ",
                 " a180 ", " a180d ", " a200 ", " a200d ",
                 " 116i ", " 118i ", " 120i ", " 116d ", " 118d ", " 120d ",
-                " agila ", " 107 ", " 147 ", " 207 ", " 208 ", " 308 ",
+                " agila ", " karl ", " astra ", " corsa ", " 1007 ", " 107 ", " 147 ", " 206 ", " 207 ", " 208 ", " 308 ",
                 " sandero ", " logan ", " scala ", " citigo ",
                 " fiat 500 ", " tipo ", " fiat tipo ",
                 " auris ", " prius ", " corolla ", " corsa ", " mazda 3 ", " rapid ", " yaris ", " getz ", " soul ")) {
@@ -2264,6 +2304,8 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " a3 ", " a4 ", " a5 ", " a6 ", " q3 ", " q5 ",
                 " x1 ", " x3 ", " x5 ",
                 " civic ", " duster ", " panda ", " punto ", " mustang ",
+                " x-trail ", " x trail ", " pathfinder ", " astra ", " corsa ", " insignia ", " insignie ",
+                " 1007 ", " 208 ", " 5008 ",
                 " octavia ", " superb ", " passat ")) {
             return false;
         }
@@ -3016,6 +3058,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " qashqai ",
                 " juke ",
                 " x-trail ",
+                " pathfinder ",
                 " patrol ",
                 " 2008 ",
                 " 3008 ",
@@ -3030,6 +3073,13 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " cx5 ",
                 " megane ",
                 " clio ",
+                " astra ",
+                " corsa ",
+                " karl ",
+                " 1007 ",
+                " 206 ",
+                " 207 ",
+                " 208 ",
                 " talisman ",
                 " thalia ",
                 " e-tron ",
