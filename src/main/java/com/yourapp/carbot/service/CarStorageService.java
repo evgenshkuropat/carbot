@@ -479,7 +479,7 @@ public class CarStorageService {
             return "DIESEL";
         }
 
-        if (containsAny(lower, "petrol", "benzin", "benz", "benzinovy", "benzín", "benzínový", "tsi", "tfsi", "fsi", "gdi", "tgdi", "sce", "puretech", "ecoboost", "camaro", "corvette", "chevrolet ssr")) {
+        if (containsAny(lower, "petrol", "benzin", "benz", "benzinovy", "benzín", "benzínový", "tsi", "tfsi", "fsi", "gdi", "tgdi", "sce", "puretech", "ecoboost", "camaro", "corvette", "chevrolet ssr", "civic 1.8", "civic 1,8", "civic ufo", "legend 2.7", "legend 2,7")) {
             return "PETROL";
         }
 
@@ -534,7 +534,7 @@ public class CarStorageService {
             return "SUV";
         }
 
-        if (containsAny(lower, "volvo s60", " s60 ", " s 60 ")) {
+        if (containsAny(lower, "volvo s60", " s60 ", " s 60 ", "honda legend", " legend ")) {
             return "SEDAN";
         }
 

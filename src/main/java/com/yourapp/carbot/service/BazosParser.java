@@ -916,6 +916,14 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             return "DIESEL";
         }
 
+        if (source.contains(" civic ")
+                && (containsAny(source, " 1.8 ", " 1,8 ", " 1.8i ", " 1,8i ", " ufo ")
+                || compact.contains("18ivtec")
+                || compact.contains("18vtec"))
+                && !containsAny(source, " dtec ", " d-tec ", " i-dtec ", " idtec ", " ctdi ", " diesel ", " nafta ")) {
+            return "PETROL";
+        }
+
         if (containsAny(source, " civic type r ", " vtec ", " v-tec ", " i-vtec ", " ivtec ")
                 && !containsAny(source, " dtec ", " d-tec ", " i-dtec ", " idtec ", " ctdi ", " ctdi ")) {
             return "PETROL";
@@ -1272,8 +1280,14 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         }
 
         String source = " " + normalizeText(title).toLowerCase(Locale.ROOT) + " ";
-        return containsAny(source, " twin spark ", " 6ti rychl ", " 6ti rychlost ", " 6 rychl ", " 6 rychlost ")
-                && !containsAny(source, " selespeed ", " automat ", " automaticka ", " automatickÄ‚Ë‡ ", " automatic ", " aut. ", " a/t ", " at6 ", " at8 ", " at/8 ", " dsg ", " cvt ");
+        boolean hasExplicitAutomatic = containsAny(source, " selespeed ", " automat ", " automaticka ", " automatický ",
+                " automatic ", " aut. ", " a/t ", " at6 ", " at8 ", " at/8 ", " dsg ", " cvt ");
+        if (hasExplicitAutomatic) {
+            return false;
+        }
+
+        return containsAny(source, " twin spark ", " 6ti rychl ", " 6ti rychlost ", " 6 rychl ", " 6 rychlost ",
+                " accord ", " crx ", " delsol ", " cr-v ", " cr v ", " crv ");
     }
 
     private boolean looksLikelyFalseManual(String title, String transmission) {
@@ -1725,7 +1739,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             return "COUPE";
         }
 
-        if (containsAny(titleSource, " accord ")) {
+        if (containsAny(titleSource, " accord ", " legend ")) {
             return "SEDAN";
         }
 
@@ -2872,6 +2886,16 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
     private boolean looksSuspiciousListing(String title, String text) {
         String cleanTitle = normalizeText(title).toLowerCase(Locale.ROOT);
         String cleanTitleAscii = asciiSearchText(title);
+        String cleanTitleAsciiTrimmed = cleanTitleAscii.trim();
+        if (cleanTitle.startsWith("rezervace")
+                || cleanTitle.startsWith("rezervov")
+                || cleanTitle.startsWith("prodano")
+                || cleanTitleAsciiTrimmed.startsWith("rezervace")
+                || cleanTitleAsciiTrimmed.startsWith("rezervov")
+                || cleanTitleAsciiTrimmed.startsWith("prodano")) {
+            return true;
+        }
+
         if (containsAny(cleanTitle, "prodam nebo vymenim", "prodám nebo vyměním", " rezervováno ", " rezervovano ",
                 " rezervace ")
                 || containsAny(cleanTitleAscii, " prodam nebo vymenim ", " rezervovano ", " rezervace ")) {
@@ -3139,6 +3163,13 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " sportage ",
                 " tucson ",
                 " santa fe ",
+                " i20 ",
+                " i30 ",
+                " i40 ",
+                " ix20 ",
+                " ix35 ",
+                " h1 ",
+                " h-1 ",
                 " kona ",
                 " duster ",
                 " golf ",
