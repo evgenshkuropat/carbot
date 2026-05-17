@@ -1062,6 +1062,11 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             return "DIESEL";
         }
 
+        if (source.contains(" allroad ")
+                && !containsAny(source, " tfsi ", " tsi ", " petrol ", " benzin ", " benz ")) {
+            return "DIESEL";
+        }
+
         if (compact.contains("tdi")
                 || compact.contains("tdci")
                 || compact.contains("cdi")
@@ -1101,8 +1106,10 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 || compact.contains("520d")
                 || compact.contains("525d")
                 || compact.contains("530d")
+                || compact.contains("530xd")
                 || compact.contains("540d")
                 || compact.contains("550d")
+                || compact.contains("750xd")
                 || compact.contains("xdrive30d")
                 || compact.contains("m550d")
                 || compact.contains("sdv6")
@@ -1666,7 +1673,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             return "HATCHBACK";
         }
 
-        if (containsAny(titleSource, " 730d ", " 730ld ", " 730i ", " 740d ", " 740i ", " 750d ", " 750i ", " 7 series ", " rada 7 ", " 7er ")) {
+        if (containsAny(titleSource, " 730d ", " 730ld ", " 730i ", " 740d ", " 740i ", " 750d ", " 750xd ", " 750i ", " 7 series ", " rada 7 ", " 7er ")) {
             return "SEDAN";
         }
 
@@ -1850,7 +1857,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " kombi ", " combi ", " combi2", " kombi2",
                 " wagon ", " sportwagon ", " avant ", " variant ", " sw ", " allroad ",
                 " touring ", " turnier ", " caravan ", " estate ",
-                " rs6 ", " rs 6 ", " f11 ", " f31 ",
+                " rs6 ", " rs 6 ", " e61 ", " f11 ", " f31 ", " g31 ",
                 " alltrack ", " scout ", " outback ",
                 " proceed ", " pro ceed ",
                 " v40 ", " v50 ", " v60 ", " v70 ", " v 70 ", " v90 ",
@@ -3140,8 +3147,11 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " rav 4 ",
                 " land cruiser ",
                 " x1 ",
+                " x2 ",
                 " x3 ",
                 " x5 ",
+                " x6 ",
+                " x7 ",
                 " giulia ",
                 " giulietta ",
                 " giuletta ",
@@ -3173,6 +3183,10 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " hrv ",
                 " rs6 ",
                 " rs 6 ",
+                " 116i ", " 118i ", " 120i ", " 218i ", " 220i ",
+                " 318i ", " 320i ", " 330i ", " 335i ", " 540ix ",
+                " 116d ", " 118d ", " 120d ", " 218d ", " 220d ",
+                " 318d ", " 320d ", " 330d ", " 335d ", " 520d ", " 530d ", " 530xd ", " 740d ", " 750xd ",
                 " discovery sport ",
                 " range rover ",
                 " evoque ",

@@ -461,6 +461,11 @@ public class CarStorageService {
             return "PLUGIN_HYBRID";
         }
 
+        if (containsAny(lower, "530xd", "750xd")
+                || (lower.contains("allroad") && !containsAny(lower, "tfsi", "tsi", "petrol", "benzin", "benz"))) {
+            return "DIESEL";
+        }
+
         if (containsAny(lower, "electric", "elektro", "ev")) {
             return "ELECTRIC";
         }
@@ -542,7 +547,7 @@ public class CarStorageService {
             return "MINIVAN";
         }
 
-        if (containsAny(lower, "land cruiser", "korando", "rdx", "e-tron", "etron", "x-trail", "x trail", "pathfinder", "grandland", "grandal", "cx-5", "cx 5", "cx5", "cx-7", "cx 7", "cx7", "niro", "eqa", "mustang mach-e", "mustang mache", "xc40", "xc 40", "xc60", "xc 60", "xc70", "xc 70", "xc90", "xc 90")) {
+        if (containsAny(lower, "land cruiser", "korando", "rdx", "e-tron", "etron", "x1", "x2", "x3", "x5", "x6", "x7", "x-trail", "x trail", "pathfinder", "grandland", "grandal", "cx-5", "cx 5", "cx5", "cx-7", "cx 7", "cx7", "niro", "eqa", "mustang mach-e", "mustang mache", "xc40", "xc 40", "xc60", "xc 60", "xc70", "xc 70", "xc90", "xc 90")) {
             return "SUV";
         }
 
@@ -606,11 +611,11 @@ public class CarStorageService {
             }
         }
 
-        if (containsAny(lower, "sports tourer", "sport tourer", "combi", "kombi", "avant", "variant", "touring", "wagon", "f31")) {
+        if (containsAny(lower, "sports tourer", "sport tourer", "combi", "kombi", "avant", "variant", "touring", "wagon", "e61", "f11", "f31", "g31")) {
             return "WAGON";
         }
 
-        if (containsAny(lower, "mazda 6", "oktavia", "mondeo", "insignia", "insignie", "peugeot 408")) {
+        if (containsAny(lower, "mazda 6", "oktavia", "mondeo", "insignia", "insignie", "peugeot 408", "750xd", "730d", "740d", "740i", "750i", "540ix")) {
             return "SEDAN";
         }
 
