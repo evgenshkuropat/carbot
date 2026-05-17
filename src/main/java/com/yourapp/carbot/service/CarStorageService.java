@@ -435,6 +435,12 @@ public class CarStorageService {
                 return "HYBRID";
             }
 
+            if ("ELECTRIC".equals(upper)
+                    && containsAny(titleLower, "touareg", "passat", "golf", "tiguan", "t-roc", "touran")
+                    && !containsAny(titleLower, "id.3", "id3", "id.4", "id4", "id.5", "id5", "e-golf", "egolf", "electric", "elektro", "kwh", "hybrid", "gte", "phev", "plug-in", "plugin")) {
+                return containsAny(titleLower, "tdi", "nafta", "naftov", "touareg") ? "DIESEL" : null;
+            }
+
             if (Set.of("PETROL", "DIESEL", "HYBRID", "PLUGIN_HYBRID", "ELECTRIC", "LPG", "CNG").contains(upper)) {
                 return upper;
             }
@@ -460,7 +466,7 @@ public class CarStorageService {
             return "CNG";
         }
 
-        if (containsAny(lower, "diesel", "nafta", "tdi", "tdci", "cdi", "crdi", "hdi", "dci", "multijet")
+        if (containsAny(lower, "diesel", "nafta", "naftov", "tdi", "tdci", "cdi", "crdi", "hdi", "dci", "multijet")
                 || (lower.contains("carens") && Pattern.compile("\\b1[\\.,]7\\b", Pattern.CASE_INSENSITIVE).matcher(lower).find())
                 || (lower.contains("sorento") && Pattern.compile("\\b2[\\.,]2\\b", Pattern.CASE_INSENSITIVE).matcher(lower).find())
                 || Pattern.compile("\\b\\d[\\.,]\\d\\s*d\\b", Pattern.CASE_INSENSITIVE).matcher(lower).find()) {
@@ -478,8 +484,8 @@ public class CarStorageService {
         String lower = (safe(transmission) + " " + safe(title)).toLowerCase(Locale.ROOT);
         String tokens = " " + lower.replaceAll("[^a-z0-9]+", " ") + " ";
 
-        if (containsAny(tokens, " 6mt ", " 5mt ", " mt ")
-                || containsAny(lower, "manual", "manuĂˇl", "manualni", "manuĂˇlnĂ­")) {
+        if (containsAny(tokens, " 6mt ", " 5mt ", " mt ", " 6rychl ", " 6ti ")
+                || containsAny(lower, "manual", "manuÄ‚Ë‡l", "manualni", "manuÄ‚Ë‡lnÄ‚Â­", "6ti rychl", "6 rychl", "6ti rychlost", "6 rychlost")) {
             return "MANUAL";
         }
 
@@ -514,8 +520,16 @@ public class CarStorageService {
             return "MINIVAN";
         }
 
-        if (containsAny(lower, "land cruiser", "korando", "rdx", "e-tron", "etron", "x-trail", "x trail", "pathfinder", "grandland", "grandal", "cx-5", "cx 5", "cx5", "cx-7", "cx 7", "cx7", "niro", "eqa", "mustang mach-e", "mustang mache")) {
+        if (containsAny(lower, "land cruiser", "korando", "rdx", "e-tron", "etron", "x-trail", "x trail", "pathfinder", "grandland", "grandal", "cx-5", "cx 5", "cx5", "cx-7", "cx 7", "cx7", "niro", "eqa", "mustang mach-e", "mustang mache", "xc40", "xc 40", "xc60", "xc 60", "xc70", "xc 70", "xc90", "xc 90")) {
             return "SUV";
+        }
+
+        if (containsAny(lower, "volvo s60", " s60 ", " s 60 ")) {
+            return "SEDAN";
+        }
+
+        if (containsAny(lower, "volvo v40", " v40 ", " v 40 ")) {
+            return "HATCHBACK";
         }
 
         if (containsAny(lower, "f-150", "f150")) {
