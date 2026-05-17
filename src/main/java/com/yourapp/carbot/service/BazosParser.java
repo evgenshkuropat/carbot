@@ -906,6 +906,11 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             return "PETROL";
         }
 
+        if (containsAny(source, " twinspark ", " twin spark ", " 1.8tbi ", " 1,8tbi ", " tbi ", " jts ", " giulietta sprint ")
+                && !containsAny(source, " jtd ", " jtdm ", " diesel ", " nafta ", " hdi ", " dci ")) {
+            return "PETROL";
+        }
+
         if (source.contains(" carens ")
                 && (containsAny(source, " 1.7 ", " 1,7 ", " 17crdi ", " crdi ")
                 || Pattern.compile("\\b1[\\.,]7\\b").matcher(source).find())) {
@@ -1286,7 +1291,8 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             return false;
         }
 
-        return containsAny(source, " twin spark ", " 6ti rychl ", " 6ti rychlost ", " 6 rychl ", " 6 rychlost ",
+        return containsAny(source, " twin spark ", " twinspark ", " 6ti rychl ", " 6ti rychlost ", " 6 rychl ", " 6 rychlost ",
+                " alfa romeo 159 ", " alfa 159 ", " alfa romeo 147 ", " alfa 147 ", " giulietta ", " giuletta ", " alfa romeo sportwagon ",
                 " accord ", " crx ", " delsol ", " cr-v ", " cr v ", " crv ");
     }
 
@@ -1697,7 +1703,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             return "COUPE";
         }
 
-        if (containsAny(titleSource, " giulietta ", " mito ", " alfa 145 ", " romeo 145 ", " alfa 146 ", " romeo 146 ")) {
+        if (containsAny(titleSource, " giulietta ", " giuletta ", " mito ", " alfa 145 ", " romeo 145 ", " alfa 146 ", " romeo 146 ")) {
             return "HATCHBACK";
         }
 
@@ -2913,6 +2919,23 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         String source = " " + normalizeText(title + " " + shortenForCheck(text, 500)).toLowerCase(Locale.ROOT) + " ";
         String sourceAscii = asciiSearchText(title + " " + shortenForCheck(text, 500));
 
+        if (containsAny(source,
+                " na splĂˇtky ", " na splatky ",
+                " bez registru ",
+                " akontace ",
+                " pĹ™enechĂˇm splĂˇtky ", " prenecham splatky ",
+                " pĹ™evezmu leasing ", " prevezmu leasing ",
+                " leasing pĹ™evezmu ", " leasing prevezmu ")
+                || containsAny(sourceAscii,
+                " na splatky ",
+                " bez registru ",
+                " akontace ",
+                " prenecham splatky ",
+                " prevezmu leasing ",
+                " leasing prevezmu ")) {
+            return true;
+        }
+
         if (looksLikePassengerCarModel(title)
                 && !containsAny(cleanTitleAscii, " prodano ", " zalohovano ", " rezervace ", " rezervovano ", " zadano ")) {
             return false;
@@ -3121,6 +3144,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " x5 ",
                 " giulia ",
                 " giulietta ",
+                " giuletta ",
                 " mito ",
                 " stelvio ",
                 " tonale ",

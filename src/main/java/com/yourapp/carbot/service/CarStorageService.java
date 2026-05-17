@@ -441,6 +441,11 @@ public class CarStorageService {
                 return "DIESEL";
             }
 
+            if (("ELECTRIC".equals(upper) || "DIESEL".equals(upper))
+                    && containsAny(titleLower, "twinspark", "twin spark", "1.8tbi", "1,8tbi", " tbi", "jts", "giulietta sprint")) {
+                return "PETROL";
+            }
+
             if ("ELECTRIC".equals(upper)
                     && containsAny(titleLower, "touareg", "passat", "golf", "tiguan", "t-roc", "touran")
                     && !containsAny(titleLower, "id.3", "id3", "id.4", "id4", "id.5", "id5", "e-golf", "egolf", "electric", "elektro", "kwh", "hybrid", "gte", "phev", "plug-in", "plugin")) {
@@ -479,7 +484,7 @@ public class CarStorageService {
             return "DIESEL";
         }
 
-        if (containsAny(lower, "petrol", "benzin", "benz", "benzinovy", "benzín", "benzínový", "tsi", "tfsi", "fsi", "gdi", "tgdi", "sce", "puretech", "ecoboost", "camaro", "corvette", "chevrolet ssr", "civic 1.8", "civic 1,8", "civic ufo", "legend 2.7", "legend 2,7")) {
+        if (containsAny(lower, "petrol", "benzin", "benz", "benzinovy", "benzín", "benzínový", "tsi", "tfsi", "fsi", "gdi", "tgdi", "sce", "puretech", "ecoboost", "camaro", "corvette", "chevrolet ssr", "civic 1.8", "civic 1,8", "civic ufo", "legend 2.7", "legend 2,7", "twinspark", "twin spark", "1.8tbi", "1,8tbi", "giulietta sprint", " jts")) {
             return "PETROL";
         }
 
@@ -497,6 +502,13 @@ public class CarStorageService {
                 return null;
             }
             return "MANUAL";
+        }
+
+        String titleOnly = safe(title).toLowerCase(Locale.ROOT);
+        boolean titleHasExplicitAutomatic = containsAny(titleOnly, "selespeed", "automat", "automatic", " aut. ", " a/t ", " at6", " at8", "dsg", "cvt", "s-tronic", "s tronic", "stronic", "tiptronic");
+        if (!titleHasExplicitAutomatic
+                && containsAny(titleOnly, "alfa romeo 159", "alfa 159", "alfa romeo 147", "alfa 147", "giulietta", "giuletta", "alfa romeo sportwagon", "accord", "crx", "delsol", "cr-v", "cr v", "crv")) {
+            return null;
         }
 
         if (containsAny(tokens, " aut ", " at ", " mta ")
@@ -572,6 +584,10 @@ public class CarStorageService {
         }
 
         if (containsAny(lower, "opel karl", "astra k", "astra j", "opel astra", "opel corsa", "peugeot 1007", "peugeot 106", "peugeot 206", "peugeot 207", "peugeot 208", "peugeot 308", "mazda 2", "nissan note", "nissan micra", "micra", "kalos", "calos", "ceed", "cee´d", "cee'd", "cee d", "seat leon", "citroen c4", "citroën c4")) {
+            return "HATCHBACK";
+        }
+
+        if (containsAny(lower, "giulietta", "giuletta")) {
             return "HATCHBACK";
         }
 
