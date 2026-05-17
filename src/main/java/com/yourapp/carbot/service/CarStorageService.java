@@ -385,7 +385,7 @@ public class CarStorageService {
         if (t.contains("renault")) return "RENAULT";
         if (t.contains("hyundai")) return "HYUNDAI";
         if (t.contains("kia")) return "KIA";
-        if (t.contains("chevrolet") || t.contains("corvette") || t.contains("camaro") || t.contains("ssr")) return "CHEVROLET";
+        if (t.contains("chevrolet") || t.contains("daewoo") || t.contains("calos") || t.contains("corvette") || t.contains("camaro") || t.contains("ssr")) return "CHEVROLET";
         if (t.contains("ssangyong") || t.contains("ssang yong") || t.contains("korando")) return "SSANGYONG";
         if (t.contains("chrysler") || t.contains("pacifica")) return "CHRYSLER";
         if (t.contains("lotus") || t.contains("emira")) return "LOTUS";
@@ -428,7 +428,7 @@ public class CarStorageService {
                     .replace('-', '_')
                     .replace(' ', '_');
 
-            if (containsAny(titleLower, "plug-in hybrid", "plugin hybrid", "phev")) {
+            if (containsAny(titleLower, "plug-in hybrid", "plug-inhybrid", "plugin hybrid", "pluginhybrid", "plug in hybrid", "plug-in", "plug in", "phev")) {
                 return "PLUGIN_HYBRID";
             }
             if ("PETROL".equals(upper) && containsAny(titleLower, "hybrid", "hev", "mhev", "mild hybrid", "e-tec")) {
@@ -440,7 +440,7 @@ public class CarStorageService {
             }
         }
 
-        if (containsAny(lower, "plug-in hybrid", "plugin hybrid", "phev")) {
+        if (containsAny(lower, "plug-in hybrid", "plug-inhybrid", "plugin hybrid", "pluginhybrid", "plug in hybrid", "plug-in", "plug in", "phev")) {
             return "PLUGIN_HYBRID";
         }
 
@@ -461,6 +461,8 @@ public class CarStorageService {
         }
 
         if (containsAny(lower, "diesel", "nafta", "tdi", "tdci", "cdi", "crdi", "hdi", "dci", "multijet")
+                || (lower.contains("carens") && Pattern.compile("\\b1[\\.,]7\\b", Pattern.CASE_INSENSITIVE).matcher(lower).find())
+                || (lower.contains("sorento") && Pattern.compile("\\b2[\\.,]2\\b", Pattern.CASE_INSENSITIVE).matcher(lower).find())
                 || Pattern.compile("\\b\\d[\\.,]\\d\\s*d\\b", Pattern.CASE_INSENSITIVE).matcher(lower).find()) {
             return "DIESEL";
         }
@@ -545,7 +547,7 @@ public class CarStorageService {
             return "SEDAN";
         }
 
-        if (containsAny(lower, "opel karl", "astra k", "astra j", "opel astra", "opel corsa", "peugeot 1007", "peugeot 106", "peugeot 206", "peugeot 207", "peugeot 208", "peugeot 308", "mazda 2", "nissan note", "nissan micra", "micra", "kalos", "ceed", "cee´d", "cee'd", "cee d", "seat leon", "citroen c4", "citroën c4")) {
+        if (containsAny(lower, "opel karl", "astra k", "astra j", "opel astra", "opel corsa", "peugeot 1007", "peugeot 106", "peugeot 206", "peugeot 207", "peugeot 208", "peugeot 308", "mazda 2", "nissan note", "nissan micra", "micra", "kalos", "calos", "ceed", "cee´d", "cee'd", "cee d", "seat leon", "citroen c4", "citroën c4")) {
             return "HATCHBACK";
         }
 
