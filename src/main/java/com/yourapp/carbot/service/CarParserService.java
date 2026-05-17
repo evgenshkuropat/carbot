@@ -23,6 +23,10 @@ public class CarParserService {
         this.parsers = parsers;
         this.carStorageService = carStorageService;
         this.parserRunStatsService = parserRunStatsService;
+
+        log.info("Registered car parsers={}", this.parsers.stream()
+                .map(CarSourceParser::getSourceName)
+                .toList());
     }
 
     public List<CarDto> findCars() {

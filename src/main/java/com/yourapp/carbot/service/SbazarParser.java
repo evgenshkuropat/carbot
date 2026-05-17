@@ -2,29 +2,44 @@ package com.yourapp.carbot.service;
 
 import com.yourapp.carbot.service.dto.CarDto;
 import jakarta.annotation.PostConstruct;
+import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import java.text.Normalizer;
+import java.time.Year;
+import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Service
 public class SbazarParser implements CarSourceParser {
 
     private static final Logger log = LoggerFactory.getLogger(SbazarParser.class);
 
-    private static final String BASE_URL = "https://www.sbazar.cz/170-osobni-auta";
+    private static final String BASE_HOST = "https://www.sbazar.cz";
+    private static final String BASE_LIST_URL = BASE_HOST + "/170-osobni-auta";
+    private static final int MAX_LIST_PAGES = 3;
     private static final int REQUEST_TIMEOUT_MS = 20_000;
+    private static final int DETAIL_DELAY_MS = 150;
+    private static final int MIN_VALID_PRICE = 30_000;
+    private static final int MAX_REASONABLE_PRICE = 10_000_000;
+
+    private static final Pattern PRICE_PATTERN = Pattern.compile("(?i)(\\d[\\d\\s.]{2,})\\s*(?:k\\u010d|kc|czk)");
+    private static final Pattern YEAR_PATTERN = Pattern.compile("\\b(19\\d{2}|20\\d{2})\\b");
+    private static final Pattern MILEAGE_PATTERN = Pattern.compile("(?i)(\\d[\\d\\s.]{2,})\\s*(?:km|kilometru|najeto)");
 
     @PostConstruct
     public void init() {
-        log.warn("SBAZAR parser bean initialized");
+        log.info("SBAZAR parser bean initialized baseUrl={} maxPages={}", BASE_LIST_URL, MAX_LIST_PAGES);
     }
 
     @Override
@@ -34,21 +49,162 @@ public class SbazarParser implements CarSourceParser {
 
     @Override
     public List<CarDto> fetchCars() {
-        try {
-            Document doc = Jsoup.connect(BASE_URL)
-                    .userAgent("Mozilla/5.0")
-                    .timeout(REQUEST_TIMEOUT_MS)
-                    .get();
+        List<CarDto> cars = new ArrayList<>();
+        Set<String> detailUrls = new LinkedHashSet<>();
+        Stats stats = new Stats();
 
-            Set<String> links = extractDetailUrls(doc);
+        for (int page = 1; page <= MAX_LIST_PAGES; page++) {
+            String pageUrl = buildListPageUrl(page);
 
-            log.info("SBAZAR collected detail links={}", links.size());
+            try {
+                Document doc = connect(pageUrl).get();
+                Set<String> pageLinks = extractDetailUrls(doc);
+                int before = detailUrls.size();
+                detailUrls.addAll(pageLinks);
+                int newLinks = detailUrls.size() - before;
 
-        } catch (Exception e) {
-            log.warn("SBAZAR fetch failed: {}", e.getMessage());
+                log.info("SBAZAR list page={} url={} links={} new_links={} total_unique={}",
+                        page, pageUrl, pageLinks.size(), newLinks, detailUrls.size());
+
+                if (pageLinks.isEmpty()) {
+                    log.info("SBAZAR list page={} no detail links sample_hrefs={}", page, sampleHrefs(doc));
+                }
+
+                if (page > 1 && pageLinks.isEmpty()) {
+                    log.info("SBAZAR list page={} produced no links, stopping pagination", page);
+                    break;
+                }
+            } catch (Exception e) {
+                stats.listFetchFailed++;
+                log.warn("SBAZAR list page={} url={} fetch_failed={}", page, pageUrl, e.toString());
+            }
         }
 
-        return List.of();
+        log.info("SBAZAR collected detail links={}", detailUrls.size());
+
+        for (String url : detailUrls) {
+            try {
+                ParseResult result = parseDetail(url);
+
+                if (result.car() == null) {
+                    stats.countSkip(result.reason());
+                    log.info("SBAZAR SKIP url={} reason={} title={}", url, result.reason(), safeLog(result.title()));
+                    continue;
+                }
+
+                cars.add(result.car());
+                stats.parsed++;
+
+                CarDto car = result.car();
+                log.info("SBAZAR CAR title='{}' price={} location={} year={} mileage={} fuelType={} transmission={} carType={} brand={} url={}",
+                        safeLog(car.getTitle()),
+                        car.getPriceValue(),
+                        safeLog(car.getLocation()),
+                        car.getYear(),
+                        car.getMileage(),
+                        safeLog(car.getFuelType()),
+                        safeLog(car.getTransmission()),
+                        safeLog(car.getCarType()),
+                        safeLog(car.getBrand()),
+                        car.getUrl());
+            } catch (Exception e) {
+                stats.parseException++;
+                log.warn("SBAZAR SKIP url={} reason=parse_exception error={}", url, e.toString());
+            }
+
+            sleepQuietly(DETAIL_DELAY_MS);
+        }
+
+        log.info("SBAZAR parsed {} cars", cars.size());
+        log.info("SBAZAR SUMMARY parsed={} list_fetch_failed={} broken_listing={} non_car_listing={} demand_listing={} commercial_vehicle={} cheap_low_quality_listing={} missing_price={} invalid_price={} parse_exception={}",
+                stats.parsed,
+                stats.listFetchFailed,
+                stats.brokenListing,
+                stats.nonCarListing,
+                stats.demandListing,
+                stats.commercialVehicle,
+                stats.cheapLowQualityListing,
+                stats.missingPrice,
+                stats.invalidPrice,
+                stats.parseException);
+
+        return cars;
+    }
+
+    private ParseResult parseDetail(String url) throws Exception {
+        Document doc = connect(url).get();
+        String title = firstNonBlank(
+                textOf(doc, "h1"),
+                attrOf(doc, "meta[property=og:title]", "content"),
+                doc.title()
+        );
+        title = cleanTitle(title);
+
+        if (title == null || title.isBlank()) {
+            return ParseResult.skip("broken_listing", title);
+        }
+
+        String pageText = doc.text();
+        String searchable = asciiSearchText(title + " " + pageText + " " + url);
+
+        if (looksDemandListing(searchable)) {
+            return ParseResult.skip("demand_listing", title);
+        }
+
+        if (looksNonCarListing(searchable)) {
+            return ParseResult.skip("non_car_listing", title);
+        }
+
+        if (looksCommercialVehicle(searchable)) {
+            return ParseResult.skip("commercial_vehicle", title);
+        }
+
+        Integer priceValue = extractPriceValue(doc, pageText);
+        if (priceValue == null) {
+            log.info("SBAZAR PRICE NOT FOUND url={} title={}", url, safeLog(title));
+            return ParseResult.skip("missing_price", title);
+        }
+
+        if (priceValue <= 0 || priceValue > MAX_REASONABLE_PRICE) {
+            return ParseResult.skip("invalid_price", title);
+        }
+
+        if (priceValue < MIN_VALID_PRICE) {
+            return ParseResult.skip("cheap_low_quality_listing", title);
+        }
+
+        CarDto car = new CarDto();
+        car.setSource(getSourceName());
+        car.setTitle(title);
+        car.setPrice(formatPrice(priceValue));
+        car.setPriceValue(priceValue);
+        car.setLocation(extractLocation(doc));
+        car.setUrl(url);
+        car.setImageUrl(extractImageUrl(doc));
+        car.setBrand(detectBrand(searchable));
+        car.setYear(extractYear(searchable));
+        car.setMileage(extractMileage(searchable));
+        car.setFuelType(detectFuelType(searchable));
+        car.setTransmission(detectTransmission(searchable));
+        car.setCarType(detectCarType(searchable));
+
+        return ParseResult.car(car, title);
+    }
+
+    private Connection connect(String url) {
+        return Jsoup.connect(url)
+                .userAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36")
+                .referrer(BASE_HOST)
+                .header("Accept-Language", "cs-CZ,cs;q=0.9,en;q=0.8")
+                .timeout(REQUEST_TIMEOUT_MS)
+                .followRedirects(true);
+    }
+
+    private String buildListPageUrl(int page) {
+        if (page <= 1) {
+            return BASE_LIST_URL;
+        }
+        return BASE_LIST_URL + "?strana=" + page;
     }
 
     private Set<String> extractDetailUrls(Document doc) {
@@ -56,17 +212,392 @@ public class SbazarParser implements CarSourceParser {
 
         for (Element a : doc.select("a[href]")) {
             String href = a.absUrl("href");
+            href = stripUrlParams(href);
 
             if (href == null || href.isBlank()) {
                 continue;
             }
 
-            if (href.contains("/inzerat/")) {
+            if (isLikelyDetailUrl(href)) {
                 links.add(href);
             }
         }
 
         return links;
+    }
+
+    private List<String> sampleHrefs(Document doc) {
+        List<String> samples = new ArrayList<>();
+
+        for (Element a : doc.select("a[href]")) {
+            String href = a.absUrl("href");
+            if (href == null || href.isBlank()) {
+                href = a.attr("href");
+            }
+
+            if (href != null && !href.isBlank()) {
+                samples.add(stripUrlParams(href));
+            }
+
+            if (samples.size() >= 8) {
+                break;
+            }
+        }
+
+        return samples;
+    }
+
+    private boolean isLikelyDetailUrl(String href) {
+        String lower = href.toLowerCase(Locale.ROOT);
+
+        if (!lower.startsWith(BASE_HOST) || lower.contains("/170-osobni-auta")) {
+            return false;
+        }
+
+        if (lower.contains("/inzerat/") || lower.contains("/detail/")) {
+            return true;
+        }
+
+        return lower.matches("https://www\\.sbazar\\.cz/.*/[0-9]{6,}.*");
+    }
+
+    private Integer extractPriceValue(Document doc, String pageText) {
+        String[] selectors = {
+                "meta[property=product:price:amount]",
+                "[itemprop=price]",
+                "[class*=price]",
+                "[data-testid*=price]"
+        };
+
+        for (String selector : selectors) {
+            for (Element element : doc.select(selector)) {
+                String candidate = firstNonBlank(element.attr("content"), element.attr("value"), element.text());
+                Integer price = parsePrice(candidate);
+                if (price != null) {
+                    return price;
+                }
+            }
+        }
+
+        return parsePrice(pageText);
+    }
+
+    private Integer parsePrice(String text) {
+        if (text == null || text.isBlank()) {
+            return null;
+        }
+
+        String normalized = text.replace('\u00a0', ' ');
+        Matcher matcher = PRICE_PATTERN.matcher(normalized);
+
+        while (matcher.find()) {
+            Integer value = parseInteger(matcher.group(1));
+            if (value != null && value > 0 && value <= MAX_REASONABLE_PRICE) {
+                return value;
+            }
+        }
+
+        Integer value = parseInteger(normalized);
+        if (value != null && value >= 1_000 && value <= MAX_REASONABLE_PRICE) {
+            return value;
+        }
+
+        return null;
+    }
+
+    private String extractLocation(Document doc) {
+        String[] selectors = {
+                "[data-testid*=locality]",
+                "[data-testid*=location]",
+                "[class*=locality]",
+                "[class*=location]",
+                "[class*=address]"
+        };
+
+        for (String selector : selectors) {
+            String value = textOf(doc, selector);
+            if (value != null && !value.isBlank() && value.length() <= 80) {
+                return value;
+            }
+        }
+
+        return "-";
+    }
+
+    private String extractImageUrl(Document doc) {
+        String ogImage = attrOf(doc, "meta[property=og:image]", "content");
+        if (ogImage != null && !ogImage.isBlank()) {
+            return ogImage;
+        }
+
+        Element img = doc.selectFirst("img[src]");
+        if (img == null) {
+            return null;
+        }
+
+        String src = img.absUrl("src");
+        return src == null || src.isBlank() ? null : src;
+    }
+
+    private Integer extractYear(String searchable) {
+        Matcher matcher = YEAR_PATTERN.matcher(searchable);
+        int currentYear = Year.now().getValue() + 1;
+
+        while (matcher.find()) {
+            int year = Integer.parseInt(matcher.group(1));
+            if (year >= 1980 && year <= currentYear) {
+                return year;
+            }
+        }
+
+        return null;
+    }
+
+    private Integer extractMileage(String searchable) {
+        Matcher matcher = MILEAGE_PATTERN.matcher(searchable);
+
+        while (matcher.find()) {
+            Integer mileage = parseInteger(matcher.group(1));
+            if (mileage != null && mileage >= 1_000 && mileage <= 1_500_000) {
+                return mileage;
+            }
+        }
+
+        return null;
+    }
+
+    private String detectBrand(String searchable) {
+        String[][] brands = {
+                {"ALFA_ROMEO", "alfa romeo", "giulia", "giulietta", "stelvio"},
+                {"LAND_ROVER", "land rover", "range rover", "discovery", "defender"},
+                {"MERCEDES", "mercedes", "benz", "amg", "glc", "gle", "gls", "slk"},
+                {"VOLKSWAGEN", "volkswagen", "vw", "passat", "golf", "tiguan", "touran", "touareg"},
+                {"SKODA", "skoda", "fabia", "octavia", "superb", "kodiaq", "karoq"},
+                {"CHEVROLET", "chevrolet", "corvette", "camaro", "captiva"},
+                {"MITSUBISHI", "mitsubishi", "outlander", "eclipse cross", "l200"},
+                {"HYUNDAI", "hyundai", "i20", "i30", "ix20", "ix35", "tucson", "santa fe"},
+                {"PEUGEOT", "peugeot", "rifter", "partner"},
+                {"CITROEN", "citroen", "berlingo", "picasso"},
+                {"RENAULT", "renault", "clio", "megane", "scenic"},
+                {"TOYOTA", "toyota", "yaris", "corolla", "rav4"},
+                {"NISSAN", "nissan", "qashqai", "x-trail", "micra"},
+                {"SUZUKI", "suzuki", "vitara", "sx4"},
+                {"DACIA", "dacia", "duster", "logan"},
+                {"VOLVO", "volvo", "xc40", "xc60", "xc90", "v60", "v90"},
+                {"MAZDA", "mazda", "cx-5", "cx5"},
+                {"HONDA", "honda", "civic", "accord", "cr-v", "hr-v"},
+                {"FORD", "ford", "focus", "mondeo", "kuga", "s-max", "galaxy", "ranger"},
+                {"AUDI", "audi", "a3", "a4", "a5", "a6", "q3", "q5", "q7"},
+                {"BMW", "bmw", "x1", "x3", "x5", "x6"},
+                {"KIA", "kia", "ceed", "sportage", "sorento", "picanto"},
+                {"SEAT", "seat", "ibiza", "leon", "altea"},
+                {"OPEL", "opel", "astra", "corsa", "zafira"},
+                {"FIAT", "fiat", "punto", "stilo"}
+        };
+
+        for (String[] brand : brands) {
+            for (int i = 1; i < brand.length; i++) {
+                if (containsWord(searchable, brand[i])) {
+                    return brand[0];
+                }
+            }
+        }
+
+        return "-";
+    }
+
+    private String detectFuelType(String searchable) {
+        if (containsAny(searchable, "elektro", "electric", "ev ", " kwh")) {
+            return "ELECTRIC";
+        }
+        if (containsAny(searchable, "plug-in", "plugin", "phev", "hybrid")) {
+            return "HYBRID";
+        }
+        if (containsAny(searchable, "lpg")) {
+            return "LPG";
+        }
+        if (containsAny(searchable, "cng")) {
+            return "CNG";
+        }
+        if (containsAny(searchable, "diesel", "nafta", "tdi", "tdci", "cdi", "crdi", "hdi", "dci", "jtd", "multijet", "bluehdi", "cdti", "d4d", "did")) {
+            return "DIESEL";
+        }
+        if (searchable.matches(".*\\b[0-9]{3}d\\b.*")) {
+            return "DIESEL";
+        }
+        if (containsAny(searchable, "benzin", "petrol", "tsi", "tfsi", "fsi", "gdi", "tgdi", "tce", "ecoboost", "mivec", "vtec", "mpi")) {
+            return "PETROL";
+        }
+        if (searchable.matches(".*\\b[0-9][.,][0-9]\\s*i\\b.*")) {
+            return "PETROL";
+        }
+
+        return "-";
+    }
+
+    private String detectTransmission(String searchable) {
+        if (containsAny(searchable, "automat", "automatic", "dsg", "tiptronic", "s-tronic", "stronic", "cvt", "g-tronic")) {
+            return "AUTOMATIC";
+        }
+        if (containsAny(searchable, "manual", "manualni", "man ", " mt ")) {
+            return "MANUAL";
+        }
+        if ("ELECTRIC".equals(detectFuelType(searchable))) {
+            return "AUTOMATIC";
+        }
+
+        return "-";
+    }
+
+    private String detectCarType(String searchable) {
+        if (containsAny(searchable, "pickup", "pick-up", "ranger", "hilux", "navara", "l200", "amarok", " ram ")) {
+            return "PICKUP";
+        }
+        if (containsAny(searchable, "cabrio", "roadster", "slk", " sl ")) {
+            return "CABRIO";
+        }
+        if (containsAny(searchable, "coupe", "mustang", " tt ", "370z", "350z", "brz")) {
+            return "COUPE";
+        }
+        if (containsAny(searchable, "combi", "kombi", "variant", "touring", "avant", " sw ", "wagon", "estate")) {
+            return "WAGON";
+        }
+        if (containsAny(searchable, "touran", "sharan", "s-max", "galaxy", "zafira", "scenic", "picasso", "berlingo", "rifter", "caddy", "vito", "viano", "v 250", "grandis")) {
+            return "MINIVAN";
+        }
+        if (containsAny(searchable, "suv", "4x4", "kodiaq", "karoq", "kamiq", "tiguan", "touareg", "qashqai", "x-trail", "x1", "x3", "x5", "x6", "q3", "q5", "q7", "sportage", "sorento", "tucson", "santa fe", "rav4", "cr-v", "cx-5", "outlander", "glc", "gle", "gls", "xc40", "xc60", "xc90")) {
+            return "SUV";
+        }
+        if (containsAny(searchable, "sedan", "limuz", "passat", "octavia", "superb", "a4", "a6", "bmw 3", "bmw 5", "e220", "c220")) {
+            return "SEDAN";
+        }
+        if (containsAny(searchable, "hatchback", "fabia", "clio", "golf", "focus", "i20", "i30", "ceed", "civic", "astra", "corsa", "polo", "yaris", "micra", "picanto")) {
+            return "HATCHBACK";
+        }
+
+        return "-";
+    }
+
+    private boolean looksDemandListing(String searchable) {
+        return containsAny(searchable, "koupim", "hledam", "shanim", "vymenim za", "popoptavam");
+    }
+
+    private boolean looksNonCarListing(String searchable) {
+        return containsAny(searchable,
+                "nahradni dily", "nahradni dil", "dily na", "rozprodavam", "bouracka na dily",
+                "pneu", "pneumatik", "elektrony", "alu kola", "sada kol", "disky", "naraznik",
+                "motor na", "prevodovka", "svetlo", "sedacky", "volant", "katalyzator", "servisni knizka");
+    }
+
+    private boolean looksCommercialVehicle(String searchable) {
+        return containsAny(searchable,
+                "transit", "jumper", "boxer", "ducato", "sprinter", "crafter", "valnik", "sklapec",
+                "dodavka", "nakladni", "furgon", "l2h2", "l3h2", "dvojmontaz", "celni mech", "fuso");
+    }
+
+    private boolean containsAny(String text, String... needles) {
+        if (text == null) {
+            return false;
+        }
+
+        for (String needle : needles) {
+            if (text.contains(needle)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private boolean containsWord(String text, String word) {
+        if (text == null || word == null || word.isBlank()) {
+            return false;
+        }
+
+        String normalizedWord = asciiSearchText(word);
+        return Pattern.compile("(^|[^a-z0-9])" + Pattern.quote(normalizedWord) + "([^a-z0-9]|$)")
+                .matcher(text)
+                .find();
+    }
+
+    private String asciiSearchText(String text) {
+        if (text == null) {
+            return "";
+        }
+
+        String normalized = Normalizer.normalize(text, Normalizer.Form.NFD)
+                .replaceAll("\\p{M}", "")
+                .toLowerCase(Locale.ROOT);
+
+        return normalized.replace('\u00a0', ' ').replaceAll("\\s+", " ").trim();
+    }
+
+    private String textOf(Document doc, String selector) {
+        Element element = doc.selectFirst(selector);
+        return element == null ? null : normalizeText(element.text());
+    }
+
+    private String attrOf(Document doc, String selector, String attr) {
+        Element element = doc.selectFirst(selector);
+        if (element == null) {
+            return null;
+        }
+
+        String value = element.attr(attr);
+        return value == null || value.isBlank() ? null : normalizeText(value);
+    }
+
+    private String cleanTitle(String title) {
+        if (title == null) {
+            return null;
+        }
+
+        return normalizeText(title)
+                .replace(" - Sbazar.cz", "")
+                .replace(" | Sbazar.cz", "");
+    }
+
+    private String normalizeText(String text) {
+        if (text == null) {
+            return null;
+        }
+
+        return text.replace('\u00a0', ' ').replaceAll("\\s+", " ").trim();
+    }
+
+    private Integer parseInteger(String raw) {
+        if (raw == null) {
+            return null;
+        }
+
+        String digits = raw.replaceAll("[^0-9]", "");
+        if (digits.isBlank()) {
+            return null;
+        }
+
+        try {
+            return Integer.parseInt(digits);
+        } catch (NumberFormatException e) {
+            return null;
+        }
+    }
+
+    private String firstNonBlank(String... values) {
+        for (String value : values) {
+            if (value != null && !value.isBlank()) {
+                return normalizeText(value);
+            }
+        }
+
+        return null;
+    }
+
+    private String formatPrice(Integer priceValue) {
+        if (priceValue == null) {
+            return null;
+        }
+
+        return priceValue + " CZK";
     }
 
     private String stripUrlParams(String url) {
@@ -80,5 +611,53 @@ public class SbazarParser implements CarSourceParser {
         }
 
         return url;
+    }
+
+    private String safeLog(String value) {
+        return value == null || value.isBlank() ? "-" : value.replace("'", "\\'");
+    }
+
+    private void sleepQuietly(long millis) {
+        try {
+            Thread.sleep(millis);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+    }
+
+    private record ParseResult(CarDto car, String reason, String title) {
+        private static ParseResult car(CarDto car, String title) {
+            return new ParseResult(car, null, title);
+        }
+
+        private static ParseResult skip(String reason, String title) {
+            return new ParseResult(null, reason, title);
+        }
+    }
+
+    private static final class Stats {
+        private int parsed;
+        private int listFetchFailed;
+        private int brokenListing;
+        private int nonCarListing;
+        private int demandListing;
+        private int commercialVehicle;
+        private int cheapLowQualityListing;
+        private int missingPrice;
+        private int invalidPrice;
+        private int parseException;
+
+        private void countSkip(String reason) {
+            switch (reason) {
+                case "broken_listing" -> brokenListing++;
+                case "non_car_listing" -> nonCarListing++;
+                case "demand_listing" -> demandListing++;
+                case "commercial_vehicle" -> commercialVehicle++;
+                case "cheap_low_quality_listing" -> cheapLowQualityListing++;
+                case "missing_price" -> missingPrice++;
+                case "invalid_price" -> invalidPrice++;
+                default -> parseException++;
+            }
+        }
     }
 }
