@@ -938,6 +938,20 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             return "DIESEL";
         }
 
+        if (containsAny(source, " v 250 ", " v250 ", " v 250l ", " v250l ", " v250d ", " v 250d ", " v300d ", " v 300d ")
+                && !containsAny(source, " benzin ", " benz ", " petrol ", " lpg ")) {
+            return "DIESEL";
+        }
+
+        if (containsAny(source, " sl 600 ", " sl600 ", " slk55 ", " s500 ", " gl 500 ", " gl500 ", " v12 ", " v8 ")) {
+            return "PETROL";
+        }
+
+        if (containsAny(source, " space star ", " spacestar ", " eclipse cross 1.5 ", " eclipse cross 1,5 ")
+                && !containsAny(source, " phev ", " hybrid ", " diesel ", " did ", " di-d ")) {
+            return "PETROL";
+        }
+
         if (containsAny(source, " ampera ", " plug-in hybrid ", " plugin hybrid ", " plug in ", " plug-in ", " phev ")
                 || compact.contains("pluginhybrid")
                 || compact.contains("plugin")) {
@@ -1094,6 +1108,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 || compact.contains("120d")
                 || compact.contains("218d")
                 || compact.contains("220d")
+                || compact.contains("220cdi")
                 || compact.contains("250d")
                 || compact.contains("318d")
                 || compact.contains("320d")
@@ -1504,6 +1519,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         if (source.contains(" tourneo ")) return "FORD";
 
         if (source.contains(" rdx ")) return "HONDA";
+        if (source.contains(" grandis ")) return "MITSUBISHI";
 
         if (source.contains(" megane ")) return "RENAULT";
         if (source.contains(" scenic ")) return "RENAULT";
@@ -1585,6 +1601,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         if (source.contains(" asx ")) return "MITSUBISHI";
         if (source.contains(" colt ")) return "MITSUBISHI";
         if (source.contains(" spacestar ") || source.contains(" space star ")) return "MITSUBISHI";
+        if (source.contains(" grandis ")) return "MITSUBISHI";
         if (source.contains(" qashqai ")) return "NISSAN";
         if (source.contains(" juke ")) return "NISSAN";
         if (source.contains(" x-trail ")) return "NISSAN";
@@ -1657,7 +1674,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             return "HATCHBACK";
         }
 
-        if (containsAny(titleSource, " multivan ", " nv 200 ", " nv200 ", " almera tino ")) {
+        if (containsAny(titleSource, " multivan ", " nv 200 ", " nv200 ", " almera tino ", " grandis ")) {
             return "MINIVAN";
         }
 
@@ -1673,7 +1690,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             return "HATCHBACK";
         }
 
-        if (containsAny(titleSource, " 730d ", " 730ld ", " 730i ", " 740d ", " 740i ", " 750d ", " 750xd ", " 750i ", " 7 series ", " rada 7 ", " 7er ")) {
+        if (containsAny(titleSource, " s 350 ", " s350 ", " s 500 ", " s500 ", " w220 ", " 730d ", " 730ld ", " 730i ", " 740d ", " 740i ", " 750d ", " 750xd ", " 750i ", " 7 series ", " rada 7 ", " 7er ")) {
             return "SEDAN";
         }
 
@@ -1694,6 +1711,10 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         }
 
         if (containsAny(titleSource, " gran coupe ", " grand coupe ", " gran coup\u00e9 ", " grand coup\u00e9 ")) {
+            return "SEDAN";
+        }
+
+        if (containsAny(titleSource, " c220 ", " c 220 ", " c220d ", " c 220d ", " e220 ", " e 220 ", " e220d ", " e 220d ", " e300 ", " e 300 ", " e300cdi ", " e 300 cdi ", " cla ", " cls ")) {
             return "SEDAN";
         }
 
@@ -1789,7 +1810,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " q2 ", " q3 ", " q4 ", " q5 ", " q7 ", " q8 ",
                 " sq5 ", " sq7 ",
                 " glc ", " gle ", " gls ", " gla ", " glb ",
-                " gl320 ", " gl 63 ", " ml 350 ", " ml350 ",
+                " gl 500 ", " gl500 ", " gl320 ", " gl 63 ", " ml 350 ", " ml350 ",
                 " kodiaq ", " karoq ", " kamiq ",
                 " tiguan ", " touareg ", " t-roc ", " troc ",
                 " pajero ", " outlander ", " eclipse cross ", " asx ",
@@ -1871,8 +1892,8 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " cabrio ", " kabrio ",
                 " roadster ", " spyder ", " spider ",
                 " convertible ", " cabriolet ",
-                " sl 500 ", " sl500 ", " sl 63 ", " sl63 ",
-                " slk ", " z4 ", " mx-5 ", " boxster ")) {
+                " sl 500 ", " sl500 ", " sl 600 ", " sl600 ", " sl 63 ", " sl63 ",
+                " slk ", " slk55 ", " z4 ", " mx-5 ", " boxster ")) {
             return "CABRIO";
         }
 
@@ -1891,7 +1912,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " civic ", " leon ", " swift ", " born ", " punto ", " panda ",
                 " leaf ", " micra ", " colt ", " spacestar ", " space star ",
                 " f40 ", " řada 1 ", " rada 1 ",
-                " a180 ", " a180d ", " a200 ", " a200d ",
+                " a180 ", " a 180 ", " a180d ", " a 180d ", " a200 ", " a 200 ", " a200d ", " a 200d ", " a35 ",
                 " 116i ", " 118i ", " 120i ", " 116d ", " 118d ", " 120d ",
                 " agila ", " karl ", " astra ", " corsa ", " 1007 ", " 107 ", " 147 ", " 206 ", " 207 ", " 208 ", " 308 ",
                 " sandero ", " logan ", " scala ", " citigo ",
@@ -3183,6 +3204,9 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " hrv ",
                 " rs6 ",
                 " rs 6 ",
+                " a180 ", " a 180 ", " a180d ", " a 180d ", " a200 ", " a 200 ", " a200d ", " a 200d ", " a35 ",
+                " c220 ", " c 220 ", " c220d ", " e220 ", " e 220 ", " e220d ", " e300 ", " e 300 ", " e300cdi ",
+                " cla ", " cls ", " slk ", " slk55 ", " sl600 ", " glc ", " gle ", " gls ", " gl500 ", " grandis ",
                 " 116i ", " 118i ", " 120i ", " 218i ", " 220i ",
                 " 318i ", " 320i ", " 330i ", " 335i ", " 540ix ",
                 " 116d ", " 118d ", " 120d ", " 218d ", " 220d ",
