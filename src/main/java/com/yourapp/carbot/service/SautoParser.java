@@ -679,8 +679,7 @@ public class SautoParser implements CarSourceParser {
                 " špatná spojka ", " spatna spojka ",
                 " vada turba ",
                 " k opravě ", " k oprave ",
-                " na opravu ",
-                " plně pojízdné ", " plne pojizdne ")) {
+                " na opravu ")) {
             return true;
         }
 
@@ -1461,14 +1460,14 @@ public class SautoParser implements CarSourceParser {
     private String extractFuelType(String text) {
         String normalized = " " + normalizeText(text).toLowerCase(Locale.ROOT) + " ";
 
-        if (containsAny(normalized, " elektro ", " elektrické ", " elektricke ", " electric ", " ev ", " kwh ", " soh ")) {
-            return "ELECTRIC";
-        }
         if (containsAny(normalized, " plug-in-hybrid ", " plug in hybrid ", " phev ")) {
             return "PLUGIN_HYBRID";
         }
         if (containsAny(normalized, " hybridní ", " hybridni ", " hybrid ", " mhev ", " hev ", " 300h ", " 450h ", " 250h ", " xdrive30e ", " t8 ")) {
             return "HYBRID";
+        }
+        if (containsAny(normalized, " elektro ", " elektrické ", " elektricke ", " electric ", " ev ", " kwh ", " soh ")) {
+            return "ELECTRIC";
         }
         if (containsAny(normalized, " nafta ", " diesel ", " tdi ", " tdci ", " hdi ", " dci ", " cdi ", " crdi ", " jtd ")) {
             return "DIESEL";
