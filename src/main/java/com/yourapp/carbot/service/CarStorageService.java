@@ -436,6 +436,12 @@ public class CarStorageService {
             }
 
             if ("ELECTRIC".equals(upper)
+                    && titleLower.contains("carens")
+                    && Pattern.compile("\\b1[\\.,]7\\b", Pattern.CASE_INSENSITIVE).matcher(titleLower).find()) {
+                return "DIESEL";
+            }
+
+            if ("ELECTRIC".equals(upper)
                     && containsAny(titleLower, "touareg", "passat", "golf", "tiguan", "t-roc", "touran")
                     && !containsAny(titleLower, "id.3", "id3", "id.4", "id4", "id.5", "id5", "e-golf", "egolf", "electric", "elektro", "kwh", "hybrid", "gte", "phev", "plug-in", "plugin")) {
                 return containsAny(titleLower, "tdi", "nafta", "naftov", "touareg") ? "DIESEL" : null;
@@ -486,6 +492,10 @@ public class CarStorageService {
 
         if (containsAny(tokens, " 6mt ", " 5mt ", " mt ", " 6rychl ", " 6ti ")
                 || containsAny(lower, "manual", "manuÄ‚Ë‡l", "manualni", "manuÄ‚Ë‡lnÄ‚Â­", "6ti rychl", "6 rychl", "6ti rychlost", "6 rychlost")) {
+            if (lower.contains("silverado")
+                    && !containsAny(lower, "manual", "manuĂ„â€šĂ‹â€ˇl", "manualni", " man. ", " 5mt ", " 6mt ", "6ti rychl", "6 rychl")) {
+                return null;
+            }
             return "MANUAL";
         }
 

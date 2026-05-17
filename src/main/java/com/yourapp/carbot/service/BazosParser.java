@@ -353,9 +353,12 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             String transmission = firstNonBlank(
                     extractTransmission(title),
                     extractTransmission(listingText),
-                    "ELECTRIC".equals(fuelType) ? "AUTOMATIC" : null
+                    ("ELECTRIC".equals(fuelType) || looksAutomaticHybridTitle(title, fuelType)) ? "AUTOMATIC" : null
             );
             if (looksLikelyFalseAutomatic(title, transmission)) {
+                transmission = null;
+            }
+            if (looksLikelyFalseManual(title, transmission)) {
                 transmission = null;
             }
             String brand = extractBrand(title, analysisText);
@@ -1239,12 +1242,28 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             return fuelType;
         }
 
+        if (source.contains(" carens ") && Pattern.compile("\\b1[\\.,]7\\b").matcher(source).find()) {
+            return "DIESEL";
+        }
+
         if (containsAny(source, " touareg ", " passat ", " golf ", " tiguan ", " t-roc ", " troc ", " touran ")
                 && !containsAny(source, " hybrid ", " ehybrid ", " e-hybrid ", " gte ", " phev ", " plug-in ", " plugin ")) {
             return extractFuelType(title);
         }
 
         return fuelType;
+    }
+
+    private boolean looksAutomaticHybridTitle(String title, String fuelType) {
+        if (!"HYBRID".equals(fuelType)) {
+            return false;
+        }
+
+        String source = " " + normalizeText(title).toLowerCase(Locale.ROOT) + " ";
+        String compact = source.replaceAll("[^a-z0-9]", "");
+        return containsAny(source, " plug-in ", " plug in ", " phev ", " gte ", " e-hybrid ", " ehybrid ")
+                || compact.contains("plugin")
+                || compact.contains("pluginhybrid");
     }
 
     private boolean looksLikelyFalseAutomatic(String title, String transmission) {
@@ -1255,6 +1274,16 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         String source = " " + normalizeText(title).toLowerCase(Locale.ROOT) + " ";
         return containsAny(source, " twin spark ", " 6ti rychl ", " 6ti rychlost ", " 6 rychl ", " 6 rychlost ")
                 && !containsAny(source, " selespeed ", " automat ", " automaticka ", " automatickÄ‚Ë‡ ", " automatic ", " aut. ", " a/t ", " at6 ", " at8 ", " at/8 ", " dsg ", " cvt ");
+    }
+
+    private boolean looksLikelyFalseManual(String title, String transmission) {
+        if (!"MANUAL".equals(transmission)) {
+            return false;
+        }
+
+        String source = " " + normalizeText(title).toLowerCase(Locale.ROOT) + " ";
+        return containsAny(source, " silverado ")
+                && !containsAny(source, " manual ", " manuĂˇl ", " manualni ", " man. ", " mt ", " 5mt ", " 6mt ", " 6 rychl ", " 6ti rychl ");
     }
 
     private String extractTransmission(String text) {
