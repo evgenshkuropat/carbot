@@ -397,10 +397,12 @@ public class SbazarParser implements CarSourceParser {
                 {"VOLKSWAGEN", "volkswagen", "vw", "passat", "golf", "tiguan", "touran", "touareg"},
                 {"SKODA", "skoda", "fabia", "octavia", "superb", "kodiaq", "karoq"},
                 {"CHEVROLET", "chevrolet", "corvette", "camaro", "captiva"},
-                {"CHRYSLER", "chrysler", "pacifica", "grand caravan"},
-                {"DODGE", "dodge", "challenger", "grand caravan"},
+                {"DODGE", "dodge", "challenger"},
+                {"CHRYSLER", "chrysler", "pacifica"},
                 {"LAMBORGHINI", "lamborghini", "urus"},
                 {"PORSCHE", "porsche", "carrera", "911"},
+                {"CUPRA", "cupra", "ateca"},
+                {"OMODA", "omoda"},
                 {"MITSUBISHI", "mitsubishi", "outlander", "eclipse cross", "l200"},
                 {"HYUNDAI", "hyundai", "i20", "i30", "ix20", "ix35", "tucson", "santa fe"},
                 {"PEUGEOT", "peugeot", "rifter", "partner"},
@@ -453,7 +455,7 @@ public class SbazarParser implements CarSourceParser {
                 || searchable.matches(".*\\b[0-9][.,][0-9]\\s*d\\b.*")) {
             return "DIESEL";
         }
-        if (containsAny(searchable, "benzin", "petrol", "tsi", "tfsi", "fsi", "gdi", "tgdi", "tce", "ecoboost", "mivec", "vtec", "mpi", "pentastar", "hemi")) {
+        if (containsAny(searchable, "benzin", "petrol", "tsi", "tfsi", "fsi", "gdi", "tgdi", "tce", "ecoboost", "mivec", "vtec", "mpi", "ti-vct", "pentastar", "hemi", "challenger", "pacifica", "carrera")) {
             return "PETROL";
         }
         if (searchable.matches(".*\\b[0-9][.,][0-9]\\s*i\\b.*")) {
@@ -484,22 +486,22 @@ public class SbazarParser implements CarSourceParser {
         if (containsAny(searchable, "cabrio", "roadster", "slk", " sl ")) {
             return "CABRIO";
         }
-        if (containsAny(searchable, "coupe", "mustang", " tt ", "370z", "350z", "brz")) {
+        if (containsAny(searchable, "coupe", "mustang", " tt ", "370z", "350z", "brz", "challenger", "carrera", "911")) {
             return "COUPE";
         }
-        if (containsAny(searchable, "combi", "kombi", "variant", "touring", "avant", " sw ", "wagon", "estate")) {
+        if (containsAny(searchable, "combi", "kombi", "variant", "touring", "avant", " sw ", "wagon", "estate", "v60", "v70", "v90")) {
             return "WAGON";
         }
-        if (containsAny(searchable, "touran", "sharan", "s-max", "galaxy", "zafira", "scenic", "picasso", "berlingo", "rifter", "caddy", "vito", "viano", "v 250", "grandis")) {
+        if (containsAny(searchable, "touran", "sharan", "s-max", "c-max", "galaxy", "zafira", "scenic", "picasso", "berlingo", "rifter", "caddy", "vito", "viano", "v 250", "grandis", "pacifica", "grand caravan")) {
             return "MINIVAN";
         }
-        if (containsAny(searchable, "suv", "kodiaq", "karoq", "kamiq", "tiguan", "touareg", "qashqai", "x-trail", "x1", "x3", "x5", "x6", "q3", "q5", "q7", "sportage", "sorento", "tucson", "santa fe", "rav4", "cr-v", "hr-v", "cx-5", "outlander", "gl 450", "glc", "gle", "gls", "xc40", "xc60", "xc90", "duster", "ateca")) {
+        if (containsAny(searchable, "suv", "kodiaq", "karoq", "kamiq", "tiguan", "touareg", "qashqai", "x-trail", "x1", "x3", "x5", "x6", "q3", "q5", "q7", "sportage", "sorento", "tucson", "santa fe", "rav4", "cr-v", "hr-v", "cx-5", "outlander", "gl 450", "glc", "gle", "gls", "xc40", "xc60", "xc90", "duster", "ateca", "omoda 5")) {
             return "SUV";
         }
         if (containsAny(searchable, "sedan", "limuz", "passat", "octavia", "superb", "a4", "a6", "bmw 3", "bmw 5", "e220", "c220")) {
             return "SEDAN";
         }
-        if (containsAny(searchable, "hatchback", "fabia", "clio", "golf", "focus", "i20", "i30", "ceed", "civic", "astra", "corsa", "polo", "yaris", "micra", "picanto")) {
+        if (containsAny(searchable, "hatchback", "citigo", "fabia", "clio", "golf", "focus", "i20", "i30", "ceed", "civic", "astra", "corsa", "polo", "yaris", "micra", "picanto")) {
             return "HATCHBACK";
         }
 
