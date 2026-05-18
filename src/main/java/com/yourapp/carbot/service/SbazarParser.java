@@ -403,6 +403,7 @@ public class SbazarParser implements CarSourceParser {
                 {"PORSCHE", "porsche", "carrera", "911"},
                 {"CUPRA", "cupra", "ateca"},
                 {"OMODA", "omoda"},
+                {"MINI", "mini", "cooper"},
                 {"MITSUBISHI", "mitsubishi", "outlander", "eclipse cross", "l200"},
                 {"HYUNDAI", "hyundai", "i20", "i30", "ix20", "ix35", "tucson", "santa fe"},
                 {"PEUGEOT", "peugeot", "rifter", "partner"},
@@ -455,7 +456,7 @@ public class SbazarParser implements CarSourceParser {
                 || searchable.matches(".*\\b[0-9][.,][0-9]\\s*d\\b.*")) {
             return "DIESEL";
         }
-        if (containsAny(searchable, "benzin", "petrol", "tsi", "tfsi", "fsi", "gdi", "tgdi", "tce", "ecoboost", "mivec", "vtec", "mpi", "ti-vct", "pentastar", "hemi", "challenger", "pacifica", "carrera")) {
+        if (containsAny(searchable, "benzin", "petrol", "tsi", "tfsi", "fsi", "gdi", "tgdi", "tce", "ecoboost", "mivec", "vtec", "mpi", "ti-vct", "pentastar", "hemi", "challenger", "pacifica", "carrera", "cooper s")) {
             return "PETROL";
         }
         if (searchable.matches(".*\\b[0-9][.,][0-9]\\s*i\\b.*")) {
@@ -501,7 +502,7 @@ public class SbazarParser implements CarSourceParser {
         if (containsAny(searchable, "sedan", "limuz", "passat", "octavia", "superb", "a4", "a6", "bmw 3", "bmw 5", "e220", "c220")) {
             return "SEDAN";
         }
-        if (containsAny(searchable, "hatchback", "citigo", "fabia", "clio", "golf", "focus", "i20", "i30", "ceed", "civic", "astra", "corsa", "polo", "yaris", "micra", "picanto")) {
+        if (containsAny(searchable, "hatchback", "mini", "cooper", "citigo", "fabia", "clio", "golf", "focus", "i20", "i30", "ceed", "civic", "astra", "corsa", "polo", "yaris", "micra", "picanto")) {
             return "HATCHBACK";
         }
 
