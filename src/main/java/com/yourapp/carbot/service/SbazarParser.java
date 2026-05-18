@@ -70,8 +70,8 @@ public class SbazarParser implements CarSourceParser {
                     log.info("SBAZAR list page={} no detail links sample_hrefs={}", page, sampleHrefs(doc));
                 }
 
-                if (page > 1 && pageLinks.isEmpty()) {
-                    log.info("SBAZAR list page={} produced no links, stopping pagination", page);
+                if (page > 1 && (pageLinks.isEmpty() || newLinks == 0)) {
+                    log.info("SBAZAR list page={} produced no new links, stopping pagination", page);
                     break;
                 }
             } catch (Exception e) {
@@ -182,12 +182,12 @@ public class SbazarParser implements CarSourceParser {
         car.setLocation(extractLocation(doc));
         car.setUrl(url);
         car.setImageUrl(extractImageUrl(doc));
-        car.setBrand(detectBrand(searchable));
-        car.setYear(extractYear(searchable));
-        car.setMileage(extractMileage(searchable));
-        car.setFuelType(detectFuelType(searchable));
-        car.setTransmission(detectTransmission(searchable));
-        car.setCarType(detectCarType(searchable));
+        car.setBrand(detectBrand(listingIdentity));
+        car.setYear(extractYear(listingIdentity));
+        car.setMileage(extractMileage(listingIdentity));
+        car.setFuelType(detectFuelType(listingIdentity));
+        car.setTransmission(detectTransmission(listingIdentity));
+        car.setCarType(detectCarType(listingIdentity));
 
         return ParseResult.car(car, title);
     }
@@ -375,6 +375,10 @@ public class SbazarParser implements CarSourceParser {
                 {"VOLKSWAGEN", "volkswagen", "vw", "passat", "golf", "tiguan", "touran", "touareg"},
                 {"SKODA", "skoda", "fabia", "octavia", "superb", "kodiaq", "karoq"},
                 {"CHEVROLET", "chevrolet", "corvette", "camaro", "captiva"},
+                {"CHRYSLER", "chrysler", "pacifica", "grand caravan"},
+                {"DODGE", "dodge", "challenger", "grand caravan"},
+                {"LAMBORGHINI", "lamborghini", "urus"},
+                {"PORSCHE", "porsche", "carrera", "911"},
                 {"MITSUBISHI", "mitsubishi", "outlander", "eclipse cross", "l200"},
                 {"HYUNDAI", "hyundai", "i20", "i30", "ix20", "ix35", "tucson", "santa fe"},
                 {"PEUGEOT", "peugeot", "rifter", "partner"},
