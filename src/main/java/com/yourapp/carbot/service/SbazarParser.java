@@ -35,7 +35,9 @@ public class SbazarParser implements CarSourceParser {
 
     private static final Pattern PRICE_PATTERN = Pattern.compile("(?i)(\\d[\\d\\s.]{2,})\\s*(?:k\\u010d|kc|czk)");
     private static final Pattern YEAR_PATTERN = Pattern.compile("\\b(19\\d{2}|20\\d{2})\\b");
-    private static final Pattern MILEAGE_PATTERN = Pattern.compile("(?i)(\\d[\\d\\s.]{2,})\\s*(?:km|kilometru|najeto)");
+    private static final Pattern MILEAGE_KM_PATTERN = Pattern.compile("(?i)(\\d[\\d\\s.]{2,})\\s*(?:km|kilometru)");
+    private static final Pattern MILEAGE_NAJETO_PATTERN = Pattern.compile("(?i)(?:najeto|najezd)\\s*(\\d[\\d\\s.]{2,})\\s*(?:km|kilometru)?");
+    private static final Pattern MILEAGE_TIS_PATTERN = Pattern.compile("(?i)\\b(\\d{2,3})\\s*(?:tis\\.?|tkm)\\b");
 
     @PostConstruct
     public void init() {
@@ -355,11 +357,31 @@ public class SbazarParser implements CarSourceParser {
     }
 
     private Integer extractMileage(String searchable) {
-        Matcher matcher = MILEAGE_PATTERN.matcher(searchable);
+        Integer mileage = extractMileageValue(MILEAGE_NAJETO_PATTERN.matcher(searchable), false);
+        if (mileage != null) {
+            return mileage;
+        }
 
+        mileage = extractMileageValue(MILEAGE_KM_PATTERN.matcher(searchable), false);
+        if (mileage != null) {
+            return mileage;
+        }
+
+        return extractMileageValue(MILEAGE_TIS_PATTERN.matcher(searchable), true);
+    }
+
+    private Integer extractMileageValue(Matcher matcher, boolean thousands) {
         while (matcher.find()) {
             Integer mileage = parseInteger(matcher.group(1));
-            if (mileage != null && mileage >= 1_000 && mileage <= 1_500_000) {
+            if (mileage == null) {
+                continue;
+            }
+
+            if (thousands) {
+                mileage *= 1_000;
+            }
+
+            if (mileage >= 1_000 && mileage <= 1_500_000) {
                 return mileage;
             }
         }
@@ -427,10 +449,11 @@ public class SbazarParser implements CarSourceParser {
         if (containsAny(searchable, "diesel", "nafta", "tdi", "tdci", "cdi", "crdi", "hdi", "dci", "jtd", "multijet", "bluehdi", "cdti", "d4d", "did")) {
             return "DIESEL";
         }
-        if (searchable.matches(".*\\b[0-9]{3}d\\b.*")) {
+        if (searchable.matches(".*\\b[0-9]{3}d\\b.*")
+                || searchable.matches(".*\\b[0-9][.,][0-9]\\s*d\\b.*")) {
             return "DIESEL";
         }
-        if (containsAny(searchable, "benzin", "petrol", "tsi", "tfsi", "fsi", "gdi", "tgdi", "tce", "ecoboost", "mivec", "vtec", "mpi")) {
+        if (containsAny(searchable, "benzin", "petrol", "tsi", "tfsi", "fsi", "gdi", "tgdi", "tce", "ecoboost", "mivec", "vtec", "mpi", "pentastar", "hemi")) {
             return "PETROL";
         }
         if (searchable.matches(".*\\b[0-9][.,][0-9]\\s*i\\b.*")) {
@@ -470,7 +493,7 @@ public class SbazarParser implements CarSourceParser {
         if (containsAny(searchable, "touran", "sharan", "s-max", "galaxy", "zafira", "scenic", "picasso", "berlingo", "rifter", "caddy", "vito", "viano", "v 250", "grandis")) {
             return "MINIVAN";
         }
-        if (containsAny(searchable, "suv", "4x4", "kodiaq", "karoq", "kamiq", "tiguan", "touareg", "qashqai", "x-trail", "x1", "x3", "x5", "x6", "q3", "q5", "q7", "sportage", "sorento", "tucson", "santa fe", "rav4", "cr-v", "cx-5", "outlander", "glc", "gle", "gls", "xc40", "xc60", "xc90")) {
+        if (containsAny(searchable, "suv", "kodiaq", "karoq", "kamiq", "tiguan", "touareg", "qashqai", "x-trail", "x1", "x3", "x5", "x6", "q3", "q5", "q7", "sportage", "sorento", "tucson", "santa fe", "rav4", "cr-v", "hr-v", "cx-5", "outlander", "gl 450", "glc", "gle", "gls", "xc40", "xc60", "xc90", "duster", "ateca")) {
             return "SUV";
         }
         if (containsAny(searchable, "sedan", "limuz", "passat", "octavia", "superb", "a4", "a6", "bmw 3", "bmw 5", "e220", "c220")) {
