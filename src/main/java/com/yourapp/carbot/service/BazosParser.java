@@ -1112,6 +1112,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 || compact.contains("250d")
                 || compact.contains("318d")
                 || compact.contains("320d")
+                || compact.contains("320xd")
                 || compact.contains("30d")
                 || compact.contains("330d")
                 || compact.contains("32d")
@@ -1657,7 +1658,8 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             return "SEDAN";
         }
 
-        if (containsAny(titleSource, " insignia st ", " insignia sports tourer ", " insignia sport tourer ",
+        if (containsAny(titleSource, " c5 tourer ", " citroen c5 tourer ", " c5 x7 ",
+                " insignia st ", " insignia sports tourer ", " insignia sport tourer ",
                 " astra sports tourer ", " astra sport tourer ", " astra sw ", " astra combi ", " astra kombi ", " 308 sw ", " peugeot 308 sw ")) {
             return "WAGON";
         }
@@ -1806,7 +1808,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
 
         if (containsAny(titleSource,
                 " suv ", " crossover ", " tonale ",
-                " x1 ", " x2 ", " x3 ", " x4 ", " x5 ", " x6 ", " x7 ",
+                " bmw x1 ", " bmw x2 ", " bmw x3 ", " bmw x4 ", " bmw x5 ", " bmw x6 ", " bmw x7 ",
                 " q2 ", " q3 ", " q4 ", " q5 ", " q7 ", " q8 ",
                 " sq5 ", " sq7 ",
                 " glc ", " gle ", " gls ", " gla ", " glb ",
@@ -1906,7 +1908,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " fabia ", " focus ", " golf ", " polo ",
                 " i20 ", " i30 ", " ceed ", " mazda 2 ",
                 " aveo ", " spark ", " picanto ",
-                " c2 ", " c3 ", " c4 ",
+                " c1 ", " c2 ", " c3 ", " c4 ",
                 " clio ", " megane ", " fiesta ",
                 " rs3 ", " rs 3 ",
                 " civic ", " leon ", " swift ", " born ", " punto ", " panda ",
@@ -1958,7 +1960,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " e90 ", " e60 ", " e39 ", " f07 ",
                 " 3 series ", " 5 series ", " 7 series ",
                 " řada 3 ", " rada 3 ", " řada 5 ", " rada 5 ", " řada 7 ", " rada 7 ",
-                " 318d ", " 320d ", " 330d ", " 318i ", " 320i ", " 330i ",
+                " 318d ", " 320d ", " 320xd ", " 330d ", " 318i ", " 320i ", " 330i ",
                 " 730d ", " 730i ", " 740d ", " 740i ", " 750d ", " 750i ",
                 " 540ix ", " 540i ", " 540d ", " gran turismo ",
                 " c5 ", " mondeo ", " mondeo sedan ",
@@ -2418,7 +2420,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " swift 390 ", " toscane "
         ) || containsAny(wordSource,
                 " transporter ", " caravelle ", " carawelle ", " multivan ",
-                " sprinter ", " crafter ", " transit ", " ducato ",
+                " sprinter ", " crafter ", " transit ", " ducato ", " jumpy ",
                 " jumper ", " peugeot boxer ", " movano ", " master ");
     }
 
@@ -3170,6 +3172,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " x1 ",
                 " x2 ",
                 " x3 ",
+                " x4 ",
                 " x5 ",
                 " x6 ",
                 " x7 ",
@@ -3207,10 +3210,11 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " a180 ", " a 180 ", " a180d ", " a 180d ", " a200 ", " a 200 ", " a200d ", " a 200d ", " a35 ",
                 " c220 ", " c 220 ", " c220d ", " e220 ", " e 220 ", " e220d ", " e300 ", " e 300 ", " e300cdi ",
                 " cla ", " cls ", " slk ", " slk55 ", " sl600 ", " glc ", " gle ", " gls ", " gl500 ", " grandis ",
+                " m3 ", " e36 ",
                 " 116i ", " 118i ", " 120i ", " 218i ", " 220i ",
                 " 318i ", " 320i ", " 330i ", " 335i ", " 540ix ",
                 " 116d ", " 118d ", " 120d ", " 218d ", " 220d ",
-                " 318d ", " 320d ", " 330d ", " 335d ", " 520d ", " 530d ", " 530xd ", " 740d ", " 750xd ",
+                " 318d ", " 320d ", " 320xd ", " 330d ", " 335d ", " 520d ", " 530d ", " 530xd ", " 740d ", " 750xd ",
                 " discovery sport ",
                 " range rover ",
                 " evoque ",
