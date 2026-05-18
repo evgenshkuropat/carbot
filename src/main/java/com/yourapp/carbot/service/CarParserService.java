@@ -35,8 +35,14 @@ public class CarParserService {
 
         parserRunStatsService.reset();
 
+        log.info("Starting parser run parsers={}", parsers.stream()
+                .map(CarSourceParser::getSourceName)
+                .toList());
+
         for (CarSourceParser parser : parsers) {
             String sourceName = parser.getSourceName();
+
+            log.info("Starting parser {}", sourceName);
 
             try {
                 List<CarDto> parsedCars = parser.fetchCars();
