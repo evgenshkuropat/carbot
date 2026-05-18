@@ -146,16 +146,17 @@ public class SbazarParser implements CarSourceParser {
 
         String pageText = doc.text();
         String searchable = asciiSearchText(title + " " + pageText + " " + url);
+        String listingIdentity = asciiSearchText(title + " " + url);
 
-        if (looksDemandListing(searchable)) {
+        if (looksDemandListing(listingIdentity)) {
             return ParseResult.skip("demand_listing", title);
         }
 
-        if (looksNonCarListing(searchable)) {
+        if (looksNonCarListing(listingIdentity)) {
             return ParseResult.skip("non_car_listing", title);
         }
 
-        if (looksCommercialVehicle(searchable)) {
+        if (looksCommercialVehicle(listingIdentity)) {
             return ParseResult.skip("commercial_vehicle", title);
         }
 
