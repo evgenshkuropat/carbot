@@ -2234,20 +2234,21 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         String source = " " + normalizeText(title + " " + text + " " + shortenForCheck(analysisText, 700))
                 .toLowerCase(Locale.ROOT) + " ";
 
-        if (looksLikeRealCar(title, analysisText)) {
+        if (containsAny(titleSource,
+                " rs3 ", " rs4 ", " rs5 ", " rs6 ", " rs7 ", " rsq8 ",
+                " q7 ", " q5 ", " q3 ",
+                " stelvio ", " giulia ", " giulietta ", " mito ", " brera ",
+                " a3 ", " a4 ", " a5 ", " a6 ",
+                " x1 ", " x3 ", " x5 ",
+                " octavia ", " superb ", " passat ",
+                " civic ", " duster ", " mustang ",
+                " x-trail ", " x trail ",
+                " corsa ", " astra ", " insignia ",
+                " 208 ", " 5008 ")) {
             return false;
         }
 
-        // реальные модели, которые нельзя считать колесами/шинами
-        if (containsAny(titleSource,
-                " giulietta sprint ",
-                " alfa romeo giulietta ",
-                " alfa romeo sprint ",
-                " stelvio ",
-                " giulia ",
-                " giulietta ",
-                " mito ",
-                " brera ")) {
+        if (looksLikeRealCar(title, analysisText)) {
             return false;
         }
 
