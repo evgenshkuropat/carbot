@@ -348,6 +348,12 @@ public class SbazarParser implements CarSourceParser {
 
         while (matcher.find()) {
             int year = Integer.parseInt(matcher.group(1));
+
+            // Skip Peugeot 2008 model name
+            if (year == 2008 && searchable.contains("peugeot 2008")) {
+                continue;
+            }
+
             if (year >= 1980 && year <= currentYear) {
                 return year;
             }
