@@ -366,7 +366,7 @@ public class CarStorageService {
                     "JEEP", "MINI", "LEXUS", "PORSCHE", "MITSUBISHI", "BYD",
                     "MG", "DS", "LAND_ROVER", "ALFA_ROMEO", "CHEVROLET",
                     "SSANGYONG", "CHRYSLER", "LOTUS", "LAMBORGHINI", "FERRARI",
-                    "JAECOO", "OMODA", "SWM", "SMART"
+                    "JAECOO", "OMODA", "SWM", "SMART", "INFINITI"
             );
 
             if (allowed.contains(upper)) {
@@ -396,6 +396,7 @@ public class CarStorageService {
         if (t.contains("omoda")) return "OMODA";
         if (t.contains("swm")) return "SWM";
         if (t.contains("smart") || t.contains("fortwo")) return "SMART";
+        if (t.contains("infiniti") || t.contains("fx35") || t.contains("fx-35")) return "INFINITI";
         if (t.contains("peugeot")) return "PEUGEOT";
         if (t.contains("opel")) return "OPEL";
         if (t.contains("mazda")) return "MAZDA";
@@ -472,7 +473,7 @@ public class CarStorageService {
             return "DIESEL";
         }
 
-        if (containsAny(lower, "inster", "puma gen-e", "puma gen e", "electric", "elektro", "bev")) {
+        if (containsAny(lower, "inster", "puma gen-e", "puma gen e", "cupra born", "electric", "elektro", "bev", "kwh")) {
             return "ELECTRIC";
         }
 
@@ -524,14 +525,14 @@ public class CarStorageService {
         }
 
         String titleOnly = safe(title).toLowerCase(Locale.ROOT);
-        boolean titleHasExplicitAutomatic = containsAny(titleOnly, "selespeed", "automat", "automatic", " aut. ", " a/t ", " at6", " at8", "at7", "7at", "dsg", "dct", "cvt", "s-tronic", "s tronic", "stronic", "tiptronic");
+        boolean titleHasExplicitAutomatic = containsAny(titleOnly, "selespeed", "automat", "automatic", " aut. ", " a/t ", " at6", " at8", "at7", "7at", "at8", "8at", "dsg", "dct", "cvt", "s-tronic", "s tronic", "stronic", "tiptronic");
         if (!titleHasExplicitAutomatic
                 && containsAny(titleOnly, "alfa romeo 159", "alfa 159", "alfa romeo 147", "alfa 147", "giulietta", "giuletta", "alfa romeo sportwagon", "accord", "crx", "delsol", "cr-v", "cr v", "crv")) {
             return null;
         }
 
         if (containsAny(tokens, " aut ", " at ", " mta ")
-                || containsAny(lower, "automat", "automatic", "dsg", "dct", "at7", "7at", "tiptronic", "s tronic", "stronic", "cvt")) {
+                || containsAny(lower, "automat", "automatic", "dsg", "dct", "at7", "7at", "at8", "8at", "atled", "tiptronic", "s tronic", "stronic", "cvt")) {
             return "AUTOMATIC";
         }
 
@@ -561,7 +562,7 @@ public class CarStorageService {
             return "MINIVAN";
         }
 
-        if (containsAny(lower, "land cruiser", "korando", "rdx", "e-tron", "etron", "x1", "x2", "x3", "x5", "x6", "x7", "glc", "gle", "gls", "gla", "glb", "gl 500", "gl500", "x-trail", "x trail", "pathfinder", "grandland", "grandal", "cx-5", "cx 5", "cx5", "cx-7", "cx 7", "cx7", "niro", "eqa", "mustang mach-e", "mustang mache", "xc40", "xc 40", "xc60", "xc 60", "xc70", "xc 70", "xc90", "xc 90", "jaecoo", "omoda", "swm g1", "swm g01", "inster", "puma gen-e", "puma gen e")) {
+        if (containsAny(lower, "land cruiser", "korando", "rdx", "e-tron", "etron", "x1", "x2", "x3", "x5", "x6", "x7", "glc", "gle", "gls", "gla", "glb", "gl 500", "gl500", "x-trail", "x trail", "pathfinder", "grandland", "grandal", "cx-5", "cx 5", "cx5", "cx-7", "cx 7", "cx7", "niro", "eqa", "mustang mach-e", "mustang mache", "xc40", "xc 40", "xc60", "xc 60", "xc70", "xc 70", "xc90", "xc 90", "jaecoo", "omoda", "swm g1", "swm g01", "inster", "puma gen-e", "puma gen e", "infiniti fx", "fx35", "fx-35")) {
             return "SUV";
         }
 
@@ -577,7 +578,7 @@ public class CarStorageService {
             return "PICKUP";
         }
 
-        if (containsAny(lower, "3000gt", "3000 gt", "cr-z", "cr z")) {
+        if (containsAny(lower, "3000gt", "3000 gt", "cr-z", "cr z", "clk")) {
             return "COUPE";
         }
 
