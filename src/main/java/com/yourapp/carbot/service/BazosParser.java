@@ -902,6 +902,47 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         String source = " " + normalizeText(text).toLowerCase(Locale.ROOT) + " ";
         String compact = source.replaceAll("[^a-z0-9]", "");
 
+        if (containsAny(source, " ampera ", " plug-in hybrid ", " plugin hybrid ", " plug in ", " plug-in ", " phev ")
+                || compact.contains("pluginhybrid")
+                || compact.contains("plugin")) {
+            return "HYBRID";
+        }
+
+        if (Pattern.compile("\\b\\d{2,3}\\s*kwh\\b", Pattern.CASE_INSENSITIVE).matcher(source).find()
+                || compact.contains("64kwh")
+                || compact.contains("62kwh")
+                || compact.contains("electric")
+                || compact.contains("elektro")
+                || containsAny(source,
+                " palivo: elektro ", " palivo elektro ", " elektromobil ", " elektroauto ",
+                " electric vehicle ", " electric ", " bev ", " bz4x ", " bz 4x ",
+                " enyaq ", " id.3 ", " id.4 ", " id.5 ", " tesla ", " leaf ",
+                " kona electric ", " kona elektric ", " ioniq ", " ioniq 5 ", " ioniq 6 ",
+                " e-tron ", " etron ", " inster ", " puma gen-e ", " puma gen e ")) {
+            return "ELECTRIC";
+        }
+
+        if (containsAny(source,
+                " hybrid ", " hybridní ", " hybridni ", " hybryd ", " hybrydni ",
+                " plug-in hybrid ", " plugin hybrid ", " plug in ", " plug-in ",
+                " ima ", " hev ", " phev ", " tfsi e ", " tsi e ", " t8 ",
+                " recharge ", " superb iv ", " kodiaq iv ", " ehybrid ", " mhev ", " e-hybrid ")
+                || compact.contains("ima")
+                || compact.contains("hybrid")
+                || compact.contains("phev")
+                || compact.contains("mhev")
+                || compact.contains("pluginhybrid")) {
+            return "HYBRID";
+        }
+
+        if (containsAny(source, " lpg ") || compact.contains("lpg")) {
+            return "LPG";
+        }
+
+        if (containsAny(source, " cng ", " g-tec ", " g tec ") || compact.contains("gtec")) {
+            return "CNG";
+        }
+
         if (source.contains(" stelvio ")
                 && (containsAny(source, " 2.0t ", " 2,0t ", " 2.0 t ", " 2,0 t ", " 2.0 turbo ", " 2,0 turbo ", " turbo ")
                 || compact.contains("20tq4")
@@ -933,7 +974,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         }
 
         if (containsAny(source, " civic type r ", " vtec ", " v-tec ", " i-vtec ", " ivtec ")
-                && !containsAny(source, " dtec ", " d-tec ", " i-dtec ", " idtec ", " ctdi ", " ctdi ")) {
+                && !containsAny(source, " dtec ", " d-tec ", " i-dtec ", " idtec ", " ctdi ")) {
             return "PETROL";
         }
 
@@ -953,12 +994,6 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         if (containsAny(source, " space star ", " spacestar ", " eclipse cross 1.5 ", " eclipse cross 1,5 ")
                 && !containsAny(source, " phev ", " hybrid ", " diesel ", " did ", " di-d ")) {
             return "PETROL";
-        }
-
-        if (containsAny(source, " ampera ", " plug-in hybrid ", " plugin hybrid ", " plug in ", " plug-in ", " phev ")
-                || compact.contains("pluginhybrid")
-                || compact.contains("plugin")) {
-            return "HYBRID";
         }
 
         if (source.contains(" touareg ")
@@ -989,90 +1024,11 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             return "PETROL";
         }
 
-        if (containsAny(source, " inster ", " puma gen-e ", " puma gen e ")) {
-            return "ELECTRIC";
-        }
-
-        if (Pattern.compile("\\b\\d{2,3}\\s*kwh\\b", Pattern.CASE_INSENSITIVE)
-                .matcher(source).find()
-                || compact.contains("64kwh")
-                || compact.contains("62kwh")
-                || compact.contains("electric")
-                || compact.contains("elektro")) {
-            return "ELECTRIC";
-        }
-
-        if (containsAny(source,
-                " palivo: elektro ",
-                " palivo elektro ",
-                " elektromobil ",
-                " elektroauto ",
-                " electric vehicle ",
-                " electric ",
-                " bev ",
-                " bz4x ",
-                " bz 4x ",
-                " enyaq ", " id.3 ", " id.4 ", " id.5 ", " tesla ", " leaf ",
-                " kona electric ", " kona elektric ",
-                " ioniq ", " ioniq 5 ", " ioniq 6 ",
-                " e-tron ", " etron ")) {
-            return "ELECTRIC";
-        }
-
-        if (containsAny(source,
-                " hybrid ",
-                " hybridní ",
-                " hybridni ",
-                " hybryd ",
-                " hybrydni ",
-                " plug-in hybrid ",
-                " plugin hybrid ",
-                " plug in ",
-                " plug-in ",
-                " hev ",
-                " phev ",
-                " tfsi e ",
-                " tsi e ",
-                " t8 ",
-                " recharge ",
-                " superb iv ",
-                " ehybrid ",
-                " mhev ",
-                " e-hybrid ")) {
-            return "HYBRID";
-        }
-
-        if (source.contains(" superb ")
-                && containsAny(source,
-                " phev ",
-                " plug-in ",
-                " plug in ",
-                " ehybrid ",
-                " e-hybrid ")) {
-            return "HYBRID";
-        }
-
-        if (containsAny(source, " lpg ") || compact.contains("lpg")) {
-            return "LPG";
-        }
-
-        if (containsAny(source, " cng ")) {
-            return "CNG";
-        }
-
-        if (containsAny(source,
-                " giulia qv ",
-                " quadrifoglio ",
-                " rs6 ",
-                " rs 6 ",
-                " m4 competition ",
-                " 2.9 v6 ",
-                " 29 v6 ")) {
+        if (containsAny(source, " giulia qv ", " quadrifoglio ", " rs6 ", " rs 6 ", " m4 competition ", " 2.9 v6 ", " 29 v6 ")) {
             return "PETROL";
         }
 
-        if (source.contains(" stelvio ")
-                && containsAny(source, " 2.2 ", " 22jtd ", " 2,2 ")) {
+        if (source.contains(" stelvio ") && containsAny(source, " 2.2 ", " 22jtd ", " 2,2 ")) {
             return "DIESEL";
         }
 
@@ -1136,7 +1092,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 || compact.contains("m550d")
                 || compact.contains("sdv6")
                 || compact.contains("13d")
-                || compact.contains("16d")){
+                || compact.contains("16d")) {
             return "DIESEL";
         }
 
@@ -1192,78 +1148,22 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         }
 
         if (containsAny(source,
-                " palivo: benzin ",
-                " palivo: benzín ",
-                " palivo benzin ",
-                " palivo benzín ",
-                " benzin ",
-                " benzín ",
-                " benzinove ",
-                " benzínové ",
-                " fsi ",
-                " vti ",
-                " vvt-i ",
-                " i-vtec ",
-                " skyactiv-g ",
-                " 1.0i ",
-                " 1.2i ",
-                " 1.4i ",
-                " 1.5i ",
-                " 1.6i ",
-                " 1.8i ",
-                " 2.0i ",
-                " 2.4i ",
-                " 2.5i ",
-                " 2.8i ",
-                " 3.0i ",
-                " 3.2i ",
-                " 3.5i ",
-                " 4.0i ",
-                " 5.0i ",
-                " 4.4 ",
-                " 4,4 ",
-                " mustang ",
-                " v8 ",
-                " 330i ",
-                " 320i ",
-                " 318i ",
-                " 116i ",
-                " 118i ",
-                " 120i ",
-                " 520i ",
-                " 523i ",
-                " 528i ",
-                " n52 ",
-                " n53 ",
-                " n54 ",
-                " n55 ",
-                " b48 ",
-                " b58 ")) {
+                " palivo: benzin ", " palivo: benzín ", " palivo benzin ", " palivo benzín ",
+                " benzin ", " benzín ", " benzinove ", " benzínové ", " fsi ", " vti ",
+                " vvt-i ", " i-vtec ", " skyactiv-g ", " 1.0i ", " 1.2i ", " 1.4i ",
+                " 1.5i ", " 1.6i ", " 1.8i ", " 2.0i ", " 2.4i ", " 2.5i ",
+                " 2.8i ", " 3.0i ", " 3.2i ", " 3.5i ", " 4.0i ", " 5.0i ",
+                " 4.4 ", " 4,4 ", " mustang ", " v8 ", " 330i ", " 320i ",
+                " 318i ", " 116i ", " 118i ", " 120i ", " 520i ", " 523i ",
+                " 528i ", " n52 ", " n53 ", " n54 ", " n55 ", " b48 ", " b58 ")) {
             return "PETROL";
         }
 
         if (containsAny(source,
-                " palivo: nafta ",
-                " palivo nafta ",
-                " diesel ",
-                " nafta ",
-                " tdi ",
-                " tdci ",
-                " cdi ",
-                " dci ",
-                " hdi ",
-                " crdi ",
-                " jtd ",
-                " multijet ",
-                " bluehdi ",
-                " cdti ",
-                " 1.3 cdti ",
-                " 1.5 dci ",
-                " 1.6 tdi ",
-                " 1.9 tdi ",
-                " 2.0 tdi ",
-                " 2.2 cdi ",
-                " 3.0 tdi ")) {
+                " palivo: nafta ", " palivo nafta ", " diesel ", " nafta ", " tdi ",
+                " tdci ", " cdi ", " dci ", " hdi ", " crdi ", " jtd ", " multijet ",
+                " bluehdi ", " cdti ", " 1.3 cdti ", " 1.5 dci ", " 1.6 tdi ",
+                " 1.9 tdi ", " 2.0 tdi ", " 2.2 cdi ", " 3.0 tdi ")) {
             return "DIESEL";
         }
 
@@ -2475,40 +2375,11 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
 
     private boolean looksTyreOrWheelListing(String title, String text, String analysisText) {
         String titleSource = " " + normalizeText(title).toLowerCase(Locale.ROOT) + " ";
-
-        if (containsAny(titleSource,
-                " q7 ", " rs3 ", " stelvio ", " giulia ", " giulietta ",
-                " a3 ", " a4 ", " a5 ", " a6 ", " q3 ", " q5 ",
-                " x1 ", " x3 ", " x5 ",
-                " civic ", " duster ", " panda ", " punto ", " mustang ",
-                " x-trail ", " x trail ", " pathfinder ", " astra ", " corsa ", " insignia ", " insignie ",
-                " 1007 ", " 208 ", " 5008 ",
-                " octavia ", " superb ", " passat ")) {
-            return false;
-        }
-
-        if (looksLikeRealCar(title, analysisText)) {
-            return false;
-        }
         String source = " " + normalizeText(title + " " + text + " " + shortenForCheck(analysisText, 700))
                 .toLowerCase(Locale.ROOT) + " ";
 
-        if (containsAny(titleSource,
-                " pneu ",
-                " pneumatiky ",
-                " alu kola ",
-                " sada kol ",
-                " sada pneu ",
-                " disky ",
-                " ráfky ",
-                " rafky ",
-                " letní kola ",
-                " letni kola ",
-                " zimní kola ",
-                " zimni kola ",
-                " rezervní kolo ",
-                " rezervni kolo ")) {
-            return true;
+        if (looksLikeRealCar(title, analysisText)) {
+            return false;
         }
 
         if (startsWithAny(titleSource,
