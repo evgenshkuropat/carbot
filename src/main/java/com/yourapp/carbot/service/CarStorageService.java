@@ -476,7 +476,11 @@ public class CarStorageService {
             return "ELECTRIC";
         }
 
-        if (containsAny(lower, "hybrid", "hev", "mhev", "mild hybrid")) {
+        if (containsAny(lower, "g-tec", "g tec", "gtec")) {
+            return "CNG";
+        }
+
+        if (containsAny(lower, "hybrid", "hev", "mhev", "mild hybrid", "tsi iv", "tsi i v", "superb iv", "kodiaq iv")) {
             return "HYBRID";
         }
 
@@ -510,7 +514,7 @@ public class CarStorageService {
         String lower = (safe(transmission) + " " + safe(title)).toLowerCase(Locale.ROOT);
         String tokens = " " + lower.replaceAll("[^a-z0-9]+", " ") + " ";
 
-        if (containsAny(tokens, " 6mt ", " 5mt ", " mt ", " 6rychl ", " 6ti ")
+        if (containsAny(tokens, " 6mt ", " 5mt ", " mt ", " 6rychl ", " 6ti ", " mt6 ", " m6 ", " 6m ", " 6mp ")
                 || containsAny(lower, "manual", "manuÄ‚Ë‡l", "manualni", "manuÄ‚Ë‡lnÄ‚Â­", "6ti rychl", "6 rychl", "6ti rychlost", "6 rychlost")) {
             if (lower.contains("silverado")
                     && !containsAny(lower, "manual", "manuĂ„â€šĂ‹â€ˇl", "manualni", " man. ", " 5mt ", " 6mt ", "6ti rychl", "6 rychl")) {
@@ -520,14 +524,14 @@ public class CarStorageService {
         }
 
         String titleOnly = safe(title).toLowerCase(Locale.ROOT);
-        boolean titleHasExplicitAutomatic = containsAny(titleOnly, "selespeed", "automat", "automatic", " aut. ", " a/t ", " at6", " at8", "dsg", "cvt", "s-tronic", "s tronic", "stronic", "tiptronic");
+        boolean titleHasExplicitAutomatic = containsAny(titleOnly, "selespeed", "automat", "automatic", " aut. ", " a/t ", " at6", " at8", "at7", "7at", "dsg", "dct", "cvt", "s-tronic", "s tronic", "stronic", "tiptronic");
         if (!titleHasExplicitAutomatic
                 && containsAny(titleOnly, "alfa romeo 159", "alfa 159", "alfa romeo 147", "alfa 147", "giulietta", "giuletta", "alfa romeo sportwagon", "accord", "crx", "delsol", "cr-v", "cr v", "crv")) {
             return null;
         }
 
         if (containsAny(tokens, " aut ", " at ", " mta ")
-                || containsAny(lower, "automat", "automatic", "dsg", "tiptronic", "s tronic", "stronic", "cvt")) {
+                || containsAny(lower, "automat", "automatic", "dsg", "dct", "at7", "7at", "tiptronic", "s tronic", "stronic", "cvt")) {
             return "AUTOMATIC";
         }
 
