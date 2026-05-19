@@ -365,7 +365,8 @@ public class CarStorageService {
                     "TESLA", "CUPRA", "DODGE", "SUBARU", "NISSAN", "SUZUKI",
                     "JEEP", "MINI", "LEXUS", "PORSCHE", "MITSUBISHI", "BYD",
                     "MG", "DS", "LAND_ROVER", "ALFA_ROMEO", "CHEVROLET",
-                    "SSANGYONG", "CHRYSLER", "LOTUS", "LAMBORGHINI", "FERRARI"
+                    "SSANGYONG", "CHRYSLER", "LOTUS", "LAMBORGHINI", "FERRARI",
+                    "JAECOO", "OMODA", "SWM"
             );
 
             if (allowed.contains(upper)) {
@@ -391,6 +392,9 @@ public class CarStorageService {
         if (t.contains("lotus") || t.contains("emira")) return "LOTUS";
         if (t.contains("lamborghini") || t.contains("hurac")) return "LAMBORGHINI";
         if (t.contains("ferrari") || t.contains("california")) return "FERRARI";
+        if (t.contains("jaecoo")) return "JAECOO";
+        if (t.contains("omoda")) return "OMODA";
+        if (t.contains("swm")) return "SWM";
         if (t.contains("peugeot")) return "PEUGEOT";
         if (t.contains("opel")) return "OPEL";
         if (t.contains("mazda")) return "MAZDA";
@@ -467,7 +471,7 @@ public class CarStorageService {
             return "DIESEL";
         }
 
-        if (containsAny(lower, "electric", "elektro", "ev")) {
+        if (containsAny(lower, "inster", "puma gen-e", "puma gen e", "electric", "elektro", "bev")) {
             return "ELECTRIC";
         }
 
@@ -494,7 +498,7 @@ public class CarStorageService {
             return "PETROL";
         }
 
-        if (containsAny(lower, "petrol", "benzin", "benz", "benzinovy", "benzín", "benzínový", "tsi", "tfsi", "fsi", "gdi", "tgdi", "sce", "puretech", "ecoboost", "camaro", "corvette", "chevrolet ssr", "civic 1.8", "civic 1,8", "civic ufo", "legend 2.7", "legend 2,7", "twinspark", "twin spark", "1.8tbi", "1,8tbi", "giulietta sprint", " jts")) {
+        if (containsAny(lower, "petrol", "benzin", "benz", "benzinovy", "benzín", "benzínový", "tsi", "tfsi", "fsi", "gdi", "tgdi", "sce", "puretech", "ecoboost", "1.0eb", "1,0eb", "1.2eb", "1,2eb", "camaro", "corvette", "chevrolet ssr", "civic 1.8", "civic 1,8", "civic ufo", "legend 2.7", "legend 2,7", "twinspark", "twin spark", "1.8tbi", "1,8tbi", "giulietta sprint", " jts")) {
             return "PETROL";
         }
 
@@ -552,7 +556,7 @@ public class CarStorageService {
             return "MINIVAN";
         }
 
-        if (containsAny(lower, "land cruiser", "korando", "rdx", "e-tron", "etron", "x1", "x2", "x3", "x5", "x6", "x7", "glc", "gle", "gls", "gla", "glb", "gl 500", "gl500", "x-trail", "x trail", "pathfinder", "grandland", "grandal", "cx-5", "cx 5", "cx5", "cx-7", "cx 7", "cx7", "niro", "eqa", "mustang mach-e", "mustang mache", "xc40", "xc 40", "xc60", "xc 60", "xc70", "xc 70", "xc90", "xc 90")) {
+        if (containsAny(lower, "land cruiser", "korando", "rdx", "e-tron", "etron", "x1", "x2", "x3", "x5", "x6", "x7", "glc", "gle", "gls", "gla", "glb", "gl 500", "gl500", "x-trail", "x trail", "pathfinder", "grandland", "grandal", "cx-5", "cx 5", "cx5", "cx-7", "cx 7", "cx7", "niro", "eqa", "mustang mach-e", "mustang mache", "xc40", "xc 40", "xc60", "xc 60", "xc70", "xc 70", "xc90", "xc 90", "jaecoo", "omoda", "swm g1", "swm g01", "inster", "puma gen-e", "puma gen e")) {
             return "SUV";
         }
 
@@ -568,8 +572,12 @@ public class CarStorageService {
             return "PICKUP";
         }
 
-        if (containsAny(lower, "3000gt", "3000 gt")) {
+        if (containsAny(lower, "3000gt", "3000 gt", "cr-z", "cr z")) {
             return "COUPE";
+        }
+
+        if (containsAny(lower, "clubman")) {
+            return "WAGON";
         }
 
         if (containsAny(lower, "proceed", "pro ceed")) {

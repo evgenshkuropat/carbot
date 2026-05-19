@@ -934,7 +934,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             return "PETROL";
         }
 
-        if (source.contains(" orlando ") && containsAny(source, " 2.0 ", " 2,0 ", " 20vcdi ", " vcdi ", " cdti ")) {
+        if (source.contains(" orlando ") && containsAny(source, " 2.0 ", " 2,0 ", " 2.0l ", " 2,0l ", " 2l ", " 2 l ", " 20vcdi ", " vcdi ", " cdti ")) {
             return "DIESEL";
         }
 
@@ -986,6 +986,10 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             return "PETROL";
         }
 
+        if (containsAny(source, " inster ", " puma gen-e ", " puma gen e ")) {
+            return "ELECTRIC";
+        }
+
         if (Pattern.compile("\\b\\d{2,3}\\s*kwh\\b", Pattern.CASE_INSENSITIVE)
                 .matcher(source).find()
                 || compact.contains("64kwh")
@@ -1002,7 +1006,6 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " elektroauto ",
                 " electric vehicle ",
                 " electric ",
-                " ev ",
                 " bev ",
                 " bz4x ",
                 " bz 4x ",
@@ -1150,6 +1153,8 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 || compact.contains("benz")
                 || compact.contains("puretech")
                 || compact.contains("ecoboost")
+                || compact.contains("10eb")
+                || compact.contains("12eb")
                 || compact.contains("skyactivg")
                 || compact.contains("ivtec")
                 || compact.contains("vtec")
@@ -1402,6 +1407,10 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             return "AUTOMATIC";
         }
 
+        if (containsAny(source, " shs ", " e-dcs ", " edcs ")) {
+            return "AUTOMATIC";
+        }
+
         return null;
     }
 
@@ -1445,6 +1454,9 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         if (containsAny(titleSource, " tesla ")) return "TESLA";
         if (containsAny(titleSource, " chevrolet ", " daewoo ", " calos ")) return "CHEVROLET";
         if (containsAny(titleSource, " land rover ", " range rover ")) return "LAND_ROVER";
+        if (containsAny(titleSource, " jaecoo ")) return "JAECOO";
+        if (containsAny(titleSource, " omoda ")) return "OMODA";
+        if (containsAny(titleSource, " swm ")) return "SWM";
         if (containsAny(compactTitleSource, " nissan ")) return "NISSAN";
         if (containsAny(compactTitleSource, " peugeot ")) return "PEUGEOT";
         if (containsAny(compactTitleSource, " renault ")) return "RENAULT";
@@ -1485,6 +1497,9 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         if (containsAny(source, " tesla ")) return "TESLA";
         if (containsAny(source, " chevrolet ", " daewoo ", " calos ")) return "CHEVROLET";
         if (containsAny(source, " land rover ", " range rover ")) return "LAND_ROVER";
+        if (containsAny(source, " jaecoo ")) return "JAECOO";
+        if (containsAny(source, " omoda ")) return "OMODA";
+        if (containsAny(source, " swm ")) return "SWM";
 
         // fallback model detection
         if (source.contains(" leon ")) return "SEAT";
@@ -1637,7 +1652,12 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         if (source.contains(" i40 ")) return "HYUNDAI";
         if (source.contains(" kona ")) return "HYUNDAI";
         if (source.contains(" bayon ")) return "HYUNDAI";
+        if (source.contains(" inster ")) return "HYUNDAI";
         if (source.contains(" ioniq ") || source.contains(" ionig ")) return "HYUNDAI";
+
+        if (source.contains(" jaecoo ")) return "JAECOO";
+        if (source.contains(" omoda ")) return "OMODA";
+        if (source.contains(" swm ")) return "SWM";
 
         if (source.contains(" soul ")) return "KIA";
 
@@ -1656,6 +1676,18 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
 
         if (containsAny(titleSource, " corolla sedan ", " corolla sd ")) {
             return "SEDAN";
+        }
+
+        if (containsAny(titleSource, " jaecoo ", " omoda ", " swm g1 ", " swm g01 ", " inster ", " puma gen-e ", " puma gen e ")) {
+            return "SUV";
+        }
+
+        if (containsAny(titleSource, " cr-z ", " cr z ")) {
+            return "COUPE";
+        }
+
+        if (containsAny(titleSource, " clubman ")) {
+            return "WAGON";
         }
 
         if (containsAny(titleSource, " c5 tourer ", " citroen c5 tourer ", " c5 x7 ",
@@ -2203,6 +2235,9 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         if (url.contains("-chevrolet-")) return "CHEVROLET";
         if (url.contains("-land-rover-") || url.contains("-range-rover-")) return "LAND_ROVER";
         if (url.contains("-mini-")) return "MINI";
+        if (url.contains("-jaecoo-")) return "JAECOO";
+        if (url.contains("-omoda-")) return "OMODA";
+        if (url.contains("-swm-")) return "SWM";
         return null;
     }
 
