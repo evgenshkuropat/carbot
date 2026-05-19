@@ -902,269 +902,125 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         String source = " " + normalizeText(text).toLowerCase(Locale.ROOT) + " ";
         String compact = source.replaceAll("[^a-z0-9]", "");
 
-        if (containsAny(source, " ampera ", " plug-in hybrid ", " plugin hybrid ", " plug in ", " plug-in ", " phev ")
-                || compact.contains("pluginhybrid")
-                || compact.contains("plugin")) {
-            return "HYBRID";
-        }
-
-        if (Pattern.compile("\\b\\d{2,3}\\s*kwh\\b", Pattern.CASE_INSENSITIVE).matcher(source).find()
-                || compact.contains("64kwh")
-                || compact.contains("62kwh")
-                || compact.contains("electric")
-                || compact.contains("elektro")
-                || containsAny(source,
-                " palivo: elektro ", " palivo elektro ", " elektromobil ", " elektroauto ",
-                " electric vehicle ", " electric ", " bev ", " bz4x ", " bz 4x ",
-                " enyaq ", " id.3 ", " id.4 ", " id.5 ", " tesla ", " leaf ",
-                " kona electric ", " kona elektric ", " ioniq ", " ioniq 5 ", " ioniq 6 ",
-                " e-tron ", " etron ", " inster ", " puma gen-e ", " puma gen e ")) {
-            return "ELECTRIC";
-        }
-
-        if (containsAny(source,
-                " hybrid ", " hybridní ", " hybridni ", " hybryd ", " hybrydni ",
-                " plug-in hybrid ", " plugin hybrid ", " plug in ", " plug-in ",
-                " ima ", " hev ", " phev ", " tfsi e ", " tsi e ", " t8 ",
-                " recharge ", " superb iv ", " kodiaq iv ", " ehybrid ", " mhev ", " e-hybrid ")
-                || compact.contains("ima")
-                || compact.contains("hybrid")
-                || compact.contains("phev")
-                || compact.contains("mhev")
-                || compact.contains("pluginhybrid")) {
-            return "HYBRID";
-        }
-
+        // LPG / CNG first
         if (containsAny(source, " lpg ") || compact.contains("lpg")) {
             return "LPG";
         }
 
-        if (containsAny(source, " cng ", " g-tec ", " g tec ") || compact.contains("gtec")) {
+        if (containsAny(source, " cng ", " g-tec ", " g tec ", " gtec ")) {
             return "CNG";
         }
 
-        if (source.contains(" stelvio ")
-                && (containsAny(source, " 2.0t ", " 2,0t ", " 2.0 t ", " 2,0 t ", " 2.0 turbo ", " 2,0 turbo ", " turbo ")
-                || compact.contains("20tq4")
-                || compact.contains("20turbo"))) {
-            return "PETROL";
+        // ELECTRIC - only strong EV signals
+        if (containsAny(source,
+                " elektro ", " elektromobil ", " elektroauto ",
+                " electric ", " bev ",
+                " e-tron ", " etron ",
+                " id.3 ", " id.4 ", " id.5 ",
+                " tesla ", " leaf ", " enyaq ",
+                " cupra born ", " kona electric ", " ioniq 5 ", " ioniq 6 ",
+                " bz4x ", " bz 4x ")) {
+            return "ELECTRIC";
         }
 
-        if (containsAny(source, " twinspark ", " twin spark ", " 1.8tbi ", " 1,8tbi ", " tbi ", " jts ", " giulietta sprint ")
-                && !containsAny(source, " jtd ", " jtdm ", " diesel ", " nafta ", " hdi ", " dci ")) {
-            return "PETROL";
+        if (Pattern.compile("\\b\\d{2,3}\\s*kwh\\b", Pattern.CASE_INSENSITIVE)
+                .matcher(source).find()) {
+            return "ELECTRIC";
         }
 
-        if (source.contains(" carens ")
-                && (containsAny(source, " 1.7 ", " 1,7 ", " 17crdi ", " crdi ")
-                || Pattern.compile("\\b1[\\.,]7\\b").matcher(source).find())) {
-            return "DIESEL";
+        // HYBRID - only clear hybrid signals
+        if (containsAny(source,
+                " plug-in hybrid ",
+                " plugin hybrid ",
+                " plug in hybrid ",
+                " plug-in ",
+                " plug in ",
+                " phev ",
+                " hybrid ",
+                " hybridní ",
+                " hybridni ",
+                " tfsi e ",
+                " tsi e ",
+                " e-hybrid ",
+                " ehybrid ",
+                " superb iv ",
+                " octavia iv ",
+                " passat gte ",
+                " golf gte ",
+                " prius ")) {
+            return "HYBRID";
         }
 
-        if (source.contains(" sorento ") && containsAny(source, " 2.2 ", " 2,2 ", " crdi ", " 22crdi ")) {
-            return "DIESEL";
-        }
-
-        if (source.contains(" civic ")
-                && (containsAny(source, " 1.8 ", " 1,8 ", " 1.8i ", " 1,8i ", " ufo ")
-                || compact.contains("18ivtec")
-                || compact.contains("18vtec"))
-                && !containsAny(source, " dtec ", " d-tec ", " i-dtec ", " idtec ", " ctdi ", " diesel ", " nafta ")) {
-            return "PETROL";
-        }
-
-        if (containsAny(source, " civic type r ", " vtec ", " v-tec ", " i-vtec ", " ivtec ")
-                && !containsAny(source, " dtec ", " d-tec ", " i-dtec ", " idtec ", " ctdi ")) {
-            return "PETROL";
-        }
-
-        if (source.contains(" orlando ") && containsAny(source, " 2.0 ", " 2,0 ", " 2.0l ", " 2,0l ", " 2l ", " 2 l ", " 20vcdi ", " vcdi ", " cdti ")) {
-            return "DIESEL";
-        }
-
-        if (containsAny(source, " v 250 ", " v250 ", " v 250l ", " v250l ", " v250d ", " v 250d ", " v300d ", " v 300d ")
-                && !containsAny(source, " benzin ", " benz ", " petrol ", " lpg ")) {
-            return "DIESEL";
-        }
-
-        if (containsAny(source, " sl 600 ", " sl600 ", " slk55 ", " s500 ", " gl 500 ", " gl500 ", " v12 ", " v8 ")) {
-            return "PETROL";
-        }
-
-        if (containsAny(source, " space star ", " spacestar ", " eclipse cross 1.5 ", " eclipse cross 1,5 ")
-                && !containsAny(source, " phev ", " hybrid ", " diesel ", " did ", " di-d ")) {
-            return "PETROL";
-        }
-
-        if (source.contains(" touareg ")
-                && containsAny(source, " tdi ", " 3.0 ", " 3,0 ", " webasto ", " r-line ", " r line ")
-                && !containsAny(source, " hybrid ", " ehybrid ", " e-hybrid ", " phev ", " plug-in ", " plugin ", " tfsi ", " tsi ")) {
-            return "DIESEL";
-        }
-
-        if (containsAny(source, " grandland ", " grandal ", " mokka ")
-                && containsAny(source, " 1.2 ", " 1,2 ", " 1.4t ", " 1,4t ", " 12t ", " 14t ")) {
-            return "PETROL";
-        }
-
-        if (source.contains(" peugeot 308 ") && containsAny(source, " 1.2 ", " 1,2 ", " puretech ", " pt ")) {
-            return "PETROL";
-        }
-
-        if (source.contains(" mazda ") && containsAny(source, " 2.2 cd ", " 2,2 cd ", " 22cd ")) {
-            return "DIESEL";
-        }
-
-        if (containsAny(source, " camaro ", " corvette ", " ssr ")) {
-            return "PETROL";
-        }
-
-        if (containsAny(source, " spark ", " aveo ", " kalos ", " calos ", " cruze ")
-                && containsAny(source, " v8 ", " v6 ", " ls3 ", " 6.2 ", " 6,2 ", " 5.7 ", " 5,7 ", " 3.8 ", " 3,8 ", " 3.6 ", " 3,6 ", " 1.6 ", " 1,6 ", " 1.4 ", " 1,4 ", " 1.2 ", " 1,2 ")) {
-            return "PETROL";
-        }
-
-        if (containsAny(source, " giulia qv ", " quadrifoglio ", " rs6 ", " rs 6 ", " m4 competition ", " 2.9 v6 ", " 29 v6 ")) {
-            return "PETROL";
-        }
-
-        if (source.contains(" stelvio ") && containsAny(source, " 2.2 ", " 22jtd ", " 2,2 ")) {
-            return "DIESEL";
-        }
-
-        if ((source.contains(" volvo ")
-                || containsAny(source, " xc40 ", " xc60 ", " xc70 ", " xc90 ", " v40 ", " v60 ", " v70 ", " v90 "))
-                && containsAny(source, " d3 ", " d4 ", " d5 ")) {
-            return "DIESEL";
-        }
-
-        if (source.contains(" allroad ")
-                && !containsAny(source, " tfsi ", " tsi ", " petrol ", " benzin ", " benz ")) {
+        // DIESEL
+        if (containsAny(source,
+                " diesel ", " nafta ",
+                " tdi ", " tdci ", " cdi ", " crdi ", " hdi ", " dci ",
+                " jtd ", " jtdm ", " multijet ", " bluehdi ", " cdti ",
+                " d4d ", " d-4d ", " did ", " td4 ", " ecoblue ", " crd ")) {
             return "DIESEL";
         }
 
         if (compact.contains("tdi")
                 || compact.contains("tdci")
                 || compact.contains("cdi")
-                || compact.contains("dci")
-                || compact.contains("hdi")
                 || compact.contains("crdi")
-                || compact.contains("dtec")
-                || compact.contains("idtec")
-                || compact.contains("ictdi")
+                || compact.contains("hdi")
+                || compact.contains("dci")
                 || compact.contains("jtd")
+                || compact.contains("jtdm")
                 || compact.contains("multijet")
-                || compact.contains("naftov")
                 || compact.contains("bluehdi")
                 || compact.contains("cdti")
                 || compact.contains("d4d")
-                || compact.contains("did")
-                || compact.matches(".*\\dtd.*")
-                || compact.contains("180d")
-                || compact.contains("200d")
-                || compact.contains("20d")
-                || compact.contains("23d")
-                || compact.contains("25d")
-                || compact.contains("116d")
-                || compact.contains("118d")
-                || compact.contains("120d")
-                || compact.contains("218d")
-                || compact.contains("220d")
-                || compact.contains("220cdi")
-                || compact.contains("250d")
-                || compact.contains("318d")
-                || compact.contains("320d")
-                || compact.contains("320xd")
+                || compact.contains("ecoblue")
                 || compact.contains("30d")
-                || compact.contains("330d")
-                || compact.contains("32d")
-                || compact.contains("350d")
-                || compact.contains("400d")
-                || compact.contains("420d")
-                || compact.contains("520d")
-                || compact.contains("525d")
-                || compact.contains("530d")
-                || compact.contains("530xd")
-                || compact.contains("540d")
-                || compact.contains("550d")
-                || compact.contains("750xd")
-                || compact.contains("xdrive30d")
-                || compact.contains("m550d")
-                || compact.contains("sdv6")
-                || compact.contains("13d")
-                || compact.contains("16d")) {
+                || compact.contains("20d")
+                || compact.contains("22jtd")
+                || compact.contains("22jtdm")
+                || compact.contains("19jtd")
+                || compact.contains("19jtdm")
+                || compact.contains("16jtd")
+                || compact.contains("16jtdm")) {
             return "DIESEL";
+        }
+
+        if (source.matches(".*\\b[0-9][.,][0-9]\\s*d\\b.*")) {
+            return "DIESEL";
+        }
+
+        // PETROL
+        if (containsAny(source,
+                " benzin ", " benzín ", " petrol ",
+                " tsi ", " tfsi ", " fsi ", " gdi ", " tgdi ", " t-gdi ",
+                " dig-t ", " tce ", " ecoboost ", " mivec ",
+                " vtec ", " vti ", " puretech ", " mpi ",
+                " jts ", " twinspark ", " twin spark ", " tbi ",
+                " quadrifoglio ", " qv ",
+                " gti ", " v6 ", " v8 ", " hemi ",
+                " camaro ", " corvette ", " mustang ")) {
+            return "PETROL";
         }
 
         if (compact.contains("tsi")
                 || compact.contains("tfsi")
-                || compact.contains("jts")
-                || compact.contains("vr6")
-                || compact.contains("mpi")
+                || compact.contains("fsi")
                 || compact.contains("gdi")
                 || compact.contains("tgdi")
-                || compact.contains("digt")
-                || compact.contains("igt")
-                || compact.contains("mivec")
                 || compact.contains("tce")
-                || compact.contains("tjet")
-                || compact.contains("sce")
-                || compact.contains("benz")
-                || compact.contains("puretech")
                 || compact.contains("ecoboost")
-                || compact.contains("10eb")
-                || compact.contains("12eb")
-                || compact.contains("skyactivg")
-                || compact.contains("ivtec")
+                || compact.contains("mivec")
                 || compact.contains("vtec")
-                || compact.contains("benzinovy")
-                || compact.contains("benzinove")
-                || compact.contains("vvti")
-                || compact.contains("vvt")
-                || compact.contains("10i")
-                || compact.contains("12i")
-                || compact.contains("14i")
-                || compact.contains("15i")
-                || compact.contains("16i")
-                || compact.contains("16v")
-                || compact.contains("18i")
-                || compact.contains("20i")
-                || compact.contains("24i")
-                || compact.contains("25i")
-                || compact.contains("28i")
-                || compact.contains("30i")
-                || compact.contains("32i")
-                || compact.contains("35i")
-                || compact.contains("40i")
-                || compact.contains("50i")
-                || compact.contains("318ci")
-                || compact.contains("320ci")
-                || compact.contains("325ci")
-                || compact.contains("330ci")
-                || compact.contains("448v")
-                || compact.contains("44v8")
-                || (compact.contains("v6") && !compact.contains("tdi"))) {
+                || compact.contains("vti")
+                || compact.contains("puretech")
+                || compact.contains("mpi")
+                || compact.contains("jts")
+                || compact.contains("twinspark")
+                || compact.contains("tbi")) {
             return "PETROL";
         }
 
-        if (containsAny(source,
-                " palivo: benzin ", " palivo: benzín ", " palivo benzin ", " palivo benzín ",
-                " benzin ", " benzín ", " benzinove ", " benzínové ", " fsi ", " vti ",
-                " vvt-i ", " i-vtec ", " skyactiv-g ", " 1.0i ", " 1.2i ", " 1.4i ",
-                " 1.5i ", " 1.6i ", " 1.8i ", " 2.0i ", " 2.4i ", " 2.5i ",
-                " 2.8i ", " 3.0i ", " 3.2i ", " 3.5i ", " 4.0i ", " 5.0i ",
-                " 4.4 ", " 4,4 ", " mustang ", " v8 ", " 330i ", " 320i ",
-                " 318i ", " 116i ", " 118i ", " 120i ", " 520i ", " 523i ",
-                " 528i ", " n52 ", " n53 ", " n54 ", " n55 ", " b48 ", " b58 ")) {
+        if (source.matches(".*\\b[0-9][.,][0-9]\\s*i\\b.*")) {
             return "PETROL";
-        }
-
-        if (containsAny(source,
-                " palivo: nafta ", " palivo nafta ", " diesel ", " nafta ", " tdi ",
-                " tdci ", " cdi ", " dci ", " hdi ", " crdi ", " jtd ", " multijet ",
-                " bluehdi ", " cdti ", " 1.3 cdti ", " 1.5 dci ", " 1.6 tdi ",
-                " 1.9 tdi ", " 2.0 tdi ", " 2.2 cdi ", " 3.0 tdi ")) {
-            return "DIESEL";
         }
 
         return null;
