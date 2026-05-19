@@ -88,6 +88,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         int invalidPriceCount = 0;
         int missingPriceCount = 0;
         int parseErrorCount = 0;
+        int tyreOrWheelListingCount = 0;
 
         try {
             for (String listPageBaseUrl : LIST_PAGE_BASE_URLS) {
@@ -159,6 +160,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                             case "invalid_price" -> invalidPriceCount++;
                             case "missing_price" -> missingPriceCount++;
                             case "parse_error" -> parseErrorCount++;
+                            case "tyre_or_wheel_listing" -> tyreOrWheelListingCount++;
                         }
                     }
 
@@ -178,7 +180,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
 
         log.info("BAZOS parsed {} cars", cars.size());
         log.info(
-                "BAZOS SUMMARY parsed={} empty_title={} demand_listing={} commercial_vehicle={} non_car_listing={} broken_or_for_parts={} suspicious_listing={} invalid_price={} missing_price={} parse_error={}",
+                "BAZOS SUMMARY tyre_or_wheel_listing={} parsed={} empty_title={} demand_listing={} commercial_vehicle={} non_car_listing={} broken_or_for_parts={} suspicious_listing={} invalid_price={} missing_price={} parse_error={}" ,
                 cars.size(),
                 emptyTitleCount,
                 demandListingCount,
@@ -188,7 +190,8 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 suspiciousListingCount,
                 invalidPriceCount,
                 missingPriceCount,
-                parseErrorCount
+                parseErrorCount,
+                tyreOrWheelListingCount
         );
 
         return cars;
@@ -287,7 +290,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
 
             if (looksTyreOrWheelListing(title, preview, analysisText)) {
                 log.info("BAZOS SKIP url={} reason=tyre_or_wheel_listing title={}", safe(url), safe(title));
-                return ParseResult.skip("non_car_listing");
+                return ParseResult.skip("tyre_or_wheel_listing");
             }
 
             if (extractBrand(title, analysisText) == null
