@@ -185,11 +185,11 @@ public class SbazarParser implements CarSourceParser {
         car.setUrl(url);
         car.setImageUrl(extractImageUrl(doc));
         car.setBrand(detectBrand(listingIdentity));
-        car.setYear(extractYear(listingIdentity));
-        car.setMileage(extractMileage(listingIdentity));
-        car.setFuelType(detectFuelType(listingIdentity));
-        car.setTransmission(detectTransmission(listingIdentity));
-        car.setCarType(detectCarType(listingIdentity));
+        car.setYear(extractYear(searchable));
+        car.setMileage(extractMileage(searchable));
+        car.setFuelType(detectFuelType(searchable));
+        car.setTransmission(detectTransmission(searchable));
+        car.setCarType(detectCarType(searchable));
 
         return ParseResult.car(car, title);
     }
@@ -205,9 +205,10 @@ public class SbazarParser implements CarSourceParser {
 
     private String buildListPageUrl(int page) {
         if (page <= 1) {
-            return BASE_LIST_URL;
+            return "https://www.sbazar.cz/170-osobni-auta";
         }
-        return BASE_LIST_URL + "?strana=" + page;
+
+        return "https://www.sbazar.cz/170-osobni-auta/cela-cr/cena-neomezena/nejnovejsi/" + page;
     }
 
     private Set<String> extractDetailUrls(Document doc) {
