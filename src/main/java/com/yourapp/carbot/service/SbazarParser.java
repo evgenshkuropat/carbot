@@ -541,7 +541,8 @@ public class SbazarParser implements CarSourceParser {
                 "nabourany", "nabourane", "havarovany", "havarovane", "palubni deska", "airbag",
                 "pneu", "pneumatik", "elektrony", "alu kola", "sada kol", "disky", "naraznik",
                 "motor na", "prevodovka", "svetlo", "sedacky", "volant", "katalyzator", "servisni knizka",
-                "autoradio", "auto radio", "cmx", "rebel");
+                "autoradio", "auto radio", "stresni nosic", "stresni nosnik", "zamky centralni",
+                "centralni zamky", "zamykani zpatecky", "sterac", "sterace", "cmx", "rebel");
     }
 
     private boolean looksCommercialVehicle(String searchable) {

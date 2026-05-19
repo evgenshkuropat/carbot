@@ -817,6 +817,13 @@ public class CarStorageService {
                 || t.contains("svetla")
                 || t.contains("autorádio")
                 || t.contains("autoradio")
+                || t.contains("stresni nosic")
+                || t.contains("stresni nosnik")
+                || t.contains("zamky centralni")
+                || t.contains("centralni zamky")
+                || t.contains("zamykani zpatecky")
+                || t.contains("sterac")
+                || t.contains("sterace")
                 || t.matches(".*\\b\\d{3}/\\d{2}r\\d{2}\\b.*")
                 || t.matches(".*\\b\\d{3}/\\d{2}/r\\d{2}\\b.*");
     }
