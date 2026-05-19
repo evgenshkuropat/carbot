@@ -87,7 +87,23 @@ public class CarFilterMatcher {
     }
 
     private boolean shouldPreferDetectedCarType(String storedType, String detectedType) {
-        return isBlank(storedType) && !isBlank(detectedType);
+        if (isBlank(detectedType)) {
+            return false;
+        }
+        if (isBlank(storedType)) {
+            return true;
+        }
+        if (storedType.equals(detectedType)) {
+            return false;
+        }
+
+        return switch (detectedType) {
+            case "SUV" -> storedType.equals("HATCHBACK") || storedType.equals("SEDAN");
+            case "MINIVAN" -> storedType.equals("HATCHBACK") || storedType.equals("SEDAN");
+            case "HATCHBACK" -> storedType.equals("MINIVAN");
+            case "SEDAN" -> storedType.equals("HATCHBACK");
+            default -> false;
+        };
     }
 
     private String detectCarTypeFromTitle(String rawTitle) {
@@ -183,6 +199,10 @@ public class CarFilterMatcher {
                 " RAV4 ",
                 " C-HR ",
                 " CHR ",
+                " CX-3 ",
+                " CX3 ",
+                " CX-5 ",
+                " CX5 ",
                 " MACAN ",
                 " CAYENNE ",
                 " UX ",
@@ -227,7 +247,12 @@ public class CarFilterMatcher {
                 " TOURNEO CONNECT ",
                 " DOBLO ",
                 " COMBO ",
-                " VANEO ")) {
+                " VANEO ",
+                " DOKKER ",
+                " B180 ",
+                " B 180 ",
+                " B200 ",
+                " B 200 ")) {
             return "MINIVAN";
         }
 
@@ -282,6 +307,8 @@ public class CarFilterMatcher {
                 " XSARA ",
                 " AGILA ",
                 " 207 ",
+                " 208 ",
+                " FIAT 500 ",
                 " TRIDY A ",
                 " TRIDY-A ",
                 " A-CLASS ")) {
@@ -300,7 +327,17 @@ public class CarFilterMatcher {
                 " SUPERB ",
                 " ARTEON ",
                 " MODEL 3 ",
-                " MODEL S ")) {
+                " MODEL S ",
+                " RADA 7 ",
+                " TRIDY S ",
+                " S-CLASS ",
+                " CLA ",
+                " C 250 ",
+                " C250 ",
+                " S 320 ",
+                " S 350 ",
+                " 350D ",
+                " 750D ")) {
             return "SEDAN";
         }
 
