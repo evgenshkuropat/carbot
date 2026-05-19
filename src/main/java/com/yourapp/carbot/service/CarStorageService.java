@@ -366,7 +366,7 @@ public class CarStorageService {
                     "JEEP", "MINI", "LEXUS", "PORSCHE", "MITSUBISHI", "BYD",
                     "MG", "DS", "LAND_ROVER", "ALFA_ROMEO", "CHEVROLET",
                     "SSANGYONG", "CHRYSLER", "LOTUS", "LAMBORGHINI", "FERRARI",
-                    "JAECOO", "OMODA", "SWM"
+                    "JAECOO", "OMODA", "SWM", "SMART"
             );
 
             if (allowed.contains(upper)) {
@@ -395,6 +395,7 @@ public class CarStorageService {
         if (t.contains("jaecoo")) return "JAECOO";
         if (t.contains("omoda")) return "OMODA";
         if (t.contains("swm")) return "SWM";
+        if (t.contains("smart") || t.contains("fortwo")) return "SMART";
         if (t.contains("peugeot")) return "PEUGEOT";
         if (t.contains("opel")) return "OPEL";
         if (t.contains("mazda")) return "MAZDA";
@@ -576,6 +577,10 @@ public class CarStorageService {
             return "COUPE";
         }
 
+        if (containsAny(lower, "smart roadster")) {
+            return "CABRIO";
+        }
+
         if (containsAny(lower, "clubman")) {
             return "WAGON";
         }
@@ -601,7 +606,7 @@ public class CarStorageService {
             return "SEDAN";
         }
 
-        if (containsAny(lower, "opel karl", "astra k", "astra j", "opel astra", "opel corsa", "peugeot 1007", "peugeot 106", "peugeot 206", "peugeot 207", "peugeot 208", "peugeot 308", "mazda 2", "nissan note", "nissan micra", "micra", "kalos", "calos", "ceed", "cee´d", "cee'd", "cee d", "seat leon", "citroen c4", "citroën c4")) {
+        if (containsAny(lower, "opel karl", "astra k", "astra j", "opel astra", "opel corsa", "peugeot 1007", "peugeot 106", "peugeot 206", "peugeot 207", "peugeot 208", "peugeot 308", "mazda 2", "nissan note", "nissan micra", "micra", "kalos", "calos", "ceed", "cee´d", "cee'd", "cee d", "seat leon", "smart fortwo", "citroen c4", "citroën c4")) {
             return "HATCHBACK";
         }
 
