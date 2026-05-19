@@ -184,12 +184,14 @@ public class SbazarParser implements CarSourceParser {
         car.setLocation(extractLocation(doc));
         car.setUrl(url);
         car.setImageUrl(extractImageUrl(doc));
-        car.setBrand(detectBrand(listingIdentity));
+        String identityText = asciiSearchText(title + " " + url);
+
+        car.setBrand(detectBrand(identityText));
         car.setYear(extractYear(searchable));
         car.setMileage(extractMileage(searchable));
-        car.setFuelType(detectFuelType(searchable));
-        car.setTransmission(detectTransmission(searchable));
-        car.setCarType(detectCarType(searchable));
+        car.setFuelType(detectFuelType(identityText));
+        car.setTransmission(detectTransmission(identityText));
+        car.setCarType(detectCarType(identityText));
 
         return ParseResult.car(car, title);
     }
@@ -462,9 +464,7 @@ public class SbazarParser implements CarSourceParser {
             }
             return "HYBRID";
         }
-        if (containsAny(searchable, "elektro", "electric", "kwh", "enyaq", "cupra born", "bmw i5", " i5 ")) {
-            return "ELECTRIC";
-        }
+
         if (containsAny(searchable, "lpg")) {
             return "LPG";
         }
@@ -484,6 +484,9 @@ public class SbazarParser implements CarSourceParser {
         }
         if (searchable.matches(".*\\b[0-9][.,][0-9]\\s*i\\b.*")) {
             return "PETROL";
+        }
+        if (containsAny(searchable, "elektro", "electric", "kwh", "enyaq", "cupra born", "bmw i5")) {
+            return "ELECTRIC";
         }
 
         return "-";
