@@ -203,6 +203,9 @@ public class CarFilterMatcher {
                 " CX3 ",
                 " CX-5 ",
                 " CX5 ",
+                " C5 AIRCROSS ",
+                " EVOQUE ",
+                " TARRACO ",
                 " MACAN ",
                 " CAYENNE ",
                 " UX ",
@@ -252,7 +255,10 @@ public class CarFilterMatcher {
                 " B180 ",
                 " B 180 ",
                 " B200 ",
-                " B 200 ")) {
+                " B 200 ",
+                " TRIDY R ",
+                " GRAND VOYAGER ",
+                " VOYAGER ")) {
             return "MINIVAN";
         }
 
@@ -309,6 +315,10 @@ public class CarFilterMatcher {
                 " 207 ",
                 " 208 ",
                 " FIAT 500 ",
+                " CITIGO ",
+                " SANDERO ",
+                " RIO ",
+                " SWIFT ",
                 " TRIDY A ",
                 " TRIDY-A ",
                 " A-CLASS ")) {
@@ -337,7 +347,8 @@ public class CarFilterMatcher {
                 " S 320 ",
                 " S 350 ",
                 " 350D ",
-                " 750D ")) {
+                " 750D ",
+                " S90 ")) {
             return "SEDAN";
         }
 
@@ -375,6 +386,8 @@ public class CarFilterMatcher {
 
         if (containsAny(title,
                 " CABRIO ",
+                " KABRIOLET ",
+                " EOS ",
                 " CABRIOLET ",
                 " KABRIO ",
                 " ROADSTER ",
