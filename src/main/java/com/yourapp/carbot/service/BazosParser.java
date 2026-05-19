@@ -2238,6 +2238,19 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             return false;
         }
 
+        // реальные модели, которые нельзя считать колесами/шинами
+        if (containsAny(titleSource,
+                " giulietta sprint ",
+                " alfa romeo giulietta ",
+                " alfa romeo sprint ",
+                " stelvio ",
+                " giulia ",
+                " giulietta ",
+                " mito ",
+                " brera ")) {
+            return false;
+        }
+
         if (startsWithAny(titleSource,
                 "pneu ",
                 "pneumatiky ",
