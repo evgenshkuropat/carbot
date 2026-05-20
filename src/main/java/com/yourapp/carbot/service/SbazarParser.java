@@ -185,13 +185,14 @@ public class SbazarParser implements CarSourceParser {
         car.setUrl(url);
         car.setImageUrl(extractImageUrl(doc));
         String identityText = asciiSearchText(title + " " + url);
+        String fullText = asciiSearchText(title + " " + pageText + " " + url);
 
-        car.setBrand(detectBrand(identityText));
-        car.setYear(extractYear(searchable));
-        car.setMileage(extractMileage(searchable));
-        car.setFuelType(detectFuelType(identityText));
-        car.setTransmission(detectTransmission(identityText));
-        car.setCarType(detectCarType(identityText));
+        car.setBrand(detectBrand(fullText));
+        car.setYear(extractYear(fullText));
+        car.setMileage(extractMileage(fullText));
+        car.setFuelType(detectFuelType(fullText));
+        car.setTransmission(detectTransmission(fullText));
+        car.setCarType(detectCarType(fullText));
 
         return ParseResult.car(car, title);
     }
