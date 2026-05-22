@@ -189,7 +189,7 @@ public class SbazarParser implements CarSourceParser {
         String scopedText = asciiSearchText(title + " " + listingText + " " + url);
 
         car.setBrand(firstDetected(detectBrand(identityText), detectBrand(scopedText)));
-        car.setYear(extractYear(scopedText));
+        car.setYear(firstInteger(extractYear(identityText), extractYear(scopedText)));
         car.setMileage(extractMileage(scopedText));
         car.setFuelType(firstDetected(detectFuelType(identityText), detectFuelType(scopedText)));
         car.setTransmission(firstDetected(detectTransmission(identityText), detectTransmission(scopedText)));
@@ -210,8 +210,7 @@ public class SbazarParser implements CarSourceParser {
                 "[data-testid*=locality]",
                 "[data-testid*=location]",
                 "[class*=description]",
-                "[class*=param]",
-                "[class*=detail]"
+                "[class*=param]"
         };
 
         for (String selector : selectors) {
@@ -385,7 +384,7 @@ public class SbazarParser implements CarSourceParser {
         Matcher matcher = YEAR_PATTERN.matcher(searchable);
 
         List<Integer> validYears = new ArrayList<>();
-        int currentYear = Year.now().getValue() + 1;
+        int currentYear = Year.now().getValue();
 
         while (matcher.find()) {
             int year = Integer.parseInt(matcher.group(1));
@@ -395,7 +394,7 @@ public class SbazarParser implements CarSourceParser {
                 continue;
             }
 
-            if (year >= 1980 && year <= currentYear) {
+            if (year >= 1980 && year < currentYear && !isBadYearContext(searchable, matcher.start(), matcher.end())) {
                 validYears.add(year);
             }
         }
@@ -423,6 +422,13 @@ public class SbazarParser implements CarSourceParser {
         }
 
         return extractMileageValue(MILEAGE_TIS_PATTERN.matcher(searchable), true);
+    }
+
+    private boolean isBadYearContext(String searchable, int start, int end) {
+        String context = searchable.substring(Math.max(0, start - 24), Math.min(searchable.length(), end + 24));
+        return containsAny(context,
+                "zaruka", "zaruky", "garance", "stk", "emise",
+                "servis do", "platne do", "platnost", "do roku");
     }
 
     private Integer extractMileageValue(Matcher matcher, boolean thousands) {
@@ -455,6 +461,7 @@ public class SbazarParser implements CarSourceParser {
         String[][] brands = {
                 {"ALFA_ROMEO", "alfa romeo", "giulia", "giulietta", "stelvio"},
                 {"LAND_ROVER", "land rover", "range rover", "discovery", "defender"},
+                {"LEXUS", "lexus", "nx350h", "nx 350h"},
                 {"JEEP", "jeep", "wrangler", "cherokee"},
                 {"MERCEDES", "mercedes", "benz", "amg", "glc", "gle", "gls", "slk", "e270", "g320"},
                 {"VOLKSWAGEN", "volkswagen", "vw", "passat", "golf", "tiguan", "touran", "touareg", "sharan", "california", "t-cross"},
@@ -504,6 +511,10 @@ public class SbazarParser implements CarSourceParser {
     }
 
     private String detectFuelType(String searchable) {
+        if (containsAny(searchable, "bmw i3", " i3 ", "elektro", "electric", "kwh", "enyaq", "cupra born", "bmw i5")) {
+            return "ELECTRIC";
+        }
+
         if (containsAny(searchable, "g-tec", "g tec", "gtec")) {
             return "CNG";
         }
@@ -526,7 +537,7 @@ public class SbazarParser implements CarSourceParser {
                 "diesel", "nafta", "tdi", "tdci", "cdi", "crdi", "hdi", "dci",
                 "jtd", "jtdm", "multijet", "bluehdi", "cdti", "d4d", "d-4d",
                 "did", "td4", " td ", " td,", "ecoblue", "crd",
-                "20d", "24d5", "d5", "25d", "xdrive25d")) {
+                "20d", "24d5", "d5", "25d", "30sd", "3 0sd", "xdrive25d")) {
             return "DIESEL";
         }
 
@@ -537,15 +548,10 @@ public class SbazarParser implements CarSourceParser {
         }
 
         if (containsAny(searchable,
-                "elektro", "electric", "kwh", "enyaq", "cupra born", "bmw i5")) {
-            return "ELECTRIC";
-        }
-
-        if (containsAny(searchable,
                 "benzin", "benzín", "petrol", "tsi", "tfsi", "tsfi", "fsi",
                 "gdi", "tgdi", "dig-t", "tce", "ecoboost", "mivec", "vtec",
                 "vti", "puretech", "pt", "mpi", "16v", "20i", "2 0i",
-                "14tsi", "20tsi", "turbo", "ti-vct", "pentastar", "hemi",
+                "30i", "40i", "50i", "850i", "14tsi", "20tsi", "turbo", "ti-vct", "pentastar", "hemi",
                 "challenger", "pacifica", "carrera", "cooper s", "gti",
                 "t5", "s5", "amg gt", "v8", "camaro", "corvette", "macan",
                 "cayenne", "750li", "325xi", "fx35", "fx-35",
@@ -615,7 +621,7 @@ public class SbazarParser implements CarSourceParser {
         if (containsAny(searchable, "touran", "sharan", "alhambra", "s-max", "c-max", "galaxy", "zafira", "scenic", "picasso", "berlingo", "rifter", "caddy", "vito", "viano", "v 250", "tridy v", "tridy r", "proace verso", "proace city verso", "multivan", "dokker", "lodgy", "b180", "b 180", "b200", "b 200", "peugeot 807", " 807 ", "mazda 5", "grandis", "voyager", "pacifica", "grand caravan")) {
             return "MINIVAN";
         }
-        if (containsAny(searchable, "suv", "kodiaq", "karoq", "kamiq", "yeti", "enyaq", "tiguan", "touareg", "t-cross", "t cross", "qashqai", "x-trail", "patrol", "bmw x1", "bmw x 1", "bmw x3", "bmw x4", "bmw x5", "bmw x6", "fx35", "fx-35", "q3", "q5", "q7", "q8", "wrangler", "discovery", "sportage", "sorento", "xceed", "xcee", "tucson", "santa fe", "ix35", "rav4", "c-hr", " chr ", "cr-v", "hr-v", "cx-3", "cx3", "cx-5", "outlander", "formentor", "kuga", "crossland", "glb", "gl 450", "glc", "gle", "gls", "tridy g", "g320", "c5 aircross", "evoque", "range rover", "tarraco", "xc40", "xc60", "xc90", "xc 70", "xc70", "duster", "ateca", "omoda 5", "mg zs", "mgs5", "peugeot 2008", "ignis", "macan", "cayenne", "forester", "asx", "austral", "ix55")) {
+        if (containsAny(searchable, "suv", "kodiaq", "karoq", "kamiq", "yeti", "enyaq", "tiguan", "touareg", "t-cross", "t cross", "qashqai", "x-trail", "patrol", "bmw x1", "bmw x 1", "bmw x3", "bmw x4", "bmw x5", "bmw x6", "bmw x7", "fx35", "fx-35", "q3", "q5", "q7", "q8", "wrangler", "discovery", "sportage", "sorento", "xceed", "xcee", "tucson", "santa fe", "ix35", "rav4", "c-hr", " chr ", "cr-v", "hr-v", "cx-3", "cx3", "cx-5", "outlander", "formentor", "kuga", "crossland", "glb", "gla", "gl 450", "glc", "gle", "gls", "tridy g", "g320", "c5 aircross", "evoque", "range rover", "tarraco", "xc40", "xc60", "xc90", "xc 70", "xc70", "duster", "ateca", "omoda 5", "mg zs", "mgs5", "peugeot 2008", "ignis", "macan", "cayenne", "urus", "lexus nx", "nx350h", "forester", "asx", "austral", "ix55")) {
             return "SUV";
         }
         if (containsAny(searchable, "sedan", "limuz", "passat", "octavia", "superb", "arteon", "corolla", "a4", "a6", "bmw 3", "rada 3", "bmw 5", "bmw 7", "rada 7", "750d", "750li", "e90", "325xi", "mondeo", "cla", "c250", "c 250", "e220", "e270", "e350", "e 350", "c220", "s 320", "s 350", "tridy s")) {
@@ -753,6 +759,16 @@ public class SbazarParser implements CarSourceParser {
         }
 
         return "-";
+    }
+
+    private Integer firstInteger(Integer... values) {
+        for (Integer value : values) {
+            if (value != null) {
+                return value;
+            }
+        }
+
+        return null;
     }
 
     private String formatPrice(Integer priceValue) {
