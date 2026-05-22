@@ -181,6 +181,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         log.info("BAZOS parsed {} cars", cars.size());
         log.info(
                 "BAZOS SUMMARY tyre_or_wheel_listing={} parsed={} empty_title={} demand_listing={} commercial_vehicle={} non_car_listing={} broken_or_for_parts={} suspicious_listing={} invalid_price={} missing_price={} parse_error={}" ,
+                tyreOrWheelListingCount,
                 cars.size(),
                 emptyTitleCount,
                 demandListingCount,
@@ -190,8 +191,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 suspiciousListingCount,
                 invalidPriceCount,
                 missingPriceCount,
-                parseErrorCount,
-                tyreOrWheelListingCount
+                parseErrorCount
         );
 
         return cars;
@@ -2233,6 +2233,25 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         String titleSource = " " + normalizeText(title).toLowerCase(Locale.ROOT) + " ";
         String source = " " + normalizeText(title + " " + text + " " + shortenForCheck(analysisText, 700))
                 .toLowerCase(Locale.ROOT) + " ";
+        boolean titleHasTyreSize =
+                TYRE_SIZE_PATTERN.matcher(titleSource).find()
+                        || TYRE_SIZE_ALT_PATTERN.matcher(titleSource).find();
+        boolean titleHasRimSpec = RIM_SPEC_PATTERN.matcher(titleSource).find();
+        boolean titleHasWheelWords = containsAny(titleSource,
+                " pneu ",
+                " pneumatiky ",
+                " sada pneu ",
+                " sada pneumatik ",
+                " sada kol ",
+                " sada 4 kol ",
+                " alu kola ",
+                " disky ",
+                " rĂˇfky ",
+                " rafky ",
+                " letnĂ­ pneu ",
+                " letni pneu ",
+                " zimnĂ­ pneu ",
+                " zimni pneu ");
 
         if (containsAny(titleSource,
                 " rs3 ", " rs4 ", " rs5 ", " rs6 ", " rs7 ", " rsq8 ",
@@ -2258,11 +2277,16 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 "alu kola ",
                 "disky ",
                 "sada kol ",
+                "sada 4 kol ",
                 "sada pneu ",
                 "kola ",
                 "ráfky ",
                 "rafky ")) {
             return true;
+        }
+
+        if (looksLikePassengerCarTitle(title) && !titleHasWheelWords && !titleHasTyreSize && !titleHasRimSpec) {
+            return false;
         }
 
         boolean hasTyreSize =
@@ -2308,6 +2332,16 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " hankook ", " michelin ", " continental ", " goodyear ", " bridgestone ",
                 " pirelli ", " dunlop ", " barum ", " nokian ", " firestone ",
                 " thule ", " bosch ", " valeo ", " hella ", " castrol ", " shell ");
+    }
+
+    private boolean looksLikePassengerCarTitle(String title) {
+        return extractBrand(title, title) != null
+                && (looksLikePassengerCarModel(title)
+                || extractFuelType(title) != null
+                || extractTransmission(title) != null
+                || extractCarType(title, title) != null
+                || extractYear(title, title) != null
+                || extractMileage(title, title) != null);
     }
 
     private boolean looksNonCarListing(String title, String text, String url, String analysisText) {
