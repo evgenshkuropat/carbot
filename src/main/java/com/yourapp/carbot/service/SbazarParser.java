@@ -146,8 +146,9 @@ public class SbazarParser implements CarSourceParser {
             return ParseResult.skip("broken_listing", title);
         }
 
+        String listingText = extractListingText(doc);
         String pageText = doc.text();
-        String searchable = asciiSearchText(title + " " + pageText + " " + url);
+        String searchable = asciiSearchText(title + " " + listingText + " " + url);
         String listingIdentity = asciiSearchText(title + " " + url);
 
         if (looksDemandListing(listingIdentity)) {
@@ -185,16 +186,50 @@ public class SbazarParser implements CarSourceParser {
         car.setUrl(url);
         car.setImageUrl(extractImageUrl(doc));
         String identityText = asciiSearchText(title + " " + url);
-        String fullText = asciiSearchText(title + " " + pageText + " " + url);
+        String scopedText = asciiSearchText(title + " " + listingText + " " + url);
 
-        car.setBrand(detectBrand(fullText));
-        car.setYear(extractYear(fullText));
-        car.setMileage(extractMileage(fullText));
-        car.setFuelType(detectFuelType(fullText));
-        car.setTransmission(detectTransmission(fullText));
-        car.setCarType(detectCarType(fullText));
+        car.setBrand(firstDetected(detectBrand(identityText), detectBrand(scopedText)));
+        car.setYear(extractYear(scopedText));
+        car.setMileage(extractMileage(scopedText));
+        car.setFuelType(firstDetected(detectFuelType(identityText), detectFuelType(scopedText)));
+        car.setTransmission(firstDetected(detectTransmission(identityText), detectTransmission(scopedText)));
+        car.setCarType(firstDetected(detectCarType(identityText), detectCarType(scopedText)));
 
         return ParseResult.car(car, title);
+    }
+
+    private String extractListingText(Document doc) {
+        List<String> parts = new ArrayList<>();
+
+        addIfPresent(parts, attrOf(doc, "meta[name=description]", "content"));
+        addIfPresent(parts, attrOf(doc, "meta[property=og:description]", "content"));
+
+        String[] selectors = {
+                "[data-testid*=description]",
+                "[data-testid*=parameter]",
+                "[data-testid*=locality]",
+                "[data-testid*=location]",
+                "[class*=description]",
+                "[class*=param]",
+                "[class*=detail]"
+        };
+
+        for (String selector : selectors) {
+            for (Element element : doc.select(selector)) {
+                String text = normalizeText(element.text());
+                if (text != null && !text.isBlank() && text.length() <= 2_000) {
+                    parts.add(text);
+                }
+            }
+        }
+
+        return String.join(" ", parts);
+    }
+
+    private void addIfPresent(List<String> values, String value) {
+        if (value != null && !value.isBlank()) {
+            values.add(value);
+        }
     }
 
     private Connection connect(String url) {
@@ -708,6 +743,16 @@ public class SbazarParser implements CarSourceParser {
         }
 
         return null;
+    }
+
+    private String firstDetected(String... values) {
+        for (String value : values) {
+            if (value != null && !value.isBlank() && !"-".equals(value)) {
+                return value;
+            }
+        }
+
+        return "-";
     }
 
     private String formatPrice(Integer priceValue) {
