@@ -912,6 +912,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
 
     private String extractFuelType(String text) {
         String source = " " + normalizeText(text).toLowerCase(Locale.ROOT) + " ";
+        String ascii = asciiSearchText(text);
         String compact = source.replaceAll("[^a-z0-9]", "");
 
         // LPG / CNG first
@@ -987,6 +988,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 || compact.contains("bluehdi")
                 || compact.contains("cdti")
                 || compact.contains("dtec")
+                || compact.contains("detec")
                 || compact.contains("tddi")
                 || compact.contains("d4d")
                 || compact.contains("ecoblue")
@@ -1007,7 +1009,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
 
         // PETROL
         if (containsAny(source,
-                " benzin ", " benzín ", " petrol ",
+                " benzin ", " benzín ", " benzinovy ", " benzínový ", " petrol ",
                 " tsi ", " tfsi ", " fsi ", " gdi ", " tgdi ", " t-gdi ",
                 " dig-t ", " tce ", " ecoboost ", " mivec ",
                 " vtec ", " vti ", " puretech ", " mpi ",
@@ -1015,6 +1017,10 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " quadrifoglio ", " qv ",
                 " gti ", " v6 ", " v8 ", " hemi ",
                 " camaro ", " corvette ", " mustang ")) {
+            return "PETROL";
+        }
+
+        if (containsAny(ascii, " benzin ", " benzinovy ")) {
             return "PETROL";
         }
 
@@ -1233,7 +1239,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         if (containsAny(titleSource, " fiat ")) return "FIAT";
         if (containsAny(titleSource, " dodge ")) return "DODGE";
         if (containsAny(titleSource, " nissan ")) return "NISSAN";
-        if (containsAny(titleSource, " honda ", " acura ")) return "HONDA";
+        if (containsAny(titleSource, " honda ", " acura ", " insight ")) return "HONDA";
         if (containsAny(titleSource, " suzuki ")) return "SUZUKI";
         if (containsAny(titleSource, " dacia ", " dacie ", " duster ", " sandero ", " logan ", " dokker ", " lodgy ", " jogger ")) return "DACIA";
         if (containsAny(titleSource, " cupra ")) return "CUPRA";
@@ -1276,7 +1282,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         if (containsAny(source, " fiat ")) return "FIAT";
         if (containsAny(source, " dodge ")) return "DODGE";
         if (containsAny(source, " nissan ")) return "NISSAN";
-        if (containsAny(source, " honda ", " acura ")) return "HONDA";
+        if (containsAny(source, " honda ", " acura ", " insight ")) return "HONDA";
         if (containsAny(source, " suzuki ")) return "SUZUKI";
         if (containsAny(source, " dacia ", " dacie ", " duster ", " sandero ", " logan ", " dokker ", " lodgy ", " jogger ")) return "DACIA";
         if (containsAny(source, " cupra ")) return "CUPRA";
@@ -1426,7 +1432,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         if (source.contains(" swift ")) return "SUZUKI";
         if (source.contains(" vitara ")) return "SUZUKI";
         if (source.contains(" sx 4 ") || source.contains(" sx4 ")) return "SUZUKI";
-        if (containsAny(source, " civic ", " jazz ", " accord ", " cr-v ", " cr v ", " crv ", " hr-v ", " hr v ", " hrv ", " fr-v ", " fr v ", " frv ")) return "HONDA";
+        if (containsAny(source, " civic ", " jazz ", " accord ", " insight ", " cr-v ", " cr v ", " crv ", " hr-v ", " hr v ", " hrv ", " fr-v ", " fr v ", " frv ")) return "HONDA";
 
         if (source.contains(" 1007 ")) return "PEUGEOT";
         if (source.contains(" 107 ")) return "PEUGEOT";
@@ -1605,7 +1611,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             return "MINIVAN";
         }
 
-        if (containsAny(titleSource, " i10 ", " jazz ", " rio ", " ds3 ", " punto ", " panda ", " grande punto ", " kalos ", " calos ",
+        if (containsAny(titleSource, " i10 ", " jazz ", " insight ", " rio ", " ds3 ", " punto ", " panda ", " grande punto ", " kalos ", " calos ",
                 " fiat 500e ", " fiat e500 ", " 500e ", " e500 ")) {
             return "HATCHBACK";
         }
@@ -1752,7 +1758,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " c1 ", " c2 ", " c3 ", " c4 ",
                 " clio ", " megane ", " fiesta ",
                 " rs3 ", " rs 3 ",
-                " civic ", " leon ", " swift ", " born ", " punto ", " panda ",
+                " civic ", " insight ", " leon ", " swift ", " born ", " punto ", " panda ",
                 " fiat 500e ", " fiat e500 ", " 500e ", " e500 ",
                 " leaf ", " micra ", " colt ", " spacestar ", " space star ",
                 " f40 ", " řada 1 ", " rada 1 ",
@@ -2738,7 +2744,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         String titleSource = " " + normalizeText(title).toLowerCase(Locale.ROOT) + " ";
         String source = " " + normalizeText(title + " " + shortenForCheck(text, 500)).toLowerCase(Locale.ROOT) + " ";
 
-        if (containsAny(titleSource, " mustang ", " civic type r ", " duster ", " stelvio ", " chevrolet ssr ", " spark ", " stonic ",
+        if (containsAny(titleSource, " mustang ", " civic type r ", " cr-v ", " cr v ", " crv ", " duster ", " stelvio ", " chevrolet ssr ", " spark ", " stonic ",
                 " passat ", " golf ", " tiguan ", " touareg ", " t-roc ", " troc ", " touran ")
                 && !containsAny(titleSource, " na dily ", " na nd ", " nahradni dily ", " nepojizdny ", " nepojizdne ", " vadny ", " vadne ",
                 " k oprave ", " na opravu ")) {
@@ -3096,6 +3102,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " rs3 ",
                 " rs 3 ",
                 " accord ",
+                " insight ",
                 " civic ",
                 " jazz ",
                 " cr-v ",
