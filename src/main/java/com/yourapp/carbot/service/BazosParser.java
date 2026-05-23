@@ -1374,7 +1374,14 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         if (source.contains(" v90 ")) return "VOLVO";
         if (source.contains(" c70 ")) return "VOLVO";
 
-        if (source.contains(" 540d ") || source.contains(" xdrive ")) return "BMW";
+        if (containsAny(source,
+                " 116i ", " 118i ", " 120i ", " 218i ", " 220i ",
+                " 318i ", " 320i ", " 330i ", " 335i ", " 540ix ",
+                " 116d ", " 118d ", " 120d ", " 218d ", " 220d ",
+                " 318d ", " 320d ", " 320xd ", " 330d ", " 335d ",
+                " 520d ", " 530d ", " 530xd ", " 540d ", " 730d ", " 740d ", " 750xd ",
+                " g20 ", " g21 ", " g30 ", " g31 ", " f10 ", " f11 ", " f30 ", " f31 ",
+                " xdrive ")) return "BMW";
         if (containsAny(source,
                 " a3 ", " a4 ", " a5 ", " a6 ", " a7 ", " a8 ",
                 " a6c7 ", " q3 ", " q4 ", " q5 ", " sq7 ", " rs3 ", " rs 3 ",
@@ -1476,7 +1483,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             return "WAGON";
         }
 
-        if (containsAny(titleSource, " c5 tourer ", " citroen c5 tourer ", " c5 x7 ",
+        if (containsAny(titleSource, " g21 ", " c5 tourer ", " citroen c5 tourer ", " c5 x7 ",
                 " insignia st ", " insignia sports tourer ", " insignia sport tourer ",
                 " astra sports tourer ", " astra sport tourer ", " astra sw ", " astra combi ", " astra kombi ", " 308 sw ", " peugeot 308 sw ")) {
             return "WAGON";
@@ -1500,6 +1507,14 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
 
         if (containsAny(titleSource, " pathfinder ", " x-trail ", " x trail ", " grandland ", " grandal ")) {
             return "SUV";
+        }
+
+        if (containsAny(titleSource, " a6 avant ", " a6 allroad ", " a6 combi ", " a6 kombi ")) {
+            return "WAGON";
+        }
+
+        if (containsAny(titleSource, " a6 ", " a 6 ", " a7 ", " a 7 ", " a8 ", " a 8 ", " a6c7 ", " a6 c7 ", " a6 c8 ")) {
+            return "SEDAN";
         }
 
         if (containsAny(titleSource, " s60 ", " s 60 ")) {
@@ -1628,6 +1643,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " suv ", " crossover ", " tonale ",
                 " bmw x1 ", " bmw x2 ", " bmw x3 ", " bmw x4 ", " bmw x5 ", " bmw x6 ", " bmw x7 ",
                 " q2 ", " q3 ", " q4 ", " q5 ", " q7 ", " q8 ",
+                " q 2 ", " q 3 ", " q 4 ", " q 5 ", " q 7 ", " q 8 ",
                 " sq5 ", " sq7 ",
                 " glc ", " gle ", " gls ", " gla ", " glb ",
                 " gl 500 ", " gl500 ", " gl320 ", " gl 63 ", " ml 350 ", " ml350 ",
@@ -2417,6 +2433,15 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             return false;
         }
 
+        if (looksLikePassengerCarTitle(title)
+                && !containsAny(asciiTitleValue,
+                " na dily ", " na nd ", " nahradni dily ", " rezervace ", " rezervovano ", " prodano ",
+                " kola ", " alu kola ", " pneu ", " pneumatiky ", " disky ", " r15 ", " r16 ", " r17 ", " r18 ", " r19 ", " r20 ",
+                " splitter ", " koncovky ", " vyfukove koncovky ", " svetlo ", " svetla ", " mlhova svetla ",
+                " naraznik ", " mrizky ", " displej ", " infotainment ", " znak ", " listy ")) {
+            return false;
+        }
+
         if (startsWithAny(titleValue,
                 "přední halogenové světlomety ",
                 "predni halogenove svetlomety ",
@@ -3071,6 +3096,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " c220 ", " c 220 ", " c220d ", " e220 ", " e 220 ", " e220d ", " e300 ", " e 300 ", " e300cdi ",
                 " cla ", " cls ", " slk ", " slk55 ", " sl600 ", " glc ", " gle ", " gls ", " gl500 ", " grandis ",
                 " m3 ", " e36 ",
+                " g20 ", " g21 ", " g30 ", " g31 ", " f10 ", " f11 ", " f30 ", " f31 ",
                 " 116i ", " 118i ", " 120i ", " 218i ", " 220i ",
                 " 318i ", " 320i ", " 330i ", " 335i ", " 540ix ",
                 " 116d ", " 118d ", " 120d ", " 218d ", " 220d ",

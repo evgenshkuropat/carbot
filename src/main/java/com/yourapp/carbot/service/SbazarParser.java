@@ -155,7 +155,7 @@ public class SbazarParser implements CarSourceParser {
             return ParseResult.skip("demand_listing", title);
         }
 
-        if (looksNonCarListing(searchable)) {
+        if (looksNonCarListing(listingIdentity)) {
             return ParseResult.skip("non_car_listing", title);
         }
 
