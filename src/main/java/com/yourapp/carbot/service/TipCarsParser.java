@@ -146,8 +146,8 @@ public class TipCarsParser implements CarSourceParser {
             String imageUrl = extractImageUrl(doc);
             String brand = extractBrand(title, url);
             String fuelType = firstNonBlank(
-                    extractFuelType(url),
                     extractFuelType(title),
+                    extractFuelType(url),
                     extractFuelType(pageText)
             );
 
@@ -514,6 +514,14 @@ public class TipCarsParser implements CarSourceParser {
         String source = " " + normalizeText(safe(text)).toLowerCase(Locale.ROOT) + " ";
         String compact = source.replaceAll("[^a-z0-9]", "");
 
+        if (containsAny(source, "/lpg/", " lpg ")) {
+            return "LPG";
+        }
+
+        if (containsAny(source, "/cng/", " cng ")) {
+            return "CNG";
+        }
+
         if (containsAny(source,
                 "/elektro/",
                 " elektro ",
@@ -540,6 +548,7 @@ public class TipCarsParser implements CarSourceParser {
                 " plugin ",
                 " phev ",
                 " mhev ",
+                " m-hev ",
                 " e-cvt ",
                 " ecvt ")) {
             return "HYBRID";
@@ -578,14 +587,6 @@ public class TipCarsParser implements CarSourceParser {
                 || compact.contains("520d")
                 || compact.contains("d4d")) {
             return "DIESEL";
-        }
-
-        if (containsAny(source, "/lpg/", " lpg ")) {
-            return "LPG";
-        }
-
-        if (containsAny(source, "/cng/", " cng ")) {
-            return "CNG";
         }
 
         if (containsAny(source,
