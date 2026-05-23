@@ -191,9 +191,9 @@ public class SbazarParser implements CarSourceParser {
         car.setBrand(firstDetected(detectBrand(identityText), detectBrand(scopedText)));
         car.setYear(firstInteger(extractYear(identityText), extractYear(scopedText)));
         car.setMileage(extractMileage(scopedText));
-        car.setFuelType(firstDetected(detectFuelType(identityText), detectFuelType(scopedText)));
-        car.setTransmission(firstDetected(detectTransmission(identityText), detectTransmission(scopedText)));
-        car.setCarType(firstDetected(detectCarType(identityText), detectCarType(scopedText)));
+        car.setFuelType(resolveFuelType(identityText, scopedText));
+        car.setTransmission(resolveTransmission(identityText, scopedText, car.getFuelType()));
+        car.setCarType(resolveCarType(identityText, scopedText));
 
         return ParseResult.car(car, title);
     }
@@ -533,6 +533,7 @@ public class SbazarParser implements CarSourceParser {
 
         if (containsAny(searchable,
                 "plug-in", "plugin", "phev", "hybrid", " hev ", " mhev ", " gte ",
+                "tfsi e", "tsi e",
                 " t8 ", "superb iv", "kodiaq iv")) {
             return "HYBRID";
         }
@@ -570,6 +571,21 @@ public class SbazarParser implements CarSourceParser {
         return "-";
     }
 
+    private String resolveFuelType(String identityText, String scopedText) {
+        String identityFuel = detectFuelType(identityText);
+        if (!"-".equals(identityFuel)) {
+            return identityFuel;
+        }
+
+        String scopedFuel = detectFuelType(scopedText);
+        if ("ELECTRIC".equals(scopedFuel)
+                && !containsAny(identityText, "elektro", "electric", "bev", "kwh", "enyaq", "cupra born", "bmw i3", "bmw i5", "e-tron", "etron")) {
+            return "-";
+        }
+
+        return scopedFuel;
+    }
+
     private String detectTransmission(String searchable) {
         if (containsAny(searchable,
                 "automat", "automatic", "automatik", "aut.",
@@ -586,6 +602,7 @@ public class SbazarParser implements CarSourceParser {
 
         if (containsAny(searchable,
                 "manual", "manuál", "manualni", "manuální",
+                " kvalt ", " kvalt,",
                 " man ", " man,", " man.",
                 " mt ", " mt,", " mt.",
                 "mt5", "5mt", "mt6", "6mt",
@@ -603,6 +620,22 @@ public class SbazarParser implements CarSourceParser {
         return "-";
     }
 
+    private String resolveTransmission(String identityText, String scopedText, String fuelType) {
+        String identityTransmission = detectTransmission(identityText);
+        if (!"-".equals(identityTransmission)) {
+            return identityTransmission;
+        }
+
+        String scopedTransmission = detectTransmission(scopedText);
+        if ("AUTOMATIC".equals(scopedTransmission)
+                && !"ELECTRIC".equals(fuelType)
+                && !containsAny(identityText, "automat", "automatic", "automatik", "aut.", "dsg", "dct", "edc", "tiptronic", "s-tronic", "stronic", "cvt", " at ")) {
+            return "-";
+        }
+
+        return scopedTransmission;
+    }
+
     private String detectCarType(String searchable) {
         if (containsAny(searchable, "pickup", "pick-up", "ranger", "hilux", "navara", "l200", "amarok", " ram ")) {
             return "PICKUP";
@@ -616,7 +649,8 @@ public class SbazarParser implements CarSourceParser {
         if (containsAny(searchable, "combi", "kombi", "variant", "touring", "avant", "allroad", " sw ", "wagon", "estate", "v60", "v70", "v90")) {
             return "WAGON";
         }
-        if (containsAny(searchable, "citigo", "sandero", " rio ", "swift", "mazda 3", "v40", "tridy a", "a 160", "a160", "c3", "fiesta", "a1", "a3", "panda", "fortwo", "cupra born", "jazz")) {
+        if (containsAny(searchable, "citigo", "rapid", "sandero", " rio ", "swift", "mazda 3", "v40", "tridy a", "a 160", "a160", "c3", "fiesta", "a1", "a3", "panda", "fortwo", "cupra born", "jazz",
+                "peugeot 206", " 206 ")) {
             return "HATCHBACK";
         }
         if (containsAny(searchable, "cruze", "superb", "s90", "mazda 6")) {
@@ -636,6 +670,26 @@ public class SbazarParser implements CarSourceParser {
         }
 
         return "-";
+    }
+
+    private String resolveCarType(String identityText, String scopedText) {
+        String identityType = detectCarType(identityText);
+        if (!"-".equals(identityType)) {
+            return identityType;
+        }
+
+        String scopedType = detectCarType(scopedText);
+        if ("COUPE".equals(scopedType)
+                && !containsAny(identityText, "coupe", "coup", "mustang", " tt ", "370z", "350z", "brz", "challenger", "carrera", "911", "camaro")) {
+            return "-";
+        }
+
+        if ("SUV".equals(scopedType)
+                && !containsAny(identityText, "suv", "4x4", "kodiaq", "karoq", "yeti", "tiguan", "touareg", "qashqai", "x-trail", "bmw x", "q3", "q5", "q7", "q8", "kuga", "duster", "crossover")) {
+            return "-";
+        }
+
+        return scopedType;
     }
 
     private boolean looksDemandListing(String searchable) {

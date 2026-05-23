@@ -458,6 +458,11 @@ public class CarStorageService {
                 return containsAny(titleLower, "tdi", "nafta", "naftov", "touareg") ? "DIESEL" : null;
             }
 
+            if ("ELECTRIC".equals(upper)
+                    && !containsAny(titleLower, "electric", "elektro", "bev", "kwh", "e-tron", "etron", "id.3", "id3", "id.4", "id4", "id.5", "id5", "enyaq", "cupra born", "bmw i3", "bmw i5")) {
+                return null;
+            }
+
             if (Set.of("PETROL", "DIESEL", "HYBRID", "PLUGIN_HYBRID", "ELECTRIC", "LPG", "CNG").contains(upper)) {
                 return upper;
             }
@@ -483,6 +488,10 @@ public class CarStorageService {
 
         String fuelTokens = " " + lower.replaceAll("[^a-z0-9]+", " ") + " ";
 
+        if (containsAny(lower, "plug-in", "plugin", "phev", "tfsi e", "tsi e")) {
+            return "PLUGIN_HYBRID";
+        }
+
         if (containsAny(lower, "hybrid", "mild hybrid", "tsi iv", "tsi i v", "superb iv", "kodiaq iv")
                 || containsAny(fuelTokens, " hev ", " mhev ")) {
             return "HYBRID";
@@ -503,7 +512,7 @@ public class CarStorageService {
             return "DIESEL";
         }
 
-        if (containsAny(lower, "sl 600", "sl600", "slk55", "s500", "gl 500", "gl500", "v12", "v8", "space star", "spacestar", "eclipse cross 1.5", "eclipse cross 1,5")) {
+        if (containsAny(lower, "sl 600", "sl600", "slk55", "s500", "gl 500", "gl500", "v12", "v8", "space star", "spacestar", "eclipse cross 1.5", "eclipse cross 1,5", "mx-5", "mx 5", "x-type", "x type")) {
             return "PETROL";
         }
 
@@ -614,6 +623,10 @@ public class CarStorageService {
             return "SEDAN";
         }
 
+        if (containsAny(lower, "skoda rapid", "škoda rapid")) {
+            return "HATCHBACK";
+        }
+
         if (containsAny(lower, "opel karl", "astra k", "astra j", "opel astra", "opel corsa", "peugeot 1007", "peugeot 106", "peugeot 206", "peugeot 207", "peugeot 208", "peugeot 308", "mazda 2", "nissan note", "nissan micra", "micra", "kalos", "calos", "ceed", "cee´d", "cee'd", "cee d", "seat leon", "smart fortwo", "citroen c4", "citroën c4")) {
             return "HATCHBACK";
         }
@@ -645,7 +658,7 @@ public class CarStorageService {
             return "WAGON";
         }
 
-        if (containsAny(lower, "cruze", "mazda 6", "oktavia", "mondeo", "insignia", "insignie", "peugeot 408", "c220", "c 220", "c220d", "e220", "e 220", "e220d", "e300", "e 300", "e300cdi", "cla", "cls", "s350", "s 350", "s500", "s 500", "w220", "750xd", "730d", "740d", "740i", "750i", "540ix")) {
+        if (containsAny(lower, "jaguar x-type", "jaguar x type", "x-type", "x type", "cruze", "mazda 6", "oktavia", "mondeo", "insignia", "insignie", "peugeot 408", "c220", "c 220", "c220d", "e220", "e 220", "e220d", "e300", "e 300", "e300cdi", "cla", "cls", "s350", "s 350", "s500", "s 500", "w220", "750xd", "730d", "740d", "740i", "750i", "540ix")) {
             return "SEDAN";
         }
 
