@@ -786,6 +786,17 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             }
         }
 
+        Matcher shortYearMatcher = Pattern.compile(
+                "(?i)(?:r\\.v\\.?|r\\.|rv|rok|model)\\s*[:\\-\\.]?\\s*'?([0-9]{2})\\b"
+        ).matcher(source);
+
+        if (shortYearMatcher.find()) {
+            Integer year = parseShortYearCandidate(shortYearMatcher.group(1));
+            if (year != null && !isBadYearContext(source, shortYearMatcher.start(), shortYearMatcher.end())) {
+                return year;
+            }
+        }
+
         matcher = Pattern.compile("(?i)\\bm\\s*(20\\d{2})\\b").matcher(normalizedTitle);
         while (matcher.find()) {
             Integer year = parseYearCandidate(matcher.group(1));
@@ -919,7 +930,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " id.3 ", " id.4 ", " id.5 ",
                 " tesla ", " leaf ", " enyaq ",
                 " cupra born ", " kona electric ", " ioniq 5 ", " ioniq 6 ",
-                " bz4x ", " bz 4x ")) {
+                " bz4x ", " bz 4x ", " bolt ev ")) {
             return "ELECTRIC";
         }
 
@@ -1080,7 +1091,8 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
 
         return containsAny(source, " twin spark ", " twinspark ", " 6ti rychl ", " 6ti rychlost ", " 6 rychl ", " 6 rychlost ",
                 " alfa romeo 159 ", " alfa 159 ", " alfa romeo 147 ", " alfa 147 ", " giulietta ", " giuletta ", " alfa romeo sportwagon ",
-                " accord ", " crx ", " delsol ", " cr-v ", " cr v ", " crv ");
+                " accord ", " civic ", " crx ", " delsol ", " cr-v ", " cr v ", " crv ",
+                " i20 ", " i30 ", " ix20 ", " tucson ", " aveo ");
     }
 
     private boolean looksLikelyFalseManual(String title, String transmission) {
@@ -1562,7 +1574,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             return "HATCHBACK";
         }
 
-        if (containsAny(titleSource, " civic coupe ", " civic coupĂ© ", " crx ")) {
+        if (containsAny(titleSource, " civic coupe ", " civic coupĂ© ", " civic si ", " fg2 ", " crx ")) {
             return "COUPE";
         }
 
@@ -1616,7 +1628,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " captur ", " austral ", " arkana ", " rafale ",
                 " sportage ", " sorento ", " stonic ",
                 " rdx ",
-                " tucson ", " santa fe ", " kona ",
+                " tucson ", " santa fe ", " kona ", " pilot ", " ix55 ",
                 " duster ", " koleos ", " kadjar ",
                 " cr-v ", " cr v ", " crv ", " hr-v ", " hr v ", " hrv ", " rav4 ", " c-hr ", " chr ",
                 " cx-3 ", " cx3 ", " cx-5 ", " cx 5 ", " cx5 ", " cx-7 ", " cx 7 ", " cx7 ",
@@ -1627,7 +1639,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " discovery ", " discovery sport ", " defender ",
                 " compass ", " cherokee ", " grand cherokee ",
                 " grand vitara ", " vitara ",
-                " captiva ", " tahoe ", " suburban ",
+                " captiva ", " tahoe ", " suburban ", " bolt ev ",
                 " model y ",
                 " xv ", " forester ",
                 " mokka ",
@@ -2829,6 +2841,26 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         try {
             int year = Integer.parseInt(raw);
             int currentYear = java.time.Year.now().getValue();
+
+            if (year >= 1990 && year <= currentYear) {
+                return year;
+            }
+        } catch (NumberFormatException ignored) {
+        }
+
+        return null;
+    }
+
+    private Integer parseShortYearCandidate(String raw) {
+        try {
+            int value = Integer.parseInt(raw);
+            int currentYear = java.time.Year.now().getValue();
+            int currentCentury = (currentYear / 100) * 100;
+            int year = currentCentury + value;
+
+            if (year > currentYear) {
+                year -= 100;
+            }
 
             if (year >= 1990 && year <= currentYear) {
                 return year;
