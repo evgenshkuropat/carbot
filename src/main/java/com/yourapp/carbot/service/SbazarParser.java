@@ -572,6 +572,7 @@ public class SbazarParser implements CarSourceParser {
 
         if (searchable.matches(".*\\b[0-9][.,][0-9]\\s*i\\b.*")
                 || searchable.matches(".*\\b[0-9]{2,3}i\\b.*")
+                || searchable.matches(".*\\b(?:golf|octavia|fiesta)\\b[^a-z0-9]{0,8}\\b1[.,][46]\\b.*")
                 || searchable.matches(".*\\b[0-9][.,][0-9]\\b.*\\b(?:jts|vti|tsi|tfsi|mpi)\\b.*")
                 || searchable.matches(".*\\b(?:outback|forester)\\b.*\\b2[.,]5\\b.*")) {
             return "PETROL";
@@ -692,7 +693,7 @@ public class SbazarParser implements CarSourceParser {
         if (containsAny(searchable, "cabrio", "kabriolet", "cabriolet", "eos", "roadster", "slk", " sl ", "308 cc", "peugeot 308 cc", "500c")) {
             return "CABRIO";
         }
-        if (containsAny(searchable, "combi", "kombi", "variant", "touring", " avant ", "allroad", " sw ", "wagon", "estate", "v60", "v70", "v90")) {
+        if (containsAny(searchable, "combi", "kombi", "variant", "shooting brake", "touring", " avant ", "allroad", " sw ", "wagon", "estate", "v60", "v70", "v90")) {
             return "WAGON";
         }
         if (containsAny(searchable, "citigo", "rapid", "sandero", " rio ", "swift", "mazda 3", "v40", "tridy a", "a 160", "a160", "c3", "fiesta", "a1", "a3", "panda", "fortwo", "fourtwo", "forfour", "cupra born", "jazz",
@@ -751,7 +752,7 @@ public class SbazarParser implements CarSourceParser {
                 "pneu", "pneumatik", "elektrony", "alu kola", "sada kol", "disky", "naraznik",
                 "motor na", "prevodovka", "svetlo", "svetel", "sedacky", "volant", "katalyzator", "servisni knizka",
                 "autoradio", "auto radio", "navigace tomtom", "stresni nosic", "stresni nosnik", "zamky centralni",
-                "centralni zamky", "zamykani zpatecky", "sterac", "sterace", "cmx", "rebel");
+                "centralni zamky", "zamykani zpatecky", "sterac", "sterace", "padlo", "rucni pumpicka", "pumpicka", "cmx", "rebel");
     }
 
     private boolean looksCommercialVehicle(String searchable) {

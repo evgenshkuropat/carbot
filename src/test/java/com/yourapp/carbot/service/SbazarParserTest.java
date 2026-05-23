@@ -31,6 +31,7 @@ class SbazarParserTest {
         assertThat(resolveFuelType("mercedes r129 sl320 zehlicka", "")).isEqualTo("PETROL");
         assertThat(resolveFuelType("nova stk klima alu tazne ford fiesta 1.4 59 kw", "")).isEqualTo("PETROL");
         assertThat(resolveFuelType("klima bez koroze 184 tis volkswagen golf 1.6", "")).isEqualTo("PETROL");
+        assertThat(resolveFuelType("volkswagen golf, 1.4-59 kw,klima,r.09,nova stk", "")).isEqualTo("PETROL");
     }
 
     @Test
@@ -70,6 +71,12 @@ class SbazarParserTest {
         assertThat(resolveCarType("peugeot partner tepee 1.6 vti 72kw", "")).isEqualTo("MINIVAN");
         assertThat(resolveCarType("bmw rada 4 m440i cr hk tazne 2x kola", "")).isEqualTo("COUPE");
         assertThat(resolveCarType("bmw rada 5 530d xdrive luxury line daprof nafta", "")).isEqualTo("SEDAN");
+        assertThat(resolveCarType("vw arteon shooting brake 147kw r-line dsg 06/2021", "")).isEqualTo("WAGON");
+    }
+
+    @Test
+    void skipsNonCarSbazarListingsFromFreshLogs() throws Exception {
+        assertThat(looksNonCarListing("padlo a rucni pumpicka")).isTrue();
     }
 
     private String resolveFuelType(String identityText, String scopedText) throws Exception {
@@ -94,5 +101,11 @@ class SbazarParserTest {
         Method method = SbazarParser.class.getDeclaredMethod("resolveCarType", String.class, String.class);
         method.setAccessible(true);
         return (String) method.invoke(parser, identityText, scopedText);
+    }
+
+    private boolean looksNonCarListing(String searchable) throws Exception {
+        Method method = SbazarParser.class.getDeclaredMethod("looksNonCarListing", String.class);
+        method.setAccessible(true);
+        return (boolean) method.invoke(parser, searchable);
     }
 }
