@@ -352,6 +352,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                     extractFuelType(title),
                     extractFuelType(listingText)
             );
+            fuelType = preferExplicitTitleFuelType(title, fuelType);
             fuelType = correctLikelyFalseElectricFuel(title, fuelType);
             String transmission = firstNonBlank(
                     extractTransmission(title),
@@ -1060,6 +1061,20 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         if (containsAny(source, " touareg ", " passat ", " golf ", " tiguan ", " t-roc ", " troc ", " touran ")
                 && !containsAny(source, " hybrid ", " ehybrid ", " e-hybrid ", " gte ", " phev ", " plug-in ", " plugin ")) {
             return extractFuelType(title);
+        }
+
+        return fuelType;
+    }
+
+    private String preferExplicitTitleFuelType(String title, String fuelType) {
+        String source = " " + normalizeText(title).toLowerCase(Locale.ROOT) + " ";
+
+        if (containsAny(source, " benzin ", " benzín ", " petrol ")) {
+            return "PETROL";
+        }
+
+        if (containsAny(source, " diesel ", " nafta ")) {
+            return "DIESEL";
         }
 
         return fuelType;
