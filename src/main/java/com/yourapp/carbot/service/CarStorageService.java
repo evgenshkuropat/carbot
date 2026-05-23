@@ -481,7 +481,10 @@ public class CarStorageService {
             return "CNG";
         }
 
-        if (containsAny(lower, "hybrid", "hev", "mhev", "mild hybrid", "tsi iv", "tsi i v", "superb iv", "kodiaq iv")) {
+        String fuelTokens = " " + lower.replaceAll("[^a-z0-9]+", " ") + " ";
+
+        if (containsAny(lower, "hybrid", "mild hybrid", "tsi iv", "tsi i v", "superb iv", "kodiaq iv")
+                || containsAny(fuelTokens, " hev ", " mhev ")) {
             return "HYBRID";
         }
 
@@ -558,11 +561,11 @@ public class CarStorageService {
     private String normalizeCarType(String carType, String title) {
         String lower = safe(title).toLowerCase(Locale.ROOT);
 
-        if (containsAny(lower, "touran", "v 250", "v250", "v 250l", "v250l", "v 250d", "v250d", "v300d", "grandis")) {
+        if (containsAny(lower, "touran", "v 250", "v250", "v 250l", "v250l", "v 250d", "v250d", "v300d", "grandis", "altea")) {
             return "MINIVAN";
         }
 
-        if (containsAny(lower, "land cruiser", "korando", "rdx", "e-tron", "etron", "x1", "x2", "x3", "x5", "x6", "x7", "glc", "gle", "gls", "gla", "glb", "gl 500", "gl500", "x-trail", "x trail", "pathfinder", "grandland", "grandal", "cx-5", "cx 5", "cx5", "cx-7", "cx 7", "cx7", "niro", "eqa", "mustang mach-e", "mustang mache", "xc40", "xc 40", "xc60", "xc 60", "xc70", "xc 70", "xc90", "xc 90", "jaecoo", "omoda", "swm g1", "swm g01", "inster", "puma gen-e", "puma gen e", "infiniti fx", "fx35", "fx-35")) {
+        if (containsAny(lower, "land cruiser", "korando", "rdx", "e-tron", "etron", "x1", "x2", "x3", "x5", "x6", "x7", "compass", "cherokee", "glk", "glc", "gle", "gls", "gla", "glb", "gl 500", "gl500", "x-trail", "x trail", "pathfinder", "grandland", "grandal", "cx-5", "cx 5", "cx5", "cx-7", "cx 7", "cx7", "niro", "eqa", "mustang mach-e", "mustang mache", "xc40", "xc 40", "xc60", "xc 60", "xc70", "xc 70", "xc90", "xc 90", "jaecoo", "omoda", "swm g1", "swm g01", "inster", "puma gen-e", "puma gen e", "infiniti fx", "fx35", "fx-35")) {
             return "SUV";
         }
 
@@ -642,7 +645,7 @@ public class CarStorageService {
             return "WAGON";
         }
 
-        if (containsAny(lower, "mazda 6", "oktavia", "mondeo", "insignia", "insignie", "peugeot 408", "c220", "c 220", "c220d", "e220", "e 220", "e220d", "e300", "e 300", "e300cdi", "cla", "cls", "s350", "s 350", "s500", "s 500", "w220", "750xd", "730d", "740d", "740i", "750i", "540ix")) {
+        if (containsAny(lower, "cruze", "mazda 6", "oktavia", "mondeo", "insignia", "insignie", "peugeot 408", "c220", "c 220", "c220d", "e220", "e 220", "e220d", "e300", "e 300", "e300cdi", "cla", "cls", "s350", "s 350", "s500", "s 500", "w220", "750xd", "730d", "740d", "740i", "750i", "540ix")) {
             return "SEDAN";
         }
 
