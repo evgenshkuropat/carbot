@@ -24,6 +24,13 @@ class SbazarParserTest {
         assertThat(resolveFuelType("alfa romeo spider 2.2i jts 185ps exclusive", "")).isEqualTo("PETROL");
         assertThat(resolveFuelType("bmw rada 3 330e xdrive m-paket propano", "")).isEqualTo("HYBRID");
         assertThat(resolveFuelType("ford escort 1.6 66kw", "")).isEqualTo("PETROL");
+        assertThat(resolveFuelType("volkswagen multivan 2.0tdi 103kw highline 4motion", "")).isEqualTo("DIESEL");
+        assertThat(resolveTransmission("volkswagen multivan 2.0tdi 103kw highline 4motion", "", "DIESEL")).isEqualTo("-");
+        assertThat(resolveFuelType("hyundai ioniq 5 style 77,4 kwh soh 96,3 800v", "")).isEqualTo("ELECTRIC");
+        assertThat(resolveFuelType("mercedes-benz tridy c 43 amg 4matic", "")).isEqualTo("PETROL");
+        assertThat(resolveFuelType("mercedes r129 sl320 zehlicka", "")).isEqualTo("PETROL");
+        assertThat(resolveFuelType("nova stk klima alu tazne ford fiesta 1.4 59 kw", "")).isEqualTo("PETROL");
+        assertThat(resolveFuelType("klima bez koroze 184 tis volkswagen golf 1.6", "")).isEqualTo("PETROL");
     }
 
     @Test
@@ -49,6 +56,20 @@ class SbazarParserTest {
         assertThat(resolveCarType("ford escort 1.6 66kw", "")).isEqualTo("HATCHBACK");
         assertThat(resolveCarType("volkswagen cc facelift passat 2.0tdi 103kw m2013", "")).isEqualTo("SEDAN");
         assertThat(resolveCarType("mercedes c220 w204 2.2cdi avantgarde", "")).isEqualTo("SEDAN");
+        assertThat(resolveCarType("mercedes-benz tridy e 220cdi amg paket", "")).isEqualTo("SEDAN");
+        assertThat(resolveCarType("audi a8 3,0 50 tdi quattro laser dph", "")).isEqualTo("SEDAN");
+        assertThat(resolveCarType("mercedes-benz tridy c 43 amg 4matic", "")).isEqualTo("SEDAN");
+        assertThat(resolveCarType("vw id 3 pro performance rv.2024", "")).isEqualTo("HATCHBACK");
+        assertThat(resolveCarType("smart fourtwo 451 cdi l6e", "")).isEqualTo("HATCHBACK");
+        assertThat(resolveCarType("smart forfour eq comfort 60 kw", "")).isEqualTo("HATCHBACK");
+        assertThat(resolveCarType("hyundai ix20 1.4 crdi 60tkm cz", "")).isEqualTo("MINIVAN");
+        assertThat(resolveCarType("mazda cx-7 2.3 lpg 4x4 automat", "")).isEqualTo("SUV");
+        assertThat(resolveCarType("mazda cx7 2.2 mzr 127 kw", "")).isEqualTo("SUV");
+        assertThat(resolveCarType("hyundai ioniq 5 style 77,4 kwh soh 96,3 800v", "")).isEqualTo("SUV");
+        assertThat(resolveCarType("opel meriva 1.7dci 74 kw", "")).isEqualTo("MINIVAN");
+        assertThat(resolveCarType("peugeot partner tepee 1.6 vti 72kw", "")).isEqualTo("MINIVAN");
+        assertThat(resolveCarType("bmw rada 4 m440i cr hk tazne 2x kola", "")).isEqualTo("COUPE");
+        assertThat(resolveCarType("bmw rada 5 530d xdrive luxury line daprof nafta", "")).isEqualTo("SEDAN");
     }
 
     private String resolveFuelType(String identityText, String scopedText) throws Exception {
