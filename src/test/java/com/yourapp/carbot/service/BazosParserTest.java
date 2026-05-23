@@ -29,6 +29,15 @@ class BazosParserTest {
     }
 
     @Test
+    void resolvesFuelFromBmwAndAudiBazosTitles() throws Exception {
+        assertThat(extractFuelType("Audi S3")).isEqualTo("PETROL");
+        assertThat(extractFuelType("BMW. 118d")).isEqualTo("DIESEL");
+        assertThat(extractFuelType("BMW 320xd 135kw automat xdrive")).isEqualTo("DIESEL");
+        assertThat(extractFuelType("BMW 530xd E61 LCI M-paket")).isEqualTo("DIESEL");
+        assertThat(extractFuelType("BMW 335i E92 M3 LOOK")).isEqualTo("PETROL");
+    }
+
+    @Test
     void resolvesCarTypesFromBazosTitles() throws Exception {
         assertThat(extractCarType("Seat Leon1.5 TSi 96kW 1majitel CR Xcellence", "", "")).isEqualTo("HATCHBACK");
         assertThat(extractCarType("Seat Leon ST 1.2 TSI, 81kW, r2017", "", "")).isEqualTo("WAGON");
@@ -39,6 +48,8 @@ class BazosParserTest {
         assertThat(extractCarType("Prodám Suzuki s×4,1.6", "", "")).isEqualTo("SUV");
         assertThat(extractCarType("Suzuki Virara 1.6 Ddis", "", "")).isEqualTo("SUV");
         assertThat(extractCarType("Suzuki Alto,1.0i,50kw", "", "")).isEqualTo("HATCHBACK");
+        assertThat(extractCarType("Audi S3", "", "")).isEqualTo("HATCHBACK");
+        assertThat(extractCarType("Mini Cooper 1.5 i 2018 F 56", "", "")).isEqualTo("HATCHBACK");
     }
 
     private String extractFuelType(String text) throws Exception {

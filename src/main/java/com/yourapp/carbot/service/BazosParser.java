@@ -1007,7 +1007,8 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             return "DIESEL";
         }
 
-        if (source.matches(".*\\b[0-9][.,][0-9]\\s*(?:d|td)\\b.*")) {
+        if (source.matches(".*\\b[0-9][.,][0-9]\\s*(?:d|td)\\b.*")
+                || source.matches(".*\\b[0-9]{2,3}x?d\\b.*")) {
             return "DIESEL";
         }
 
@@ -1021,7 +1022,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " quadrifoglio ", " qv ",
                 " gti ", " v6 ", " v8 ", " hemi ",
                 " camaro ", " corvette ", " mustang ",
-                " c63 ", " c 63 ", " s63 ", " s 63 ")) {
+                " c63 ", " c 63 ", " s3 ", " s 3 ", " s63 ", " s 63 ")) {
             return "PETROL";
         }
 
@@ -1059,7 +1060,8 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             return "PETROL";
         }
 
-        if (source.matches(".*\\b[0-9][.,][0-9]\\s*i\\b.*")) {
+        if (source.matches(".*\\b[0-9][.,][0-9]\\s*i\\b.*")
+                || source.matches(".*\\b[0-9]{2,3}i\\b.*")) {
             return "PETROL";
         }
 
@@ -1548,6 +1550,10 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         }
 
         if (containsAny(titleSource, " ibiza ", " alto ")) {
+            return "HATCHBACK";
+        }
+
+        if (containsAny(titleSource, " audi s3 ", " s3 ", " s 3 ", " mini cooper ", " cooper ")) {
             return "HATCHBACK";
         }
 
