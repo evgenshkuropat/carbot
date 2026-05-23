@@ -955,6 +955,8 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " tsi e ",
                 " e-hybrid ",
                 " ehybrid ",
+                " hev ",
+                " mhev ",
                 " superb iv ",
                 " octavia iv ",
                 " passat gte ",
@@ -968,6 +970,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " diesel ", " nafta ",
                 " tdi ", " tdci ", " cdi ", " crdi ", " hdi ", " dci ",
                 " jtd ", " jtdm ", " multijet ", " bluehdi ", " cdti ",
+                " dtec ", " d-tec ", " tddi ",
                 " d4d ", " d-4d ", " did ", " td4 ", " ecoblue ", " crd ")) {
             return "DIESEL";
         }
@@ -983,6 +986,8 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 || compact.contains("multijet")
                 || compact.contains("bluehdi")
                 || compact.contains("cdti")
+                || compact.contains("dtec")
+                || compact.contains("tddi")
                 || compact.contains("d4d")
                 || compact.contains("ecoblue")
                 || compact.contains("30d")
@@ -1596,11 +1601,12 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             return "COUPE";
         }
 
-        if (containsAny(titleSource, " ix20 ", " orlando ", " hhr ")) {
+        if (containsAny(titleSource, " ix20 ", " orlando ", " hhr ", " freemont ")) {
             return "MINIVAN";
         }
 
-        if (containsAny(titleSource, " i10 ", " jazz ", " rio ", " ds3 ", " punto ", " panda ", " grande punto ", " kalos ", " calos ")) {
+        if (containsAny(titleSource, " i10 ", " jazz ", " rio ", " ds3 ", " punto ", " panda ", " grande punto ", " kalos ", " calos ",
+                " fiat 500e ", " fiat e500 ", " 500e ", " e500 ")) {
             return "HATCHBACK";
         }
 
@@ -1652,6 +1658,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " pajero ", " outlander ", " eclipse cross ", " asx ",
                 " qashqai ", " juke ", " x-trail ", " x trail ", " pathfinder ",
                 " land cruiser ", " landcruiser ", " patrol ", " peugeot 2008 ", " 3008 ", " 5008 ",
+                " explorer ",
                 " kuga ", " puma ", " ecosport ",
                 " formentor ", " ateca ", " arona ", " tarraco ",
                 " xc40 ", " xc 40 ", " xc60 ", " xc 60 ", " xc70 ", " xc 70 ", " xc90 ", " xc 90 ",
@@ -1699,7 +1706,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " roomster ", " lodgy ", " verso ",
                 " c-max ", " c max ", " grand c-max ", " grand c max ",
                 " tourneo custom ", " tourneo courier ", " tourneo connect ",
-                " doblo ", " 500l ", " fiat 500l ", " combo ", " vaneo ",
+                " doblo ", " freemont ", " 500l ", " fiat 500l ", " combo ", " vaneo ",
                 " picasso ", " grand c4 picasso ", " c4 picasso ",
                 " b 200 ", " b200 ",
                 " mazda 5 ",
@@ -1746,6 +1753,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " clio ", " megane ", " fiesta ",
                 " rs3 ", " rs 3 ",
                 " civic ", " leon ", " swift ", " born ", " punto ", " panda ",
+                " fiat 500e ", " fiat e500 ", " 500e ", " e500 ",
                 " leaf ", " micra ", " colt ", " spacestar ", " space star ",
                 " f40 ", " řada 1 ", " rada 1 ",
                 " a180 ", " a 180 ", " a180d ", " a 180d ", " a200 ", " a 200 ", " a200d ", " a 200d ", " a35 ",
@@ -2191,6 +2199,10 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         String wordSource = compactSearchText(title + " " + shortenForCheck(text, 400) + " " + safe(url));
 
         if (looksLikePassengerCarModel(title)) {
+            return false;
+        }
+
+        if (containsAny(titleSource, " freemont ")) {
             return false;
         }
 
@@ -3123,6 +3135,8 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " h1 ",
                 " h-1 ",
                 " kona ",
+                " freemont ",
+                " explorer ",
                 " duster ",
                 " golf ",
                 " passat ",
