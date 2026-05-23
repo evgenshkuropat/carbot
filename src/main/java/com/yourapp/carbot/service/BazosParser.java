@@ -949,6 +949,8 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " plug-in ",
                 " plug in ",
                 " phev ",
+                " mild-hybrid ",
+                " mild hybrid ",
                 " hybrid ",
                 " hybridní ",
                 " hybridni ",
@@ -971,7 +973,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " diesel ", " nafta ",
                 " tdi ", " tdci ", " cdi ", " crdi ", " hdi ", " dci ",
                 " jtd ", " jtdm ", " multijet ", " bluehdi ", " cdti ",
-                " dtec ", " d-tec ", " tddi ",
+                " dtec ", " d-tec ", " tddi ", " ddis ",
                 " d4d ", " d-4d ", " did ", " di-d ", " di d ", " td4 ", " ecoblue ", " crd ")) {
             return "DIESEL";
         }
@@ -989,6 +991,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 || compact.contains("cdti")
                 || compact.contains("dtec")
                 || compact.contains("detec")
+                || compact.contains("ddis")
                 || compact.contains("tddi")
                 || compact.contains("d4d")
                 || compact.contains("did")
@@ -1014,7 +1017,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " tsi ", " tfsi ", " fsi ", " gdi ", " tgdi ", " t-gdi ",
                 " dig-t ", " tce ", " ecoboost ", " mivec ",
                 " vtec ", " vti ", " puretech ", " mpi ",
-                " jts ", " twinspark ", " twin spark ", " tbi ",
+                " jts ", " twinspark ", " twin spark ", " tbi ", " vvt ", " boosterjet ", " booster jet ",
                 " quadrifoglio ", " qv ",
                 " gti ", " v6 ", " v8 ", " hemi ",
                 " camaro ", " corvette ", " mustang ",
@@ -1040,7 +1043,15 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 || compact.contains("mpi")
                 || compact.contains("jts")
                 || compact.contains("twinspark")
-                || compact.contains("tbi")) {
+                || compact.contains("tbi")
+                || compact.contains("vvt")
+                || compact.contains("boosterjet")) {
+            return "PETROL";
+        }
+
+        if ((containsAny(source, " vitara ", " virara ", " jimny ", " sx4 ", " s-cross ", " s cross ", " alto ")
+                || Pattern.compile("\\bs\\s*[x×]?\\s*4\\b").matcher(source).find())
+                && Pattern.compile("\\b(?:1[.,][0346]|2[.,]4)\\b").matcher(source).find()) {
             return "PETROL";
         }
 
@@ -1278,6 +1289,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         if (containsAny(compactTitleSource, " nissan ")) return "NISSAN";
         if (containsAny(compactTitleSource, " peugeot ")) return "PEUGEOT";
         if (containsAny(compactTitleSource, " renault ")) return "RENAULT";
+        if (containsAny(compactTitleSource, " seat ")) return "SEAT";
         if (containsAny(compactTitleSource, " suzuki ")) return "SUZUKI";
 
         if (containsAny(source,
@@ -1326,6 +1338,10 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         if (source.contains(" leon ")) return "SEAT";
         if (source.contains(" ibiza ")) return "SEAT";
         if (source.contains(" alhambra ")) return "SEAT";
+        if (source.contains(" altea ")) return "SEAT";
+        if (source.contains(" ateca ")) return "SEAT";
+        if (source.contains(" arona ")) return "SEAT";
+        if (source.contains(" tarraco ")) return "SEAT";
 
         if (source.contains(" golf ")) return "VOLKSWAGEN";
         if (source.contains(" passat ")) return "VOLKSWAGEN";
@@ -1508,6 +1524,31 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
 
         if (containsAny(titleSource, " jaecoo ", " omoda ", " swm g1 ", " swm g01 ", " inster ", " puma gen-e ", " puma gen e ")) {
             return "SUV";
+        }
+
+        if (containsAny(titleSource, " jimny ", " virara ", " tarraco ")) {
+            return "SUV";
+        }
+
+        if (containsAny(titleSource, " sx4 ", " sx 4 ", " s-cross ", " s cross ")
+                || Pattern.compile("\\bs\\s*[x×]?\\s*4\\b").matcher(titleSource).find()) {
+            return "SUV";
+        }
+
+        if (containsAny(titleSource, " altea ", " altea xl ")) {
+            return "MINIVAN";
+        }
+
+        if (containsAny(titleSource, " leon st ", " seat leon st ")) {
+            return "WAGON";
+        }
+
+        if (Pattern.compile("\\bleon\\s*[0-9]").matcher(titleSource).find()) {
+            return "HATCHBACK";
+        }
+
+        if (containsAny(titleSource, " ibiza ", " alto ")) {
+            return "HATCHBACK";
         }
 
         if (containsAny(titleSource, " cr-z ", " cr z ")) {
