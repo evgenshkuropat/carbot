@@ -465,6 +465,7 @@ public class SbazarParser implements CarSourceParser {
                 {"ALFA_ROMEO", "alfa romeo", "giulia", "giulietta", "stelvio"},
                 {"LAND_ROVER", "land rover", "range rover", "discovery", "defender"},
                 {"LEXUS", "lexus", "nx350h", "nx 350h"},
+                {"BENTLEY", "bentley", "continental gt"},
                 {"JAGUAR", "jaguar", "e-pace", "e pace", "xj"},
                 {"JEEP", "jeep", "wrangler", "cherokee"},
                 {"MERCEDES", "mercedes", "benz", "amg", "glc", "gle", "gls", "slk", "e270", "g320"},
@@ -480,8 +481,8 @@ public class SbazarParser implements CarSourceParser {
                 {"OMODA", "omoda"},
                 {"MINI", "mini", "cooper"},
                 {"MITSUBISHI", "mitsubishi", "outlander", "eclipse cross", "l200"},
-                {"HYUNDAI", "hyundai", "i20", "i30", "ix20", "ix35", "tucson", "santa fe"},
-                {"SMART", "smart", "fortwo", "roadster"},
+                {"HYUNDAI", "hyundai", "i20", "i30", "ix20", "ix35", "ioniq", "tucson", "santa fe"},
+                {"SMART", "smart", "fortwo", "forfour", "roadster"},
                 {"PEUGEOT", "peugeot", "rifter", "partner"},
                 {"CITROEN", "citroen", "berlingo", "picasso"},
                 {"RENAULT", "renault", "clio", "megane", "scenic"},
@@ -515,7 +516,11 @@ public class SbazarParser implements CarSourceParser {
     }
 
     private String detectFuelType(String searchable) {
-        if (containsAny(searchable, "bmw i3", " i3 ", "elektro", "electric", "kwh", "enyaq", "cupra born", "bmw i5")) {
+        if (containsAny(searchable,
+                "bmw i3", " i3 ", "bmw i5", " id 3 ", "id.3", " id3 ",
+                " id 4 ", "id.4", " id4 ", " id 5 ", "id.5", " id5 ",
+                "eq comfort", " smart eq", "ioniq 5", "elektro", "electric", "bev", "kwh",
+                "enyaq", "cupra born", "e-tron", "etron")) {
             return "ELECTRIC";
         }
 
@@ -534,7 +539,7 @@ public class SbazarParser implements CarSourceParser {
         if (containsAny(searchable,
                 "plug-in", "plugin", "phev", "hybrid", " hev ", " mhev ", " gte ",
                 "tfsi e", "tsi e",
-                " t8 ", "superb iv", "kodiaq iv")) {
+                " t6 ", " t8 ", "recharge", "superb iv", "kodiaq iv")) {
             return "HYBRID";
         }
 
@@ -542,12 +547,13 @@ public class SbazarParser implements CarSourceParser {
                 "diesel", "nafta", "tdi", "tdci", "cdi", "crdi", "hdi", "dci",
                 "jtd", "jtdm", "multijet", "bluehdi", "cdti", "d4d", "d-4d",
                 "did", "td4", " td ", " td,", "ecoblue", "crd",
-                "20d", "24d5", "d5", "25d", "30sd", "3 0sd", "xdrive25d")) {
+                " d3 ", " d4 ", " d5 ", "20d", "24d5", "25d", "30sd", "3 0sd", "xdrive25d")) {
             return "DIESEL";
         }
 
         if (searchable.matches(".*\\b[a-z]?[0-9]{2,3}d\\b.*")
                 || searchable.matches(".*\\b[0-9][.,][0-9]\\s*d\\b.*")
+                || searchable.matches(".*\\bd\\s*[0-9]\\b.*")
                 || searchable.matches(".*\\bd\\s*4m.*")) {
             return "DIESEL";
         }
@@ -555,16 +561,19 @@ public class SbazarParser implements CarSourceParser {
         if (containsAny(searchable,
                 "benzin", "benzín", "petrol", "tsi", "tfsi", "tsfi", "fsi",
                 "gdi", "tgdi", "dig-t", "tce", "ecoboost", "mivec", "vtec",
-                "vti", "puretech", "pt", "mpi", "16v", "20i", "2 0i",
+                "vti", "puretech", "pt", "mpi", "jts", "16v", "18i", "20i", "2 0i",
                 "30i", "40i", "50i", "850i", "14tsi", "20tsi", "turbo", "ti-vct", "pentastar", "hemi",
                 "challenger", "pacifica", "carrera", "cooper s", "gti",
-                "t5", "s5", "amg gt", "v8", "camaro", "corvette", "macan",
+                "t5", "s5", "amg gt", "v8", "v12", "camaro", "corvette", "macan",
                 "cayenne", "750li", "325xi", "fx35", "fx-35",
                 "2.5t", "2,5t", "focus st", "skyactiv-g")) {
             return "PETROL";
         }
 
-        if (searchable.matches(".*\\b[0-9][.,][0-9]\\s*i\\b.*")) {
+        if (searchable.matches(".*\\b[0-9][.,][0-9]\\s*i\\b.*")
+                || searchable.matches(".*\\b[0-9]{2,3}i\\b.*")
+                || searchable.matches(".*\\b[0-9][.,][0-9]\\b.*\\b(?:jts|vti|tsi|tfsi|mpi)\\b.*")
+                || searchable.matches(".*\\b(?:outback|forester)\\b.*\\b2[.,]5\\b.*")) {
             return "PETROL";
         }
 
@@ -579,11 +588,36 @@ public class SbazarParser implements CarSourceParser {
 
         String scopedFuel = detectFuelType(scopedText);
         if ("ELECTRIC".equals(scopedFuel)
-                && !containsAny(identityText, "elektro", "electric", "bev", "kwh", "enyaq", "cupra born", "bmw i3", "bmw i5", "e-tron", "etron")) {
+                && !containsAny(identityText, "elektro", "electric", "bev", "kwh", "enyaq", "cupra born", "bmw i3", "bmw i5", "id.3", " id 3 ", " id3 ", "id.4", " id 4 ", " id4 ", "id.5", " id 5 ", " id5 ", " smart eq", "eq comfort", "ioniq 5", "e-tron", "etron")) {
+            return "-";
+        }
+
+        if (!"-".equals(scopedFuel) && !hasFuelSignal(identityText, scopedFuel)) {
             return "-";
         }
 
         return scopedFuel;
+    }
+
+    private boolean hasFuelSignal(String identityText, String fuelType) {
+        return switch (fuelType) {
+            case "PETROL" -> containsAny(identityText, "benzin", "benzĂ­n", "petrol", "tsi", "tfsi", "fsi", "gdi",
+                    "tgdi", "dig-t", "tce", "ecoboost", "mivec", "vtec", "vti", "puretech", "mpi", "jts",
+                    "16v", "18i", "20i", "30i", "40i", "50i", "850i", "v8", "v12", "gti")
+                    || identityText.matches(".*\\b[0-9][.,][0-9]\\s*i\\b.*")
+                    || identityText.matches(".*\\b[0-9]{2,3}i\\b.*");
+            case "DIESEL" -> containsAny(identityText, "diesel", "nafta", "tdi", "tdci", "cdi", "crdi", "hdi",
+                    "dci", "jtd", "jtdm", "multijet", "bluehdi", "cdti", "d4d", "d-4d", " d3 ", " d4 ", " d5 ",
+                    "20d", "25d", "30sd", "xdrive25d")
+                    || identityText.matches(".*\\b[a-z]?[0-9]{2,3}d\\b.*")
+                    || identityText.matches(".*\\b[0-9][.,][0-9]\\s*d\\b.*")
+                    || identityText.matches(".*\\bd\\s*[0-9]\\b.*");
+            case "HYBRID" -> containsAny(identityText, "plug-in", "plugin", "phev", "hybrid", " hev ", " mhev ",
+                    " gte ", "tfsi e", "tsi e", " t6 ", " t8 ", "recharge", "superb iv", "kodiaq iv");
+            case "LPG" -> containsAny(identityText, "lpg");
+            case "CNG" -> containsAny(identityText, "cng", "g-tec", "g tec", "gtec");
+            default -> true;
+        };
     }
 
     private String detectTransmission(String searchable) {
