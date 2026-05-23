@@ -32,6 +32,7 @@ class SbazarParserTest {
         assertThat(resolveFuelType("nova stk klima alu tazne ford fiesta 1.4 59 kw", "")).isEqualTo("PETROL");
         assertThat(resolveFuelType("klima bez koroze 184 tis volkswagen golf 1.6", "")).isEqualTo("PETROL");
         assertThat(resolveFuelType("volkswagen golf, 1.4-59 kw,klima,r.09,nova stk", "")).isEqualTo("PETROL");
+        assertThat(resolveFuelType("mercedes benz a 45 amg", "")).isEqualTo("PETROL");
     }
 
     @Test
@@ -72,6 +73,9 @@ class SbazarParserTest {
         assertThat(resolveCarType("bmw rada 4 m440i cr hk tazne 2x kola", "")).isEqualTo("COUPE");
         assertThat(resolveCarType("bmw rada 5 530d xdrive luxury line daprof nafta", "")).isEqualTo("SEDAN");
         assertThat(resolveCarType("vw arteon shooting brake 147kw r-line dsg 06/2021", "")).isEqualTo("WAGON");
+        assertThat(resolveCarType("nissan padfinder", "")).isEqualTo("SUV");
+        assertThat(resolveCarType("audi a4 avant 1,4 tfsi aut led navi e kufr", "")).isEqualTo("WAGON");
+        assertThat(resolveCarType("mercedes benz a 45 amg", "")).isEqualTo("HATCHBACK");
     }
 
     @Test
