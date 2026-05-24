@@ -968,7 +968,8 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             return "HYBRID";
         }
 
-        if (containsAny(source, " jts ", " twinspark ", " twin spark ", " tbi ", " turbo ")) {
+        if (containsAny(source, " jts ", " twinspark ", " twin spark ", " tbi ", " turbo ",
+                " bmw m3 ", " m3 ")) {
             return "PETROL";
         }
 
@@ -1576,6 +1577,10 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             return "CABRIO";
         }
 
+        if (containsAny(titleSource, " bmw m3 ", " m3 ")) {
+            return "COUPE";
+        }
+
         if (containsAny(titleSource, " c63 ", " c 63 ", " c63 amg ", " c 63 amg ")) {
             return "SEDAN";
         }
@@ -1602,7 +1607,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             return "WAGON";
         }
 
-        if (containsAny(titleSource, " g21 ", " c5 tourer ", " citroen c5 tourer ", " c5 x7 ",
+        if (containsAny(titleSource, " g21 ", " e91 ", " c5 tourer ", " citroen c5 tourer ", " c5 x7 ",
                 " insignia st ", " insignia sports tourer ", " insignia sport tourer ",
                 " astra sports tourer ", " astra sport tourer ", " astra sw ", " astra combi ", " astra kombi ", " 308 sw ", " peugeot 308 sw ")) {
             return "WAGON";
@@ -2565,8 +2570,13 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " znak ", " znaky ",
                 " kryty pedalu ",
                 " pruziny ",
+                " tlacitka ",
+                " ovladace ",
                 " hlavice radicky ",
                 " palivovy filtr ",
+                " filtr ",
+                " filtru ",
+                " setrvacnik ",
                 " podbehy ",
                 " stinitka ",
                 " manzeta rucky ")) {

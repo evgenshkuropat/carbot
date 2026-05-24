@@ -37,6 +37,7 @@ class BazosParserTest {
         assertThat(extractFuelType("BMW 320xd 135kw automat xdrive")).isEqualTo("DIESEL");
         assertThat(extractFuelType("BMW 530xd E61 LCI M-paket")).isEqualTo("DIESEL");
         assertThat(extractFuelType("BMW 335i E92 M3 LOOK")).isEqualTo("PETROL");
+        assertThat(extractFuelType("BMW M3 MANUAL KOMPRESOR")).isEqualTo("PETROL");
     }
 
     @Test
@@ -61,6 +62,8 @@ class BazosParserTest {
         assertThat(extractCarType("Suzuki Alto,1.0i,50kw", "", "")).isEqualTo("HATCHBACK");
         assertThat(extractCarType("Audi S3", "", "")).isEqualTo("HATCHBACK");
         assertThat(extractCarType("Mini Cooper 1.5 i 2018 F 56", "", "")).isEqualTo("HATCHBACK");
+        assertThat(extractCarType("BMW 325i e91", "", "")).isEqualTo("WAGON");
+        assertThat(extractCarType("BMW M3 MANUAL KOMPRESOR", "", "")).isEqualTo("COUPE");
     }
 
     @Test
@@ -88,6 +91,9 @@ class BazosParserTest {
         assertThat(looksNonCarListing("JTD Palivovy filtr", "", "", "")).isTrue();
         assertThat(looksNonCarListing("Zadni podbehy Alfa Giulia", "", "", "")).isTrue();
         assertThat(looksNonCarListing("Tmave stinitka Alfa Romeo 147/GT", "", "", "")).isTrue();
+        assertThat(looksNonCarListing("Alfa Romeo 159 - tlacitka, ovladace", "", "", "")).isTrue();
+        assertThat(looksNonCarListing("Original setrvacnik Lancia Fiat 1.2 8v / 16v", "", "", "")).isTrue();
+        assertThat(looksNonCarListing("Sada OEM filtru Alfa 159", "", "", "")).isTrue();
     }
 
     @Test
