@@ -968,6 +968,10 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             return "HYBRID";
         }
 
+        if (containsAny(source, " jts ", " twinspark ", " twin spark ", " tbi ", " turbo ")) {
+            return "PETROL";
+        }
+
         // DIESEL
         if (containsAny(source,
                 " diesel ", " nafta ",
@@ -1196,7 +1200,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             return "MANUAL";
         }
 
-        if (containsAny(tokens, " automat ", " aut ", " at ", " a t ", " mta ")) {
+        if (containsAny(tokens, " automat ", " aut ", " at ", " a t ", " at8 ", " at6 ", " mta ", " selespeed ")) {
             return "AUTOMATIC";
         }
 
@@ -1211,6 +1215,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " automatem ",
                 " aut. ",
                 " a/t ",
+                " selespeed ",
                 " at6 ",
                 " at8 ",
                 " at/8 ",
@@ -2552,6 +2557,19 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         if (containsAny(asciiTitleValue,
                 " dily z ", " dil z ", " na dily ", " nahradni dily ",
                 " stresni nosic ", " stresni box ", " nosic ", " pricniky ", " nd ")) {
+            return true;
+        }
+
+        if (containsAny(asciiTitleValue,
+                " blatnik ", " blatniky ",
+                " znak ", " znaky ",
+                " kryty pedalu ",
+                " pruziny ",
+                " hlavice radicky ",
+                " palivovy filtr ",
+                " podbehy ",
+                " stinitka ",
+                " manzeta rucky ")) {
             return true;
         }
 

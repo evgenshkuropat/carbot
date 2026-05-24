@@ -44,6 +44,8 @@ class BazosParserTest {
         assertThat(extractFuelType("Mercedes-Benz E 350 BLUETEC 4MATIC 12/2016")).isEqualTo("DIESEL");
         assertThat(extractFuelType("Mercedes-Benz 126.500 SEC AMG Paket")).isEqualTo("PETROL");
         assertThat(extractFuelType("Prodam Mitsubishi Eclipse cross 1,5")).isEqualTo("PETROL");
+        assertThat(extractFuelType("Alfa Romeo 156 2.0 JTS 16V Selespeed Distinctive Funny car")).isEqualTo("PETROL");
+        assertThat(extractFuelType("Alfa Romeo Stelvio 2.0 Turbo 16V AT8-Q4 Veloce T")).isEqualTo("PETROL");
     }
 
     @Test
@@ -74,6 +76,21 @@ class BazosParserTest {
     }
 
     @Test
+    void resolvesAlfaRomeoTransmissionAndSkipsPartTitles() throws Exception {
+        assertThat(extractTransmission("Alfa Romeo 156 2.0 JTS 16V Selespeed Distinctive Funny car")).isEqualTo("AUTOMATIC");
+        assertThat(extractTransmission("Alfa Romeo Stelvio 2.0 Turbo 16V AT8-Q4 Veloce T")).isEqualTo("AUTOMATIC");
+
+        assertThat(looksNonCarListing("Alfa Romeo 156 blatniky", "", "", "")).isTrue();
+        assertThat(looksNonCarListing("Znaky Alfa Romeo 74mm", "", "", "")).isTrue();
+        assertThat(looksNonCarListing("Hlinikove kryty pedalu Alfa 159", "", "", "")).isTrue();
+        assertThat(looksNonCarListing("TI Zadni pruziny Alfa Romeo 159 1.9JTDm, JTS, 2.0, 2.2, 1.8", "", "", "")).isTrue();
+        assertThat(looksNonCarListing("Hlavice radicky Alfa Romeo 159", "", "", "")).isTrue();
+        assertThat(looksNonCarListing("JTD Palivovy filtr", "", "", "")).isTrue();
+        assertThat(looksNonCarListing("Zadni podbehy Alfa Giulia", "", "", "")).isTrue();
+        assertThat(looksNonCarListing("Tmave stinitka Alfa Romeo 147/GT", "", "", "")).isTrue();
+    }
+
+    @Test
     void keepsMazdaSixAsCarListing() throws Exception {
         assertThat(looksNonCarListing(
                 "PRODAM MAZDU 6 GH VE VYBORNEM STAVU",
@@ -99,6 +116,12 @@ class BazosParserTest {
         Method method = BazosParser.class.getDeclaredMethod("extractCarType", String.class, String.class, String.class);
         method.setAccessible(true);
         return (String) method.invoke(parser, title, text, url);
+    }
+
+    private String extractTransmission(String text) throws Exception {
+        Method method = BazosParser.class.getDeclaredMethod("extractTransmission", String.class);
+        method.setAccessible(true);
+        return (String) method.invoke(parser, text);
     }
 
     private boolean looksNonCarListing(String title, String text, String url, String analysisText) throws Exception {
