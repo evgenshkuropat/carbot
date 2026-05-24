@@ -459,7 +459,7 @@ public class CarStorageService {
             }
 
             if ("ELECTRIC".equals(upper)
-                    && !containsAny(titleLower, "electric", "elektro", "bev", "kwh", "e-tron", "etron", "id.3", "id3", "id.4", "id4", "id.5", "id5", "enyaq", "cupra born", "bmw i3", "bmw i5")) {
+                    && !containsAny(titleLower, "electric", "elektro", "elektric", "bev", " ev ", "kwh", "e-tron", "etron", "id.3", "id3", "id.4", "id4", "id.5", "id5", "enyaq", "cupra born", "tesla", "polestar", "leaf", "cooper se", "bmw i3", "bmw i5")) {
                 return null;
             }
 
@@ -478,7 +478,7 @@ public class CarStorageService {
             return "DIESEL";
         }
 
-        if (containsAny(lower, "inster", "puma gen-e", "puma gen e", "cupra born", "electric", "elektro", "bev", "kwh")) {
+        if (containsAny(lower, "inster", "puma gen-e", "puma gen e", "cupra born", "tesla", "model y", "model 3", "polestar", "leaf", "cooper se", "electric", "elektro", "elektric", "bev", " ev ", "kwh")) {
             return "ELECTRIC";
         }
 
@@ -570,11 +570,11 @@ public class CarStorageService {
     private String normalizeCarType(String carType, String title) {
         String lower = safe(title).toLowerCase(Locale.ROOT);
 
-        if (containsAny(lower, "touran", "v 250", "v250", "v 250l", "v250l", "v 250d", "v250d", "v300d", "grandis", "altea")) {
+        if (containsAny(lower, "touran", "sharan", "multivan", "c-max", "c max", "grand scenic", "grand scĂ©nic", "scenic", "scĂ©nic", "v 250", "v250", "v 250l", "v250l", "v 250d", "v250d", "v300d", "grandis", "altea")) {
             return "MINIVAN";
         }
 
-        if (containsAny(lower, "land cruiser", "korando", "rdx", "e-tron", "etron", "x1", "x2", "x3", "x5", "x6", "x7", "compass", "cherokee", "glk", "glc", "gle", "gls", "gla", "glb", "gl 500", "gl500", "x-trail", "x trail", "pathfinder", "grandland", "grandal", "cx-5", "cx 5", "cx5", "cx-7", "cx 7", "cx7", "niro", "eqa", "mustang mach-e", "mustang mache", "xc40", "xc 40", "xc60", "xc 60", "xc70", "xc 70", "xc90", "xc 90", "jaecoo", "omoda", "swm g1", "swm g01", "inster", "puma gen-e", "puma gen e", "infiniti fx", "fx35", "fx-35")) {
+        if (containsAny(lower, "land cruiser", "korando", "rdx", "e-tron", "etron", "tiguan", "yeti", "duster", "kodiaq", "karoq", "kamiq", "kuga", "x1", "x2", "x3", "x5", "x6", "x7", "compass", "cherokee", "glk", "glc", "gle", "gls", "gla", "glb", "gl 500", "gl500", "x-trail", "x trail", "pathfinder", "grandland", "grandal", "cx-5", "cx 5", "cx5", "cx-7", "cx 7", "cx7", "niro", "eqa", "mustang mach-e", "mustang mache", "xc40", "xc 40", "xc60", "xc 60", "xc70", "xc 70", "xc90", "xc 90", "jaecoo", "omoda", "swm g1", "swm g01", "inster", "puma gen-e", "puma gen e", "infiniti fx", "fx35", "fx-35")) {
             return "SUV";
         }
 
@@ -881,6 +881,8 @@ public class CarStorageService {
 
         return t.contains("hledám auto")
                 || t.contains("hledam auto")
+                || t.equals("osobni automobil")
+                || t.equals("osobnĂ­ automobil")
                 || t.contains("koupím auto")
                 || t.contains("koupim auto")
                 || t.contains("pronájem auta")
