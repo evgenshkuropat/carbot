@@ -33,6 +33,10 @@ class SbazarParserTest {
         assertThat(resolveFuelType("klima bez koroze 184 tis volkswagen golf 1.6", "")).isEqualTo("PETROL");
         assertThat(resolveFuelType("volkswagen golf, 1.4-59 kw,klima,r.09,nova stk", "")).isEqualTo("PETROL");
         assertThat(resolveFuelType("mercedes benz a 45 amg", "")).isEqualTo("PETROL");
+        assertThat(resolveFuelType("jaecoo 7 1.6 phev shs exclusive", "")).isEqualTo("HYBRID");
+        assertThat(resolveFuelType("omoda 9 shs premium", "")).isEqualTo("HYBRID");
+        assertThat(resolveFuelType("hyundai inster cross premium", "")).isEqualTo("ELECTRIC");
+        assertThat(resolveTransmission("omoda 5 1.6 t 108 kw premium a/t", "", "PETROL")).isEqualTo("AUTOMATIC");
     }
 
     @Test
@@ -48,6 +52,7 @@ class SbazarParserTest {
         assertThat(detectBrand("bentley continental gt v12 434 kw breitling masaze")).isEqualTo("BENTLEY");
         assertThat(detectBrand("hyundai ioniq 5 style 77,4 kwh")).isEqualTo("HYUNDAI");
         assertThat(detectBrand("smart forfour eq comfort 60 kw")).isEqualTo("SMART");
+        assertThat(detectBrand("jaecoo 7 jaecoo 4x4 exclusive")).isEqualTo("JAECOO");
     }
 
     @Test
@@ -76,6 +81,17 @@ class SbazarParserTest {
         assertThat(resolveCarType("nissan padfinder", "")).isEqualTo("SUV");
         assertThat(resolveCarType("audi a4 avant 1,4 tfsi aut led navi e kufr", "")).isEqualTo("WAGON");
         assertThat(resolveCarType("mercedes benz a 45 amg", "")).isEqualTo("HATCHBACK");
+        assertThat(resolveCarType("hyundai bayon bayon fl 1,0 t-gdi wave", "")).isEqualTo("SUV");
+        assertThat(resolveCarType("hyundai inster cross premium", "")).isEqualTo("SUV");
+        assertThat(resolveCarType("jaecoo 7 1.6 phev shs exclusive", "")).isEqualTo("SUV");
+        assertThat(resolveCarType("omoda 9 shs premium", "")).isEqualTo("SUV");
+        assertThat(resolveCarType("peugeot 3008 allure hybrid extra-stav nove", "")).isEqualTo("SUV");
+        assertThat(resolveCarType("suzuki grand vitara 2,4i", "")).isEqualTo("SUV");
+        assertThat(resolveCarType("hyundai i30 cw 1.6d r.v. 2010", "")).isEqualTo("WAGON");
+        assertThat(resolveCarType("prodam dacia logan mcv 1.2 55 kw 2014", "")).isEqualTo("WAGON");
+        assertThat(resolveCarType("kia proceed gt 1.6 t-gdi 150 kw r.v. 2023", "")).isEqualTo("WAGON");
+        assertThat(resolveCarType("mercedes-benz cls 1 majitel amg full led 4 matic", "")).isEqualTo("SEDAN");
+        assertThat(resolveCarType("hyundai bayon bayon fl 1,0 t-gdi wave", "combi wagon")).isEqualTo("SUV");
     }
 
     @Test

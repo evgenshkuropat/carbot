@@ -479,9 +479,10 @@ public class SbazarParser implements CarSourceParser {
                 {"CUPRA", "cupra", "formentor", "born"},
                 {"INFINITI", "infiniti", "fx35", "fx-35"},
                 {"OMODA", "omoda"},
+                {"JAECOO", "jaecoo"},
                 {"MINI", "mini", "cooper"},
                 {"MITSUBISHI", "mitsubishi", "outlander", "eclipse cross", "l200"},
-                {"HYUNDAI", "hyundai", "i20", "i30", "ix20", "ix35", "ioniq", "tucson", "santa fe"},
+                {"HYUNDAI", "hyundai", "i20", "i30", "ix20", "ix35", "ioniq", "tucson", "santa fe", "bayon", "inster"},
                 {"SMART", "smart", "fortwo", "forfour", "roadster"},
                 {"PEUGEOT", "peugeot", "rifter", "partner"},
                 {"CITROEN", "citroen", "berlingo", "picasso"},
@@ -534,7 +535,7 @@ public class SbazarParser implements CarSourceParser {
 
         if (containsAny(searchable,
                 "plug-in", "plugin", "phev", "hybrid", " hev ", " mhev ", " gte ",
-                "tfsi e", "tsi e",
+                "tfsi e", "tsi e", " shs ",
                 " t6 ", " t8 ", "recharge", "superb iv", "kodiaq iv",
                 "330e", " 330 e ", "530e", " 530 e ")) {
             return "HYBRID";
@@ -583,7 +584,7 @@ public class SbazarParser implements CarSourceParser {
 
     private boolean hasElectricSignal(String searchable) {
         return containsAny(searchable,
-                "bmw i3", " i3 ", "bmw i5", " id 3 ", "id.3", " id3 ",
+                "bmw i3", " i3 ", "bmw i5", " inster ", " id 3 ", "id.3", " id3 ",
                 " id 4 ", "id.4", " id4 ", " id 5 ", "id.5", " id5 ",
                 "eq comfort", " smart eq", "ioniq 5", "elektro", "electric", "bev",
                 "enyaq", "cupra born", "e-tron", "etron")
@@ -622,7 +623,7 @@ public class SbazarParser implements CarSourceParser {
                     || identityText.matches(".*\\b[0-9][.,][0-9]\\s*d\\b.*")
                     || identityText.matches(".*\\bd\\s*[0-9]\\b.*");
             case "HYBRID" -> containsAny(identityText, "plug-in", "plugin", "phev", "hybrid", " hev ", " mhev ",
-                    " gte ", "tfsi e", "tsi e", " t6 ", " t8 ", "recharge", "superb iv", "kodiaq iv",
+                    " gte ", "tfsi e", "tsi e", " shs ", " t6 ", " t8 ", "recharge", "superb iv", "kodiaq iv",
                     "330e", " 330 e ", "530e", " 530 e ");
             case "LPG" -> containsAny(identityText, "lpg");
             case "CNG" -> containsAny(identityText, "cng", "g-tec", "g tec", "gtec");
@@ -638,7 +639,7 @@ public class SbazarParser implements CarSourceParser {
                 "steptronic", "g-tronic",
                 "cvt", "e-cvt", "ecvt",
                 "powershift",
-                " at ", " at/", " at,", " at.",
+                " at ", " at/", " at,", " at.", " a/t ", " a/t",
                 "at6", "6at", "at7", "7at", "at8", "8at", "at9", "9at",
                 "10at", "10st", " 10a")) {
             return "AUTOMATIC";
@@ -693,7 +694,7 @@ public class SbazarParser implements CarSourceParser {
         if (containsAny(searchable, "cabrio", "kabriolet", "cabriolet", "eos", "roadster", "slk", " sl ", "308 cc", "peugeot 308 cc", "500c")) {
             return "CABRIO";
         }
-        if (containsAny(searchable, "combi", "kombi", "variant", "shooting brake", "touring", " avant ", "allroad", " sw ", "wagon", "estate", "v60", "v70", "v90")) {
+        if (containsAny(searchable, "i30 cw", "logan mcv", "proceed", "pro ceed", "combi", "kombi", "variant", "shooting brake", "touring", " avant ", "allroad", " sw ", "wagon", "estate", "v60", "v70", "v90")) {
             return "WAGON";
         }
         if (containsAny(searchable, "citigo", "rapid", "sandero", " rio ", "swift", "mazda 3", "v40", "tridy a", "a 160", "a160", "a 45", "a45", "c3", "fiesta", "a1", "a3", "panda", "fortwo", "fourtwo", "forfour", "cupra born", "jazz",
@@ -704,13 +705,13 @@ public class SbazarParser implements CarSourceParser {
         if (containsAny(searchable, "cruze", "superb", "s90", "mazda 6")) {
             return "SEDAN";
         }
-        if (containsAny(searchable, "suv", "kodiaq", "karoq", "kamiq", "yeti", "enyaq", "tiguan", "touareg", "t-cross", "t cross", "kadjar", "qashqai", "x-trail", "pathfinder", "padfinder", "patrol", "bmw x1", "bmw x 1", "bmw x3", "bmw x4", "bmw x5", "bmw x6", "bmw x7", "fx35", "fx-35", "q3", "q5", "q7", "q8", "wrangler", "compass", "cherokee", "discovery", "sportage", "sorento", "xceed", "xcee", "tucson", "santa fe", "ix35", "rav4", "c-hr", " chr ", "cr-v", "hr-v", "cx-3", "cx3", "cx-5", "cx-7", "cx7", "ioniq 5", "outlander", "formentor", "kuga", "crossland", "glk", "glb", "gla", "gl 450", "glc", "gle", "gls", "tridy g", "g320", "c5 aircross", "evoque", "range rover", "tarraco", "xc40", "xc60", "xc90", "xc 70", "xc70", "duster", "ateca", "omoda 5", "mg zs", "mgs5", "peugeot 2008", "ignis", "macan", "cayenne", "urus", "lexus nx", "nx350h", "forester", "asx", "austral", "ix55")) {
+        if (containsAny(searchable, "suv", "kodiaq", "karoq", "kamiq", "yeti", "enyaq", "tiguan", "touareg", "t-cross", "t cross", "kadjar", "qashqai", "x-trail", "pathfinder", "padfinder", "patrol", "bmw x1", "bmw x 1", "bmw x3", "bmw x4", "bmw x5", "bmw x6", "bmw x7", "fx35", "fx-35", "q3", "q5", "q7", "q8", "wrangler", "compass", "cherokee", "discovery", "sportage", "sorento", "xceed", "xcee", "tucson", "santa fe", "bayon", "inster", "ix35", "rav4", "c-hr", " chr ", "cr-v", "hr-v", "cx-3", "cx3", "cx-5", "cx-7", "cx7", "ioniq 5", "outlander", "formentor", "kuga", "crossland", "glk", "glb", "gla", "gl 450", "glc", "gle", "gls", "tridy g", "g320", "c5 aircross", "evoque", "range rover", "tarraco", "xc40", "xc60", "xc90", "xc 70", "xc70", "duster", "ateca", "omoda 5", "omoda 9", "jaecoo", "mg zs", "mgs5", "peugeot 2008", "peugeot 3008", "3008", "peugeot 5008", "5008", "ignis", "vitara", "macan", "cayenne", "urus", "lexus nx", "nx350h", "forester", "asx", "austral", "ix55")) {
             return "SUV";
         }
         if (containsAny(searchable, "coupe", "mustang", " tt ", "370z", "350z", "brz", "challenger", "carrera", "911", "s5", "amg gt", "mercedes-benz cl,", " tridy cl", "clk", "camaro", "rada 4", "bmw 4", "m440i", "440i")) {
             return "COUPE";
         }
-        if (containsAny(searchable, "sedan", "limuz", "passat", "octavia", "superb", "arteon", "corolla", "a4", "a6", "a8", "bmw 3", "rada 3", "bmw 5", "rada 5", "bmw 7", "rada 7", "750d", "750li", "e90", "325xi", "mondeo", "cla", "c250", "c 250", "e220", "e 220", "220cdi", "e270", "e350", "e 350", "c220", "c43", "c 43", "tridy c", "tridy e", "s 320", "s 350", "tridy s")) {
+        if (containsAny(searchable, "sedan", "limuz", "passat", "octavia", "superb", "arteon", "corolla", "a4", "a6", "a8", "bmw 3", "rada 3", "bmw 5", "rada 5", "bmw 7", "rada 7", "750d", "750li", "e90", "325xi", "mondeo", "cla", "cls", "c250", "c 250", "e220", "e 220", "220cdi", "e270", "e350", "e 350", "c220", "c43", "c 43", "tridy c", "tridy e", "s 320", "s 350", "tridy s")) {
             return "SEDAN";
         }
         if (containsAny(searchable, "hatchback", "mini", "cooper", "208", "punto", "fiat 500", "citigo", "fabia", "scala", "clio", "golf", "focus", "a 180", "i20", "i30", "ceed", "leon", "civic", "astra", "corsa", "polo", "yaris", "micra", "picanto")) {
@@ -733,7 +734,12 @@ public class SbazarParser implements CarSourceParser {
         }
 
         if ("SUV".equals(scopedType)
-                && !containsAny(identityText, "suv", "4x4", "kodiaq", "karoq", "yeti", "tiguan", "touareg", "qashqai", "x-trail", "bmw x", "q3", "q5", "q7", "q8", "kuga", "duster", "crossover")) {
+                && !containsAny(identityText, "suv", "4x4", "kodiaq", "karoq", "yeti", "tiguan", "touareg", "qashqai", "x-trail", "bmw x", "q3", "q5", "q7", "q8", "kuga", "duster", "bayon", "inster", "omoda", "jaecoo", "3008", "5008", "vitara", "crossover")) {
+            return "-";
+        }
+
+        if ("WAGON".equals(scopedType)
+                && !containsAny(identityText, "combi", "kombi", "variant", "shooting brake", "touring", " avant ", "allroad", " sw ", "cw", "wagon", "estate", "mcv", "proceed", "pro ceed")) {
             return "-";
         }
 
