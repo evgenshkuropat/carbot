@@ -924,6 +924,14 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             return "CNG";
         }
 
+        if (containsAny(source,
+                " plug-in hybrid ", " plugin hybrid ", " plug in hybrid ",
+                " plug-in ", " plug in ", " phev ",
+                " mild-hybrid ", " mild hybrid ",
+                " hybrid ", " hybridni ", " e-hybrid ", " ehybrid ", " hev ", " mhev ")) {
+            return "HYBRID";
+        }
+
         // ELECTRIC - only strong EV signals
         if (containsAny(source,
                 " elektro ", " elektromobil ", " elektroauto ",
@@ -1022,7 +1030,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " benzin ", " benzín ", " benzinovy ", " benzínový ", " petrol ",
                 " tsi ", " tfsi ", " fsi ", " gdi ", " tgdi ", " t-gdi ",
                 " dig-t ", " tce ", " ecoboost ", " mivec ",
-                " vtec ", " vti ", " puretech ", " mpi ",
+                " vtec ", " vti ", " puretech ", " mpi ", " twinair ",
                 " jts ", " twinspark ", " twin spark ", " tbi ", " vvt ", " boosterjet ", " booster jet ",
                 " quadrifoglio ", " qv ",
                 " gti ", " v6 ", " v8 ", " hemi ",
@@ -1048,6 +1056,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 || compact.contains("vti")
                 || compact.contains("puretech")
                 || compact.contains("mpi")
+                || compact.contains("twinair")
                 || compact.contains("jts")
                 || compact.contains("twinspark")
                 || compact.contains("tbi")
@@ -1067,6 +1076,11 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         }
 
         if (source.contains(" eclipse cross ") && Pattern.compile("\\b1[.,]5\\b").matcher(source).find()) {
+            return "PETROL";
+        }
+
+        if (source.contains(" fiat 500 ")
+                && Pattern.compile("\\b(?:0[.,]9|1[.,][0124])\\b").matcher(source).find()) {
             return "PETROL";
         }
 
