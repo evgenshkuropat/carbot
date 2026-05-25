@@ -1555,6 +1555,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
     private String extractCarType(String title, String text, String url) {
         String titleSource = " " + normalizeText(safe(title)).toLowerCase(Locale.ROOT) + " ";
         titleSource = titleSource + " " + compactSearchText(safe(title));
+        titleSource = titleSource + " " + asciiSearchText(safe(title));
         String textSource = " " + normalizeText(safe(text)).toLowerCase(Locale.ROOT) + " ";
         String urlSource = " " + normalizeText(safe(url)).toLowerCase(Locale.ROOT) + " ";
 
@@ -1867,6 +1868,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " roomster ", " lodgy ", " verso ",
                 " c-max ", " c max ", " grand c-max ", " grand c max ",
                 " tourneo custom ", " tourneo courier ", " tourneo connect ",
+                " talento kombi ", " talento 8mist ", " talento 8 mist ", " talento 9mist ", " talento 9 mist ",
                 " doblo ", " freemont ", " 500l ", " fiat 500l ", " combo ", " vaneo ",
                 " picasso ", " grand c4 picasso ", " c4 picasso ",
                 " b 200 ", " b200 ",
@@ -1887,7 +1889,8 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " proceed ", " pro ceed ",
                 " v40 ", " v50 ", " v60 ", " v70 ", " v 70 ", " v90 ",
                 " g31 ", " tipo sw ", " 206sw ", " 207sw ", " 307sw ", " 308sw ", " 407sw ", " 508sw ",
-                " i40 wg ", " i40 wagon ", " i40 kombi ")) {
+                " i40 wg ", " i40 wagon ", " i40 kombi ",
+                " fiat croma ", " croma ")) {
             return "WAGON";
         }
 
