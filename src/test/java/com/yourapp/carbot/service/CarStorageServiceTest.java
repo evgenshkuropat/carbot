@@ -30,6 +30,14 @@ class CarStorageServiceTest {
         assertThat(normalizeFuelType(null, "Fiat 500X 1.6 81kw")).isEqualTo("PETROL");
         assertThat(normalizeFuelType(null, "Mercedes-Benz CL 500")).isEqualTo("PETROL");
         assertThat(normalizeFuelType(null, "Jaguar XK8 4.0 209 kW")).isEqualTo("PETROL");
+        assertThat(normalizeFuelType(null, "Nissan Qashqai TEKNA e-POWER 2WD 140kW")).isEqualTo("HYBRID");
+        assertThat(normalizeFuelType(null, "BMW Rada 2 225xe iPERFORMANCE F45 165kW")).isEqualTo("HYBRID");
+        assertThat(normalizeFuelType(null, "TOP MOTOR 4x4 1.8 T 110 KW SKODA OCTAVIA Super")).isEqualTo("PETROL");
+        assertThat(normalizeFuelType(null, "Chevrolet Cruze 1.6 91kW")).isEqualTo("PETROL");
+        assertThat(normalizeFuelType(null, "Ford Focus Combi 1.6 85 kW")).isEqualTo("PETROL");
+        assertThat(normalizeFuelType(null, "Ford Fiesta ST atmosfera 150PS")).isEqualTo("PETROL");
+        assertThat(normalizeFuelType(null, "Suzuki SX4 S-Cross 1,4 BoosterJet Premium")).isEqualTo("PETROL");
+        assertThat(normalizeFuelType(null, "Dongfeng U-Tour 1,5 T 130 kW ExclusiveFR")).isEqualTo("PETROL");
     }
 
     @Test
@@ -57,6 +65,16 @@ class CarStorageServiceTest {
         assertThat(normalizeCarType(null, "Mercedes-Benz CL 500")).isEqualTo("COUPE");
         assertThat(normalizeCarType("HATCHBACK", "Jaguar XK8 4.0 209 kW")).isEqualTo("COUPE");
         assertThat(normalizeCarType(null, "Dodge Caliber")).isEqualTo("HATCHBACK");
+        assertThat(normalizeCarType("HATCHBACK", "Ford Tourneo Custom 2,0 EcoBlue 96kW 8mist")).isEqualTo("MINIVAN");
+        assertThat(normalizeCarType("HATCHBACK", "Dongfeng U-Tour 1,5 T 130 kW ExclusiveFR 7mist")).isEqualTo("MINIVAN");
+        assertThat(normalizeCarType("HATCHBACK", "Dongfeng Mage 1,5 T 145 kW E2 DCT7")).isEqualTo("SUV");
+        assertThat(normalizeCarType("MINIVAN", "Dongfeng T5 EVO 1,5 T 130kW DCT7 DragonEdition")).isEqualTo("SUV");
+        assertThat(normalizeCarType("HATCHBACK", "BMW X2 sDrive 18d M-PAKET")).isEqualTo("SUV");
+        assertThat(normalizeCarType("HATCHBACK", "Seat Arona 1,6 TDI 85kW FR")).isEqualTo("SUV");
+        assertThat(normalizeCarType(null, "Alfa Romeo Stelvio 2.2 JTDm Competizione Q4")).isEqualTo("SUV");
+        assertThat(normalizeCarType("HATCHBACK", "Suzuki SX4 S-Cross 1,4 BoosterJet Premium")).isEqualTo("SUV");
+        assertThat(normalizeCarType(null, "Skoda Octavia Scout CZ DPH")).isEqualTo("WAGON");
+        assertThat(normalizeCarType("HATCHBACK", "BMW Rada 2 225xe iPERFORMANCE F45 165kW")).isEqualTo("MINIVAN");
     }
 
     @Test

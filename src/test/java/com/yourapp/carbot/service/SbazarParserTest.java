@@ -53,6 +53,14 @@ class SbazarParserTest {
         assertThat(resolveFuelType("fiat 500x 1.6 81kw pop star navi", "")).isEqualTo("PETROL");
         assertThat(resolveFuelType("mercedes-benz cl 500", "")).isEqualTo("PETROL");
         assertThat(resolveFuelType("jaguar xk8 4.0 209 kw", "")).isEqualTo("PETROL");
+        assertThat(resolveFuelType("nissan qashqai tekna e-power 2wd 140kw", "")).isEqualTo("HYBRID");
+        assertThat(resolveFuelType("bmw rada 2 225xe iperformance f45 165kw", "")).isEqualTo("HYBRID");
+        assertThat(resolveFuelType("top motor 4x4 1.8 t 110 kw skoda octavia super", "")).isEqualTo("PETROL");
+        assertThat(resolveFuelType("nova stk bez koroze chevrolet cruze 1.6 91kw", "")).isEqualTo("PETROL");
+        assertThat(resolveFuelType("ford focus combi 1.6 85 kw", "")).isEqualTo("PETROL");
+        assertThat(resolveFuelType("ford fiesta st atmosfera 150ps", "")).isEqualTo("PETROL");
+        assertThat(resolveFuelType("suzuki sx4 s-cross 1,4 boosterjet premium 2x4", "")).isEqualTo("PETROL");
+        assertThat(resolveFuelType("dongfeng u-tour 1,5 t 130 kw exclusivefr 7mist", "")).isEqualTo("PETROL");
         assertThat(resolveTransmission("honda crv 2020 hybrid benzin 72tis.km", "", "HYBRID")).isEqualTo("AUTOMATIC");
         assertThat(resolveTransmission("tesla model 3 long range dual motor soh 92", "", "ELECTRIC")).isEqualTo("AUTOMATIC");
     }
@@ -73,6 +81,7 @@ class SbazarParserTest {
         assertThat(detectBrand("jaecoo 7 jaecoo 4x4 exclusive")).isEqualTo("JAECOO");
         assertThat(detectBrand("tesla model 3 performance")).isEqualTo("TESLA");
         assertThat(detectBrand("ssangyong tivoli xlv 1.6i 94kw lpg")).isEqualTo("SSANGYONG");
+        assertThat(detectBrand("dongfeng t5 evo 1,5 t 130kw dct7 dragonedition")).isEqualTo("DONGFENG");
     }
 
     @Test
@@ -134,6 +143,17 @@ class SbazarParserTest {
         assertThat(resolveCarType("jaguar xk8 4.0 209 kw", "")).isEqualTo("COUPE");
         assertThat(resolveCarType("dodge caliber", "")).isEqualTo("HATCHBACK");
         assertThat(resolveCarType("skoda fabia 1.2 htp classic", "")).isEqualTo("HATCHBACK");
+        assertThat(resolveCarType("ford tourneo custom 2,0 ecoblue 96kw 8mist l2 navi", "")).isEqualTo("MINIVAN");
+        assertThat(resolveCarType("dongfeng u-tour 1,5 t 130 kw exclusivefr 7mist", "")).isEqualTo("MINIVAN");
+        assertThat(resolveCarType("dongfeng mage 1,5 t 145 kw e2 dct7", "")).isEqualTo("SUV");
+        assertThat(resolveCarType("dongfeng t5 evo 1,5 t 130kw dct7 dragonedition", "")).isEqualTo("SUV");
+        assertThat(resolveCarType("bmw x2 sdrive 18d m-paket", "")).isEqualTo("SUV");
+        assertThat(resolveCarType("seat arona 1,6 tdi 85kw fr", "")).isEqualTo("SUV");
+        assertThat(resolveCarType("alfa romeo stelvio 2.2 jtdm competizione q4", "")).isEqualTo("SUV");
+        assertThat(resolveCarType("suzuki sx4 s-cross 1,4 boosterjet premium 2x4", "")).isEqualTo("SUV");
+        assertThat(resolveCarType("peugeot 308 2,0 bhdi 110kw", "")).isEqualTo("HATCHBACK");
+        assertThat(resolveCarType("skoda octavia scout cz dph", "")).isEqualTo("WAGON");
+        assertThat(resolveCarType("bmw rada 2 225xe iperformance f45 165kw", "")).isEqualTo("MINIVAN");
     }
 
     @Test

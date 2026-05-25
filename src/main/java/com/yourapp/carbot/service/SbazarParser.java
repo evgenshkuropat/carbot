@@ -481,6 +481,7 @@ public class SbazarParser implements CarSourceParser {
                 {"INFINITI", "infiniti", "fx35", "fx-35"},
                 {"OMODA", "omoda"},
                 {"JAECOO", "jaecoo"},
+                {"DONGFENG", "dongfeng", "u-tour", "u tour", "t5 evo"},
                 {"MINI", "mini", "cooper"},
                 {"MITSUBISHI", "mitsubishi", "outlander", "eclipse cross", "l200"},
                 {"HYUNDAI", "hyundai", "i20", "i30", "ix20", "ix35", "ioniq", "tucson", "santa fe", "bayon", "inster"},
@@ -537,9 +538,9 @@ public class SbazarParser implements CarSourceParser {
 
         if (containsAny(searchable,
                 "plug-in", "plugin", "phev", "hybrid", " hev ", " mhev ", " gte ",
-                "tfsi e", "tsi e", " shs ",
+                "tfsi e", "tsi e", " shs ", "e-power", "epower", "225xe", "iperformance",
                 " t8 ", "recharge", "superb iv", "kodiaq iv",
-                "330e", " 330 e ", "530e", " 530 e ")) {
+                "330e", " 330 e ", "530e", " 530 e ", " b5 ")) {
             return "HYBRID";
         }
 
@@ -581,17 +582,21 @@ public class SbazarParser implements CarSourceParser {
                 "challenger", "pacifica", "carrera", "cooper s", "gti",
                 "t5", " t6 ", "s5", "amg gt", "v8", "v12", "camaro", "corvette", "macan",
                 "cayenne", "750li", "325xi", "fx35", "fx-35",
-                "2.5t", "2,5t", "focus st", "skyactiv-g", "skyactiv g", "sky-g", "sky g",
+                "2.5t", "2,5t", "focus st", "fiesta st", "skyactiv-g", "skyactiv g", "sky-g", "sky g",
+                "boosterjet", "u-tour 1,5", "u tour 1,5", "mage 1,5", "t5 evo 1,5",
                 "busso", "gta", "matiz", "s-max 1.5", "s max 1.5", "s-max 1,5", "s max 1,5",
                 "b-max 1.0", "b max 1.0", "b-max 1,0", "b max 1,0",
-                "focus 1.0", "focus 1,0", "e-thp", "ethp", "htp",
+                "focus 1.0", "focus 1,0", "focus combi 1.6", "focus combi 1,6", "e-thp", "ethp", "htp",
                 "escort 1.6", "escort 1,6", "c43", "c 43", "a45", "a 45", "sl320",
                 "fiesta 1.4", "fiesta 1,4", "golf 1.6", "golf 1,6",
-                "golf 1.4", "golf 1,4", "octavia 1.6", "octavia 1,6")) {
+                "golf 1.4", "golf 1,4", "octavia 1.6", "octavia 1,6",
+                "octavia 1.8 t", "octavia 1,8 t", "cruze 1.6", "cruze 1,6")) {
             return "PETROL";
         }
 
-        if ((containsAny(searchable, "peugeot 3008", "fiat 500x", "b-max", "b max")
+        if ((containsAny(searchable, "octavia")
+                && searchable.matches(".*\\b1[.,]8\\s*t\\b.*"))
+                || (containsAny(searchable, "peugeot 3008", "fiat 500x", "b-max", "b max")
                 && searchable.matches(".*\\b1[.,][026]\\b.*"))
                 || containsAny(searchable, "cl 500", "cl500", "xk8")) {
             return "PETROL";
@@ -651,7 +656,8 @@ public class SbazarParser implements CarSourceParser {
                     || identityText.matches(".*\\b[0-9][.,][0-9]\\s*d\\b.*")
                     || identityText.matches(".*\\bd\\s*[0-9]\\b.*");
             case "HYBRID" -> containsAny(identityText, "plug-in", "plugin", "phev", "hybrid", " hev ", " mhev ",
-                    " gte ", "tfsi e", "tsi e", " shs ", " t8 ", "recharge", "superb iv", "kodiaq iv",
+                    " gte ", "tfsi e", "tsi e", " shs ", "e-power", "epower", "225xe", "iperformance",
+                    " t8 ", "recharge", "superb iv", "kodiaq iv", " b5 ",
                     "330e", " 330 e ", "530e", " 530 e ");
             case "LPG" -> containsAny(identityText, "lpg");
             case "CNG" -> containsAny(identityText, "cng", "g-tec", "g tec", "gtec");
@@ -722,7 +728,7 @@ public class SbazarParser implements CarSourceParser {
         if (containsAny(searchable, "volkswagen cc", "vw cc", "passat cc")) {
             return "SEDAN";
         }
-        if (containsAny(searchable, "touran", "sharan", "alhambra", "altea", "s-max", "c-max", "b-max", "galaxy", "zafira", "scenic", "picasso", "roomster", "berlingo", "rifter", "caddy", "vito", "viano", "v 250", "tridy v", "tridy r", "proace verso", "proace city verso", "multivan", " t5 ", " t6 ", "volkswagen t5", "volkswagen t6", "dokker", "lodgy", "jogger", "b180", "b 180", "b200", "b 200", "peugeot 807", " 807 ", "mazda 5", "grandis", "voyager", "pacifica", "grand caravan", "ix20", "meriva", "partner tepee")) {
+        if (containsAny(searchable, "touran", "sharan", "alhambra", "altea", "s-max", "c-max", "b-max", "galaxy", "zafira", "scenic", "picasso", "roomster", "berlingo", "rifter", "caddy", "vito", "viano", "v 250", "tridy v", "tridy r", "proace verso", "proace city verso", "multivan", "volkswagen t5", "volkswagen t6", "vw t5", "vw t6", "tourneo custom", "u-tour", "u tour", "225xe", "active tourer", " f45 ", "dokker", "lodgy", "jogger", "b180", "b 180", "b200", "b 200", "peugeot 807", " 807 ", "mazda 5", "grandis", "voyager", "pacifica", "grand caravan", "ix20", "meriva", "partner tepee")) {
             return "MINIVAN";
         }
         if (containsAny(searchable, "model 3", "model s", "w220", "w 220", "fluence", "audi s8", " s8 ", "jaguar xf", " xf ")) {
@@ -740,7 +746,7 @@ public class SbazarParser implements CarSourceParser {
         if (containsAny(searchable, "cabrio", "kabriolet", "cabriolet", "eos", "roadster", "slk", " sl ", "308 cc", "peugeot 308 cc", "500c")) {
             return "CABRIO";
         }
-        if (containsAny(searchable, "i30 cw", "logan mcv", "proceed", "pro ceed", "combi", "kombi", "variant", "shooting brake", "touring", " avant ", "allroad", " sw ", "wagon", "estate", "v60", "v70", "v90")
+        if (containsAny(searchable, "octavia scout", "i30 cw", "logan mcv", "proceed", "pro ceed", "combi", "kombi", "variant", "shooting brake", "touring", " avant ", "allroad", " sw ", "wagon", "estate", "v60", "v70", "v90")
                 || searchable.matches(".*\\ba[46]\\b.*\\bavant\\b.*")) {
             return "WAGON";
         }
@@ -752,7 +758,7 @@ public class SbazarParser implements CarSourceParser {
         if (containsAny(searchable, "cruze", "superb", "s90", "mazda 6")) {
             return "SEDAN";
         }
-        if (containsAny(searchable, "suv", "kodiaq", "karoq", "kamiq", "yeti", "enyaq", "tiguan", "touareg", "t-cross", "t cross", "kadjar", "qashqai", "x-trail", "pathfinder", "padfinder", "patrol", "bmw x1", "bmw x 1", "bmw x3", "bmw x4", "bmw x5", "bmw x6", "bmw x7", "fx35", "fx-35", "q3", "q5", "q7", "q8", "wrangler", "compass", "cherokee", "discovery", "sportage", "sorento", "xceed", "xcee", "tucson", "santa fe", "bayon", "inster", "ix35", "rav4", "c-hr", " chr ", "cr-v", "hr-v", "cx-3", "cx3", "cx-5", "cx-7", "cx7", "ioniq 5", "outlander", "formentor", "kuga", "crossland", "glk", "glb", "gla", "gl 450", "glc", "gle", "gls", "tridy g", "g320", "c5 aircross", "evoque", "range rover", "tarraco", "xc40", "xc60", "xc90", "xc 70", "xc70", "duster", "tivoli", "ateca", "omoda 5", "omoda 9", "jaecoo", "mg zs", "mgs5", "peugeot 2008", "peugeot 3008", "3008", "peugeot 5008", "5008", "ignis", "vitara", "macan", "cayenne", "urus", "lexus nx", "nx350h", "forester", "asx", "austral", "ix55")) {
+        if (containsAny(searchable, "suv", "kodiaq", "karoq", "kamiq", "yeti", "enyaq", "tiguan", "touareg", "t-cross", "t cross", "kadjar", "qashqai", "x-trail", "pathfinder", "padfinder", "patrol", "bmw x1", "bmw x 1", "bmw x2", "bmw x 2", "bmw x3", "bmw x4", "bmw x5", "bmw x6", "bmw x7", "fx35", "fx-35", "q3", "q5", "q7", "q8", "wrangler", "compass", "cherokee", "discovery", "sportage", "sorento", "xceed", "xcee", "tucson", "santa fe", "bayon", "inster", "ix35", "rav4", "c-hr", " chr ", "cr-v", "hr-v", "cx-3", "cx3", "cx-5", "cx-7", "cx7", "ioniq 5", "outlander", "formentor", "kuga", "crossland", "glk", "glb", "gla", "gl 450", "glc", "gle", "gls", "tridy g", "g320", "c5 aircross", "evoque", "range rover", "tarraco", "arona", "stelvio", "xc40", "xc60", "xc90", "xc 70", "xc70", "duster", "tivoli", "ateca", "sx4", "s-cross", "s cross", "dongfeng mage", "t5 evo", "dongfeng t5", "omoda 5", "omoda 9", "jaecoo", "mg zs", "mgs5", "peugeot 2008", "peugeot 3008", "3008", "peugeot 5008", "5008", "ignis", "vitara", "macan", "cayenne", "urus", "lexus nx", "nx350h", "forester", "asx", "austral", "ix55")) {
             return "SUV";
         }
         if (containsAny(searchable, "coupe", "mustang", " tt ", "370z", "350z", "brz", "challenger", "carrera", "911", "s5", "amg gt", "mercedes-benz cl,", " tridy cl", "clk", "camaro", "rada 4", "bmw 4", "m440i", "440i")) {
@@ -761,7 +767,7 @@ public class SbazarParser implements CarSourceParser {
         if (containsAny(searchable, "sedan", "limuz", "passat", "octavia", "superb", "arteon", "corolla", "a4", "a6", "a8", "bmw 3", "rada 3", "bmw 5", "rada 5", "bmw 7", "rada 7", "750d", "750li", "e90", "325xi", "mondeo", "cla", "cls", "c250", "c 250", "e220", "e 220", "220cdi", "e270", "e350", "e 350", "c220", "c43", "c 43", "tridy c", "tridy e", "s 320", "s 350", "tridy s")) {
             return "SEDAN";
         }
-        if (containsAny(searchable, "hatchback", "mini", "cooper", "208", "punto", "fiat 500", "citigo", "fabia", "scala", "clio", "golf", "focus", "a 180", "i20", "i30", "ceed", "leon", "civic", "astra", "corsa", "polo", "yaris", "micra", "picanto")) {
+        if (containsAny(searchable, "hatchback", "mini", "cooper", "208", "peugeot 308", "punto", "fiat 500", "citigo", "fabia", "scala", "clio", "golf", "focus", "a 180", "i20", "i30", "ceed", "leon", "civic", "astra", "corsa", "polo", "yaris", "micra", "picanto")) {
             return "HATCHBACK";
         }
 
