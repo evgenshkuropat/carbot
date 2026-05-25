@@ -37,6 +37,12 @@ class SbazarParserTest {
         assertThat(resolveFuelType("omoda 9 shs premium", "")).isEqualTo("HYBRID");
         assertThat(resolveFuelType("hyundai inster cross premium", "")).isEqualTo("ELECTRIC");
         assertThat(resolveTransmission("omoda 5 1.6 t 108 kw premium a/t", "", "PETROL")).isEqualTo("AUTOMATIC");
+        assertThat(resolveFuelType("mazda cx-5 2.2 skyactive 4wd bose sendo", "")).isEqualTo("DIESEL");
+        assertThat(resolveFuelType("mazda cx-3 2.0 sky-g 121k attraction a/t", "")).isEqualTo("PETROL");
+        assertThat(resolveFuelType("alfa romeo 147 gta 3,2busso manual", "")).isEqualTo("PETROL");
+        assertThat(resolveFuelType("chevrolet matiz 0.8 rok 2009 krasny stav", "")).isEqualTo("PETROL");
+        assertThat(resolveFuelType("ford s-max 1.5 st-line 118 kw 1 majitel", "")).isEqualTo("PETROL");
+        assertThat(resolveTransmission("honda crv 2020 hybrid benzin 72tis.km", "", "HYBRID")).isEqualTo("AUTOMATIC");
     }
 
     @Test
@@ -92,6 +98,10 @@ class SbazarParserTest {
         assertThat(resolveCarType("kia proceed gt 1.6 t-gdi 150 kw r.v. 2023", "")).isEqualTo("WAGON");
         assertThat(resolveCarType("mercedes-benz cls 1 majitel amg full led 4 matic", "")).isEqualTo("SEDAN");
         assertThat(resolveCarType("hyundai bayon bayon fl 1,0 t-gdi wave", "combi wagon")).isEqualTo("SUV");
+        assertThat(resolveCarType("skoda roomster 1.2tsi 63kw nove v cr klima", "")).isEqualTo("MINIVAN");
+        assertThat(resolveCarType("audi a6 3.0 tdi 4x4 avant quattro automat sline", "")).isEqualTo("WAGON");
+        assertThat(resolveCarType("fiat bravo 2011 1.4 66kw lpg servis nove rozvody", "")).isEqualTo("HATCHBACK");
+        assertThat(resolveCarType("chevrolet matiz 0.8 rok 2009 krasny stav", "")).isEqualTo("HATCHBACK");
     }
 
     @Test

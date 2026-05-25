@@ -441,6 +441,11 @@ public class CarStorageService {
                 return "HYBRID";
             }
 
+            if ("DIESEL".equals(upper)
+                    && containsAny(titleLower, "matiz", "0.8", "0,8")) {
+                return "PETROL";
+            }
+
             if ("ELECTRIC".equals(upper)
                     && titleLower.contains("carens")
                     && Pattern.compile("\\b1[\\.,]7\\b", Pattern.CASE_INSENSITIVE).matcher(titleLower).find()) {
@@ -472,7 +477,10 @@ public class CarStorageService {
             return "PLUGIN_HYBRID";
         }
 
-        if (containsAny(lower, "530xd", "750xd", "220cdi")
+        if ((containsAny(lower, "mazda cx-5", "mazda cx5", "cx-5", "cx5")
+                && containsAny(lower, "skyactiv", "skyactive")
+                && Pattern.compile("\\b2[\\.,]2\\b", Pattern.CASE_INSENSITIVE).matcher(lower).find())
+                || containsAny(lower, "530xd", "750xd", "220cdi")
                 || (containsAny(lower, "v 250", "v250", "v 250l", "v250l", "v250d", "v 250d", "v300d", "v 300d") && !containsAny(lower, "benzin", "benz", "petrol", "lpg"))
                 || (lower.contains("allroad") && !containsAny(lower, "tfsi", "tsi", "petrol", "benzin", "benz"))) {
             return "DIESEL";
@@ -512,7 +520,7 @@ public class CarStorageService {
             return "DIESEL";
         }
 
-        if (containsAny(lower, "sl 600", "sl600", "slk55", "s500", "gl 500", "gl500", "v12", "v8", "space star", "spacestar", "eclipse cross 1.5", "eclipse cross 1,5", "mx-5", "mx 5", "x-type", "x type")) {
+        if (containsAny(lower, "sl 600", "sl600", "slk55", "s500", "gl 500", "gl500", "v12", "v8", "space star", "spacestar", "eclipse cross 1.5", "eclipse cross 1,5", "mx-5", "mx 5", "x-type", "x type", "busso", "gta", "matiz", "s-max 1.5", "s max 1.5", "s-max 1,5", "s max 1,5", "sky-g", "sky g", "skyactiv-g", "skyactiv g")) {
             return "PETROL";
         }
 
@@ -537,6 +545,13 @@ public class CarStorageService {
         }
 
         String titleOnly = safe(title).toLowerCase(Locale.ROOT);
+        String normalizedFuel = normalizeFuelType(fuelType, title);
+        if ("HYBRID".equals(normalizedFuel)
+                && containsAny(lower, "honda crv", "honda cr-v", "honda hr-v", "honda hrv", "e:hev", "ehev", "full hybrid")
+                && !containsAny(lower, "manual", "manualni", "man.", " mt ", "6mt", "5mt")) {
+            return "AUTOMATIC";
+        }
+
         boolean titleHasExplicitAutomatic = containsAny(titleOnly, "selespeed", "automat", "automatic", " aut. ", " a/t ", " at6", " at8", "at7", "7at", "at8", "8at", "dsg", "dct", "cvt", "s-tronic", "s tronic", "stronic", "tiptronic");
         if (!titleHasExplicitAutomatic
                 && containsAny(titleOnly, "alfa romeo 159", "alfa 159", "alfa romeo 147", "alfa 147", "giulietta", "giuletta", "alfa romeo sportwagon", "accord", "crx", "delsol", "cr-v", "cr v", "crv")) {
@@ -559,7 +574,6 @@ public class CarStorageService {
             }
         }
 
-        String normalizedFuel = normalizeFuelType(fuelType, title);
         if ("ELECTRIC".equals(normalizedFuel)) {
             return null;
         }
@@ -569,6 +583,14 @@ public class CarStorageService {
 
     private String normalizeCarType(String carType, String title) {
         String lower = safe(title).toLowerCase(Locale.ROOT);
+
+        if (containsAny(lower, "picasso", "roomster")) {
+            return "MINIVAN";
+        }
+
+        if (containsAny(lower, "matiz", "bravo")) {
+            return "HATCHBACK";
+        }
 
         if (containsAny(lower, "touran", "sharan", "multivan", "c-max", "c max", "grand scenic", "grand scĂ©nic", "scenic", "scĂ©nic", "v 250", "v250", "v 250l", "v250l", "v 250d", "v250d", "v300d", "grandis", "altea")) {
             return "MINIVAN";
@@ -640,6 +662,10 @@ public class CarStorageService {
         }
 
         if (containsAny(lower, "sportwagon")) {
+            return "WAGON";
+        }
+
+        if (containsAny(lower, "a4", "a6") && containsAny(lower, "avant")) {
             return "WAGON";
         }
 
