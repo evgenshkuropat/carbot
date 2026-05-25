@@ -20,6 +20,11 @@ class CarStorageServiceTest {
         assertThat(normalizeFuelType(null, "Mazda CX-3, 2.0 Sky-G 121k Attraction A/T")).isEqualTo("PETROL");
         assertThat(normalizeFuelType("DIESEL", "Chevrolet Matiz 0.8, rok 2009")).isEqualTo("PETROL");
         assertThat(normalizeFuelType(null, "Alfa Romeo 147 GTA 3,2Busso manual")).isEqualTo("PETROL");
+        assertThat(normalizeFuelType(null, "Tesla Model 3 Performance")).isEqualTo("ELECTRIC");
+        assertThat(normalizeFuelType(null, "Dacia Jogger Expression Eco-G 120")).isEqualTo("LPG");
+        assertThat(normalizeFuelType(null, "Ford B-MAX 1.0 74kW ColourLine")).isEqualTo("PETROL");
+        assertThat(normalizeFuelType(null, "Citroen C4 1.2 e-THP 81kW")).isEqualTo("PETROL");
+        assertThat(normalizeFuelType(null, "Skoda Fabia 1.2 HTP Classic")).isEqualTo("PETROL");
     }
 
     @Test
@@ -32,11 +37,17 @@ class CarStorageServiceTest {
         assertThat(normalizeCarType("SEDAN", "Audi A6 3.0 TDI 4X4,Avant,quattro")).isEqualTo("WAGON");
         assertThat(normalizeCarType(null, "Fiat Bravo 2011 1.4 66kW LPG")).isEqualTo("HATCHBACK");
         assertThat(normalizeCarType(null, "Chevrolet Matiz 0.8, rok 2009")).isEqualTo("HATCHBACK");
+        assertThat(normalizeCarType(null, "Tesla Model 3 Performance")).isEqualTo("SEDAN");
+        assertThat(normalizeCarType("HATCHBACK", "Volkswagen T5 2.0Tdi 9mist")).isEqualTo("MINIVAN");
+        assertThat(normalizeCarType(null, "Dacia Jogger Expression Eco-G 120")).isEqualTo("MINIVAN");
+        assertThat(normalizeCarType("HATCHBACK", "SsangYong Tivoli XLV 1.6i LPG")).isEqualTo("SUV");
+        assertThat(normalizeCarType("HATCHBACK", "Renault Fluence 1.5 dCi")).isEqualTo("SEDAN");
     }
 
     @Test
     void normalizesHondaHybridTransmission() throws Exception {
         assertThat(normalizeTransmission(null, "HONDA CRV 2020 hybrid benzin", "HYBRID")).isEqualTo("AUTOMATIC");
+        assertThat(normalizeTransmission(null, "Tesla Model 3 Performance", "ELECTRIC")).isEqualTo("AUTOMATIC");
     }
 
     @Test

@@ -19,6 +19,7 @@ class SbazarParserTest {
         assertThat(resolveTransmission("smart forfour eq comfort 60 kw", "", "ELECTRIC")).isEqualTo("AUTOMATIC");
 
         assertThat(resolveFuelType("volvo xc60 t6 awd recharge led panorama", "")).isEqualTo("HYBRID");
+        assertThat(resolveFuelType("volvo xc60 t6 224kw 4x4 r-design navi", "")).isEqualTo("PETROL");
         assertThat(resolveFuelType("volvo xc40 2,0 d3 inscription", "")).isEqualTo("DIESEL");
         assertThat(resolveFuelType("bmw rada 2 218i active tourer at led", "")).isEqualTo("PETROL");
         assertThat(resolveFuelType("alfa romeo spider 2.2i jts 185ps exclusive", "")).isEqualTo("PETROL");
@@ -42,7 +43,13 @@ class SbazarParserTest {
         assertThat(resolveFuelType("alfa romeo 147 gta 3,2busso manual", "")).isEqualTo("PETROL");
         assertThat(resolveFuelType("chevrolet matiz 0.8 rok 2009 krasny stav", "")).isEqualTo("PETROL");
         assertThat(resolveFuelType("ford s-max 1.5 st-line 118 kw 1 majitel", "")).isEqualTo("PETROL");
+        assertThat(resolveFuelType("ford b-max 1.0 74kw colourline", "")).isEqualTo("PETROL");
+        assertThat(resolveFuelType("citroen c4 1.2 e-thp 81kw shine", "")).isEqualTo("PETROL");
+        assertThat(resolveFuelType("skoda fabia 1,2 htp classic", "")).isEqualTo("PETROL");
+        assertThat(resolveFuelType("dacia jogger expression eco-g 120 5 mist", "")).isEqualTo("LPG");
+        assertThat(resolveFuelType("tesla model 3 performance", "")).isEqualTo("ELECTRIC");
         assertThat(resolveTransmission("honda crv 2020 hybrid benzin 72tis.km", "", "HYBRID")).isEqualTo("AUTOMATIC");
+        assertThat(resolveTransmission("tesla model 3 long range dual motor soh 92", "", "ELECTRIC")).isEqualTo("AUTOMATIC");
     }
 
     @Test
@@ -59,6 +66,8 @@ class SbazarParserTest {
         assertThat(detectBrand("hyundai ioniq 5 style 77,4 kwh")).isEqualTo("HYUNDAI");
         assertThat(detectBrand("smart forfour eq comfort 60 kw")).isEqualTo("SMART");
         assertThat(detectBrand("jaecoo 7 jaecoo 4x4 exclusive")).isEqualTo("JAECOO");
+        assertThat(detectBrand("tesla model 3 performance")).isEqualTo("TESLA");
+        assertThat(detectBrand("ssangyong tivoli xlv 1.6i 94kw lpg")).isEqualTo("SSANGYONG");
     }
 
     @Test
@@ -102,6 +111,13 @@ class SbazarParserTest {
         assertThat(resolveCarType("audi a6 3.0 tdi 4x4 avant quattro automat sline", "")).isEqualTo("WAGON");
         assertThat(resolveCarType("fiat bravo 2011 1.4 66kw lpg servis nove rozvody", "")).isEqualTo("HATCHBACK");
         assertThat(resolveCarType("chevrolet matiz 0.8 rok 2009 krasny stav", "")).isEqualTo("HATCHBACK");
+        assertThat(resolveCarType("mercedes w 220 320 i", "")).isEqualTo("SEDAN");
+        assertThat(resolveCarType("tesla model 3 performance", "")).isEqualTo("SEDAN");
+        assertThat(resolveCarType("ford b-max 1.0 74kw colourline", "")).isEqualTo("MINIVAN");
+        assertThat(resolveCarType("volkswagen t5 2.0tdi 9mist", "")).isEqualTo("MINIVAN");
+        assertThat(resolveCarType("dacia jogger expression eco-g 120 5 mist", "")).isEqualTo("MINIVAN");
+        assertThat(resolveCarType("ssangyong tivoli xlv 1.6i 94kw lpg", "")).isEqualTo("SUV");
+        assertThat(resolveCarType("renault fluence 1.5 dci 81 kw klimatizace", "")).isEqualTo("SEDAN");
     }
 
     @Test

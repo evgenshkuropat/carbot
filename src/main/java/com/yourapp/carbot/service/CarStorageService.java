@@ -486,7 +486,7 @@ public class CarStorageService {
             return "DIESEL";
         }
 
-        if (containsAny(lower, "inster", "puma gen-e", "puma gen e", "cupra born", "tesla", "model y", "model 3", "polestar", "leaf", "cooper se", "electric", "elektro", "elektric", "bev", " ev ", "kwh")) {
+        if (containsAny(lower, "inster", "puma gen-e", "puma gen e", "cupra born", "tesla", "model y", "model 3", "model s", "model x", "polestar", "leaf", "cooper se", "electric", "elektro", "elektric", "bev", " ev ", "kwh")) {
             return "ELECTRIC";
         }
 
@@ -509,6 +509,10 @@ public class CarStorageService {
             return "LPG";
         }
 
+        if (containsAny(lower, "eco-g", "eco g")) {
+            return "LPG";
+        }
+
         if (containsAny(lower, "cng")) {
             return "CNG";
         }
@@ -520,7 +524,7 @@ public class CarStorageService {
             return "DIESEL";
         }
 
-        if (containsAny(lower, "sl 600", "sl600", "slk55", "s500", "gl 500", "gl500", "v12", "v8", "space star", "spacestar", "eclipse cross 1.5", "eclipse cross 1,5", "mx-5", "mx 5", "x-type", "x type", "busso", "gta", "matiz", "s-max 1.5", "s max 1.5", "s-max 1,5", "s max 1,5", "sky-g", "sky g", "skyactiv-g", "skyactiv g")) {
+        if (containsAny(lower, "sl 600", "sl600", "slk55", "s500", "gl 500", "gl500", "w220 320", "w 220 320", "v12", "v8", "space star", "spacestar", "eclipse cross 1.5", "eclipse cross 1,5", "mx-5", "mx 5", "x-type", "x type", "busso", "gta", "matiz", "s-max 1.5", "s max 1.5", "s-max 1,5", "s max 1,5", "b-max 1.0", "b max 1.0", "b-max 1,0", "b max 1,0", "focus 1.0", "focus 1,0", "e-thp", "ethp", "htp", "sky-g", "sky g", "skyactiv-g", "skyactiv g")) {
             return "PETROL";
         }
 
@@ -575,7 +579,7 @@ public class CarStorageService {
         }
 
         if ("ELECTRIC".equals(normalizedFuel)) {
-            return null;
+            return "AUTOMATIC";
         }
 
         return null;
@@ -588,6 +592,10 @@ public class CarStorageService {
             return "MINIVAN";
         }
 
+        if (containsAny(lower, "b-max", "b max", "volkswagen t5", " t5 ", "jogger")) {
+            return "MINIVAN";
+        }
+
         if (containsAny(lower, "matiz", "bravo")) {
             return "HATCHBACK";
         }
@@ -596,7 +604,7 @@ public class CarStorageService {
             return "MINIVAN";
         }
 
-        if (containsAny(lower, "land cruiser", "korando", "rdx", "e-tron", "etron", "tiguan", "yeti", "duster", "kodiaq", "karoq", "kamiq", "kuga", "x1", "x2", "x3", "x5", "x6", "x7", "compass", "cherokee", "glk", "glc", "gle", "gls", "gla", "glb", "gl 500", "gl500", "x-trail", "x trail", "pathfinder", "grandland", "grandal", "cx-5", "cx 5", "cx5", "cx-7", "cx 7", "cx7", "niro", "eqa", "mustang mach-e", "mustang mache", "xc40", "xc 40", "xc60", "xc 60", "xc70", "xc 70", "xc90", "xc 90", "jaecoo", "omoda", "swm g1", "swm g01", "inster", "puma gen-e", "puma gen e", "infiniti fx", "fx35", "fx-35")) {
+        if (containsAny(lower, "land cruiser", "korando", "tivoli", "rdx", "e-tron", "etron", "tiguan", "yeti", "duster", "kodiaq", "karoq", "kamiq", "kuga", "x1", "x2", "x3", "x5", "x6", "x7", "compass", "cherokee", "glk", "glc", "gle", "gls", "gla", "glb", "gl 500", "gl500", "x-trail", "x trail", "pathfinder", "grandland", "grandal", "cx-5", "cx 5", "cx5", "cx-7", "cx 7", "cx7", "niro", "eqa", "mustang mach-e", "mustang mache", "xc40", "xc 40", "xc60", "xc 60", "xc70", "xc 70", "xc90", "xc 90", "jaecoo", "omoda", "swm g1", "swm g01", "inster", "puma gen-e", "puma gen e", "infiniti fx", "fx35", "fx-35")) {
             return "SUV";
         }
 
@@ -669,6 +677,10 @@ public class CarStorageService {
             return "WAGON";
         }
 
+        if (containsAny(lower, "fluence")) {
+            return "SEDAN";
+        }
+
         String value = clean(carType);
         if (value != null) {
             String upper = value.toUpperCase(Locale.ROOT)
@@ -684,7 +696,7 @@ public class CarStorageService {
             return "WAGON";
         }
 
-        if (containsAny(lower, "jaguar x-type", "jaguar x type", "x-type", "x type", "cruze", "mazda 6", "oktavia", "mondeo", "insignia", "insignie", "peugeot 408", "c220", "c 220", "c220d", "e220", "e 220", "e220d", "e300", "e 300", "e300cdi", "cla", "cls", "s350", "s 350", "s500", "s 500", "w220", "750xd", "730d", "740d", "740i", "750i", "540ix")) {
+        if (containsAny(lower, "jaguar x-type", "jaguar x type", "x-type", "x type", "cruze", "mazda 6", "model 3", "model s", "oktavia", "mondeo", "fluence", "insignia", "insignie", "peugeot 408", "c220", "c 220", "c220d", "e220", "e 220", "e220d", "e300", "e 300", "e300cdi", "cla", "cls", "s350", "s 350", "s500", "s 500", "w220", "w 220", "750xd", "730d", "740d", "740i", "750i", "540ix")) {
             return "SEDAN";
         }
 
