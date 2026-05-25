@@ -1635,6 +1635,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         }
 
         if (containsAny(titleSource, " g21 ", " e91 ", " c5 tourer ", " citroen c5 tourer ", " c5 x7 ",
+                " civic tourer ", " focus tunier ", " focus turnier ",
                 " insignia st ", " insignia sports tourer ", " insignia sport tourer ",
                 " astra sports tourer ", " astra sport tourer ", " astra sw ", " astra combi ", " astra kombi ", " 308 sw ", " peugeot 308 sw ")) {
             return "WAGON";

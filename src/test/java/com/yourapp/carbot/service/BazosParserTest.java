@@ -74,6 +74,8 @@ class BazosParserTest {
         assertThat(extractCarType("Fiat Dobló 1,6Jtd MAXI klima+5dveri+CR+64000km", "", "")).isEqualTo("MINIVAN");
         assertThat(extractCarType("Fiat Talento Kombi 1.6turbo 107kw,novy motor 8mist,zaves", "", "")).isEqualTo("MINIVAN");
         assertThat(extractCarType("Fiat Croma 1,9jtd AUTOMAT 2009", "", "")).isEqualTo("WAGON");
+        assertThat(extractCarType("Ford Focus Tunier 2014", "", "")).isEqualTo("WAGON");
+        assertThat(extractCarType("HONDA CIVIC TOURER 1.6i DTEC 2016 KAMERA", "", "")).isEqualTo("WAGON");
     }
 
     @Test
