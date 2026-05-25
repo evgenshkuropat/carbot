@@ -38,6 +38,8 @@ class BazosParserTest {
         assertThat(extractFuelType("BMW 530xd E61 LCI M-paket")).isEqualTo("DIESEL");
         assertThat(extractFuelType("BMW 335i E92 M3 LOOK")).isEqualTo("PETROL");
         assertThat(extractFuelType("BMW M3 MANUAL KOMPRESOR")).isEqualTo("PETROL");
+        assertThat(extractFuelType("BMW Z4 3.0 si MANUAL Coupe")).isEqualTo("PETROL");
+        assertThat(extractFuelType("Audi A6 Allroad 235 kW")).isEqualTo("DIESEL");
     }
 
     @Test
@@ -67,6 +69,7 @@ class BazosParserTest {
         assertThat(extractCarType("Mini Cooper 1.5 i 2018 F 56", "", "")).isEqualTo("HATCHBACK");
         assertThat(extractCarType("BMW 325i e91", "", "")).isEqualTo("WAGON");
         assertThat(extractCarType("BMW M3 MANUAL KOMPRESOR", "", "")).isEqualTo("COUPE");
+        assertThat(extractCarType("BMW Z4 3.0 si MANUAL Coupe", "", "")).isEqualTo("COUPE");
     }
 
     @Test

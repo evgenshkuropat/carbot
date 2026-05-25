@@ -1025,6 +1025,10 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             return "DIESEL";
         }
 
+        if (containsAny(source, " a6 allroad ") && containsAny(source, " 235 kw ", " 235kw ")) {
+            return "DIESEL";
+        }
+
         // PETROL
         if (containsAny(source,
                 " benzin ", " benzín ", " benzinovy ", " benzínový ", " petrol ",
@@ -1081,6 +1085,10 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
 
         if (source.contains(" fiat 500 ")
                 && Pattern.compile("\\b(?:0[.,]9|1[.,][0124])\\b").matcher(source).find()) {
+            return "PETROL";
+        }
+
+        if (source.contains(" z4 ") && Pattern.compile("\\b3[.,]0\\b").matcher(source).find()) {
             return "PETROL";
         }
 
@@ -1743,6 +1751,10 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             if (containsAny(titleSource, " cabrio ", " convertible ", " t-top ", " targa ")) {
                 return "CABRIO";
             }
+            return "COUPE";
+        }
+
+        if (titleSource.contains(" z4 ") && containsAny(titleSource, " coupe ", " coupé ")) {
             return "COUPE";
         }
 
