@@ -48,6 +48,11 @@ class SbazarParserTest {
         assertThat(resolveFuelType("skoda fabia 1,2 htp classic", "")).isEqualTo("PETROL");
         assertThat(resolveFuelType("dacia jogger expression eco-g 120 5 mist", "")).isEqualTo("LPG");
         assertThat(resolveFuelType("tesla model 3 performance", "")).isEqualTo("ELECTRIC");
+        assertThat(resolveFuelType("opel zafira a 2,0 74 kw nova stk", "")).isEqualTo("DIESEL");
+        assertThat(resolveFuelType("peugeot 3008 1.2 96kw nove rozvody", "")).isEqualTo("PETROL");
+        assertThat(resolveFuelType("fiat 500x 1.6 81kw pop star navi", "")).isEqualTo("PETROL");
+        assertThat(resolveFuelType("mercedes-benz cl 500", "")).isEqualTo("PETROL");
+        assertThat(resolveFuelType("jaguar xk8 4.0 209 kw", "")).isEqualTo("PETROL");
         assertThat(resolveTransmission("honda crv 2020 hybrid benzin 72tis.km", "", "HYBRID")).isEqualTo("AUTOMATIC");
         assertThat(resolveTransmission("tesla model 3 long range dual motor soh 92", "", "ELECTRIC")).isEqualTo("AUTOMATIC");
     }
@@ -115,9 +120,20 @@ class SbazarParserTest {
         assertThat(resolveCarType("tesla model 3 performance", "")).isEqualTo("SEDAN");
         assertThat(resolveCarType("ford b-max 1.0 74kw colourline", "")).isEqualTo("MINIVAN");
         assertThat(resolveCarType("volkswagen t5 2.0tdi 9mist", "")).isEqualTo("MINIVAN");
+        assertThat(resolveCarType("volkswagen t6 2.0 tdi 84 kw", "")).isEqualTo("MINIVAN");
         assertThat(resolveCarType("dacia jogger expression eco-g 120 5 mist", "")).isEqualTo("MINIVAN");
         assertThat(resolveCarType("ssangyong tivoli xlv 1.6i 94kw lpg", "")).isEqualTo("SUV");
         assertThat(resolveCarType("renault fluence 1.5 dci 81 kw klimatizace", "")).isEqualTo("SEDAN");
+        assertThat(resolveCarType("audi s8 tfsi quattro full bo masaze", "")).isEqualTo("SEDAN");
+        assertThat(resolveCarType("jaguar xf 2.0 25d 177kw", "")).isEqualTo("SEDAN");
+        assertThat(resolveCarType("renault koleos 4x4 2.0dci 110kw", "")).isEqualTo("SUV");
+        assertThat(resolveCarType("fiat 500x 1.6 81kw pop star navi", "")).isEqualTo("SUV");
+        assertThat(resolveCarType("land rover freelander 2.0td4 82kw", "")).isEqualTo("SUV");
+        assertThat(resolveCarType("dacia bigster journey hybrid 155", "")).isEqualTo("SUV");
+        assertThat(resolveCarType("mercedes-benz cl 500", "")).isEqualTo("COUPE");
+        assertThat(resolveCarType("jaguar xk8 4.0 209 kw", "")).isEqualTo("COUPE");
+        assertThat(resolveCarType("dodge caliber", "")).isEqualTo("HATCHBACK");
+        assertThat(resolveCarType("skoda fabia 1.2 htp classic", "")).isEqualTo("HATCHBACK");
     }
 
     @Test

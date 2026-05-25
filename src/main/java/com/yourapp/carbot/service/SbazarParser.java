@@ -556,6 +556,10 @@ public class SbazarParser implements CarSourceParser {
             return "DIESEL";
         }
 
+        if (containsAny(searchable, "zafira a") && searchable.matches(".*\\b2[.,]0\\b.*\\b74\\s*kw\\b.*")) {
+            return "DIESEL";
+        }
+
         if (containsAny(searchable, "mazda cx-5", "mazda cx5", "cx-5", "cx5")
                 && containsAny(searchable, "skyactiv", "skyactive")
                 && searchable.matches(".*\\b2[.,]2\\b.*")) {
@@ -584,6 +588,12 @@ public class SbazarParser implements CarSourceParser {
                 "escort 1.6", "escort 1,6", "c43", "c 43", "a45", "a 45", "sl320",
                 "fiesta 1.4", "fiesta 1,4", "golf 1.6", "golf 1,6",
                 "golf 1.4", "golf 1,4", "octavia 1.6", "octavia 1,6")) {
+            return "PETROL";
+        }
+
+        if ((containsAny(searchable, "peugeot 3008", "fiat 500x", "b-max", "b max")
+                && searchable.matches(".*\\b1[.,][026]\\b.*"))
+                || containsAny(searchable, "cl 500", "cl500", "xk8")) {
             return "PETROL";
         }
 
@@ -712,11 +722,20 @@ public class SbazarParser implements CarSourceParser {
         if (containsAny(searchable, "volkswagen cc", "vw cc", "passat cc")) {
             return "SEDAN";
         }
-        if (containsAny(searchable, "touran", "sharan", "alhambra", "altea", "s-max", "c-max", "b-max", "galaxy", "zafira", "scenic", "picasso", "roomster", "berlingo", "rifter", "caddy", "vito", "viano", "v 250", "tridy v", "tridy r", "proace verso", "proace city verso", "multivan", " t5 ", "volkswagen t5", "dokker", "lodgy", "jogger", "b180", "b 180", "b200", "b 200", "peugeot 807", " 807 ", "mazda 5", "grandis", "voyager", "pacifica", "grand caravan", "ix20", "meriva", "partner tepee")) {
+        if (containsAny(searchable, "touran", "sharan", "alhambra", "altea", "s-max", "c-max", "b-max", "galaxy", "zafira", "scenic", "picasso", "roomster", "berlingo", "rifter", "caddy", "vito", "viano", "v 250", "tridy v", "tridy r", "proace verso", "proace city verso", "multivan", " t5 ", " t6 ", "volkswagen t5", "volkswagen t6", "dokker", "lodgy", "jogger", "b180", "b 180", "b200", "b 200", "peugeot 807", " 807 ", "mazda 5", "grandis", "voyager", "pacifica", "grand caravan", "ix20", "meriva", "partner tepee")) {
             return "MINIVAN";
         }
-        if (containsAny(searchable, "model 3", "model s", "w220", "w 220", "fluence")) {
+        if (containsAny(searchable, "model 3", "model s", "w220", "w 220", "fluence", "audi s8", " s8 ", "jaguar xf", " xf ")) {
             return "SEDAN";
+        }
+        if (containsAny(searchable, "koleos", "freelander", "bigster", "fiat 500x", "500x")) {
+            return "SUV";
+        }
+        if (containsAny(searchable, "dodge caliber", "caliber")) {
+            return "HATCHBACK";
+        }
+        if (containsAny(searchable, "xk8", "cl 500", "cl500")) {
+            return "COUPE";
         }
         if (containsAny(searchable, "cabrio", "kabriolet", "cabriolet", "eos", "roadster", "slk", " sl ", "308 cc", "peugeot 308 cc", "500c")) {
             return "CABRIO";
@@ -727,7 +746,7 @@ public class SbazarParser implements CarSourceParser {
         }
         if (containsAny(searchable, "citigo", "rapid", "sandero", " rio ", "swift", "mazda 3", "v40", "tridy a", "a 160", "a160", "a 45", "a45", "c3", "fiesta", "a1", "a3", "panda", "bravo", "matiz", "fortwo", "fourtwo", "forfour", "cupra born", "jazz",
                 "id.3", " id 3 ", " id3 ",
-                "peugeot 206", " 206 ", "fabie", "bmw 116i", " 116i ", "bmw f20", " f20 ", "escort")) {
+                "peugeot 206", " 206 ", "fabia", "fabie", "bmw 116i", " 116i ", "bmw f20", " f20 ", "escort")) {
             return "HATCHBACK";
         }
         if (containsAny(searchable, "cruze", "superb", "s90", "mazda 6")) {

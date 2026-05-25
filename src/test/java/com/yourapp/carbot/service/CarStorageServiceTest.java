@@ -25,6 +25,11 @@ class CarStorageServiceTest {
         assertThat(normalizeFuelType(null, "Ford B-MAX 1.0 74kW ColourLine")).isEqualTo("PETROL");
         assertThat(normalizeFuelType(null, "Citroen C4 1.2 e-THP 81kW")).isEqualTo("PETROL");
         assertThat(normalizeFuelType(null, "Skoda Fabia 1.2 HTP Classic")).isEqualTo("PETROL");
+        assertThat(normalizeFuelType(null, "Opel Zafira A 2,0 74 kW")).isEqualTo("DIESEL");
+        assertThat(normalizeFuelType(null, "Peugeot 3008 1.2 96kW")).isEqualTo("PETROL");
+        assertThat(normalizeFuelType(null, "Fiat 500X 1.6 81kw")).isEqualTo("PETROL");
+        assertThat(normalizeFuelType(null, "Mercedes-Benz CL 500")).isEqualTo("PETROL");
+        assertThat(normalizeFuelType(null, "Jaguar XK8 4.0 209 kW")).isEqualTo("PETROL");
     }
 
     @Test
@@ -39,9 +44,19 @@ class CarStorageServiceTest {
         assertThat(normalizeCarType(null, "Chevrolet Matiz 0.8, rok 2009")).isEqualTo("HATCHBACK");
         assertThat(normalizeCarType(null, "Tesla Model 3 Performance")).isEqualTo("SEDAN");
         assertThat(normalizeCarType("HATCHBACK", "Volkswagen T5 2.0Tdi 9mist")).isEqualTo("MINIVAN");
+        assertThat(normalizeCarType("HATCHBACK", "Volkswagen T6 2.0 TDI 84 kW")).isEqualTo("MINIVAN");
         assertThat(normalizeCarType(null, "Dacia Jogger Expression Eco-G 120")).isEqualTo("MINIVAN");
         assertThat(normalizeCarType("HATCHBACK", "SsangYong Tivoli XLV 1.6i LPG")).isEqualTo("SUV");
         assertThat(normalizeCarType("HATCHBACK", "Renault Fluence 1.5 dCi")).isEqualTo("SEDAN");
+        assertThat(normalizeCarType("COUPE", "Audi S8 TFSi QUATTRO")).isEqualTo("SEDAN");
+        assertThat(normalizeCarType("HATCHBACK", "Jaguar XF 2.0 25D")).isEqualTo("SEDAN");
+        assertThat(normalizeCarType("CABRIO", "Renault Koleos 4X4 2.0DCi")).isEqualTo("SUV");
+        assertThat(normalizeCarType("HATCHBACK", "Fiat 500X 1.6 81kw")).isEqualTo("SUV");
+        assertThat(normalizeCarType("HATCHBACK", "Land Rover Freelander 2.0TD4")).isEqualTo("SUV");
+        assertThat(normalizeCarType("HATCHBACK", "Dacia Bigster Journey hybrid 155")).isEqualTo("SUV");
+        assertThat(normalizeCarType(null, "Mercedes-Benz CL 500")).isEqualTo("COUPE");
+        assertThat(normalizeCarType("HATCHBACK", "Jaguar XK8 4.0 209 kW")).isEqualTo("COUPE");
+        assertThat(normalizeCarType(null, "Dodge Caliber")).isEqualTo("HATCHBACK");
     }
 
     @Test
