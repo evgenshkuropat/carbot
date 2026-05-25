@@ -1088,6 +1088,10 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             return "PETROL";
         }
 
+        if (source.contains(" jazz ") && Pattern.compile("\\b1[.,][24]\\b").matcher(source).find()) {
+            return "PETROL";
+        }
+
         if (source.contains(" z4 ") && Pattern.compile("\\b3[.,]0\\b").matcher(source).find()) {
             return "PETROL";
         }
