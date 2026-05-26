@@ -1630,7 +1630,12 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         }
 
         if (containsAny(titleSource, " corolla st ", " corolla ts ", " corolla touring ", " corolla sports touring ",
-                " arteon sb ", " arteon shooting brake ")) {
+                " a4 avant ", " a6 avant ", " arteon sb ", " arteon shooting brake ")) {
+            return "WAGON";
+        }
+
+        if (containsAny(titleSource, " avant ")
+                && containsAny(titleSource, " audi a4 ", " audi a6 ", " a4 ", " a6 ")) {
             return "WAGON";
         }
 
@@ -3064,6 +3069,10 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         String cleanTitle = normalizeText(title).toLowerCase(Locale.ROOT);
         String cleanTitleAscii = asciiSearchText(title);
         String cleanTitleAsciiTrimmed = cleanTitleAscii.trim();
+        if (looksLikeBareBrandTitle(cleanTitleAsciiTrimmed)) {
+            return true;
+        }
+
         if (cleanTitle.startsWith("rezervace")
                 || cleanTitle.startsWith("rezervov")
                 || cleanTitle.startsWith("prodano")
@@ -3151,6 +3160,27 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " zalohovano ",
                 " rezervovano ", " rezervace ",
                 " zadano ");
+    }
+
+    private boolean looksLikeBareBrandTitle(String cleanTitleAscii) {
+        return cleanTitleAscii.equals("alfa")
+                || cleanTitleAscii.equals("alfa romeo")
+                || cleanTitleAscii.equals("bmw")
+                || cleanTitleAscii.equals("audi")
+                || cleanTitleAscii.equals("mercedes")
+                || cleanTitleAscii.equals("volkswagen")
+                || cleanTitleAscii.equals("vw")
+                || cleanTitleAscii.equals("toyota")
+                || cleanTitleAscii.equals("skoda")
+                || cleanTitleAscii.equals("opel")
+                || cleanTitleAscii.equals("nissan")
+                || cleanTitleAscii.equals("citroen")
+                || cleanTitleAscii.equals("renault")
+                || cleanTitleAscii.equals("ford")
+                || cleanTitleAscii.equals("honda")
+                || cleanTitleAscii.equals("hyundai")
+                || cleanTitleAscii.equals("kia")
+                || cleanTitleAscii.equals("mazda");
     }
 
     private Integer parseYearCandidate(String raw) {

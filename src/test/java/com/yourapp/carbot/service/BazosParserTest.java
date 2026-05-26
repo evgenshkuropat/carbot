@@ -71,6 +71,7 @@ class BazosParserTest {
         assertThat(extractCarType("Mini Cooper 1.5 i 2018 F 56", "", "")).isEqualTo("HATCHBACK");
         assertThat(extractCarType("BMW 325i e91", "", "")).isEqualTo("WAGON");
         assertThat(extractCarType("BMW F36 430d 258Hp GC 05/2016 original M-Paket", "", "")).isEqualTo("SEDAN");
+        assertThat(extractCarType("Audi A6 2.0 TDI AVANT Ultra S-tronic 2015", "", "")).isEqualTo("WAGON");
         assertThat(extractCarType("BMW M3 MANUAL KOMPRESOR", "", "")).isEqualTo("COUPE");
         assertThat(extractCarType("BMW Z4 3.0 si MANUAL Coupe", "", "")).isEqualTo("COUPE");
         assertThat(extractCarType("Citroen C 3 1.5 HDi, Edice Origins Since 1919", "", "")).isEqualTo("HATCHBACK");
@@ -122,6 +123,12 @@ class BazosParserTest {
         assertThat(looksNonCarListing("Alfa Romeo 159 - tlacitka, ovladace", "", "", "")).isTrue();
         assertThat(looksNonCarListing("Original setrvacnik Lancia Fiat 1.2 8v / 16v", "", "", "")).isTrue();
         assertThat(looksNonCarListing("Sada OEM filtru Alfa 159", "", "", "")).isTrue();
+    }
+
+    @Test
+    void rejectsBareBrandTitlesButKeepsRealModels() throws Exception {
+        assertThat(looksSuspiciousListing("Alfa romeo", "")).isTrue();
+        assertThat(looksSuspiciousListing("Alfa Romeo 159", "")).isFalse();
     }
 
     @Test
@@ -183,6 +190,12 @@ class BazosParserTest {
         Method method = BazosParser.class.getDeclaredMethod("extractYear", String.class, String.class);
         method.setAccessible(true);
         return (Integer) method.invoke(parser, title, text);
+    }
+
+    private boolean looksSuspiciousListing(String title, String text) throws Exception {
+        Method method = BazosParser.class.getDeclaredMethod("looksSuspiciousListing", String.class, String.class);
+        method.setAccessible(true);
+        return (boolean) method.invoke(parser, title, text);
     }
 
     private boolean looksNonCarListing(String title, String text, String url, String analysisText) throws Exception {
