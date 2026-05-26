@@ -69,8 +69,10 @@ class BazosParserTest {
         assertThat(extractCarType("Audi S3", "", "")).isEqualTo("HATCHBACK");
         assertThat(extractCarType("Mini Cooper 1.5 i 2018 F 56", "", "")).isEqualTo("HATCHBACK");
         assertThat(extractCarType("BMW 325i e91", "", "")).isEqualTo("WAGON");
+        assertThat(extractCarType("BMW F36 430d 258Hp GC 05/2016 original M-Paket", "", "")).isEqualTo("SEDAN");
         assertThat(extractCarType("BMW M3 MANUAL KOMPRESOR", "", "")).isEqualTo("COUPE");
         assertThat(extractCarType("BMW Z4 3.0 si MANUAL Coupe", "", "")).isEqualTo("COUPE");
+        assertThat(extractCarType("Citroen C 3 1.5 HDi, Edice Origins Since 1919", "", "")).isEqualTo("HATCHBACK");
         assertThat(extractCarType("Fiat Dobló 1,6Jtd MAXI klima+5dveri+CR+64000km", "", "")).isEqualTo("MINIVAN");
         assertThat(extractCarType("Fiat Talento Kombi 1.6turbo 107kw,novy motor 8mist,zaves", "", "")).isEqualTo("MINIVAN");
         assertThat(extractCarType("Fiat Croma 1,9jtd AUTOMAT 2009", "", "")).isEqualTo("WAGON");
@@ -118,6 +120,11 @@ class BazosParserTest {
                 .isFalse();
     }
 
+    @Test
+    void resolvesApproximateMileageFromBazosTitles() throws Exception {
+        assertThat(extractMileage("Citroen C5 combi diesel 124 xxx km", "")).isEqualTo(124000);
+    }
+
     private String extractFuelType(String text) throws Exception {
         Method method = BazosParser.class.getDeclaredMethod("extractFuelType", String.class);
         method.setAccessible(true);
@@ -140,6 +147,12 @@ class BazosParserTest {
         Method method = BazosParser.class.getDeclaredMethod("extractTransmission", String.class);
         method.setAccessible(true);
         return (String) method.invoke(parser, text);
+    }
+
+    private Integer extractMileage(String title, String text) throws Exception {
+        Method method = BazosParser.class.getDeclaredMethod("extractMileage", String.class, String.class);
+        method.setAccessible(true);
+        return (Integer) method.invoke(parser, title, text);
     }
 
     private boolean looksNonCarListing(String title, String text, String url, String analysisText) throws Exception {

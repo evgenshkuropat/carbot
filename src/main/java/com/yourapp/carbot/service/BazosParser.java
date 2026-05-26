@@ -907,6 +907,14 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             }
         }
 
+        matcher = Pattern.compile("(?i)\\b([0-9]{1,3})\\s*x{2,3}\\s*km\\b").matcher(source);
+        while (matcher.find()) {
+            Integer value = parseMileageCandidate(matcher.group(1) + "000");
+            if (value != null) {
+                return value;
+            }
+        }
+
         return null;
     }
 
@@ -1701,6 +1709,11 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             return "SEDAN";
         }
 
+        if ((containsAny(titleSource, " bmw ", " 430d ", " 430i ", " 420d ", " 420i ", " 440i ") && containsAny(titleSource, " gc ", " f36 "))
+                || containsAny(titleSource, " bmw f36 ", " f36 430d ", " f36 430i ", " f36 420d ", " f36 420i ", " f36 440i ")) {
+            return "SEDAN";
+        }
+
         if (containsAny(titleSource,
                 " e270 ", " e270cdi ", " e 270 ", " e 270 cdi ",
                 " e350 bluetec ", " e 350 bluetec ",
@@ -1914,7 +1927,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " fabia ", " focus ", " golf ", " polo ",
                 " i20 ", " i30 ", " ceed ", " mazda 2 ",
                 " aveo ", " spark ", " picanto ",
-                " c1 ", " c2 ", " c3 ", " c4 ",
+                " c1 ", " c2 ", " c3 ", " c 3 ", " c4 ",
                 " clio ", " megane ", " fiesta ",
                 " rs3 ", " rs 3 ",
                 " civic ", " insight ", " leon ", " swift ", " born ", " punto ", " panda ",
