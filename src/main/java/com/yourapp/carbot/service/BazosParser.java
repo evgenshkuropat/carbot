@@ -761,6 +761,12 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
     private Integer extractYear(String title, String text) {
         String source = normalizeText(title + " " + text);
         String normalizedTitle = normalizeText(title);
+
+        Integer titleYear = extractYearFromTitle(normalizedTitle);
+        if (titleYear != null) {
+            return titleYear;
+        }
+
         Matcher explicitMatcher = Pattern.compile(
                 "(?i)(?:vyrobeno|v provozu od)\\s*[:\\-]?\\s*(?:\\d{1,2}\\s*/\\s*)?(19\\d{2}|20\\d{2})"
         ).matcher(source);
@@ -823,6 +829,46 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             Integer year = parseYearCandidate(rawYear);
 
             if (year != null && !isBadYearContext(normalizedTitle, matcher.start(), matcher.end())) {
+                return year;
+            }
+        }
+
+        return null;
+    }
+
+    private Integer extractYearFromTitle(String normalizedTitle) {
+        Matcher matcher = Pattern.compile(
+                "(?i)(?:rok vĂ˝roby|rok vyroby|r\\.v\\.?|r\\.|rv|rok|model)\\s*[:\\-\\.]?\\s*(?:\\d{1,2}\\s*/\\s*)?(19\\d{2}|20\\d{2})"
+        ).matcher(normalizedTitle);
+
+        if (matcher.find()) {
+            Integer year = parseYearCandidate(matcher.group(1));
+            if (year != null) {
+                return year;
+            }
+        }
+
+        matcher = Pattern.compile("(?i)\\b(19\\d{2}|20\\d{2})\\s*r\\b").matcher(normalizedTitle);
+        if (matcher.find()) {
+            Integer year = parseYearCandidate(matcher.group(1));
+            if (year != null) {
+                return year;
+            }
+        }
+
+        matcher = Pattern.compile("\\b(19\\d{2}|20\\d{2})\\b").matcher(normalizedTitle);
+        while (matcher.find()) {
+            String rawYear = matcher.group(1);
+            String normalizedLower = normalizedTitle.toLowerCase(Locale.ROOT);
+
+            if (("2008".equals(rawYear) && normalizedLower.contains("peugeot 2008"))
+                    || ("3008".equals(rawYear) && normalizedLower.contains("peugeot 3008"))
+                    || ("5008".equals(rawYear) && normalizedLower.contains("peugeot 5008"))) {
+                continue;
+            }
+
+            Integer year = parseYearCandidate(rawYear);
+            if (year != null) {
                 return year;
             }
         }
@@ -1620,7 +1666,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             return "SEDAN";
         }
 
-        if (containsAny(titleSource, " i-miev ", " i miev ", " imiev ", " pixo ")) {
+        if (containsAny(titleSource, " i-miev ", " i miev ", " imiev ", " pixo ", " ampera ")) {
             return "HATCHBACK";
         }
 
@@ -1645,7 +1691,8 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         if (containsAny(titleSource, " g21 ", " e91 ", " c5 tourer ", " citroen c5 tourer ", " c5 x7 ",
                 " civic tourer ", " focus tunier ", " focus turnier ",
                 " insignia st ", " insignia sports tourer ", " insignia sport tourer ",
-                " astra sports tourer ", " astra sport tourer ", " astra sw ", " astra combi ", " astra kombi ", " 308 sw ", " peugeot 308 sw ")) {
+                " astra sports tourer ", " astra sport tourer ", " astra j sports tourer ", " astra k sports tourer ",
+                " astra j sport tourer ", " astra k sport tourer ", " astra sw ", " astra combi ", " astra kombi ", " 308 sw ", " peugeot 308 sw ")) {
             return "WAGON";
         }
 
@@ -1661,7 +1708,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             return "HATCHBACK";
         }
 
-        if (containsAny(titleSource, " multivan ", " nv 200 ", " nv200 ", " almera tino ", " grandis ")) {
+        if (containsAny(titleSource, " multivan ", " nv 200 ", " nv200 ", " almera tino ", " grandis ", " elgrand ")) {
             return "MINIVAN";
         }
 
@@ -1970,7 +2017,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " limo ", " limousine ", " limuzína ", " limuzina ",
                 " charger ",
                 " giulia ", " alfa 156 ", " romeo 156 ", " alfa 159 ", " romeo 159 ", " alfa 166 ", " romeo 166 ",
-                " cruze ", " lancer ",
+                " cruze ", " lancer ", " primera ",
                 " s60 ",
                 " octavia ", " oktavia ", " mazda 6 ", " mazdu 6 ", " superb ", " passat ", " arteon ",
                 " a4 ", " a6 ", " a7 ", " a8 ", " s5 ", " s7 ", " s8 ",

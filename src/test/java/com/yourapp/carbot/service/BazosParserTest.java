@@ -78,6 +78,10 @@ class BazosParserTest {
         assertThat(extractCarType("Fiat Croma 1,9jtd AUTOMAT 2009", "", "")).isEqualTo("WAGON");
         assertThat(extractCarType("Ford Focus Tunier 2014", "", "")).isEqualTo("WAGON");
         assertThat(extractCarType("HONDA CIVIC TOURER 1.6i DTEC 2016 KAMERA", "", "")).isEqualTo("WAGON");
+        assertThat(extractCarType("Opel Astra J Sports Tourer 1.4i Turbo103Kw r.v.10/2015", "", "")).isEqualTo("WAGON");
+        assertThat(extractCarType("Nissan Primera P12 2.2D", "", "")).isEqualTo("SEDAN");
+        assertThat(extractCarType("Nissan Elgrand 3.5 V6", "", "")).isEqualTo("MINIVAN");
+        assertThat(extractCarType("OPEL AMPERA PLUGIN-HYBRID ELEKTRO", "", "")).isEqualTo("HATCHBACK");
     }
 
     @Test
@@ -125,6 +129,16 @@ class BazosParserTest {
         assertThat(extractMileage("Citroen C5 combi diesel 124 xxx km", "")).isEqualTo(124000);
     }
 
+    @Test
+    void prefersYearFromTitleOverNoisyPageText() throws Exception {
+        assertThat(extractYear("105.000km MITSUBISHI OUTLANDER III FL 2.0 MIVEC 2016", "r.v.2007"))
+                .isEqualTo(2016);
+        assertThat(extractYear("Nissan Qashqai 2011 Diesel 81Kw 201tis Km, Po servise a STK", ""))
+                .isEqualTo(2011);
+        assertThat(extractYear("Nissan Qashqai 2016r 112tis Najezd", "2012"))
+                .isEqualTo(2016);
+    }
+
     private String extractFuelType(String text) throws Exception {
         Method method = BazosParser.class.getDeclaredMethod("extractFuelType", String.class);
         method.setAccessible(true);
@@ -151,6 +165,12 @@ class BazosParserTest {
 
     private Integer extractMileage(String title, String text) throws Exception {
         Method method = BazosParser.class.getDeclaredMethod("extractMileage", String.class, String.class);
+        method.setAccessible(true);
+        return (Integer) method.invoke(parser, title, text);
+    }
+
+    private Integer extractYear(String title, String text) throws Exception {
+        Method method = BazosParser.class.getDeclaredMethod("extractYear", String.class, String.class);
         method.setAccessible(true);
         return (Integer) method.invoke(parser, title, text);
     }
