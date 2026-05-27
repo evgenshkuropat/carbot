@@ -85,9 +85,14 @@ class BazosParserTest {
         assertThat(extractCarType("Ford Focus Tunier 2014", "", "")).isEqualTo("WAGON");
         assertThat(extractCarType("HONDA CIVIC TOURER 1.6i DTEC 2016 KAMERA", "", "")).isEqualTo("WAGON");
         assertThat(extractCarType("Opel Astra J Sports Tourer 1.4i Turbo103Kw r.v.10/2015", "", "")).isEqualTo("WAGON");
+        assertThat(extractCarType("Opel Astra K 1,6 CDTI 81kw sport Tourer, Innovation", "", "")).isEqualTo("WAGON");
         assertThat(extractCarType("Nissan Primera P12 2.2D", "", "")).isEqualTo("SEDAN");
         assertThat(extractCarType("Nissan Elgrand 3.5 V6", "", "")).isEqualTo("MINIVAN");
         assertThat(extractCarType("OPEL AMPERA PLUGIN-HYBRID ELEKTRO", "", "")).isEqualTo("HATCHBACK");
+        assertThat(extractCarType("Opel Crossland X 1.2i 81kw Inovation", "", "")).isEqualTo("SUV");
+        assertThat(extractCarType("OPEL VECTRA C 2.2i 16V EDICE", "", "")).isEqualTo("SEDAN");
+        assertThat(extractCarType("Prodame Peugeot Travaller", "", "")).isEqualTo("MINIVAN");
+        assertThat(extractCarType("Peugeot Traveller 2.0 Blue-HDi Allure L2", "", "")).isEqualTo("MINIVAN");
         assertThat(extractCarType("Toyota Corolla ST 1.8 HEV 103kW e-CVT,2024,35tkm", "", "")).isEqualTo("WAGON");
         assertThat(extractCarType("Toyota Rav 4 2.0D 85Kw Nova STK, 4x4", "", "")).isEqualTo("SUV");
         assertThat(extractCarType("Toyota Aoris", "", "")).isEqualTo("HATCHBACK");

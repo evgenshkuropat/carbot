@@ -1738,7 +1738,11 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             return "WAGON";
         }
 
-        if (containsAny(titleSource, " insignia ", " insignie ")) {
+        if (Pattern.compile("(?i)\\bastra\\s+(?:j|k)?\\b.*\\bsports?\\s+tourer\\b").matcher(titleSource).find()) {
+            return "WAGON";
+        }
+
+        if (containsAny(titleSource, " insignia ", " insignie ", " vectra ")) {
             return "SEDAN";
         }
 
@@ -1750,11 +1754,12 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             return "HATCHBACK";
         }
 
-        if (containsAny(titleSource, " multivan ", " nv 200 ", " nv200 ", " almera tino ", " grandis ", " elgrand ")) {
+        if (containsAny(titleSource, " multivan ", " nv 200 ", " nv200 ", " almera tino ", " grandis ", " elgrand ",
+                " traveller ", " travaller ")) {
             return "MINIVAN";
         }
 
-        if (containsAny(titleSource, " pathfinder ", " x-trail ", " x trail ", " grandland ", " grandal ")) {
+        if (containsAny(titleSource, " pathfinder ", " x-trail ", " x trail ", " grandland ", " grandal ", " crossland ")) {
             return "SUV";
         }
 
