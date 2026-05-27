@@ -50,6 +50,7 @@ class BazosParserTest {
         assertThat(extractFuelType("Alfa Romeo 156 2.0 JTS 16V Selespeed Distinctive Funny car")).isEqualTo("PETROL");
         assertThat(extractFuelType("Alfa Romeo Stelvio 2.0 Turbo 16V AT8-Q4 Veloce T")).isEqualTo("PETROL");
         assertThat(extractFuelType("Honda HR-V 1.5 benzin hybrid")).isEqualTo("HYBRID");
+        assertThat(extractFuelType("Honda CR-V 2.0 e:HEV Advance AWD")).isEqualTo("HYBRID");
         assertThat(extractFuelType("Honda Jazz 1.4 61kw. r.2005")).isEqualTo("PETROL");
         assertThat(extractFuelType("FIAT 500 1.0 11/2022 DPH 61000km zanovni")).isEqualTo("PETROL");
         assertThat(extractFuelType("Fiat 500 / 0.9 TwinAir / SPORT / 77kW / NAVI")).isEqualTo("PETROL");
@@ -72,12 +73,15 @@ class BazosParserTest {
         assertThat(extractCarType("BMW 325i e91", "", "")).isEqualTo("WAGON");
         assertThat(extractCarType("BMW F36 430d 258Hp GC 05/2016 original M-Paket", "", "")).isEqualTo("SEDAN");
         assertThat(extractCarType("Audi A6 2.0 TDI AVANT Ultra S-tronic 2015", "", "")).isEqualTo("WAGON");
+        assertThat(extractCarType("Audi S6 Quattro UVEDENA CENA BEZ DPH", "", "")).isEqualTo("SEDAN");
         assertThat(extractCarType("BMW M3 MANUAL KOMPRESOR", "", "")).isEqualTo("COUPE");
         assertThat(extractCarType("BMW Z4 3.0 si MANUAL Coupe", "", "")).isEqualTo("COUPE");
         assertThat(extractCarType("Citroen C 3 1.5 HDi, Edice Origins Since 1919", "", "")).isEqualTo("HATCHBACK");
         assertThat(extractCarType("Fiat Dobló 1,6Jtd MAXI klima+5dveri+CR+64000km", "", "")).isEqualTo("MINIVAN");
         assertThat(extractCarType("Fiat Talento Kombi 1.6turbo 107kw,novy motor 8mist,zaves", "", "")).isEqualTo("MINIVAN");
         assertThat(extractCarType("Fiat Croma 1,9jtd AUTOMAT 2009", "", "")).isEqualTo("WAGON");
+        assertThat(extractCarType("Fiat500", "", "")).isEqualTo("HATCHBACK");
+        assertThat(extractCarType("Fiat Bravo 1,6 JTD, 2008", "", "")).isEqualTo("HATCHBACK");
         assertThat(extractCarType("Ford Focus Tunier 2014", "", "")).isEqualTo("WAGON");
         assertThat(extractCarType("HONDA CIVIC TOURER 1.6i DTEC 2016 KAMERA", "", "")).isEqualTo("WAGON");
         assertThat(extractCarType("Opel Astra J Sports Tourer 1.4i Turbo103Kw r.v.10/2015", "", "")).isEqualTo("WAGON");
@@ -111,6 +115,7 @@ class BazosParserTest {
         assertThat(extractTransmission("Alfa Romeo 156 2.0 JTS 16V Selespeed Distinctive Funny car")).isEqualTo("AUTOMATIC");
         assertThat(extractTransmission("Alfa Romeo Stelvio 2.0 Turbo 16V AT8-Q4 Veloce T")).isEqualTo("AUTOMATIC");
         assertThat(extractTransmission("Toyota Corolla ST 1.8 HEV 103kW e-CVT,2024,35tkm")).isEqualTo("AUTOMATIC");
+        assertThat(extractTransmission("Honda CR-V 2.0 e:HEV Advance AWD")).isEqualTo("AUTOMATIC");
 
         assertThat(looksNonCarListing("Alfa Romeo 156 blatniky", "", "", "")).isTrue();
         assertThat(looksNonCarListing("Znaky Alfa Romeo 74mm", "", "", "")).isTrue();
@@ -121,6 +126,7 @@ class BazosParserTest {
         assertThat(looksNonCarListing("Zadni podbehy Alfa Giulia", "", "", "")).isTrue();
         assertThat(looksNonCarListing("Tmave stinitka Alfa Romeo 147/GT", "", "", "")).isTrue();
         assertThat(looksNonCarListing("Alfa Romeo 159 - tlacitka, ovladace", "", "", "")).isTrue();
+        assertThat(looksNonCarListing("Levy halogen Alfa Romeo Giulietta", "", "", "")).isTrue();
         assertThat(looksNonCarListing("Original setrvacnik Lancia Fiat 1.2 8v / 16v", "", "", "")).isTrue();
         assertThat(looksNonCarListing("Sada OEM filtru Alfa 159", "", "", "")).isTrue();
     }
@@ -142,8 +148,17 @@ class BazosParserTest {
     }
 
     @Test
+    void rejectsKnownTitleUrlModelMismatch() throws Exception {
+        assertThat(looksTitleUrlMismatch(
+                "Doblo 1,4t-jet,88kw,dilna sortimo,1.maj.Cr,odpocet dph",
+                "https://auto.bazos.cz/inzerat/218934074/kangoo-15dci-2020-149tiskm1majcrodpocet-dphl3.php"))
+                .isTrue();
+    }
+
+    @Test
     void resolvesApproximateMileageFromBazosTitles() throws Exception {
         assertThat(extractMileage("Citroen C5 combi diesel 124 xxx km", "")).isEqualTo(124000);
+        assertThat(extractMileage("Honda CR-V 2.0 e:HEV Advance AWD, r. 2024, najeto cca 15100", "")).isEqualTo(15100);
     }
 
     @Test
@@ -202,5 +217,11 @@ class BazosParserTest {
         Method method = BazosParser.class.getDeclaredMethod("looksNonCarListing", String.class, String.class, String.class, String.class);
         method.setAccessible(true);
         return (boolean) method.invoke(parser, title, text, url, analysisText);
+    }
+
+    private boolean looksTitleUrlMismatch(String title, String url) throws Exception {
+        Method method = BazosParser.class.getDeclaredMethod("looksTitleUrlMismatch", String.class, String.class);
+        method.setAccessible(true);
+        return (boolean) method.invoke(parser, title, url);
     }
 }

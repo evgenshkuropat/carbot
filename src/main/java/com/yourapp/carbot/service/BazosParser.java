@@ -937,6 +937,14 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             }
         }
 
+        matcher = Pattern.compile("(?i)\\b(?:najeto|najezd)\\s*(?:cca|asi)?\\s*[:\\-]?\\s*([0-9\\s\\.]{5,6})\\b").matcher(source);
+        if (matcher.find()) {
+            Integer value = parseMileageCandidate(matcher.group(1));
+            if (value != null) {
+                return value;
+            }
+        }
+
         matcher = Pattern.compile("(?i)\\b([0-9]{2,3}[\\s\\.][0-9]{3}|[0-9]{5,6})\\s*km\\b").matcher(source);
         while (matcher.find()) {
             Integer value = parseMileageCandidate(matcher.group(1));
@@ -988,6 +996,10 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
 
         if (Pattern.compile("(?i)\\b[0-9][\\.,][0-9]\\s*(?:hev|mhev|phev)\\b")
                 .matcher(source).find()) {
+            return "HYBRID";
+        }
+
+        if (compact.contains("ehev")) {
             return "HYBRID";
         }
 
@@ -1291,6 +1303,10 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         }
 
         if (Pattern.compile("(?i)\\be\\s*-?\\s*cvt\\b").matcher(source).find()) {
+            return "AUTOMATIC";
+        }
+
+        if (source.contains(" e:hev ") || tokens.contains(" e hev ")) {
             return "AUTOMATIC";
         }
 
@@ -1750,7 +1766,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             return "SEDAN";
         }
 
-        if (containsAny(titleSource, " s60 ", " s 60 ")) {
+        if (containsAny(titleSource, " s60 ", " s 60 ", " audi s6 ", " s6 ", " s 6 ")) {
             return "SEDAN";
         }
 
@@ -2011,7 +2027,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " 116i ", " 118i ", " 120i ", " 116d ", " 118d ", " 120d ",
                 " agila ", " karl ", " astra ", " corsa ", " 1007 ", " 107 ", " 147 ", " 206 ", " 207 ", " 208 ", " 308 ",
                 " sandero ", " logan ", " scala ", " citigo ",
-                " fiat 500 ", " tipo ", " fiat tipo ",
+                " fiat 500 ", " fiat500 ", " tipo ", " fiat tipo ", " bravo ",
                 " auris ", " aoris ", " prius ", " corolla ", " corsa ", " mazda 3 ", " rapid ", " yaris ", " getz ", " soul ")) {
             return "HATCHBACK";
         }
@@ -2206,6 +2222,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         if (u.contains("sprinter") && containsAny(t, " golf ", " leon ", " fabia ", " octavia ")) return true;
         if (u.contains("fabia") && containsAny(t, " vito ", " sprinter ")) return true;
         if (u.contains("passat") && containsAny(t, " vito ", " sprinter ")) return true;
+        if (u.contains("kangoo") && containsAny(t, " doblo ", " fiat doblo ")) return true;
 
         return false;
     }
@@ -2687,6 +2704,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
 
         if (containsAny(asciiTitleValue,
                 " blatnik ", " blatniky ",
+                " halogen ", " halogeny ",
                 " znak ", " znaky ",
                 " kryty pedalu ",
                 " pruziny ",
