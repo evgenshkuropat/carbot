@@ -59,6 +59,13 @@ class SbazarParserTest {
         assertThat(resolveFuelType("nova stk bez koroze chevrolet cruze 1.6 91kw", "")).isEqualTo("PETROL");
         assertThat(resolveFuelType("ford focus combi 1.6 85 kw", "")).isEqualTo("PETROL");
         assertThat(resolveFuelType("ford fiesta st atmosfera 150ps", "")).isEqualTo("PETROL");
+        assertThat(resolveFuelType("renault clio 1,2 54kw limited navigace", "")).isEqualTo("PETROL");
+        assertThat(resolveFuelType("audi a6 c4 1.8 5v 160000km top stav", "")).isEqualTo("PETROL");
+        assertThat(resolveFuelType("ford focus st 2.0 184kw", "")).isEqualTo("PETROL");
+        assertThat(resolveFuelType("opel meriva 1.4 88 kw klima servis", "")).isEqualTo("PETROL");
+        assertThat(resolveFuelType("peugeot 2008 e-2008 100kw 136hp", "")).isEqualTo("ELECTRIC");
+        assertThat(resolveFuelType("bmw x7 xdrive40d", "")).isEqualTo("DIESEL");
+        assertThat(resolveFuelType("mercedes-benz glc 43 amg 4matic", "")).isEqualTo("PETROL");
         assertThat(resolveFuelType("suzuki sx4 s-cross 1,4 boosterjet premium 2x4", "")).isEqualTo("PETROL");
         assertThat(resolveFuelType("dongfeng u-tour 1,5 t 130 kw exclusivefr 7mist", "")).isEqualTo("PETROL");
         assertThat(resolveTransmission("honda crv 2020 hybrid benzin 72tis.km", "", "HYBRID")).isEqualTo("AUTOMATIC");
@@ -108,6 +115,7 @@ class SbazarParserTest {
         assertThat(resolveCarType("bmw rada 4 m440i cr hk tazne 2x kola", "")).isEqualTo("COUPE");
         assertThat(resolveCarType("bmw rada 5 530d xdrive luxury line daprof nafta", "")).isEqualTo("SEDAN");
         assertThat(resolveCarType("vw arteon shooting brake 147kw r-line dsg 06/2021", "")).isEqualTo("WAGON");
+        assertThat(resolveCarType("ford focus turnier 1,6i 85kw benzin fun-x", "")).isEqualTo("WAGON");
         assertThat(resolveCarType("nissan padfinder", "")).isEqualTo("SUV");
         assertThat(resolveCarType("audi a4 avant 1,4 tfsi aut led navi e kufr", "")).isEqualTo("WAGON");
         assertThat(resolveCarType("mercedes benz a 45 amg", "")).isEqualTo("HATCHBACK");
@@ -116,6 +124,13 @@ class SbazarParserTest {
         assertThat(resolveCarType("jaecoo 7 1.6 phev shs exclusive", "")).isEqualTo("SUV");
         assertThat(resolveCarType("omoda 9 shs premium", "")).isEqualTo("SUV");
         assertThat(resolveCarType("peugeot 3008 allure hybrid extra-stav nove", "")).isEqualTo("SUV");
+        assertThat(resolveCarType("volkswagen troc 1.5tsi 110kw 2022", "")).isEqualTo("SUV");
+        assertThat(resolveCarType("peugeot 2008 e-2008 100kw 136hp", "")).isEqualTo("SUV");
+        assertThat(resolveCarType("renault captur evolution tce 115 my25", "")).isEqualTo("SUV");
+        assertThat(resolveCarType("hyundai ix35 2,0 crdi serviska", "")).isEqualTo("SUV");
+        assertThat(resolveCarType("volkswagen id.4", "")).isEqualTo("SUV");
+        assertThat(resolveCarType("suzuki jimny 1.3 60kw 4x4 tazne", "")).isEqualTo("SUV");
+        assertThat(resolveCarType("ford mustang convertible 5.0ti-vct v8 gt automat", "")).isEqualTo("CABRIO");
         assertThat(resolveCarType("suzuki grand vitara 2,4i", "")).isEqualTo("SUV");
         assertThat(resolveCarType("hyundai i30 cw 1.6d r.v. 2010", "")).isEqualTo("WAGON");
         assertThat(resolveCarType("ford tourneo connect 1.6 tdci 70kw nove rozvody", "")).isEqualTo("MINIVAN");
@@ -167,6 +182,7 @@ class SbazarParserTest {
     @Test
     void skipsNonCarSbazarListingsFromFreshLogs() throws Exception {
         assertThat(looksNonCarListing("padlo a rucni pumpicka")).isTrue();
+        assertThat(looksNonCarListing("pc pocitac")).isTrue();
     }
 
     @Test
