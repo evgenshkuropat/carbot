@@ -1754,7 +1754,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             return "HATCHBACK";
         }
 
-        if (containsAny(titleSource, " multivan ", " nv 200 ", " nv200 ", " almera tino ", " grandis ", " elgrand ",
+        if (containsAny(titleSource, " multivan ", " nv 200 ", " nv200 ", " almera tino ", " grandis ", " elgrand ", " prius plus ",
                 " traveller ", " travaller ")) {
             return "MINIVAN";
         }
@@ -1771,7 +1771,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             return "SEDAN";
         }
 
-        if (containsAny(titleSource, " s60 ", " s 60 ", " audi s6 ", " s6 ", " s 6 ")) {
+        if (containsAny(titleSource, " s60 ", " s 60 ", " s80 ", " s 80 ", " audi s6 ", " s6 ", " s 6 ")) {
             return "SEDAN";
         }
 
@@ -2028,7 +2028,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " fiat 500e ", " fiat e500 ", " 500e ", " e500 ",
                 " leaf ", " micra ", " colt ", " spacestar ", " space star ",
                 " f40 ", " řada 1 ", " rada 1 ",
-                " a180 ", " a 180 ", " a180d ", " a 180d ", " a200 ", " a 200 ", " a200d ", " a 200d ", " a35 ",
+                " a2 ", " audi a2 ", " a180 ", " a 180 ", " a180d ", " a 180d ", " a200 ", " a 200 ", " a200d ", " a 200d ", " a35 ",
                 " 116i ", " 118i ", " 120i ", " 116d ", " 118d ", " 120d ",
                 " agila ", " karl ", " astra ", " corsa ", " 1007 ", " 107 ", " 147 ", " 206 ", " 207 ", " 208 ", " 308 ",
                 " sandero ", " logan ", " scala ", " citigo ",
