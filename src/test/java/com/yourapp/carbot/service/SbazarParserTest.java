@@ -82,6 +82,7 @@ class SbazarParserTest {
         assertThat(detectBrand("tesla model 3 performance")).isEqualTo("TESLA");
         assertThat(detectBrand("ssangyong tivoli xlv 1.6i 94kw lpg")).isEqualTo("SSANGYONG");
         assertThat(detectBrand("dongfeng t5 evo 1,5 t 130kw dct7 dragonedition")).isEqualTo("DONGFENG");
+        assertThat(detectBrand("isuzu d-max v-cross 2.2l 163k 4x4 8st a/t")).isEqualTo("ISUZU");
     }
 
     @Test
@@ -117,6 +118,12 @@ class SbazarParserTest {
         assertThat(resolveCarType("peugeot 3008 allure hybrid extra-stav nove", "")).isEqualTo("SUV");
         assertThat(resolveCarType("suzuki grand vitara 2,4i", "")).isEqualTo("SUV");
         assertThat(resolveCarType("hyundai i30 cw 1.6d r.v. 2010", "")).isEqualTo("WAGON");
+        assertThat(resolveCarType("ford tourneo connect 1.6 tdci 70kw nove rozvody", "")).isEqualTo("MINIVAN");
+        assertThat(resolveCarType("volvo v50 1.6d 80kw kuze vyhrev handsfre", "")).isEqualTo("WAGON");
+        assertThat(resolveCarType("volvo s40 1.6d 80kw vyhrev sed nova stk", "")).isEqualTo("SEDAN");
+        assertThat(resolveCarType("citroen c-crosser 2.2 hdi 4x4", "")).isEqualTo("SUV");
+        assertThat(resolveCarType("kia stonic 1.2 i nove v cr 1 maj", "")).isEqualTo("SUV");
+        assertThat(resolveCarType("peugeot partner 1,5 bhdi 75kw", "")).isEqualTo("MINIVAN");
         assertThat(resolveCarType("prodam dacia logan mcv 1.2 55 kw 2014", "")).isEqualTo("WAGON");
         assertThat(resolveCarType("kia proceed gt 1.6 t-gdi 150 kw r.v. 2023", "")).isEqualTo("WAGON");
         assertThat(resolveCarType("mercedes-benz cls 1 majitel amg full led 4 matic", "")).isEqualTo("SEDAN");

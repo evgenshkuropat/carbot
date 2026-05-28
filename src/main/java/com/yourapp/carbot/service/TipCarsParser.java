@@ -724,9 +724,13 @@ public class TipCarsParser implements CarSourceParser {
 
         if (containsAny(titleSource,
                 " q3 ", " q5 ", " q7 ", " q8 ",
-                " touareg ", " qashqai ", " kona ", " crossland ", " range rover ", " glc ",
+                " touareg ", " qashqai ", " kona ", " captur ", " crossland ", " range rover ", " glc ",
                 " gla ", " glb ", " gle ", " gls ", " yaris cross ", " stonic ", " omoda 5 ", " actyon ")) {
             return "SUV";
+        }
+
+        if (normalizedUrl.contains("/kombi/") || containsAny(titleSource, " combi ", " kombi ")) {
+            return "WAGON";
         }
 
         if (containsAny(titleSource,
@@ -737,10 +741,6 @@ public class TipCarsParser implements CarSourceParser {
         // URL от TipCars самый надежный — проверяем первым
         if (normalizedUrl.contains("/suv/")) {
             return "SUV";
-        }
-
-        if (normalizedUrl.contains("/kombi/")) {
-            return "WAGON";
         }
 
         if (normalizedUrl.contains("/mpv/")) {
