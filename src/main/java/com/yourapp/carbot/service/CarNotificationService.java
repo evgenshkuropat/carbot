@@ -249,14 +249,14 @@ public class CarNotificationService {
 
     private boolean logFilterDecision(Long chatId, CarEntity car, UserFilterEntity filter) {
         if (filter == null) {
-            log.info("FILTER chatId={} title='{}' result=PASS reason=no_filter",
+            log.debug("FILTER chatId={} title='{}' result=PASS reason=no_filter",
                     chatId, safe(car.getTitle()));
             return true;
         }
 
         FilterCheckResult check = carFilterMatcher.check(car, filter);
 
-        log.info(
+        log.debug(
                 "FILTER chatId={} title='{}' result={} | " +
                         "filter[carType={}, brand={}, maxPrice={}, location={}, maxMileage={}, fuelType={}, transmission={}, yearFrom={}] | " +
                         "car[carType={}, brand={}, priceValue={}, location={}, mileage={}, fuelType={}, transmission={}, year={}] | " +

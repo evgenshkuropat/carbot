@@ -604,7 +604,7 @@ public class CarStorageService {
             return "MINIVAN";
         }
 
-        if (containsAny(lower, "b-max", "b max", "volkswagen t5", "volkswagen t6", "vw t5", "vw t6", "tourneo custom", "tourneo courier", "tourneo connect", "u-tour", "u tour", "225xe", "active tourer", " f45 ", "jogger")) {
+        if (containsAny(lower, "b-max", "b max", "volkswagen t5", "volkswagen t6", "vw t5", "vw t6", "caddy", "tourneo custom", "tourneo courier", "tourneo connect", "proace verso", "proace city verso", "u-tour", "u tour", "225xe", "active tourer", " f45 ", "jogger")) {
             return "MINIVAN";
         }
 
@@ -616,7 +616,7 @@ public class CarStorageService {
             return "MINIVAN";
         }
 
-        if (containsAny(lower, "land cruiser", "freelander", "koleos", "bigster", "fiat 500x", "500x", "korando", "tivoli", "rdx", "e-tron", "etron", "tiguan", "yeti", "duster", "kodiaq", "karoq", "kamiq", "kuga", "x1", "x2", "x3", "x5", "x6", "x7", "compass", "cherokee", "glk", "glc", "gle", "gls", "gla", "glb", "gl 500", "gl500", "x-trail", "x trail", "pathfinder", "grandland", "grandal", "cx-5", "cx 5", "cx5", "cx-7", "cx 7", "cx7", "niro", "eqa", "mustang mach-e", "mustang mache", "xc40", "xc 40", "xc60", "xc 60", "xc70", "xc 70", "xc90", "xc 90", "arona", "stelvio", "sx4", "s-cross", "s cross", "dongfeng mage", "t5 evo", "dongfeng t5", "jaecoo", "omoda", "swm g1", "swm g01", "inster", "puma", "puma gen-e", "puma gen e", "infiniti fx", "fx35", "fx-35", "xd3")) {
+        if (containsAny(lower, "land cruiser", "freelander", "koleos", "captur", "elroq", "bigster", "fiat 500x", "500x", "korando", "tivoli", "rdx", "e-tron", "etron", "tiguan", "yeti", "duster", "kodiaq", "karoq", "kamiq", "kuga", "x1", "x2", "x3", "x5", "x6", "x7", "compass", "cherokee", "glk", "glc", "gle", "gls", "gla", "glb", "gl 500", "gl500", "x-trail", "x trail", "pathfinder", "grandland", "grandal", "cx-5", "cx 5", "cx5", "cx-7", "cx 7", "cx7", "niro", "eqa", "mustang mach-e", "mustang mache", "xc40", "xc 40", "xc60", "xc 60", "xc70", "xc 70", "xc90", "xc 90", "arona", "stelvio", "sx4", "s-cross", "s cross", "dongfeng mage", "t5 evo", "dongfeng t5", "jaecoo", "omoda", "swm g1", "swm g01", "inster", "puma", "puma gen-e", "puma gen e", "infiniti fx", "fx35", "fx-35", "jimny", "xd3")) {
             return "SUV";
         }
 

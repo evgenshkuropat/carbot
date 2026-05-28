@@ -70,6 +70,11 @@ class CarStorageServiceTest {
         assertThat(normalizeCarType("HATCHBACK", "Ford Puma Titanium, 5dverova, 1.0 EcoBoost")).isEqualTo("SUV");
         assertThat(normalizeCarType("HATCHBACK", "Subaru Outback 2.5 lpg r.v. 2006")).isEqualTo("WAGON");
         assertThat(normalizeCarType("HATCHBACK", "Alpina XD3 3.0d")).isEqualTo("SUV");
+        assertThat(normalizeCarType("HATCHBACK", "Renault Captur, techno mildhybrid 140 EDC MY25")).isEqualTo("SUV");
+        assertThat(normalizeCarType("HATCHBACK", "Skoda Elroq, 55 125 kW Selection")).isEqualTo("SUV");
+        assertThat(normalizeCarType("WAGON", "Volkswagen Caddy 2.0TDI 75kW TAZNE CZ DPH")).isEqualTo("MINIVAN");
+        assertThat(normalizeCarType("PICKUP", "SUZUKI JIMNY 1.3VVTi - 2016 - 64.000 km")).isEqualTo("SUV");
+        assertThat(normalizeCarType(null, "Toyota PROACE VERSO 2,0 D-4D L2 Family AT")).isEqualTo("MINIVAN");
         assertThat(normalizeCarType("HATCHBACK", "Dongfeng U-Tour 1,5 T 130 kW ExclusiveFR 7mist")).isEqualTo("MINIVAN");
         assertThat(normalizeCarType("HATCHBACK", "Dongfeng Mage 1,5 T 145 kW E2 DCT7")).isEqualTo("SUV");
         assertThat(normalizeCarType("MINIVAN", "Dongfeng T5 EVO 1,5 T 130kW DCT7 DragonEdition")).isEqualTo("SUV");
