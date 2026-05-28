@@ -2042,8 +2042,16 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
             return "Bazoš.cz";
         }
 
+        if (normalized.contains("SBAZAR")) {
+            return "Sbazar.cz";
+        }
+
         if (normalized.contains("TIPCARS") || normalized.contains("TIP_CARS")) {
             return "TipCars.cz";
+        }
+
+        if (normalized.contains("TOYOTA_PROVERENE")) {
+            return "Toyota prověřené vozy";
         }
 
         return source.trim();
@@ -2229,16 +2237,10 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
         LocalDateTime last24h = LocalDateTime.now().minusHours(24);
 
         long totalCars = carRepository.count();
-
-        long bazosCars = carRepository.countBySource("BAZOS");
-        long sautoCars = carRepository.countBySource("SAUTO");
-        long tipCars = carRepository.countBySource("TIPCARS");
-
         long newLast24h = carRepository.countByCreatedAtAfter(last24h);
 
-        long bazosLast24h = carRepository.countBySourceAndCreatedAtAfter("BAZOS", last24h);
-        long sautoLast24h = carRepository.countBySourceAndCreatedAtAfter("SAUTO", last24h);
-        long tipCarsLast24h = carRepository.countBySourceAndCreatedAtAfter("TIPCARS", last24h);
+        String sourcesTotal = formatSourceStats(carRepository.countCarsBySource());
+        String sourcesLast24h = formatSourceStats(carRepository.countCarsBySourceAfter(last24h));
 
         long usersTotal = subscriberService.countAllSubscribers();
         long usersActive = subscriberService.countActiveSubscribers();
@@ -2273,14 +2275,10 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
         🆕 New last 24h: %d
 
         📦 Sources total:
-        • Bazoš.cz: %d
-        • Sauto.cz: %d
-        • TipCars.cz: %d
+        %s
 
         🕒 Sources last 24h:
-        • Bazoš.cz: %d
-        • Sauto.cz: %d
-        • TipCars.cz: %d
+        %s
 
         🧾 Latest cars:
         %s
@@ -2290,16 +2288,28 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
                 favoritesTotal,
                 totalCars,
                 newLast24h,
-                bazosCars,
-                sautoCars,
-                tipCars,
-                bazosLast24h,
-                sautoLast24h,
-                tipCarsLast24h,
+                sourcesTotal,
+                sourcesLast24h,
                 latest.toString().trim()
         );
 
         sendMessage(chatId, text);
+    }
+
+    private String formatSourceStats(List<CarRepository.SourceCount> stats) {
+        if (stats == null || stats.isEmpty()) {
+            return "—";
+        }
+
+        StringBuilder builder = new StringBuilder();
+        for (CarRepository.SourceCount stat : stats) {
+            builder.append("• ")
+                    .append(formatSource(stat.getSource()))
+                    .append(": ")
+                    .append(stat.getTotal())
+                    .append("\n");
+        }
+        return builder.toString().trim();
     }
 
     private boolean isAdmin(Long chatId) {
