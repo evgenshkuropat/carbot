@@ -58,6 +58,8 @@ class BazosParserTest {
         assertThat(extractFuelType("FIAT 500 1.0 11/2022 DPH 61000km zanovni")).isEqualTo("PETROL");
         assertThat(extractFuelType("Fiat 500 / 0.9 TwinAir / SPORT / 77kW / NAVI")).isEqualTo("PETROL");
         assertThat(extractFuelType("Toyota Yaris Cross, 1.5HEV, Adventure, 4x4")).isEqualTo("HYBRID");
+        assertThat(extractFuelType("Peugeot 308 SW 1.2 PT 96 kW 130 Allure CZ DPH")).isEqualTo("PETROL");
+        assertThat(extractFuelType("PEUGEOT 301 1.2 60kW rok 2016")).isEqualTo("PETROL");
     }
 
     @Test
@@ -96,6 +98,7 @@ class BazosParserTest {
         assertThat(extractCarType("OPEL VECTRA C 2.2i 16V EDICE", "", "")).isEqualTo("SEDAN");
         assertThat(extractCarType("Prodame Peugeot Travaller", "", "")).isEqualTo("MINIVAN");
         assertThat(extractCarType("Peugeot Traveller 2.0 Blue-HDi Allure L2", "", "")).isEqualTo("MINIVAN");
+        assertThat(extractCarType("PEUGEOT 301 1.2 60kW rok 2016", "", "")).isEqualTo("SEDAN");
         assertThat(extractCarType("Toyota Corolla ST 1.8 HEV 103kW e-CVT,2024,35tkm", "", "")).isEqualTo("WAGON");
         assertThat(extractCarType("Toyota Rav 4 2.0D 85Kw Nova STK, 4x4", "", "")).isEqualTo("SUV");
         assertThat(extractCarType("Toyota Aoris", "", "")).isEqualTo("HATCHBACK");
@@ -111,6 +114,10 @@ class BazosParserTest {
         assertThat(extractCarType("VW Arteon SB 2.0 TDI 110kW DSG R-Line", "", "")).isEqualTo("WAGON");
         assertThat(extractCarType("Volvo S80 2.4D5 120 kW Klima Tempomat CR", "", "")).isEqualTo("SEDAN");
         assertThat(extractCarType("Audi A2 1.4 TDI STK 2028", "", "")).isEqualTo("HATCHBACK");
+        assertThat(extractCarType("Renault Talisman 1.6dCI MANUAL VYHREV TAZNE", "", "")).isEqualTo("SEDAN");
+        assertThat(extractCarType("Renault Alaskan", "", "")).isEqualTo("PICKUP");
+        assertThat(extractCarType("Renault Laguna 2", "", "")).isEqualTo("HATCHBACK");
+        assertThat(extractCarType("Cupra Tavascan Endurance Electric 210kW", "", "")).isEqualTo("SUV");
     }
 
     @Test
@@ -132,6 +139,7 @@ class BazosParserTest {
         assertThat(extractTransmission("Toyota Corolla ST 1.8 HEV 103kW e-CVT,2024,35tkm")).isEqualTo("AUTOMATIC");
         assertThat(extractTransmission("Honda CR-V 2.0 e:HEV Advance AWD")).isEqualTo("AUTOMATIC");
         assertThat(extractTransmission("Honda CR-V 2.0i-MMD Elegance AWD")).isEqualTo("AUTOMATIC");
+        assertThat(looksLikelyFalseAutomatic("PEUGEOT 207 1.4 i BENZIN 70 kW NOVE ROZVODY", "AUTOMATIC")).isTrue();
 
         assertThat(looksNonCarListing("Alfa Romeo 156 blatniky", "", "", "")).isTrue();
         assertThat(looksNonCarListing("Znaky Alfa Romeo 74mm", "", "", "")).isTrue();
@@ -209,6 +217,12 @@ class BazosParserTest {
         Method method = BazosParser.class.getDeclaredMethod("extractTransmission", String.class);
         method.setAccessible(true);
         return (String) method.invoke(parser, text);
+    }
+
+    private boolean looksLikelyFalseAutomatic(String title, String transmission) throws Exception {
+        Method method = BazosParser.class.getDeclaredMethod("looksLikelyFalseAutomatic", String.class, String.class);
+        method.setAccessible(true);
+        return (boolean) method.invoke(parser, title, transmission);
     }
 
     private Integer extractMileage(String title, String text) throws Exception {

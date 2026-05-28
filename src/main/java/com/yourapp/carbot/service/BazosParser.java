@@ -1107,7 +1107,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " benzin ", " benzín ", " benzinovy ", " benzínový ", " petrol ",
                 " tsi ", " tfsi ", " fsi ", " gdi ", " tgdi ", " t-gdi ",
                 " dig-t ", " tce ", " ecoboost ", " mivec ",
-                " vtec ", " vti ", " puretech ", " mpi ", " twinair ",
+                " vtec ", " vti ", " puretech ", " pt ", " mpi ", " twinair ",
                 " jts ", " twinspark ", " twin spark ", " tbi ", " vvt ", " boosterjet ", " booster jet ",
                 " quadrifoglio ", " qv ",
                 " gti ", " v6 ", " v8 ", " hemi ",
@@ -1158,6 +1158,11 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
 
         if (source.contains(" fiat 500 ")
                 && Pattern.compile("\\b(?:0[.,]9|1[.,][0124])\\b").matcher(source).find()) {
+            return "PETROL";
+        }
+
+        if (source.contains(" peugeot 301 ")
+                && Pattern.compile("\\b1[.,]2\\b").matcher(source).find()) {
             return "PETROL";
         }
 
@@ -1221,6 +1226,11 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             return "PETROL";
         }
 
+        if (containsAny(source, " puretech ", " pt ")
+                && Pattern.compile("\\b[0-9][\\.,][0-9]\\b").matcher(source).find()) {
+            return "PETROL";
+        }
+
         if (containsAny(source, " diesel ", " nafta ")) {
             return "DIESEL";
         }
@@ -1255,6 +1265,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         return containsAny(source, " twin spark ", " twinspark ", " 6ti rychl ", " 6ti rychlost ", " 6 rychl ", " 6 rychlost ",
                 " alfa romeo 159 ", " alfa 159 ", " alfa romeo 147 ", " alfa 147 ", " giulietta ", " giuletta ", " alfa romeo sportwagon ",
                 " accord ", " civic ", " crx ", " delsol ", " cr-v ", " cr v ", " crv ",
+                " peugeot 107 ", " peugeot 206 ", " peugeot 207 ", " peugeot 208 ", " peugeot 301 ",
                 " i20 ", " i30 ", " ix20 ", " tucson ", " aveo ");
     }
 
@@ -1893,7 +1904,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             return "COUPE";
         }
 
-        if (containsAny(titleSource, " accord ", " legend ")) {
+        if (containsAny(titleSource, " accord ", " legend ", " peugeot 301 ", " talisman ")) {
             return "SEDAN";
         }
 
@@ -1939,7 +1950,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " land cruiser ", " landcruiser ", " patrol ", " peugeot 2008 ", " 3008 ", " 5008 ",
                 " explorer ",
                 " kuga ", " puma ", " ecosport ",
-                " formentor ", " ateca ", " arona ", " tarraco ",
+                " formentor ", " ateca ", " arona ", " tarraco ", " tavascan ",
                 " xc40 ", " xc 40 ", " xc60 ", " xc 60 ", " xc70 ", " xc 70 ", " xc90 ", " xc 90 ",
                 " ex30 ", " ex40 ", " ex90 ",
                 " captur ", " austral ", " arkana ", " rafale ",
@@ -2040,7 +2051,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " a2 ", " audi a2 ", " a180 ", " a 180 ", " a180d ", " a 180d ", " a200 ", " a 200 ", " a200d ", " a 200d ", " a35 ",
                 " 116i ", " 118i ", " 120i ", " 116d ", " 118d ", " 120d ",
                 " agila ", " karl ", " astra ", " corsa ", " 1007 ", " 107 ", " 147 ", " 206 ", " 207 ", " 208 ", " 308 ",
-                " sandero ", " logan ", " scala ", " citigo ",
+                " sandero ", " logan ", " scala ", " citigo ", " laguna ",
                 " fiat 500 ", " fiat500 ", " tipo ", " fiat tipo ", " bravo ",
                 " auris ", " aoris ", " prius ", " corolla ", " corsa ", " mazda 3 ", " rapid ", " yaris ", " getz ", " soul ")) {
             return "HATCHBACK";
@@ -2061,7 +2072,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
 
         if (containsAny(titleSource,
                 " pickup ", " pick-up ",
-                " ranger ", " hilux ", " amarok ",
+                " ranger ", " hilux ", " amarok ", " alaskan ",
                 " navara ", " l200 ", " l 200 ",
                 " ram ", " gladiator ")) {
             return "PICKUP";
@@ -2074,7 +2085,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " charger ",
                 " giulia ", " alfa 156 ", " romeo 156 ", " alfa 159 ", " romeo 159 ", " alfa 166 ", " romeo 166 ",
                 " cruze ", " lancer ", " primera ",
-                " s60 ",
+                " s60 ", " peugeot 301 ", " talisman ",
                 " octavia ", " oktavia ", " mazda 6 ", " mazdu 6 ", " superb ", " passat ", " arteon ",
                 " a4 ", " a6 ", " a7 ", " a8 ", " s5 ", " s7 ", " s8 ",
                 " a6c7 ",
