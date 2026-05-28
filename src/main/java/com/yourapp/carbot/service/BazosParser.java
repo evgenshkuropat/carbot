@@ -990,7 +990,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " plug-in hybrid ", " plugin hybrid ", " plug in hybrid ",
                 " plug-in ", " plug in ", " phev ",
                 " mild-hybrid ", " mild hybrid ",
-                " hybrid ", " hybridni ", " e-hybrid ", " ehybrid ", " hev ", " mhev ")) {
+                " hybrid ", " hybridni ", " e-hybrid ", " ehybrid ", " i-mmd ", " immd ", " hev ", " mhev ")) {
             return "HYBRID";
         }
 
@@ -999,7 +999,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             return "HYBRID";
         }
 
-        if (compact.contains("ehev")) {
+        if (compact.contains("ehev") || compact.contains("immd")) {
             return "HYBRID";
         }
 
@@ -1037,6 +1037,8 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " tsi e ",
                 " e-hybrid ",
                 " ehybrid ",
+                " i-mmd ",
+                " immd ",
                 " hev ",
                 " mhev ",
                 " superb iv ",
@@ -1306,7 +1308,8 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             return "AUTOMATIC";
         }
 
-        if (source.contains(" e:hev ") || tokens.contains(" e hev ")) {
+        if (source.contains(" e:hev ") || tokens.contains(" e hev ")
+                || source.contains("i-mmd") || tokens.contains(" i mmd ") || tokens.contains(" immd ")) {
             return "AUTOMATIC";
         }
 
@@ -1871,7 +1874,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             return "COUPE";
         }
 
-        if (containsAny(titleSource, " ix20 ", " orlando ", " hhr ", " freemont ")) {
+        if (containsAny(titleSource, " ix20 ", " ix 20 ", " orlando ", " hhr ", " freemont ")) {
             return "MINIVAN";
         }
 
@@ -1936,7 +1939,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " captur ", " austral ", " arkana ", " rafale ",
                 " sportage ", " sorento ", " stonic ",
                 " rdx ",
-                " tucson ", " santa fe ", " kona ", " pilot ", " ix55 ",
+                " tucson ", " santa fe ", " santafe ", " kona ", " pilot ", " ix55 ",
                 " duster ", " koleos ", " kadjar ",
                 " cr-v ", " cr v ", " crv ", " hr-v ", " hr v ", " hrv ", " rav4 ", " c-hr ", " chr ",
                 " cx-3 ", " cx3 ", " cx-5 ", " cx 5 ", " cx5 ", " cx-7 ", " cx 7 ", " cx7 ",
