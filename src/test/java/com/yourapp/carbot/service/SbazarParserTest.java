@@ -119,6 +119,7 @@ class SbazarParserTest {
         assertThat(resolveCarType("suzuki grand vitara 2,4i", "")).isEqualTo("SUV");
         assertThat(resolveCarType("hyundai i30 cw 1.6d r.v. 2010", "")).isEqualTo("WAGON");
         assertThat(resolveCarType("ford tourneo connect 1.6 tdci 70kw nove rozvody", "")).isEqualTo("MINIVAN");
+        assertThat(resolveCarType("subaru outback 2.5 lpg r.v. 2006", "")).isEqualTo("WAGON");
         assertThat(resolveCarType("volvo v50 1.6d 80kw kuze vyhrev handsfre", "")).isEqualTo("WAGON");
         assertThat(resolveCarType("volvo s40 1.6d 80kw vyhrev sed nova stk", "")).isEqualTo("SEDAN");
         assertThat(resolveCarType("citroen c-crosser 2.2 hdi 4x4", "")).isEqualTo("SUV");
@@ -168,6 +169,11 @@ class SbazarParserTest {
         assertThat(looksNonCarListing("padlo a rucni pumpicka")).isTrue();
     }
 
+    @Test
+    void ignoresPageMetadataYearsAroundListingDates() throws Exception {
+        assertThat(extractYear("mitsubishi outlander 2,2 di-d 110kw 4x4 -tk do6/27 vlozeno 2025")).isNull();
+    }
+
     private String resolveFuelType(String identityText, String scopedText) throws Exception {
         Method method = SbazarParser.class.getDeclaredMethod("resolveFuelType", String.class, String.class);
         method.setAccessible(true);
@@ -196,5 +202,11 @@ class SbazarParserTest {
         Method method = SbazarParser.class.getDeclaredMethod("looksNonCarListing", String.class);
         method.setAccessible(true);
         return (boolean) method.invoke(parser, searchable);
+    }
+
+    private Integer extractYear(String searchable) throws Exception {
+        Method method = SbazarParser.class.getDeclaredMethod("extractYear", String.class);
+        method.setAccessible(true);
+        return (Integer) method.invoke(parser, searchable);
     }
 }

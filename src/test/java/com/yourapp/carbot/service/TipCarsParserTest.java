@@ -29,6 +29,18 @@ class TipCarsParserTest {
                 "",
                 "https://www.tipcars.com/renault-captur/hatchback/hybridni-benzin/renault-captur-techno.html"))
                 .isEqualTo("SUV");
+
+        assertThat(extractCarType(
+                "Ford Puma Titanium, 5dverova, 1.0 EcoBoost",
+                "",
+                "https://www.tipcars.com/ford-puma/hatchback/benzin/ford-puma.html"))
+                .isEqualTo("SUV");
+
+        assertThat(extractCarType(
+                "Ford Tourneo Courier Active, Tourneo, 1.0 EcoBoost",
+                "",
+                "https://www.tipcars.com/ford-tourneo-courier/osobni/benzin/ford-tourneo-courier.html"))
+                .isEqualTo("MINIVAN");
     }
 
     private String extractCarType(String title, String text, String url) throws Exception {

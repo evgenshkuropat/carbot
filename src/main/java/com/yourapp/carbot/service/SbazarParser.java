@@ -425,10 +425,11 @@ public class SbazarParser implements CarSourceParser {
     }
 
     private boolean isBadYearContext(String searchable, int start, int end) {
-        String context = searchable.substring(Math.max(0, start - 24), Math.min(searchable.length(), end + 24));
+        String context = searchable.substring(Math.max(0, start - 80), Math.min(searchable.length(), end + 80));
         return containsAny(context,
                 "zaruka", "zaruky", "garance", "stk", "emise",
-                "servis do", "platne do", "platnost", "do roku");
+                "servis do", "platne do", "platnost", "do roku",
+                "vlozen", "vlozeno", "pridano", "aktualiz", "inzerat");
     }
 
     private Integer extractMileageValue(Matcher matcher, boolean thousands) {
@@ -747,7 +748,7 @@ public class SbazarParser implements CarSourceParser {
         if (containsAny(searchable, "cabrio", "kabriolet", "cabriolet", "eos", "roadster", "slk", " sl ", "308 cc", "peugeot 308 cc", "500c")) {
             return "CABRIO";
         }
-        if (containsAny(searchable, "octavia scout", "i30 cw", "logan mcv", "proceed", "pro ceed", "combi", "kombi", "variant", "shooting brake", "touring", " avant ", "allroad", " sw ", "wagon", "estate", "v50", "v60", "v70", "v90")
+        if (containsAny(searchable, "octavia scout", "i30 cw", "logan mcv", "proceed", "pro ceed", "combi", "kombi", "variant", "shooting brake", "touring", " avant ", "allroad", " sw ", "wagon", "estate", "outback", "v50", "v60", "v70", "v90")
                 || searchable.matches(".*\\ba[46]\\b.*\\bavant\\b.*")) {
             return "WAGON";
         }

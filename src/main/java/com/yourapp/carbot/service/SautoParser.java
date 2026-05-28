@@ -1629,7 +1629,7 @@ public class SautoParser implements CarSourceParser {
         }
 
         if (containsAny(titleSource,
-                " v40 ", " v50 ", " v60 ", " v70 ", " v90 ",
+                " v40 ", " v50 ", " v60 ", " v70 ", " v90 ", " outback ",
                 " octavia combi ", " superb combi ", " passat variant ", " golf variant ",
                 " focus kombi ", " focus wagon ", " astra caravan ", " astra sports tourer ",
                 " ceed sw ", " proceed sw ", " leon st ", " leon sp ",
@@ -1861,6 +1861,9 @@ public class SautoParser implements CarSourceParser {
         if (value.startsWith("JEEP")) return "JEEP";
         if (value.startsWith("SUBARU")) return "SUBARU";
         if (value.startsWith("MITSUBISHI")) return "MITSUBISHI";
+        if (value.startsWith("ISUZU")) return "ISUZU";
+        if (value.startsWith("CADILLAC")) return "CADILLAC";
+        if (value.startsWith("ALPINA")) return "ALPINA";
         if (value.startsWith("CITROËN")) return "CITROEN";
         if (value.startsWith("CITROEN")) return "CITROEN";
         if (value.startsWith("ALFA")) return "ALFA_ROMEO";

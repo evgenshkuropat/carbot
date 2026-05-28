@@ -724,9 +724,13 @@ public class TipCarsParser implements CarSourceParser {
 
         if (containsAny(titleSource,
                 " q3 ", " q5 ", " q7 ", " q8 ",
-                " touareg ", " qashqai ", " kona ", " captur ", " crossland ", " range rover ", " glc ",
+                " touareg ", " qashqai ", " kona ", " captur ", " puma ", " crossland ", " range rover ", " glc ",
                 " gla ", " glb ", " gle ", " gls ", " yaris cross ", " stonic ", " omoda 5 ", " actyon ")) {
             return "SUV";
+        }
+
+        if (containsAny(titleSource, " tourneo courier ", " tourneo connect ", " tourneo custom ")) {
+            return "MINIVAN";
         }
 
         if (normalizedUrl.contains("/kombi/") || containsAny(titleSource, " combi ", " kombi ")) {
@@ -770,6 +774,7 @@ public class TipCarsParser implements CarSourceParser {
         if (containsAny(source,
                 " mustang mach-e ",
                 " mach-e ",
+                " puma ",
                 " explorer ",
                 " bronco ",
                 " crossland ",
@@ -824,6 +829,8 @@ public class TipCarsParser implements CarSourceParser {
                 " tridy v ",
                 " v 300d ",
                 " combo ",
+                " tourneo courier ",
+                " tourneo connect ",
                 " touran ",
                 " sharan ",
                 " galaxy ",

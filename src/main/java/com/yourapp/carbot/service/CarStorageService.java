@@ -366,7 +366,8 @@ public class CarStorageService {
                     "JEEP", "MINI", "LEXUS", "PORSCHE", "MITSUBISHI", "BYD",
                     "MG", "DS", "LAND_ROVER", "ALFA_ROMEO", "CHEVROLET",
                     "SSANGYONG", "CHRYSLER", "LOTUS", "LAMBORGHINI", "FERRARI",
-                    "JAECOO", "OMODA", "SWM", "SMART", "INFINITI", "DONGFENG"
+                    "JAECOO", "OMODA", "SWM", "SMART", "INFINITI", "DONGFENG",
+                    "ISUZU", "CADILLAC", "ALPINA"
             );
 
             if (allowed.contains(upper)) {
@@ -398,6 +399,9 @@ public class CarStorageService {
         if (t.contains("swm")) return "SWM";
         if (t.contains("smart") || t.contains("fortwo")) return "SMART";
         if (t.contains("infiniti") || t.contains("fx35") || t.contains("fx-35")) return "INFINITI";
+        if (t.contains("isuzu") || t.contains("d-max") || t.contains("d max")) return "ISUZU";
+        if (t.contains("cadillac") || t.contains("ats") || t.contains("ct4")) return "CADILLAC";
+        if (t.contains("alpina") || t.contains("xd3")) return "ALPINA";
         if (t.contains("peugeot")) return "PEUGEOT";
         if (t.contains("opel")) return "OPEL";
         if (t.contains("mazda")) return "MAZDA";
@@ -600,7 +604,7 @@ public class CarStorageService {
             return "MINIVAN";
         }
 
-        if (containsAny(lower, "b-max", "b max", "volkswagen t5", "volkswagen t6", "vw t5", "vw t6", "tourneo custom", "u-tour", "u tour", "225xe", "active tourer", " f45 ", "jogger")) {
+        if (containsAny(lower, "b-max", "b max", "volkswagen t5", "volkswagen t6", "vw t5", "vw t6", "tourneo custom", "tourneo courier", "tourneo connect", "u-tour", "u tour", "225xe", "active tourer", " f45 ", "jogger")) {
             return "MINIVAN";
         }
 
@@ -612,7 +616,7 @@ public class CarStorageService {
             return "MINIVAN";
         }
 
-        if (containsAny(lower, "land cruiser", "freelander", "koleos", "bigster", "fiat 500x", "500x", "korando", "tivoli", "rdx", "e-tron", "etron", "tiguan", "yeti", "duster", "kodiaq", "karoq", "kamiq", "kuga", "x1", "x2", "x3", "x5", "x6", "x7", "compass", "cherokee", "glk", "glc", "gle", "gls", "gla", "glb", "gl 500", "gl500", "x-trail", "x trail", "pathfinder", "grandland", "grandal", "cx-5", "cx 5", "cx5", "cx-7", "cx 7", "cx7", "niro", "eqa", "mustang mach-e", "mustang mache", "xc40", "xc 40", "xc60", "xc 60", "xc70", "xc 70", "xc90", "xc 90", "arona", "stelvio", "sx4", "s-cross", "s cross", "dongfeng mage", "t5 evo", "dongfeng t5", "jaecoo", "omoda", "swm g1", "swm g01", "inster", "puma gen-e", "puma gen e", "infiniti fx", "fx35", "fx-35")) {
+        if (containsAny(lower, "land cruiser", "freelander", "koleos", "bigster", "fiat 500x", "500x", "korando", "tivoli", "rdx", "e-tron", "etron", "tiguan", "yeti", "duster", "kodiaq", "karoq", "kamiq", "kuga", "x1", "x2", "x3", "x5", "x6", "x7", "compass", "cherokee", "glk", "glc", "gle", "gls", "gla", "glb", "gl 500", "gl500", "x-trail", "x trail", "pathfinder", "grandland", "grandal", "cx-5", "cx 5", "cx5", "cx-7", "cx 7", "cx7", "niro", "eqa", "mustang mach-e", "mustang mache", "xc40", "xc 40", "xc60", "xc 60", "xc70", "xc 70", "xc90", "xc 90", "arona", "stelvio", "sx4", "s-cross", "s cross", "dongfeng mage", "t5 evo", "dongfeng t5", "jaecoo", "omoda", "swm g1", "swm g01", "inster", "puma", "puma gen-e", "puma gen e", "infiniti fx", "fx35", "fx-35", "xd3")) {
             return "SUV";
         }
 
@@ -636,7 +640,7 @@ public class CarStorageService {
             return "CABRIO";
         }
 
-        if (containsAny(lower, "clubman")) {
+        if (containsAny(lower, "clubman", "outback")) {
             return "WAGON";
         }
 
@@ -812,6 +816,9 @@ public class CarStorageService {
                 || t.contains("lexus")
                 || t.contains("porsche")
                 || t.contains("mitsubishi")
+                || t.contains("isuzu")
+                || t.contains("cadillac")
+                || t.contains("alpina")
                 || t.contains("land rover")
                 || t.contains("alfa romeo")
                 || t.contains("combi")

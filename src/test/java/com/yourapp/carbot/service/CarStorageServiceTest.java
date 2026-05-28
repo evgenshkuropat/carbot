@@ -66,6 +66,10 @@ class CarStorageServiceTest {
         assertThat(normalizeCarType("HATCHBACK", "Jaguar XK8 4.0 209 kW")).isEqualTo("COUPE");
         assertThat(normalizeCarType(null, "Dodge Caliber")).isEqualTo("HATCHBACK");
         assertThat(normalizeCarType("HATCHBACK", "Ford Tourneo Custom 2,0 EcoBlue 96kW 8mist")).isEqualTo("MINIVAN");
+        assertThat(normalizeCarType(null, "Ford Tourneo Courier Active, Tourneo, 1.0 EcoBoost")).isEqualTo("MINIVAN");
+        assertThat(normalizeCarType("HATCHBACK", "Ford Puma Titanium, 5dverova, 1.0 EcoBoost")).isEqualTo("SUV");
+        assertThat(normalizeCarType("HATCHBACK", "Subaru Outback 2.5 lpg r.v. 2006")).isEqualTo("WAGON");
+        assertThat(normalizeCarType("HATCHBACK", "Alpina XD3 3.0d")).isEqualTo("SUV");
         assertThat(normalizeCarType("HATCHBACK", "Dongfeng U-Tour 1,5 T 130 kW ExclusiveFR 7mist")).isEqualTo("MINIVAN");
         assertThat(normalizeCarType("HATCHBACK", "Dongfeng Mage 1,5 T 145 kW E2 DCT7")).isEqualTo("SUV");
         assertThat(normalizeCarType("MINIVAN", "Dongfeng T5 EVO 1,5 T 130kW DCT7 DragonEdition")).isEqualTo("SUV");
@@ -81,6 +85,13 @@ class CarStorageServiceTest {
     void normalizesHondaHybridTransmission() throws Exception {
         assertThat(normalizeTransmission(null, "HONDA CRV 2020 hybrid benzin", "HYBRID")).isEqualTo("AUTOMATIC");
         assertThat(normalizeTransmission(null, "Tesla Model 3 Performance", "ELECTRIC")).isEqualTo("AUTOMATIC");
+    }
+
+    @Test
+    void normalizesAdditionalBrandsFromFreshLogs() throws Exception {
+        assertThat(normalizeBrand("ISUZU", "Isuzu D-Max V-Cross 2.2L")).isEqualTo("ISUZU");
+        assertThat(normalizeBrand(null, "Cadillac ATS V")).isEqualTo("CADILLAC");
+        assertThat(normalizeBrand(null, "Alpina, XD3 3.0d")).isEqualTo("ALPINA");
     }
 
     @Test
@@ -104,6 +115,12 @@ class CarStorageServiceTest {
         Method method = CarStorageService.class.getDeclaredMethod("normalizeTransmission", String.class, String.class, String.class);
         method.setAccessible(true);
         return (String) method.invoke(service, transmission, title, fuelType);
+    }
+
+    private String normalizeBrand(String brand, String title) throws Exception {
+        Method method = CarStorageService.class.getDeclaredMethod("normalizeBrand", String.class, String.class);
+        method.setAccessible(true);
+        return (String) method.invoke(service, brand, title);
     }
 
     private boolean looksLikeBadTitle(String title) throws Exception {
