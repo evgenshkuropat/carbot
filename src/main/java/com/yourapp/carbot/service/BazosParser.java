@@ -1371,6 +1371,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " stelvio ", " giulia ", " giulietta ", " mito ", " alfetta ")) return "ALFA_ROMEO";
         if (containsAny(titleSource, " škoda ", " skoda ")) return "SKODA";
         if (containsAny(titleSource, " volkswagen ", " vw ")) return "VOLKSWAGEN";
+        if (containsAny(titleSource, " id.3 ", " id3 ", " id.4 ", " id4 ", " id.5 ", " id5 ")) return "VOLKSWAGEN";
         if (containsAny(titleSource, " audi ")) return "AUDI";
         if (containsAny(titleSource, " bmw ")) return "BMW";
         if (containsAny(titleSource, " mercedes ", " mercedes-benz ")) return "MERCEDES";
@@ -1649,7 +1650,12 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         }
 
         if (containsAny(titleSource, " corolla st ", " corolla ts ", " corolla touring ", " corolla sports touring ",
-                " a4 avant ", " a6 avant ", " arteon sb ", " arteon shooting brake ")) {
+                " a4 avant ", " a6 avant ", " arteon sb ", " arteon shooting brake ",
+                " passat variant ", " passat varian ")) {
+            return "WAGON";
+        }
+
+        if (containsAny(titleSource, " passat ") && containsAny(titleSource, " variant ", " varian ")) {
             return "WAGON";
         }
 
@@ -1878,7 +1884,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             return "MINIVAN";
         }
 
-        if (containsAny(titleSource, " i10 ", " jazz ", " insight ", " rio ", " ds3 ", " punto ", " panda ", " grande punto ", " kalos ", " calos ",
+        if (containsAny(titleSource, " i10 ", " aygo ", " jazz ", " insight ", " rio ", " ds3 ", " punto ", " panda ", " grande punto ", " kalos ", " calos ",
                 " fiat 500e ", " fiat e500 ", " 500e ", " e500 ")) {
             return "HATCHBACK";
         }
