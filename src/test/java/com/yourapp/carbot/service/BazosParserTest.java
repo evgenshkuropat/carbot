@@ -162,6 +162,7 @@ class BazosParserTest {
         assertThat(extractTransmission("Honda CR-V 2.0 e:HEV Advance AWD")).isEqualTo("AUTOMATIC");
         assertThat(extractTransmission("Honda CR-V 2.0i-MMD Elegance AWD")).isEqualTo("AUTOMATIC");
         assertThat(looksLikelyFalseAutomatic("PEUGEOT 207 1.4 i BENZIN 70 kW NOVE ROZVODY", "AUTOMATIC")).isTrue();
+        assertThat(looksLikelyFalseAutomatic("Peugeot 308 1.6HDI 88KW 9/2015 LED NAVIGACE P. SERVIS", "AUTOMATIC")).isTrue();
         assertThat(looksLikelyFalseAutomatic("Octavia III 2,0TDi 110KW Edition + NAVI tempomat ALU STK", "AUTOMATIC")).isTrue();
         assertThat(correctLikelyNoisyFuel("Toyota Sienna AWD 2017 7 mist 8AT tazne", "DIESEL")).isNull();
         assertThat(correctLikelyNoisyFuel("Dacia Sandero Stepway", "DIESEL")).isNull();
@@ -190,6 +191,9 @@ class BazosParserTest {
         assertThat(looksSuspiciousListing("SKODA SCALA 1,0TSi 70kW Koup.CR,1.majitel,LED,2022,119tkm", "rezervace")).isFalse();
         assertThat(looksSuspiciousListing("VW ARTEON 2,0TDi 110kW DSG ELEGANCE CR 2022 NYNI PO SERVISE", "rezervace")).isFalse();
         assertThat(looksSuspiciousListing("SKODA OCTAVIA IV 1,5TSi G-TEC 96kW Koup.CR,50.000km2022", "rezervace")).isFalse();
+        assertThat(looksSuspiciousListing("OPEL e-CORSA 100kW ELEGANCE electro Koup.CR,1.majitel,2023", "rezervace")).isFalse();
+        assertThat(looksSuspiciousListing("OPEL MOKKA 1,4T 112kW 4x4 Automat,TAZNE,Koup.CR,90.0000km", "rezervace")).isFalse();
+        assertThat(looksSuspiciousListing("Peugeot 5008,automat, head up, 7mist", "rezervace")).isFalse();
     }
 
     @Test
@@ -222,6 +226,18 @@ class BazosParserTest {
                 "Tourneo Custom Titanium X L2 odpocet DPH nova prevodovka",
                 "",
                 "https://auto.bazos.cz/inzerat/219087044/tourneo-custom-titanium-x-l2-odpocet-dph.php"))
+                .isFalse();
+
+        assertThat(looksCommercialVehicle(
+                "PEUGEOT EXPERT 1.6 hdi 2008",
+                "",
+                "https://auto.bazos.cz/inzerat/219457769/peugeot-expert-16-hdi-2008.php"))
+                .isTrue();
+
+        assertThat(looksCommercialVehicle(
+                "Toyota Proace Verso XL, zakoupena nova v CR",
+                "",
+                "https://auto.bazos.cz/inzerat/219323068/jsjd.php"))
                 .isFalse();
     }
 

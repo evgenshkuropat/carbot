@@ -440,6 +440,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         }
 
         String source = " " + normalizeText(title + " " + shortenForCheck(text, 500)).toLowerCase(Locale.ROOT) + " ";
+        String titleSource = " " + normalizeText(title).toLowerCase(Locale.ROOT) + " ";
 
         if (year != null
                 && year >= 2020
@@ -466,6 +467,11 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         }
 
         if (priceValue < 100_000 && mileage != null && mileage >= 320_000) {
+            if (priceValue >= 50_000
+                    && extractMileage(title, title) == null
+                    && containsAny(titleSource, " zafira ", " 308 ", " mokka ", " corsa ", " 5008 ")) {
+                return false;
+            }
             return true;
         }
 
@@ -1314,6 +1320,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " accord ", " civic ", " crx ", " delsol ", " cr-v ", " cr v ", " crv ",
                 " peugeot 107 ", " peugeot 206 ", " peugeot 207 ", " peugeot 208 ", " peugeot 301 ",
                 " i20 ", " i30 ", " ix20 ", " tucson ", " aveo ",
+                " peugeot 308 ", " 308 ",
                 " octavia ", " oktavia ");
     }
 
@@ -2557,6 +2564,11 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             return true;
         }
 
+        if (containsAny(titleSource, " expert ", " jumpy ", " scudo ", " proace ")
+                && !containsAny(titleSource, " proace verso ", " proace city verso ", " spacetourer ")) {
+            return true;
+        }
+
         if (looksLikePassengerCarModel(title)) {
             return false;
         }
@@ -2676,7 +2688,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " octavia ", " superb ", " passat ",
                 " civic ", " duster ", " mustang ",
                 " x-trail ", " x trail ",
-                " corsa ", " astra ", " insignia ",
+                " corsa ", " e-corsa ", " e corsa ", " astra ", " insignia ",
                 " 208 ", " 5008 ")) {
             return false;
         }
@@ -3464,6 +3476,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
 
     private boolean looksLikePassengerCarModel(String title) {
         String source = " " + normalizeText(title).toLowerCase(Locale.ROOT) + " ";
+        source = source + " " + asciiSearchText(title);
 
         return containsAny(source,
                 " rav4 ",
@@ -3585,6 +3598,8 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " clio ",
                 " astra ",
                 " corsa ",
+                " e-corsa ",
+                " e corsa ",
                 " karl ",
                 " 1007 ",
                 " 206 ",
