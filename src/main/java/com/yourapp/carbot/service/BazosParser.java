@@ -1111,9 +1111,9 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         if (containsAny(source,
                 " benzin ", " benzín ", " benzinovy ", " benzínový ", " petrol ",
                 " tsi ", " tfsi ", " fsi ", " gdi ", " tgdi ", " t-gdi ",
-                " dig-t ", " tce ", " ecoboost ", " mivec ",
+                " dig-t ", " ig-t ", " igt ", " tce ", " ecoboost ", " mivec ",
                 " vtec ", " vti ", " puretech ", " pt ", " mpi ", " twinair ",
-                " jts ", " twinspark ", " twin spark ", " tbi ", " vvt ", " boosterjet ", " booster jet ",
+                " jts ", " twinspark ", " twin spark ", " tbi ", " vvt ", " 16v ", " boosterjet ", " booster jet ",
                 " quadrifoglio ", " qv ",
                 " gti ", " v6 ", " v8 ", " hemi ",
                 " camaro ", " corvette ", " mustang ",
@@ -1158,6 +1158,12 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         }
 
         if (source.contains(" eclipse cross ") && Pattern.compile("\\b1[.,]5\\b").matcher(source).find()) {
+            return "PETROL";
+        }
+
+        if (source.contains(" lancer evo ")
+                || (source.contains(" crossland ") && Pattern.compile("\\b1[.,]2\\s*t\\b").matcher(source).find())
+                || (source.contains(" primera ") && Pattern.compile("\\b1[.,]8\\b").matcher(source).find())) {
             return "PETROL";
         }
 
@@ -1221,7 +1227,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         }
 
         String source = " " + normalizeText(title).toLowerCase(Locale.ROOT) + " ";
-        if (containsAny(source, " sienna ", " sandero stepway ")
+        if (containsAny(source, " sienna ", " sandero stepway ", " navara d22 ", " grandland x ")
                 && extractFuelType(title) == null) {
             return null;
         }
@@ -1771,13 +1777,14 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
 
         if (containsAny(titleSource, " g21 ", " e91 ", " c5 tourer ", " citroen c5 tourer ", " c5 x7 ",
                 " civic tourer ", " focus tunier ", " focus turnier ",
-                " insignia st ", " insignia sports tourer ", " insignia sport tourer ",
+                " insignia st ", " insignia sports tourer ", " insignia sport tourer ", " insignia sport taurer ",
                 " astra sports tourer ", " astra sport tourer ", " astra j sports tourer ", " astra k sports tourer ",
                 " astra j sport tourer ", " astra k sport tourer ", " astra sw ", " astra combi ", " astra kombi ", " 308 sw ", " peugeot 308 sw ")) {
             return "WAGON";
         }
 
-        if (Pattern.compile("(?i)\\bastra\\s+(?:j|k)?\\b.*\\bsports?\\s+tourer\\b").matcher(titleSource).find()) {
+        if (Pattern.compile("(?i)\\bastra\\s+(?:j|k)?\\b.*\\bsports?\\s+tourer\\b").matcher(titleSource).find()
+                || Pattern.compile("(?i)\\bastra\\s+k\\b.*\\bst\\b").matcher(titleSource).find()) {
             return "WAGON";
         }
 

@@ -63,6 +63,10 @@ class BazosParserTest {
         assertThat(extractFuelType("Citroen C5 combi,2,2 diesel,125 kW, Webasto")).isEqualTo("DIESEL");
         assertThat(extractFuelType("Fiat Freemont 2.0 MJT AT 4x4 125kW")).isEqualTo("DIESEL");
         assertThat(extractFuelType("Fiat Doblo Maxi 2020 1.6 MJT2 dlouha verze")).isEqualTo("DIESEL");
+        assertThat(extractFuelType("Mitsubishi lancer evo")).isEqualTo("PETROL");
+        assertThat(extractFuelType("Nissan Primera 1.8 16V 2006")).isEqualTo("PETROL");
+        assertThat(extractFuelType("Nissan Micra 1.0 IG-T LED KLIMA")).isEqualTo("PETROL");
+        assertThat(extractFuelType("Opel Crossland 1.2T 81kW LED LIMITED CARPLAY")).isEqualTo("PETROL");
     }
 
     @Test
@@ -94,6 +98,8 @@ class BazosParserTest {
         assertThat(extractCarType("HONDA CIVIC TOURER 1.6i DTEC 2016 KAMERA", "", "")).isEqualTo("WAGON");
         assertThat(extractCarType("Opel Astra J Sports Tourer 1.4i Turbo103Kw r.v.10/2015", "", "")).isEqualTo("WAGON");
         assertThat(extractCarType("Opel Astra K 1,6 CDTI 81kw sport Tourer, Innovation", "", "")).isEqualTo("WAGON");
+        assertThat(extractCarType("Opel Astra K 1,6 CDTI 81kw 2016 ST, Innovation", "", "")).isEqualTo("WAGON");
+        assertThat(extractCarType("Opel Insignia Sport Taurer", "", "")).isEqualTo("WAGON");
         assertThat(extractCarType("Nissan Primera P12 2.2D", "", "")).isEqualTo("SEDAN");
         assertThat(extractCarType("Nissan Elgrand 3.5 V6", "", "")).isEqualTo("MINIVAN");
         assertThat(extractCarType("OPEL AMPERA PLUGIN-HYBRID ELEKTRO", "", "")).isEqualTo("HATCHBACK");
@@ -145,6 +151,8 @@ class BazosParserTest {
         assertThat(looksLikelyFalseAutomatic("PEUGEOT 207 1.4 i BENZIN 70 kW NOVE ROZVODY", "AUTOMATIC")).isTrue();
         assertThat(correctLikelyNoisyFuel("Toyota Sienna AWD 2017 7 mist 8AT tazne", "DIESEL")).isNull();
         assertThat(correctLikelyNoisyFuel("Dacia Sandero Stepway", "DIESEL")).isNull();
+        assertThat(correctLikelyNoisyFuel("Navara D22 Kingcab 98kw", "PETROL")).isNull();
+        assertThat(correctLikelyNoisyFuel("Opel Grandland X 1 majitel servis", "LPG")).isNull();
 
         assertThat(looksNonCarListing("Alfa Romeo 156 blatniky", "", "", "")).isTrue();
         assertThat(looksNonCarListing("Znaky Alfa Romeo 74mm", "", "", "")).isTrue();
