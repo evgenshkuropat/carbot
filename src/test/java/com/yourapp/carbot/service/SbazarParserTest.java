@@ -68,6 +68,8 @@ class SbazarParserTest {
         assertThat(resolveFuelType("mercedes-benz glc 43 amg 4matic", "")).isEqualTo("PETROL");
         assertThat(resolveFuelType("toyota gr86 executive manualni prev odpocet dph", "")).isEqualTo("PETROL");
         assertThat(resolveFuelType("vw golf 8 variant 1.5 etsi 110kw dsg", "")).isEqualTo("HYBRID");
+        assertThat(resolveFuelType("skoda octavia 1.5tgi 96kw dsg ambition 9/20", "")).isEqualTo("CNG");
+        assertThat(resolveFuelType("mercedes-benz tridy b b-class 250 edrive 132kw", "")).isEqualTo("ELECTRIC");
         assertThat(resolveFuelType("suzuki sx4 s-cross 1,4 boosterjet premium 2x4", "")).isEqualTo("PETROL");
         assertThat(resolveFuelType("dongfeng u-tour 1,5 t 130 kw exclusivefr 7mist", "")).isEqualTo("PETROL");
         assertThat(resolveTransmission("honda crv 2020 hybrid benzin 72tis.km", "", "HYBRID")).isEqualTo("AUTOMATIC");
@@ -181,17 +183,32 @@ class SbazarParserTest {
         assertThat(resolveCarType("bmw rada 2 225xe iperformance f45 165kw", "")).isEqualTo("MINIVAN");
         assertThat(resolveCarType("toyota sienna awd 2017 7 mist 8at tazne", "")).isEqualTo("MINIVAN");
         assertThat(resolveCarType("toyota starlet", "")).isEqualTo("HATCHBACK");
+        assertThat(resolveCarType("toyota auris 1.4 d-4d 66kw koupeno cr 2016", "")).isEqualTo("HATCHBACK");
+        assertThat(resolveCarType("toyota land cruiser 2,8 mhev invincible", "")).isEqualTo("SUV");
+        assertThat(resolveCarType("nissan terrano ii 2.7td 92kw puvod cr nova stk", "")).isEqualTo("SUV");
+        assertThat(resolveCarType("citroen jumpy 2.0hdi 94kw 8mist", "")).isEqualTo("MINIVAN");
+        assertThat(resolveCarType("renault kangoo 1.6 cng", "")).isEqualTo("MINIVAN");
+        assertThat(resolveCarType("mitsubishi colt 1,3 70kw klima", "")).isEqualTo("HATCHBACK");
     }
 
     @Test
     void skipsNonCarSbazarListingsFromFreshLogs() throws Exception {
         assertThat(looksNonCarListing("padlo a rucni pumpicka")).isTrue();
         assertThat(looksNonCarListing("pc pocitac")).isTrue();
+        assertThat(looksNonCarListing("bmw i3 125 kw 120 ah tep.cerpadlo")).isFalse();
     }
 
     @Test
     void ignoresPageMetadataYearsAroundListingDates() throws Exception {
         assertThat(extractYear("mitsubishi outlander 2,2 di-d 110kw 4x4 -tk do6/27 vlozeno 2025")).isNull();
+    }
+
+    @Test
+    void readsMileageFromTitleBeforeNoisyPageText() throws Exception {
+        String identity = "opel astra 1.6 85 kw 101 tis. km";
+        String noisyScopedText = identity + " 6022 dalsi metadata";
+
+        assertThat(firstInteger(extractMileage(identity), extractMileage(noisyScopedText))).isEqualTo(101_000);
     }
 
     private String resolveFuelType(String identityText, String scopedText) throws Exception {
@@ -228,5 +245,17 @@ class SbazarParserTest {
         Method method = SbazarParser.class.getDeclaredMethod("extractYear", String.class);
         method.setAccessible(true);
         return (Integer) method.invoke(parser, searchable);
+    }
+
+    private Integer extractMileage(String searchable) throws Exception {
+        Method method = SbazarParser.class.getDeclaredMethod("extractMileage", String.class);
+        method.setAccessible(true);
+        return (Integer) method.invoke(parser, searchable);
+    }
+
+    private Integer firstInteger(Integer... values) throws Exception {
+        Method method = SbazarParser.class.getDeclaredMethod("firstInteger", Integer[].class);
+        method.setAccessible(true);
+        return (Integer) method.invoke(parser, new Object[]{values});
     }
 }
