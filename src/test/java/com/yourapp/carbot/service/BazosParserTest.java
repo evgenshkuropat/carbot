@@ -63,6 +63,9 @@ class BazosParserTest {
         assertThat(extractFuelType("Citroen C5 combi,2,2 diesel,125 kW, Webasto")).isEqualTo("DIESEL");
         assertThat(extractFuelType("Fiat Freemont 2.0 MJT AT 4x4 125kW")).isEqualTo("DIESEL");
         assertThat(extractFuelType("Fiat Doblo Maxi 2020 1.6 MJT2 dlouha verze")).isEqualTo("DIESEL");
+        assertThat(extractFuelType("Mercedes GLC 350 D 4MATIC, 3.0 V6 nez. topeni")).isEqualTo("DIESEL");
+        assertThat(extractFuelType("Mercedes E43 AMG")).isEqualTo("PETROL");
+        assertThat(extractFuelType("Mitsubishi Outlander 2.4i+HYBRID 4x4 SERVISKA TAZNE")).isEqualTo("HYBRID");
         assertThat(extractFuelType("Mitsubishi lancer evo")).isEqualTo("PETROL");
         assertThat(extractFuelType("Nissan Primera 1.8 16V 2006")).isEqualTo("PETROL");
         assertThat(extractFuelType("Nissan Micra 1.0 IG-T LED KLIMA")).isEqualTo("PETROL");
@@ -139,6 +142,9 @@ class BazosParserTest {
         assertThat(extractCarType("Mercedes e270cdi rv2000", "", "")).isEqualTo("SEDAN");
         assertThat(extractCarType("Mercedes C200CDI, r.v. 2003, 85kW, automat", "", "")).isEqualTo("SEDAN");
         assertThat(extractCarType("Mercedes-Benz C 250d 150kW AMG 4MATIC KEYLESS", "", "")).isEqualTo("SEDAN");
+        assertThat(extractCarType("Mercedes-Benz GLK 320CDI 165KW PANORAMA KAMERA", "", "")).isEqualTo("SUV");
+        assertThat(extractCarType("Mercedes E43 AMG", "", "")).isEqualTo("SEDAN");
+        assertThat(extractCarType("MERCEDES-BENZ W246 B180 90kw PRAVIDELNY SERVIS TOP VYBAVA", "", "")).isEqualTo("MINIVAN");
         assertThat(extractCarType("Mercedes-Benz 126.500 SEC AMG Paket", "", "")).isEqualTo("COUPE");
         assertThat(extractCarType("PRODAM MAZDU 6 GH VE VYBORNEM STAVU", "", "")).isEqualTo("SEDAN");
     }

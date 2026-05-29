@@ -1000,7 +1000,11 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             return "HYBRID";
         }
 
-        if (compact.contains("ehev") || compact.contains("immd")) {
+        if (compact.contains("hybrid")
+                || compact.contains("phev")
+                || compact.contains("mhev")
+                || compact.contains("ehev")
+                || compact.contains("immd")) {
             return "HYBRID";
         }
 
@@ -1099,6 +1103,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         }
 
         if (source.matches(".*\\b[0-9][.,][0-9]\\s*(?:d|td)\\b.*")
+                || source.matches(".*\\b[0-9]{3}\\s*d\\b.*")
                 || source.matches(".*\\b[0-9]{2,3}x?d\\b.*")) {
             return "DIESEL";
         }
@@ -1117,7 +1122,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " quadrifoglio ", " qv ",
                 " gti ", " v6 ", " v8 ", " hemi ",
                 " camaro ", " corvette ", " mustang ",
-                " c63 ", " c 63 ", " s3 ", " s 3 ", " s63 ", " s 63 ",
+                " c63 ", " c 63 ", " e43 ", " e 43 ", " s3 ", " s 3 ", " s63 ", " s 63 ",
                 " 500 sec ", " sec amg ")) {
             return "PETROL";
         }
@@ -1284,6 +1289,9 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " hybrid ", " hybridni ", " hev ", " mhev ")
                 || compact.contains("plugin")
                 || compact.contains("pluginhybrid")
+                || compact.contains("hybrid")
+                || compact.contains("phev")
+                || compact.contains("mhev")
                 || compact.contains("ehev")
                 || compact.contains("immd");
     }
@@ -1770,6 +1778,10 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             return "SEDAN";
         }
 
+        if (containsAny(titleSource, " e43 ", " e 43 ", " e43 amg ", " e 43 amg ")) {
+            return "SEDAN";
+        }
+
         if (containsAny(titleSource, " i-miev ", " i miev ", " imiev ", " id.3 ", " id3 ", " pixo ", " ampera ")) {
             return "HATCHBACK";
         }
@@ -1822,7 +1834,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             return "MINIVAN";
         }
 
-        if (containsAny(titleSource, " pathfinder ", " x-trail ", " x trail ", " grandland ", " grandal ", " crossland ")) {
+        if (containsAny(titleSource, " glk ", " pathfinder ", " x-trail ", " x trail ", " grandland ", " grandal ", " crossland ")) {
             return "SUV";
         }
 
@@ -2042,7 +2054,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " talento kombi ", " talento 8mist ", " talento 8 mist ", " talento 9mist ", " talento 9 mist ",
                 " doblo ", " freemont ", " 500l ", " fiat 500l ", " combo ", " vaneo ",
                 " picasso ", " grand c4 picasso ", " c4 picasso ",
-                " b 200 ", " b200 ",
+                " w246 ", " b 180 ", " b180 ", " b 200 ", " b200 ",
                 " mazda 5 ",
                 " grand scenic ", " grand scénic ",
                 " kangoo ", " carens ", " fr-v ", " fr v ", " frv ")) {
