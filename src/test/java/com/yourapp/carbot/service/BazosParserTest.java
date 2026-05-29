@@ -93,8 +93,10 @@ class BazosParserTest {
         assertThat(extractCarType("Fiat Talento Kombi 1.6turbo 107kw,novy motor 8mist,zaves", "", "")).isEqualTo("MINIVAN");
         assertThat(extractCarType("Fiat Croma 1,9jtd AUTOMAT 2009", "", "")).isEqualTo("WAGON");
         assertThat(extractCarType("Fiat500", "", "")).isEqualTo("HATCHBACK");
+        assertThat(extractCarType("Fiat 500c 1.2 Lounge 2015", "", "")).isEqualTo("CABRIO");
         assertThat(extractCarType("Fiat Bravo 1,6 JTD, 2008", "", "")).isEqualTo("HATCHBACK");
         assertThat(extractCarType("Ford Focus Tunier 2014", "", "")).isEqualTo("WAGON");
+        assertThat(extractCarType("FUSION FACELIFT,1.4 16V 59KW,ROK 2008", "", "")).isEqualTo("HATCHBACK");
         assertThat(extractCarType("HONDA CIVIC TOURER 1.6i DTEC 2016 KAMERA", "", "")).isEqualTo("WAGON");
         assertThat(extractCarType("Opel Astra J Sports Tourer 1.4i Turbo103Kw r.v.10/2015", "", "")).isEqualTo("WAGON");
         assertThat(extractCarType("Opel Astra K 1,6 CDTI 81kw sport Tourer, Innovation", "", "")).isEqualTo("WAGON");
@@ -193,6 +195,21 @@ class BazosParserTest {
     }
 
     @Test
+    void keepsCommercialTransitCustomOutOfPassengerResults() throws Exception {
+        assertThat(looksCommercialVehicle(
+                "FORD Transit CUSTOM 2,2 tdci 114kw L1 H1 Navigace",
+                "",
+                "https://auto.bazos.cz/inzerat/219364003/ford-transit-custom-22-tdci-114kw-l1-h1.php"))
+                .isTrue();
+
+        assertThat(looksCommercialVehicle(
+                "Tourneo Custom Titanium X L2 odpocet DPH nova prevodovka",
+                "",
+                "https://auto.bazos.cz/inzerat/219087044/tourneo-custom-titanium-x-l2-odpocet-dph.php"))
+                .isFalse();
+    }
+
+    @Test
     void resolvesApproximateMileageFromBazosTitles() throws Exception {
         assertThat(extractMileage("Citroen C5 combi diesel 124 xxx km", "")).isEqualTo(124000);
         assertThat(extractMileage("Honda CR-V 2.0 e:HEV Advance AWD, r. 2024, najeto cca 15100", "")).isEqualTo(15100);
@@ -272,5 +289,11 @@ class BazosParserTest {
         Method method = BazosParser.class.getDeclaredMethod("looksTitleUrlMismatch", String.class, String.class);
         method.setAccessible(true);
         return (boolean) method.invoke(parser, title, url);
+    }
+
+    private boolean looksCommercialVehicle(String title, String text, String url) throws Exception {
+        Method method = BazosParser.class.getDeclaredMethod("looksCommercialVehicle", String.class, String.class, String.class);
+        method.setAccessible(true);
+        return (boolean) method.invoke(parser, title, text, url);
     }
 }

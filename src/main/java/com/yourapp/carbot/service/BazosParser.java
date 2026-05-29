@@ -1239,6 +1239,10 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         String source = " " + normalizeText(title).toLowerCase(Locale.ROOT) + " ";
         String compact = source.replaceAll("[^a-z0-9]", "");
 
+        if (isExplicitHybridTitle(source, compact)) {
+            return "HYBRID";
+        }
+
         if (containsAny(source, " lpg ") || compact.contains("lpg")) {
             return "LPG";
         }
@@ -1273,6 +1277,15 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         return containsAny(source, " plug-in ", " plug in ", " phev ", " gte ", " e-hybrid ", " ehybrid ")
                 || compact.contains("plugin")
                 || compact.contains("pluginhybrid");
+    }
+
+    private boolean isExplicitHybridTitle(String source, String compact) {
+        return containsAny(source, " plug-in ", " plug in ", " phev ", " gte ", " e-hybrid ", " ehybrid ",
+                " hybrid ", " hybridni ", " hev ", " mhev ")
+                || compact.contains("plugin")
+                || compact.contains("pluginhybrid")
+                || compact.contains("ehev")
+                || compact.contains("immd");
     }
 
     private boolean looksLikelyFalseAutomatic(String title, String transmission) {
@@ -1741,6 +1754,10 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             return "COUPE";
         }
 
+        if (containsAny(titleSource, " 500c ", " fiat 500c ")) {
+            return "CABRIO";
+        }
+
         if (containsAny(titleSource, " colt czc ", " czc ", " kabriolet ")) {
             return "CABRIO";
         }
@@ -2076,7 +2093,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " f40 ", " řada 1 ", " rada 1 ",
                 " a2 ", " audi a2 ", " a180 ", " a 180 ", " a180d ", " a 180d ", " a200 ", " a 200 ", " a200d ", " a 200d ", " a35 ",
                 " 116i ", " 118i ", " 120i ", " 116d ", " 118d ", " 120d ",
-                " agila ", " karl ", " astra ", " corsa ", " 1007 ", " 107 ", " 147 ", " 206 ", " 207 ", " 208 ", " 308 ",
+                " agila ", " karl ", " astra ", " corsa ", " fusion ", " 1007 ", " 107 ", " 147 ", " 206 ", " 207 ", " 208 ", " 308 ",
                 " sandero ", " logan ", " scala ", " citigo ", " laguna ",
                 " fiat 500 ", " fiat500 ", " tipo ", " fiat tipo ", " bravo ",
                 " auris ", " aoris ", " prius ", " corolla ", " corsa ", " mazda 3 ", " rapid ", " yaris ", " getz ", " soul ")) {
@@ -2516,6 +2533,11 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 .toLowerCase(Locale.ROOT) + " ";
         String titleSource = " " + normalizeText(title).toLowerCase(Locale.ROOT) + " ";
         String wordSource = compactSearchText(title + " " + shortenForCheck(text, 400) + " " + safe(url));
+
+        if (containsAny(titleSource, " transit custom ", " transit ")
+                && !containsAny(titleSource, " tourneo custom ", " tourneo ")) {
+            return true;
+        }
 
         if (looksLikePassengerCarModel(title)) {
             return false;
