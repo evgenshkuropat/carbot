@@ -66,6 +66,8 @@ class SbazarParserTest {
         assertThat(resolveFuelType("peugeot 2008 e-2008 100kw 136hp", "")).isEqualTo("ELECTRIC");
         assertThat(resolveFuelType("bmw x7 xdrive40d", "")).isEqualTo("DIESEL");
         assertThat(resolveFuelType("mercedes-benz glc 43 amg 4matic", "")).isEqualTo("PETROL");
+        assertThat(resolveFuelType("toyota gr86 executive manualni prev odpocet dph", "")).isEqualTo("PETROL");
+        assertThat(resolveFuelType("vw golf 8 variant 1.5 etsi 110kw dsg", "")).isEqualTo("HYBRID");
         assertThat(resolveFuelType("suzuki sx4 s-cross 1,4 boosterjet premium 2x4", "")).isEqualTo("PETROL");
         assertThat(resolveFuelType("dongfeng u-tour 1,5 t 130 kw exclusivefr 7mist", "")).isEqualTo("PETROL");
         assertThat(resolveTransmission("honda crv 2020 hybrid benzin 72tis.km", "", "HYBRID")).isEqualTo("AUTOMATIC");
@@ -177,6 +179,8 @@ class SbazarParserTest {
         assertThat(resolveCarType("peugeot 308 2,0 bhdi 110kw", "")).isEqualTo("HATCHBACK");
         assertThat(resolveCarType("skoda octavia scout cz dph", "")).isEqualTo("WAGON");
         assertThat(resolveCarType("bmw rada 2 225xe iperformance f45 165kw", "")).isEqualTo("MINIVAN");
+        assertThat(resolveCarType("toyota sienna awd 2017 7 mist 8at tazne", "")).isEqualTo("MINIVAN");
+        assertThat(resolveCarType("toyota starlet", "")).isEqualTo("HATCHBACK");
     }
 
     @Test
