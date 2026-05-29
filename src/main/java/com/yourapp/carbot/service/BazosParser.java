@@ -354,6 +354,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             );
             fuelType = preferExplicitTitleFuelType(title, fuelType);
             fuelType = correctLikelyFalseElectricFuel(title, fuelType);
+            fuelType = correctLikelyNoisyFuel(title, fuelType);
             String transmission = firstNonBlank(
                     extractTransmission(title),
                     extractTransmission(listingText),
@@ -1058,13 +1059,14 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         if (containsAny(source,
                 " diesel ", " nafta ",
                 " tdi ", " tdci ", " cdi ", " crdi ", " hdi ", " dci ",
-                " jtd ", " jtdm ", " multijet ", " bluehdi ", " bluetec ", " cdti ",
+                " jtd ", " jtdm ", " mjt ", " mjt2 ", " multijet ", " multi jet ", " bluehdi ", " bluetec ", " cdti ",
                 " dtec ", " d-tec ", " tddi ", " ddis ",
                 " d4d ", " d-4d ", " did ", " di-d ", " di d ", " td4 ", " ecoblue ", " crd ")) {
             return "DIESEL";
         }
 
         if (compact.contains("tdi")
+                || compact.contains("diesel")
                 || compact.contains("tdci")
                 || compact.contains("cdi")
                 || compact.contains("crdi")
@@ -1072,7 +1074,10 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 || compact.contains("dci")
                 || compact.contains("jtd")
                 || compact.contains("jtdm")
+                || compact.contains("mjt")
+                || compact.contains("mjt2")
                 || compact.contains("multijet")
+                || compact.contains("multij")
                 || compact.contains("bluehdi")
                 || compact.contains("cdti")
                 || compact.contains("dtec")
@@ -1205,6 +1210,20 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         if (containsAny(source, " touareg ", " passat ", " golf ", " tiguan ", " t-roc ", " troc ", " touran ")
                 && !containsAny(source, " hybrid ", " ehybrid ", " e-hybrid ", " gte ", " phev ", " plug-in ", " plugin ")) {
             return extractFuelType(title);
+        }
+
+        return fuelType;
+    }
+
+    private String correctLikelyNoisyFuel(String title, String fuelType) {
+        if (fuelType == null || fuelType.isBlank()) {
+            return fuelType;
+        }
+
+        String source = " " + normalizeText(title).toLowerCase(Locale.ROOT) + " ";
+        if (containsAny(source, " sienna ", " sandero stepway ")
+                && extractFuelType(title) == null) {
+            return null;
         }
 
         return fuelType;

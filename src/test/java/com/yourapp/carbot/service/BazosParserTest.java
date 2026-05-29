@@ -60,6 +60,9 @@ class BazosParserTest {
         assertThat(extractFuelType("Toyota Yaris Cross, 1.5HEV, Adventure, 4x4")).isEqualTo("HYBRID");
         assertThat(extractFuelType("Peugeot 308 SW 1.2 PT 96 kW 130 Allure CZ DPH")).isEqualTo("PETROL");
         assertThat(extractFuelType("PEUGEOT 301 1.2 60kW rok 2016")).isEqualTo("PETROL");
+        assertThat(extractFuelType("Citroen C5 combi,2,2 diesel,125 kW, Webasto")).isEqualTo("DIESEL");
+        assertThat(extractFuelType("Fiat Freemont 2.0 MJT AT 4x4 125kW")).isEqualTo("DIESEL");
+        assertThat(extractFuelType("Fiat Doblo Maxi 2020 1.6 MJT2 dlouha verze")).isEqualTo("DIESEL");
     }
 
     @Test
@@ -140,6 +143,8 @@ class BazosParserTest {
         assertThat(extractTransmission("Honda CR-V 2.0 e:HEV Advance AWD")).isEqualTo("AUTOMATIC");
         assertThat(extractTransmission("Honda CR-V 2.0i-MMD Elegance AWD")).isEqualTo("AUTOMATIC");
         assertThat(looksLikelyFalseAutomatic("PEUGEOT 207 1.4 i BENZIN 70 kW NOVE ROZVODY", "AUTOMATIC")).isTrue();
+        assertThat(correctLikelyNoisyFuel("Toyota Sienna AWD 2017 7 mist 8AT tazne", "DIESEL")).isNull();
+        assertThat(correctLikelyNoisyFuel("Dacia Sandero Stepway", "DIESEL")).isNull();
 
         assertThat(looksNonCarListing("Alfa Romeo 156 blatniky", "", "", "")).isTrue();
         assertThat(looksNonCarListing("Znaky Alfa Romeo 74mm", "", "", "")).isTrue();
@@ -223,6 +228,12 @@ class BazosParserTest {
         Method method = BazosParser.class.getDeclaredMethod("looksLikelyFalseAutomatic", String.class, String.class);
         method.setAccessible(true);
         return (boolean) method.invoke(parser, title, transmission);
+    }
+
+    private String correctLikelyNoisyFuel(String title, String fuelType) throws Exception {
+        Method method = BazosParser.class.getDeclaredMethod("correctLikelyNoisyFuel", String.class, String.class);
+        method.setAccessible(true);
+        return (String) method.invoke(parser, title, fuelType);
     }
 
     private Integer extractMileage(String title, String text) throws Exception {
