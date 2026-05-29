@@ -209,7 +209,7 @@ public class TipCarsParser implements CarSourceParser {
         if (page <= 1) {
             return BASE_LIST_URL;
         }
-        return BASE_LIST_URL + "?page=" + page;
+        return BASE_URL + "?str=" + page + "-20";
     }
 
     private Set<String> extractDetailLinks(Document listDoc) {
@@ -731,6 +731,17 @@ public class TipCarsParser implements CarSourceParser {
 
         if (containsAny(titleSource, " tourneo courier ", " tourneo connect ", " tourneo custom ")) {
             return "MINIVAN";
+        }
+
+        if (containsAny(titleSource,
+                " c-max ", " c max ", " galaxy ", " berlingo ", " caddy ", " roomster ",
+                " tridy v ", " třídy v ", " tĹ™Ă­dy v ", " vito ", " viano ",
+                " scenic ", " zafira ", " meriva ", " touran ", " sharan ")) {
+            return "MINIVAN";
+        }
+
+        if (containsAny(titleSource, " jimny ", " vitara ")) {
+            return "SUV";
         }
 
         if (normalizedUrl.contains("/kombi/") || containsAny(titleSource, " combi ", " kombi ")) {

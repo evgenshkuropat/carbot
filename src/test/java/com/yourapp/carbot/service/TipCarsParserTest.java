@@ -41,11 +41,42 @@ class TipCarsParserTest {
                 "",
                 "https://www.tipcars.com/ford-tourneo-courier/osobni/benzin/ford-tourneo-courier.html"))
                 .isEqualTo("MINIVAN");
+
+        assertThat(extractCarType(
+                "Suzuki Jimny 1.3i 63KW KLIMA 4X4 TAŽNÉ",
+                "",
+                "https://www.tipcars.com/suzuki-jimny/terenni/benzin/suzuki-jimny.html"))
+                .isEqualTo("SUV");
+
+        assertThat(extractCarType(
+                "Citroën Berlingo 1,5 BlueHDi DPH 1.maj původ ČR",
+                "",
+                "https://www.tipcars.com/citroen-berlingo/kombi/nafta/citroen-berlingo.html"))
+                .isEqualTo("MINIVAN");
+
+        assertThat(extractCarType(
+                "Ford C-MAX 1,5 EcoBoost 1.majitel, pěkný",
+                "",
+                "https://www.tipcars.com/ford-c-max/kombi/benzin/ford-c-max.html"))
+                .isEqualTo("MINIVAN");
+    }
+
+    @Test
+    void buildsCurrentTipCarsPaginationUrls() throws Exception {
+        assertThat(buildPageUrl(1)).isEqualTo("https://www.tipcars.com/osobni/");
+        assertThat(buildPageUrl(2)).isEqualTo("https://www.tipcars.com/?str=2-20");
+        assertThat(buildPageUrl(5)).isEqualTo("https://www.tipcars.com/?str=5-20");
     }
 
     private String extractCarType(String title, String text, String url) throws Exception {
         Method method = TipCarsParser.class.getDeclaredMethod("extractCarType", String.class, String.class, String.class);
         method.setAccessible(true);
         return (String) method.invoke(parser, title, text, url);
+    }
+
+    private String buildPageUrl(int page) throws Exception {
+        Method method = TipCarsParser.class.getDeclaredMethod("buildPageUrl", int.class);
+        method.setAccessible(true);
+        return (String) method.invoke(parser, page);
     }
 }
