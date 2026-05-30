@@ -604,7 +604,7 @@ public class CarStorageService {
             return "MINIVAN";
         }
 
-        if (containsAny(lower, "b-max", "b max", "volkswagen t5", "volkswagen t6", "vw t5", "vw t6", "caddy", "tourneo custom", "tourneo courier", "tourneo connect", "proace verso", "proace city verso", "u-tour", "u tour", "225xe", "active tourer", " f45 ", "jogger")) {
+        if (containsAny(lower, "b-max", "b max", "volkswagen t5", "volkswagen t6", "vw t5", "vw t6", "caddy", "tourneo custom", "tourneo courier", "tourneo connect", "proace verso", "proace city verso", "renault trafic", "opel vivaro", "nissan primastar", "u-tour", "u tour", "225xe", "active tourer", " f45 ", "jogger")) {
             return "MINIVAN";
         }
 
@@ -740,7 +740,7 @@ public class CarStorageService {
             return "CABRIO";
         }
 
-        if (containsAny(lower, "pickup", "pick-up", "crew cab", "amarok", "ranger", "hilux", "navara", "l200", "gladiator")) {
+        if (containsAny(lower, "pickup", "pick-up", "crew cab", "amarok", "ranger", "hilux", "navara", "l200", "gladiator", "ram 1500", "ram 2500", "ram 3500", "dodge ram")) {
             return "PICKUP";
         }
 

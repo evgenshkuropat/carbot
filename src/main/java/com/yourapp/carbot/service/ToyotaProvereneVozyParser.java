@@ -676,7 +676,7 @@ public class ToyotaProvereneVozyParser implements CarSourceParser {
         if (containsAny(source, " lexus lc ", " lc 500 ", " coupe ", " sportovni ", " supra ", " gt86 ")) {
             return "COUPE";
         }
-        if (containsAny(source, " corolla sd ", " sedan ", " liftback ", " toledo ", " insignia ", " stinger ", " octavia ")) {
+        if (containsAny(source, " corolla sd ", " sedan ", " liftback ", " toledo ", " insignia ", " stinger ", " octavia ", " avensis ")) {
             return "SEDAN";
         }
         if (containsAny(source, " yaris ", " aygo ", " fabia ", " ceed ", " mg3 ", " ds 4 ", " auris ", " focus ", " insight ", " 307 ")) {

@@ -75,6 +75,10 @@ class CarStorageServiceTest {
         assertThat(normalizeCarType("WAGON", "Volkswagen Caddy 2.0TDI 75kW TAZNE CZ DPH")).isEqualTo("MINIVAN");
         assertThat(normalizeCarType("PICKUP", "SUZUKI JIMNY 1.3VVTi - 2016 - 64.000 km")).isEqualTo("SUV");
         assertThat(normalizeCarType(null, "Toyota PROACE VERSO 2,0 D-4D L2 Family AT")).isEqualTo("MINIVAN");
+        assertThat(normalizeCarType("VAN", "Renault Trafic")).isEqualTo("MINIVAN");
+        assertThat(normalizeCarType("VAN", "Opel Vivaro 2,5 L2H1 WESTFALIA LIFE POSTEL")).isEqualTo("MINIVAN");
+        assertThat(normalizeCarType("VAN", "Nissan Primastar 2.0 dCi")).isEqualTo("MINIVAN");
+        assertThat(normalizeCarType("PICKUP", "RAM 1500 5.7 V8 401k LIMITED NIGHT RAMB")).isEqualTo("PICKUP");
         assertThat(normalizeCarType("HATCHBACK", "Dongfeng U-Tour 1,5 T 130 kW ExclusiveFR 7mist")).isEqualTo("MINIVAN");
         assertThat(normalizeCarType("HATCHBACK", "Dongfeng Mage 1,5 T 145 kW E2 DCT7")).isEqualTo("SUV");
         assertThat(normalizeCarType("MINIVAN", "Dongfeng T5 EVO 1,5 T 130kW DCT7 DragonEdition")).isEqualTo("SUV");

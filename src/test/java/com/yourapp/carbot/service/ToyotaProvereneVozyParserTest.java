@@ -24,6 +24,8 @@ class ToyotaProvereneVozyParserTest {
                 .isEqualTo("SEDAN");
         assertThat(extractCarType("Toyota Aygo X 1.5 Hybrid 116k", ""))
                 .isEqualTo("SUV");
+        assertThat(extractCarType("Toyota Avensis", ""))
+                .isEqualTo("SEDAN");
     }
 
     @Test
