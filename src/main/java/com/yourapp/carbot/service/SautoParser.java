@@ -1619,6 +1619,18 @@ public class SautoParser implements CarSourceParser {
             return "CABRIO";
         }
 
+        if (containsAny(titleSource, " golf plus ", " golf sportsvan ", " matrix ")) {
+            return "MINIVAN";
+        }
+
+        if (containsAny(titleSource, " accent ", " mondeo ", " nubira ")) {
+            return "SEDAN";
+        }
+
+        if (containsAny(titleSource, " golf ", " 206 ")) {
+            return "HATCHBACK";
+        }
+
         if (containsAny(titleSource,
                 " puma ", " formentor ", " captur ", " austral ", " kadjar ", " koleos ", " arkana ",
                 " kuga ", " ecosport ", " edge ", " tiguan ", " touareg ", " t-roc ", " t-cross ",
@@ -1682,8 +1694,17 @@ public class SautoParser implements CarSourceParser {
 
         if (containsAny(urlSource,
                 "/renault/scenic/", "/peugeot/partner/",
-                "/chrysler/grand-voyager/", "/chrysler/voyager/")) {
+                "/chrysler/grand-voyager/", "/chrysler/voyager/",
+                "/volkswagen/golf-plus/", "/hyundai/matrix/")) {
             return "MINIVAN";
+        }
+
+        if (containsAny(urlSource, "/hyundai/accent/", "/ford/mondeo/", "/daewoo/nubira/")) {
+            return "SEDAN";
+        }
+
+        if (containsAny(urlSource, "/peugeot/206/")) {
+            return "HATCHBACK";
         }
 
         if (containsAny(textSource, " suv ", " crossover ", " off-road ", " offroad ")) {

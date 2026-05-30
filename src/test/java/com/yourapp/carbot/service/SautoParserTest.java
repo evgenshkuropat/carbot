@@ -30,6 +30,20 @@ class SautoParserTest {
                 .isEqualTo("MINIVAN");
         assertThat(extractCarType("Fiat Grande Punto Fiat Grande Punto 2006 1.3 JTD", "kombi", "https://www.sauto.cz/osobni/detail/fiat/grande-punto/210196538"))
                 .isEqualTo("HATCHBACK");
+        assertThat(extractCarType("Volkswagen Golf Volkswagen Golf 2008 nova stk", "suv", "https://www.sauto.cz/osobni/detail/volkswagen/golf/210497417"))
+                .isEqualTo("HATCHBACK");
+        assertThat(extractCarType("Hyundai Matrix hyundai matrix 1.6i", "kombi", "https://www.sauto.cz/osobni/detail/hyundai/matrix/210470000"))
+                .isEqualTo("MINIVAN");
+        assertThat(extractCarType("Hyundai Accent 1.6i MPI, Serv.kniha, Tazne", "", "https://www.sauto.cz/osobni/detail/hyundai/accent/210380264"))
+                .isEqualTo("SEDAN");
+        assertThat(extractCarType("Ford Mondeo 2.0 TDCi, Klima", "", "https://www.sauto.cz/osobni/detail/ford/mondeo/210346946"))
+                .isEqualTo("SEDAN");
+        assertThat(extractCarType("Daewoo Nubira 1.6i,STK7/27", "", "https://www.sauto.cz/osobni/detail/daewoo/nubira/210319271"))
+                .isEqualTo("SEDAN");
+        assertThat(extractCarType("Volkswagen Golf Plus VW GOLF PLUS 1,9", "", "https://www.sauto.cz/osobni/detail/volkswagen/golf-plus/210122711"))
+                .isEqualTo("MINIVAN");
+        assertThat(extractCarType("Peugeot 206 1.1 i, NOVA CENA, po STK", "kombi", "https://www.sauto.cz/osobni/detail/peugeot/206/210229829"))
+                .isEqualTo("HATCHBACK");
     }
 
     @Test
