@@ -615,6 +615,15 @@ public class SautoParser implements CarSourceParser {
             return false;
         }
 
+        if (containsAny(normalized, " možné splátky ", " mozne splatky ")
+                && !containsAny(normalized,
+                " prevzeti leasingu ",
+                " prenechani leasingu ",
+                " operativni leasing ",
+                " zbytek na splatky ")) {
+            return false;
+        }
+
         return containsAny(normalized,
                 " převzetí leasingu ", " prevzeti leasingu ",
                 " přenechání leasingu ", " prenechani leasingu ",
@@ -1619,11 +1628,15 @@ public class SautoParser implements CarSourceParser {
             return "CABRIO";
         }
 
+        if (containsAny(titleSource, " mustang ")) {
+            return "COUPE";
+        }
+
         if (containsAny(titleSource, " golf plus ", " golf sportsvan ", " matrix ")) {
             return "MINIVAN";
         }
 
-        if (containsAny(titleSource, " accent ", " mondeo ", " nubira ")) {
+        if (containsAny(titleSource, " accent ", " mondeo ", " nubira ", " voyah passion ", " passion phev ")) {
             return "SEDAN";
         }
 

@@ -44,6 +44,10 @@ class SautoParserTest {
                 .isEqualTo("MINIVAN");
         assertThat(extractCarType("Peugeot 206 1.1 i, NOVA CENA, po STK", "kombi", "https://www.sauto.cz/osobni/detail/peugeot/206/210229829"))
                 .isEqualTo("HATCHBACK");
+        assertThat(extractCarType("Ford Mustang 5.0 GT 328 kW Mustang V8", "", "https://www.sauto.cz/osobni/detail/ford/mustang/210028392"))
+                .isEqualTo("COUPE");
+        assertThat(extractCarType("Voyah PASSION PHEV PHEV 4x4", "", "https://www.sauto.cz/osobni/detail/voyah/passion-phev/209956629"))
+                .isEqualTo("SEDAN");
     }
 
     @Test
@@ -57,6 +61,18 @@ class SautoParserTest {
                 """);
 
         assertThat(extractPriceValueDirect(doc, "Skoda Fabia 1.6 74 KW", "")).isEqualTo(30_000);
+    }
+
+    @Test
+    void keepsNormalSalePriceWhenDealerMentionsInstallments() throws Exception {
+        Document doc = Jsoup.parse("""
+                <html><body>
+                    <div class="price">33 000 Kč Zobrazit více o ceně Poznámka k ceně:
+                    MOŽNÉ SPLÁTKY I PROTIÚČET Vypočítat povinné ručení</div>
+                </body></html>
+                """);
+
+        assertThat(extractPriceValueDirect(doc, "Citroen C2 1.4HDI MOŽNÉ SPLÁTKY", "")).isEqualTo(33_000);
     }
 
     private String extractCarType(String title, String text, String url) throws Exception {
