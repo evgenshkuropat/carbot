@@ -20,6 +20,8 @@ class BazosParserTest {
                 .isEqualTo("MAZDA");
         assertThat(extractBrand("ID.4 1.st MAX 80kwh 150KW MATRIX HEAD UP 107tkm m2021", "peugeot 2008"))
                 .isEqualTo("VOLKSWAGEN");
+        assertThat(extractBrand("Toyata Yaris 1.5 16V, Edice Y20, 41 tis km", ""))
+                .isEqualTo("TOYOTA");
     }
 
     @Test
@@ -73,6 +75,7 @@ class BazosParserTest {
         assertThat(extractFuelType("Opel Crossland 1.2T 81kW LED LIMITED CARPLAY")).isEqualTo("PETROL");
         assertThat(extractFuelType("Toyota GR86 executive manualni prev. odpocet DPH")).isEqualTo("PETROL");
         assertThat(extractFuelType("Toyota GR Yaris s upravami za skoro 700.000,-")).isEqualTo("PETROL");
+        assertThat(extractFuelType("Prodam Toyota Mirai Executive")).isEqualTo("ELECTRIC");
     }
 
     @Test
@@ -83,6 +86,7 @@ class BazosParserTest {
         assertThat(extractCarType("Seat ibiza", "", "")).isEqualTo("HATCHBACK");
         assertThat(extractCarType("Suzuki Jimny 1.3 i 2015", "", "")).isEqualTo("SUV");
         assertThat(extractCarType("suzuki jimny 4x4", "", "")).isEqualTo("SUV");
+        assertThat(extractCarType("Suzuki Samurai 1.3", "", "")).isEqualTo("SUV");
         assertThat(extractCarType("Prodam Suzuki sx4,1.6", "", "")).isEqualTo("SUV");
         assertThat(extractCarType("Suzuki Virara 1.6 Ddis", "", "")).isEqualTo("SUV");
         assertThat(extractCarType("Suzuki Alto,1.0i,50kw", "", "")).isEqualTo("HATCHBACK");
@@ -128,6 +132,8 @@ class BazosParserTest {
         assertThat(extractCarType("Hyundai SantaFe 4 x 4", "", "")).isEqualTo("SUV");
         assertThat(extractCarType("Hyundai IX 20", "", "")).isEqualTo("MINIVAN");
         assertThat(extractCarType("Toyota Aygo 1.0VVT-i 50kw 4/2013", "", "")).isEqualTo("HATCHBACK");
+        assertThat(extractCarType("Prodám Toyota Mirai Executive", "", "")).isEqualTo("SEDAN");
+        assertThat(extractCarType("Škoda Yeti, 2.0 TDi 4X4 Outdoor Nové Rozvody", "", "")).isEqualTo("SUV");
         assertThat(extractCarType("VW ID.3 Pro 150kW IQ.Lights SOH 95,7%", "", "")).isEqualTo("HATCHBACK");
         assertThat(extractCarType("VW Passat B8 Varian TDI 110kW DSG", "", "")).isEqualTo("WAGON");
         assertThat(extractCarType("VW Arteon SB 2.0 TDI 110kW DSG R-Line", "", "")).isEqualTo("WAGON");
@@ -178,6 +184,11 @@ class BazosParserTest {
         assertThat(looksNonCarListing("TI Zadni pruziny Alfa Romeo 159 1.9JTDm, JTS, 2.0, 2.2, 1.8", "", "", "")).isTrue();
         assertThat(looksNonCarListing("Hlavice radicky Alfa Romeo 159", "", "", "")).isTrue();
         assertThat(looksNonCarListing("JTD Palivovy filtr", "", "", "")).isTrue();
+        assertThat(looksNonCarListing(
+                "Toyata Yaris 1.5 16V, Edice Y20, 41 tis km",
+                "",
+                "https://auto.bazos.cz/inzerat/219508952/toyata-yaris-15-16v-edice-y20-41-tis-km.php",
+                "Toyata Yaris 1.5 16V, Edice Y20, 41 tis km")).isFalse();
         assertThat(looksNonCarListing("Zadni podbehy Alfa Giulia", "", "", "")).isTrue();
         assertThat(looksNonCarListing("Tmave stinitka Alfa Romeo 147/GT", "", "", "")).isTrue();
         assertThat(looksNonCarListing("Alfa Romeo 159 - tlacitka, ovladace", "", "", "")).isTrue();
