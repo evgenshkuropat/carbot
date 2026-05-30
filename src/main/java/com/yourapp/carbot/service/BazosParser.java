@@ -995,6 +995,18 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
 
         if (containsAny(source,
                 " plug-in hybrid ", " plugin hybrid ", " plug in hybrid ",
+                " plug-in ", " plug in ", " phev ")) {
+            return "PLUGIN_HYBRID";
+        }
+
+        if (Pattern.compile("(?i)\\b[0-9][\\.,][0-9]\\s*phev\\b")
+                .matcher(source).find()
+                || compact.contains("phev")) {
+            return "PLUGIN_HYBRID";
+        }
+
+        if (containsAny(source,
+                " plug-in hybrid ", " plugin hybrid ", " plug in hybrid ",
                 " plug-in ", " plug in ", " phev ",
                 " mild-hybrid ", " mild hybrid ",
                 " hybrid ", " hybridni ", " e-hybrid ", " ehybrid ", " i-mmd ", " immd ", " hev ", " mhev ")) {
@@ -1899,6 +1911,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         if (containsAny(titleSource,
                 " e270 ", " e270cdi ", " e 270 ", " e 270 cdi ",
                 " e350 bluetec ", " e 350 bluetec ",
+                " c180 ", " c 180 ", " c180k ", " c 180k ", " c180 kompressor ", " c 180 kompressor ",
                 " c200 ", " c200cdi ", " c 200 ", " c 200 cdi ",
                 " c250d ", " c 250d ")) {
             return "SEDAN";
@@ -2009,7 +2022,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " q2 ", " q3 ", " q4 ", " q5 ", " q7 ", " q8 ",
                 " q 2 ", " q 3 ", " q 4 ", " q 5 ", " q 7 ", " q 8 ",
                 " sq5 ", " sq7 ",
-                " glc ", " gle ", " gls ", " gla ", " glb ",
+                " glc ", " gle ", " gls ", " gla ", " glb ", " eqb ",
                 " gl 500 ", " gl500 ", " gl320 ", " gl 63 ", " ml 350 ", " ml350 ",
                 " kodiaq ", " karoq ", " kamiq ",
                 " tiguan ", " touareg ", " t-roc ", " troc ",
@@ -2172,7 +2185,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " eqe ", " eqs ",
                 " cls ", " cla ",
                 " 520 ", " 525 ", " 530 ", " 540 ",
-                " c220d ", " c 220 ", " c-class ", " e-class ",
+                " c180 ", " c 180 ", " c180k ", " c 180k ", " c220d ", " c 220 ", " c-class ", " e-class ",
                 " thalia ")) {
             return "SEDAN";
         }
@@ -3522,7 +3535,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " rs6 ",
                 " rs 6 ",
                 " a180 ", " a 180 ", " a180d ", " a 180d ", " a200 ", " a 200 ", " a200d ", " a 200d ", " a35 ",
-                " c220 ", " c 220 ", " c220d ", " e220 ", " e 220 ", " e220d ", " e300 ", " e 300 ", " e300cdi ",
+                " c180 ", " c 180 ", " c180k ", " c 180k ", " c220 ", " c 220 ", " c220d ", " e220 ", " e 220 ", " e220d ", " e300 ", " e 300 ", " e300cdi ",
                 " cla ", " cls ", " slk ", " slk55 ", " sl600 ", " glc ", " gle ", " gls ", " gl500 ", " grandis ",
                 " c63 ", " c 63 ",
                 " outlander ", " pajero ", " l200 ", " l 200 ", " lancer ", " eclipse ", " asx ", " colt ", " spacestar ", " space star ", " i-miev ", " i miev ", " imiev ",

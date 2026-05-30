@@ -66,6 +66,7 @@ class BazosParserTest {
         assertThat(extractFuelType("Mercedes GLC 350 D 4MATIC, 3.0 V6 nez. topeni")).isEqualTo("DIESEL");
         assertThat(extractFuelType("Mercedes E43 AMG")).isEqualTo("PETROL");
         assertThat(extractFuelType("Mitsubishi Outlander 2.4i+HYBRID 4x4 SERVISKA TAZNE")).isEqualTo("HYBRID");
+        assertThat(extractFuelType("MITSUBISHI ECLIPSE CROSS 2.4 PHEV 138kW 4x4-12/2022-49.949KM")).isEqualTo("PLUGIN_HYBRID");
         assertThat(extractFuelType("Mitsubishi lancer evo")).isEqualTo("PETROL");
         assertThat(extractFuelType("Nissan Primera 1.8 16V 2006")).isEqualTo("PETROL");
         assertThat(extractFuelType("Nissan Micra 1.0 IG-T LED KLIMA")).isEqualTo("PETROL");
@@ -146,8 +147,10 @@ class BazosParserTest {
         assertThat(extractCarType("Mercedes Benz C 220 CDI T BlueEfficiency (W204)", "", "")).isEqualTo("WAGON");
         assertThat(extractCarType("Mercedes e270cdi rv2000", "", "")).isEqualTo("SEDAN");
         assertThat(extractCarType("Mercedes C200CDI, r.v. 2003, 85kW, automat", "", "")).isEqualTo("SEDAN");
+        assertThat(extractCarType("Mercedes-Benz C180 Kompressor W204 115 kW manual", "", "")).isEqualTo("SEDAN");
         assertThat(extractCarType("Mercedes-Benz C 250d 150kW AMG 4MATIC KEYLESS", "", "")).isEqualTo("SEDAN");
         assertThat(extractCarType("Mercedes-Benz GLK 320CDI 165KW PANORAMA KAMERA", "", "")).isEqualTo("SUV");
+        assertThat(extractCarType("Mercedes-Benz EQB 250 Progressive 140kW", "", "")).isEqualTo("SUV");
         assertThat(extractCarType("Mercedes E43 AMG", "", "")).isEqualTo("SEDAN");
         assertThat(extractCarType("MERCEDES-BENZ W246 B180 90kw PRAVIDELNY SERVIS TOP VYBAVA", "", "")).isEqualTo("MINIVAN");
         assertThat(extractCarType("Mercedes-Benz 126.500 SEC AMG Paket", "", "")).isEqualTo("COUPE");
@@ -238,6 +241,12 @@ class BazosParserTest {
                 "Toyota Proace Verso XL, zakoupena nova v CR",
                 "",
                 "https://auto.bazos.cz/inzerat/219323068/jsjd.php"))
+                .isFalse();
+
+        assertThat(looksCommercialVehicle(
+                "Mercedes-Benz C180 Kompressor W204 - 115 kW - manual",
+                "",
+                "https://auto.bazos.cz/inzerat/218778125/mercedes-benz-c180-kompressor-w204-115-kw-manual.php"))
                 .isFalse();
     }
 
