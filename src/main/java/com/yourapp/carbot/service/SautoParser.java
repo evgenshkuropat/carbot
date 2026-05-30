@@ -339,12 +339,6 @@ public class SautoParser implements CarSourceParser {
             return null;
         }
 
-        if (normalizedSelectorPrice != null && isFinanceBaitRaw(selectorRaw)) {
-            log.info("SAUTO PRICE REJECTED title='{}' reason=finance_bait_raw selectorRaw={}",
-                    safe(title), safe(selectorRaw));
-            return null;
-        }
-
         if (normalizedSelectorPrice != null
                 && !looksLikeFinanceBaitPrice(normalizedSelectorPrice, title, listingText, selectorRaw)) {
             return normalizedSelectorPrice;
@@ -439,7 +433,8 @@ public class SautoParser implements CarSourceParser {
 
         for (String text : candidates) {
             String lower = text.toLowerCase(Locale.ROOT);
-            if (!lower.contains("kč")) {
+            boolean asciiOrUnicodeCurrency = lower.contains("kc") || lower.contains("kč");
+            if (!asciiOrUnicodeCurrency && !lower.contains("kč")) {
                 continue;
             }
 
@@ -610,6 +605,15 @@ public class SautoParser implements CarSourceParser {
     private boolean looksLikeLeaseTransferOrDeposit(String title, String text, String rawPriceText) {
         String normalized = (" " + normalizeText(safe(title) + " " + safe(text) + " " + safe(rawPriceText))
                 .toLowerCase(Locale.ROOT) + " ");
+
+        if (containsAny(normalized, "0% akontace", "0 % akontace")
+                && !containsAny(normalized,
+                " pĹ™evzetĂ­ leasingu ", " prevzeti leasingu ",
+                " pĹ™enechĂˇnĂ­ leasingu ", " prenechani leasingu ",
+                " operativnĂ­ leasing ", " operativni leasing ",
+                " zbytek na splĂˇtky ", " zbytek na splatky ")) {
+            return false;
+        }
 
         return containsAny(normalized,
                 " převzetí leasingu ", " prevzeti leasingu ",
@@ -1609,7 +1613,9 @@ public class SautoParser implements CarSourceParser {
 
         if (containsAny(titleSource,
                 " cabrio ", " roadster ", " spider ", " spyder ",
-                " convertible ", " cabriolet ", " targa ")) {
+                " convertible ", " cabriolet ", " targa ",
+                " 206cc ", " 206 cc ", " 207cc ", " 207 cc ",
+                " 307cc ", " 307 cc ", " 308cc ", " 308 cc ")) {
             return "CABRIO";
         }
 
@@ -1642,7 +1648,7 @@ public class SautoParser implements CarSourceParser {
                 " clio ", " fabia ", " scala ", " polo ", " golf ", " fiesta ",
                 " corsa ", " i20 ", " i30 ", " ceed ", " mazda 3 ", " a-class ",
                 " třídy a ", " tridy a ", " civic ", " megane ", " c2 ", " c3 ",
-                " xsara ", " agila ", " 207 ", " 208 ", " i3 ", " r5 ", " id.3 ", " id3 ")) {
+                " xsara ", " agila ", " punto ", " 207 ", " 208 ", " i3 ", " r5 ", " id.3 ", " id3 ")) {
             return "HATCHBACK";
         }
 
@@ -1650,7 +1656,7 @@ public class SautoParser implements CarSourceParser {
                 " charger ", " octavia ", " superb ", " passat ", " arteon ", " a4 ",
                 " a6 ", " a8 ", " e90 ", " e60 ", " e39 ", " 3 series ", " 5 series ",
                 " c5 ", " mondeo sedan ", " model 3 ", " model s ", " cordoba ",
-                " s60 ", " s80 ", " s90 ")) {
+                " s60 ", " s80 ", " s90 ", " honda city ", " thalia ", " kia k4 ")) {
             return "SEDAN";
         }
 
@@ -1658,7 +1664,8 @@ public class SautoParser implements CarSourceParser {
                 " caddy ", " sharan ", " alhambra ", " touran ", " scenic ", " espace ",
                 " zafira ", " meriva ", " s-max ", " galaxy ", " b-max ", " c-max ",
                 " grand c-max ", " roomster ", " lodgy ", " verso ", " rifter ",
-                " berlingo ", " combo ", " doblo ", " vaneo ",
+                " berlingo ", " partner ", " combo ", " doblo ", " vaneo ",
+                " grand voyager ", " voyager ", " modus ",
                 " tourneo courier ", " tourneo connect ")) {
             return "MINIVAN";
         }
@@ -1671,6 +1678,12 @@ public class SautoParser implements CarSourceParser {
 
         if (containsAny(urlSource, "/ram/", "/gladiator/", "/amarok/", "/hilux/", "/ranger/")) {
             return "PICKUP";
+        }
+
+        if (containsAny(urlSource,
+                "/renault/scenic/", "/peugeot/partner/",
+                "/chrysler/grand-voyager/", "/chrysler/voyager/")) {
+            return "MINIVAN";
         }
 
         if (containsAny(textSource, " suv ", " crossover ", " off-road ", " offroad ")) {
@@ -1759,6 +1772,9 @@ public class SautoParser implements CarSourceParser {
     }
 
     private boolean containsKcPrice(String text) {
+        if (text != null && text.matches("(?i).*\\d[\\d\\s]*\\s*(Kč|Kc).*")) {
+            return true;
+        }
         return text != null && text.matches(".*\\d[\\d\\s]*\\s*Kč.*");
     }
 
@@ -1766,6 +1782,14 @@ public class SautoParser implements CarSourceParser {
         List<Integer> result = new ArrayList<>();
         if (text == null || text.isBlank()) {
             return result;
+        }
+
+        Matcher asciiCurrencyMatcher = Pattern.compile("(\\d[\\d ]{0,15})\\s*(Kč|Kc)", Pattern.CASE_INSENSITIVE).matcher(text);
+        while (asciiCurrencyMatcher.find()) {
+            Integer value = parsePriceToInt(asciiCurrencyMatcher.group(1));
+            if (value != null) {
+                result.add(value);
+            }
         }
 
         Matcher matcher = Pattern.compile("(\\d[\\d ]{0,15})\\s*Kč", Pattern.CASE_INSENSITIVE).matcher(text);
