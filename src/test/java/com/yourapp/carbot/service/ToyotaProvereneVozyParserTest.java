@@ -1,0 +1,50 @@
+package com.yourapp.carbot.service;
+
+import org.junit.jupiter.api.Test;
+
+import java.lang.reflect.Method;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
+class ToyotaProvereneVozyParserTest {
+
+    private final ToyotaProvereneVozyParser parser = new ToyotaProvereneVozyParser();
+
+    @Test
+    void resolvesBodyTypesFromToyotaProvereneTitles() throws Exception {
+        assertThat(extractCarType("Ford EcoSport 1,0EcoBoost 92kW M/T", ""))
+                .isEqualTo("SUV");
+        assertThat(extractCarType("Toyota Auris 1.8 Hybrid AT SELECTION TS", ""))
+                .isEqualTo("WAGON");
+        assertThat(extractCarType("Lexus LC LC 500 Sport+", ""))
+                .isEqualTo("COUPE");
+        assertThat(extractCarType("Kia Stinger 2.2 CRDi 147kW 8AT GT-Line", ""))
+                .isEqualTo("SEDAN");
+        assertThat(extractCarType("Skoda Octavia 1.2 TSI / 77 kW", ""))
+                .isEqualTo("SEDAN");
+        assertThat(extractCarType("Toyota Aygo X 1.5 Hybrid 116k", ""))
+                .isEqualTo("SUV");
+    }
+
+    @Test
+    void keepsPlugInHybridWhenModelAndPlugInAreJoined() throws Exception {
+        assertThat(mapElectrifiedFuel("Toyota RAV4 2.5Plug-in Hybrid 4x4 304k"))
+                .isEqualTo("PLUGIN_HYBRID");
+        assertThat(mapElectrifiedFuel("Toyota RAV4 2.5Plug-in 4x4 304k"))
+                .isEqualTo("PLUGIN_HYBRID");
+        assertThat(mapElectrifiedFuel("Toyota C-HR 2,0 PHEV E-CVT Style"))
+                .isEqualTo("PLUGIN_HYBRID");
+    }
+
+    private String extractCarType(String title, String text) throws Exception {
+        Method method = ToyotaProvereneVozyParser.class.getDeclaredMethod("extractCarType", String.class, String.class);
+        method.setAccessible(true);
+        return (String) method.invoke(parser, title, text);
+    }
+
+    private String mapElectrifiedFuel(String value) throws Exception {
+        Method method = ToyotaProvereneVozyParser.class.getDeclaredMethod("mapElectrifiedFuel", String.class);
+        method.setAccessible(true);
+        return (String) method.invoke(parser, value);
+    }
+}
