@@ -560,6 +560,8 @@ public class TipCarsParser implements CarSourceParser {
                 " phev ",
                 " mhev ",
                 " m-hev ",
+                " b5 ",
+                " b6 ",
                 " e-hybrid ",
                 " e hybrid ",
                 " e-cvt ",
@@ -765,7 +767,7 @@ public class TipCarsParser implements CarSourceParser {
         }
 
         if (containsAny(titleSource,
-                " fiesta ", " ibiza ", " up! ", " up ", " golf ", " scala ", " fabia ", " i30 ")) {
+                " fiesta ", " ibiza ", " up! ", " up ", " golf ", " scala ", " fabia ", " i30 ", " zoe ")) {
             return "HATCHBACK";
         }
 
@@ -782,7 +784,7 @@ public class TipCarsParser implements CarSourceParser {
             return "PICKUP";
         }
 
-        if (normalizedUrl.contains("/hatchback/")) {
+        if (normalizedUrl.contains("/hatchback/") || normalizedUrl.contains("/elektro/")) {
             return "HATCHBACK";
         }
 

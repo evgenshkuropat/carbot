@@ -65,6 +65,12 @@ class TipCarsParserTest {
                 "",
                 "https://www.tipcars.com/audi-a5/limuzina/benzin/audi-a5-2-0i-140kw-aut-kamery-serviska.html"))
                 .isEqualTo("SEDAN");
+
+        assertThat(extractCarType(
+                "Renault ZOE",
+                "",
+                "https://www.tipcars.com/renault-zoe/elektro/renault-zoe.html"))
+                .isEqualTo("HATCHBACK");
     }
 
     @Test
@@ -82,6 +88,8 @@ class TipCarsParserTest {
                 .isEqualTo("HYBRID");
         assertThat(extractFuelType("Hyundai Tucson 1.6 T-GDI PHEV"))
                 .isEqualTo("PLUGIN_HYBRID");
+        assertThat(extractFuelType("Volvo XC60 2,0 B5 Aut. AWD CZ Dark Plus"))
+                .isEqualTo("HYBRID");
     }
 
     private String extractCarType(String title, String text, String url) throws Exception {
