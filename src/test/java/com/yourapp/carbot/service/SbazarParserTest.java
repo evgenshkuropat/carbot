@@ -73,6 +73,7 @@ class SbazarParserTest {
         assertThat(resolveFuelType("suzuki sx4 s-cross 1,4 boosterjet premium 2x4", "")).isEqualTo("PETROL");
         assertThat(resolveFuelType("dongfeng u-tour 1,5 t 130 kw exclusivefr 7mist", "")).isEqualTo("PETROL");
         assertThat(resolveTransmission("honda crv 2020 hybrid benzin 72tis.km", "", "HYBRID")).isEqualTo("AUTOMATIC");
+        assertThat(resolveTransmission("seat leon, 1,4 tsi e-hybrid fr line led", "", "HYBRID")).isEqualTo("AUTOMATIC");
         assertThat(resolveTransmission("tesla model 3 long range dual motor soh 92", "", "ELECTRIC")).isEqualTo("AUTOMATIC");
     }
 
@@ -149,6 +150,8 @@ class SbazarParserTest {
         assertThat(resolveCarType("mercedes-benz cls 1 majitel amg full led 4 matic", "")).isEqualTo("SEDAN");
         assertThat(resolveCarType("hyundai bayon bayon fl 1,0 t-gdi wave", "combi wagon")).isEqualTo("SUV");
         assertThat(resolveCarType("skoda roomster 1.2tsi 63kw nove v cr klima", "")).isEqualTo("MINIVAN");
+        assertThat(resolveCarType("seat leon, 1,4 tsi e-hybrid fr line led", "")).isEqualTo("HATCHBACK");
+        assertThat(resolveCarType("skoda forman confortline", "")).isEqualTo("WAGON");
         assertThat(resolveCarType("audi a6 3.0 tdi 4x4 avant quattro automat sline", "")).isEqualTo("WAGON");
         assertThat(resolveCarType("fiat bravo 2011 1.4 66kw lpg servis nove rozvody", "")).isEqualTo("HATCHBACK");
         assertThat(resolveCarType("chevrolet matiz 0.8 rok 2009 krasny stav", "")).isEqualTo("HATCHBACK");

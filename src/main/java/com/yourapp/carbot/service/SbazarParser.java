@@ -724,6 +724,12 @@ public class SbazarParser implements CarSourceParser {
             return "AUTOMATIC";
         }
 
+        if ("HYBRID".equals(fuelType)
+                && containsAny(identityText, "e-hybrid", "e hybrid", "plug-in", "plugin", "phev", " gte ", "tfsi e", "tsi e")
+                && !containsAny(identityText, "manual", "manualni", "man.", " mt ", "6mt", "5mt", "6m/t", "5m/t")) {
+            return "AUTOMATIC";
+        }
+
         return scopedTransmission;
     }
 
@@ -739,6 +745,15 @@ public class SbazarParser implements CarSourceParser {
         }
         if (containsAny(searchable, "model 3", "model s", "w220", "w 220", "fluence", "audi s8", " s8 ", "jaguar xf", " xf ")) {
             return "SEDAN";
+        }
+        if (searchable.matches(".*\\bforman\\b.*")) {
+            return "WAGON";
+        }
+        if (containsAny(searchable, "leon sportstourer", "leon sport tourer", "leon st ", "leon combi", "leon kombi", "leon wagon")) {
+            return "WAGON";
+        }
+        if (containsAny(searchable, "seat leon", " leon ")) {
+            return "HATCHBACK";
         }
         if (containsAny(searchable, "koleos", "freelander", "bigster", "fiat 500x", "500x")) {
             return "SUV";
