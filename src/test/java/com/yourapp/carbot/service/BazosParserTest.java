@@ -83,6 +83,8 @@ class BazosParserTest {
         assertThat(extractFuelType("Prodam Toyota Mirai Executive")).isEqualTo("ELECTRIC");
         assertThat(extractFuelType("VW Passat B8 Variant GTE 1.4TSI 160kW DSG - zaruka Autodraft")).isEqualTo("PLUGIN_HYBRID");
         assertThat(extractFuelType("VW Golf 8 GTE 1.4 TSI Hybrid 150kW DSG - zaruka Autodraft")).isEqualTo("PLUGIN_HYBRID");
+        assertThat(extractFuelType("Dacia Lodgy MPV r.2022 1,3benz 96kw 1.majitel")).isEqualTo("PETROL");
+        assertThat(extractFuelType("Pekna Dacia Logan MCV 1.2...16V")).isEqualTo("PETROL");
     }
 
     @Test
@@ -181,6 +183,7 @@ class BazosParserTest {
         assertThat(extractTransmission("Honda CR-V 2.0 e:HEV Advance AWD")).isEqualTo("AUTOMATIC");
         assertThat(extractTransmission("Honda CR-V 2.0i-MMD Elegance AWD")).isEqualTo("AUTOMATIC");
         assertThat(extractTransmission("Citroen Berlingo 1.5 BlueHDi 130S&S MAN 6 SHINE")).isEqualTo("MANUAL");
+        assertThat(extractTransmission("Citroen Berlingo 1.6 BlueHDI XTR 100 MAN")).isEqualTo("MANUAL");
         assertThat(looksLikelyFalseAutomatic("PEUGEOT 207 1.4 i BENZIN 70 kW NOVE ROZVODY", "AUTOMATIC")).isTrue();
         assertThat(looksLikelyFalseAutomatic("Peugeot 308 1.6HDI 88KW 9/2015 LED NAVIGACE P. SERVIS", "AUTOMATIC")).isTrue();
         assertThat(looksLikelyFalseAutomatic("Octavia III 2,0TDi 110KW Edition + NAVI tempomat ALU STK", "AUTOMATIC")).isTrue();
@@ -237,6 +240,10 @@ class BazosParserTest {
                 "Doblo 1,4t-jet,88kw,dilna sortimo,1.maj.Cr,odpocet dph",
                 "https://auto.bazos.cz/inzerat/218934074/kangoo-15dci-2020-149tiskm1majcrodpocet-dphl3.php"))
                 .isTrue();
+        assertThat(looksTitleUrlMismatch(
+                "CITROEN C4 GRAND PICASSO 1.6i MANUAL LED KEYLESS TAZNE ZAR.",
+                "https://auto.bazos.cz/inzerat/219556468/citroen-c4-picasso-16i-manual-led-keyless-go-tazne-zarizeni.php"))
+                .isFalse();
     }
 
     @Test
@@ -270,6 +277,12 @@ class BazosParserTest {
                 "",
                 "https://auto.bazos.cz/inzerat/218778125/mercedes-benz-c180-kompressor-w204-115-kw-manual.php"))
                 .isFalse();
+
+        assertThat(looksCommercialVehicle(
+                "Citroen HY - W",
+                "",
+                "https://auto.bazos.cz/inzerat/219491815/citroen-hy-w.php"))
+                .isTrue();
     }
 
     @Test

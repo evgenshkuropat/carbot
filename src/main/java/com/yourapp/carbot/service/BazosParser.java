@@ -1157,6 +1157,10 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             return "PETROL";
         }
 
+        if (source.matches(".*\\b[0-9][.,][0-9]\\s*benz\\b.*")) {
+            return "PETROL";
+        }
+
         if (compact.contains("tsi")
                 || compact.contains("tfsi")
                 || compact.contains("fsi")
@@ -1207,6 +1211,11 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
 
         if (source.contains(" peugeot 301 ")
                 && Pattern.compile("\\b1[.,]2\\b").matcher(source).find()) {
+            return "PETROL";
+        }
+
+        if (containsAny(source, " dacia logan ", " logan mcv ", " dacia lodgy ")
+                && Pattern.compile("\\b1[.,][236]\\b").matcher(source).find()) {
             return "PETROL";
         }
 
@@ -1396,7 +1405,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             return "MANUAL";
         }
 
-        if (containsAny(tokens, " man 5 ", " man5 ", " man 6 ", " man6 ")) {
+        if (containsAny(tokens, " man ", " man 5 ", " man5 ", " man 6 ", " man6 ")) {
             return "MANUAL";
         }
 
@@ -2565,7 +2574,8 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             case "cx5" -> slug.contains("-cx-5-") || slug.contains("-cx5-");
             case "cx7" -> slug.contains("-cx-7-") || slug.contains("-cx7-");
             case "grandc4picasso" -> (slug.contains("-grand-c4-") && (slug.contains("-picasso-") || slug.contains("-spacetourer-")))
-                    || slug.contains("-c4-grand-picasso-") || slug.contains("-c4-grand-spacetourer-");
+                    || slug.contains("-c4-grand-picasso-") || slug.contains("-c4-grand-spacetourer-")
+                    || slug.contains("-c4-picasso-");
             case "c4picasso" -> slug.contains("-c4-picasso-") || slug.contains("-picasso-");
             case "berlingo" -> slug.contains("-berlingo-");
             case "c5aircross" -> slug.contains("-c5-aircross-");
@@ -2603,6 +2613,10 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
 
         if (containsAny(titleSource, " expert ", " jumpy ", " scudo ", " proace ")
                 && !containsAny(titleSource, " proace verso ", " proace city verso ", " spacetourer ")) {
+            return true;
+        }
+
+        if (containsAny(titleSource, " citroen hy ", " citroën hy ")) {
             return true;
         }
 
