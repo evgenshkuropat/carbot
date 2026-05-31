@@ -58,8 +58,16 @@ class SautoParserTest {
     void resolvesPlugInHybridsFromFreshSautoLogs() throws Exception {
         assertThat(extractFuelType("Peugeot 3008 e-Hybrid 300, GT, 4X4"))
                 .isEqualTo("PLUGIN_HYBRID");
+        assertThat(extractFuelType("Volvo XC90 T8 AWD RECHARGE BRIGHT PLUS 7m"))
+                .isEqualTo("PLUGIN_HYBRID");
         assertThat(extractFuelType("Kia XCee´d Plug-in-Hybrid, Premium, DPH"))
                 .isEqualTo("PLUGIN_HYBRID");
+    }
+
+    @Test
+    void rejectsDriveableListingsWithFaultsFromFreshSautoLogs() throws Exception {
+        assertThat(looksBrokenListing("Ford Focus 1.6 Ecoboost -poj\u00edzdn\u00e9/z\u00e1vada", "", ""))
+                .isTrue();
     }
 
     @Test
@@ -97,6 +105,12 @@ class SautoParserTest {
         Method method = SautoParser.class.getDeclaredMethod("extractFuelType", String.class);
         method.setAccessible(true);
         return (String) method.invoke(parser, text);
+    }
+
+    private boolean looksBrokenListing(String title, String listingText, String analysisText) throws Exception {
+        Method method = SautoParser.class.getDeclaredMethod("looksBrokenListing", String.class, String.class, String.class);
+        method.setAccessible(true);
+        return (boolean) method.invoke(parser, title, listingText, analysisText);
     }
 
     private Integer extractPriceValueDirect(Document doc, String title, String listingText) throws Exception {

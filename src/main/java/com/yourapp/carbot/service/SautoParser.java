@@ -738,6 +738,11 @@ public class SautoParser implements CarSourceParser {
         String normalized = " " + normalizeText(
                 safe(title) + " " + safe(listingText) + " " + shortenForCheck(analysisText, 800)
         ).toLowerCase(Locale.ROOT) + " ";
+        String compact = normalized.replaceAll("[^a-z0-9]+", "");
+
+        if (compact.contains("pojizdnezavada") || compact.contains("pojzdnzvada")) {
+            return true;
+        }
 
         return containsAny(normalized,
                 " na díly ", " na dily ", " na nd ", " náhradní díly ", " nahradni dily ",
@@ -1479,6 +1484,7 @@ public class SautoParser implements CarSourceParser {
                 || compact.contains("pluginhybrid")
                 || compact.contains("plugin")
                 || compact.contains("phev")
+                || (containsAny(normalized, " recharge ", " twin engine ", " twinengine ") && containsAny(normalized, " t8 ", " xc90 ", " xc60 "))
                 || (compact.contains("ehybrid") && containsAny(normalized, " 3008 ", " xceed ", " xcee ", " 300 ", " 4x4 "))) {
             return "PLUGIN_HYBRID";
         }
