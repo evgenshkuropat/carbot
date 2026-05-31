@@ -995,7 +995,8 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
 
         if (containsAny(source,
                 " plug-in hybrid ", " plugin hybrid ", " plug in hybrid ",
-                " plug-in ", " plug in ", " phev ")
+                " plug-in ", " plug in ", " phev ",
+                " tfsi e ", " e-tfsi ", " etfsi ", " tsi e ")
                 || ((containsAny(source, " passat ", " golf ", " vw ", " volkswagen ") || compact.contains("volkswagen"))
                 && containsAny(source, " gte "))) {
             return "PLUGIN_HYBRID";
@@ -1217,6 +1218,15 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             return "PETROL";
         }
 
+        if (source.contains(" mini cooper ")
+                && !containsAny(source, " cooper d ", " cooper sd ", " diesel ", " nafta ")) {
+            return "PETROL";
+        }
+
+        if (Pattern.compile("(?i)\\b[0-9]{3}ci\\b").matcher(source).find()) {
+            return "PETROL";
+        }
+
         if (source.matches(".*\\b[0-9][.,][0-9]\\s*i\\b.*")
                 || source.matches(".*\\b[0-9]{2,3}i\\b.*")) {
             return "PETROL";
@@ -1383,6 +1393,10 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         }
 
         if (tokens.contains(" 6rychl ") || tokens.contains(" 6ti ")) {
+            return "MANUAL";
+        }
+
+        if (containsAny(tokens, " man 5 ", " man5 ", " man 6 ", " man6 ")) {
             return "MANUAL";
         }
 
@@ -2183,6 +2197,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " c220 ", " c220d ", " e220 ", " e 220 ", " e280 ", " e 280 ",
                 " e90 ", " e60 ", " e39 ", " f07 ",
                 " 3 series ", " 5 series ", " 7 series ",
+                " bmw 6 gt ", " 6 gt ",
                 " řada 3 ", " rada 3 ", " řada 5 ", " rada 5 ", " řada 7 ", " rada 7 ",
                 " 318d ", " 320d ", " 320xd ", " 330d ", " 318i ", " 320i ", " 330i ",
                 " 730d ", " 730i ", " 740d ", " 740i ", " 750d ", " 750i ",
