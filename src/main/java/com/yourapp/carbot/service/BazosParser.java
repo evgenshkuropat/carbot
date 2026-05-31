@@ -995,7 +995,9 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
 
         if (containsAny(source,
                 " plug-in hybrid ", " plugin hybrid ", " plug in hybrid ",
-                " plug-in ", " plug in ", " phev ")) {
+                " plug-in ", " plug in ", " phev ")
+                || ((containsAny(source, " passat ", " golf ", " vw ", " volkswagen ") || compact.contains("volkswagen"))
+                && containsAny(source, " gte "))) {
             return "PLUGIN_HYBRID";
         }
 
@@ -2103,7 +2105,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " rs6 ", " rs 6 ", " e61 ", " f11 ", " f31 ", " g31 ",
                 " alltrack ", " scout ", " outback ",
                 " proceed ", " pro ceed ",
-                " v40 ", " v50 ", " v60 ", " v70 ", " v 70 ", " v90 ",
+                " v40 ", " v50 ", " v60 ", " v70 ", " v 70 ", " v90 ", " v 90 ",
                 " g31 ", " tipo sw ", " 206sw ", " 207sw ", " 307sw ", " 308sw ", " 407sw ", " 508sw ",
                 " i40 wg ", " i40 wagon ", " i40 kombi ",
                 " fiat croma ", " croma ")) {
