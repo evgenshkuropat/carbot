@@ -554,7 +554,7 @@ public class SbazarParser implements CarSourceParser {
         if (containsAny(searchable,
                 "diesel", "nafta", "tdi", "tdci", "cdi", "crdi", "hdi", "dci",
                 "jtd", "jtdm", "multijet", "bluehdi", "cdti", "d4d", "d-4d",
-                "did", "td4", " td ", " td,", "ecoblue", "crd",
+                "did", "di-d", "di d", "td4", " td ", " td,", "ecoblue", "crd",
                 " d3 ", " d4 ", " d5 ", "20d", "24d5", "25d", "40d", "30sd", "3 0sd", "xdrive25d", "xdrive40d",
                 "skyactiv-d", "skyactiv d", "skyactive d")) {
             return "DIESEL";
@@ -788,7 +788,7 @@ public class SbazarParser implements CarSourceParser {
         if (containsAny(searchable, "sedan", "limuz", "passat", "octavia", "superb", "arteon", "corolla", "a4", "a6", "a8", "bmw 3", "rada 3", "bmw 5", "rada 5", "bmw 7", "rada 7", "750d", "750li", "e90", "325xi", "mondeo", "cla", "cls", "c250", "c 250", "e220", "e 220", "220cdi", "e270", "e350", "e 350", "c220", "c43", "c 43", "tridy c", "tridy e", "s 320", "s 350", "tridy s")) {
             return "SEDAN";
         }
-        if (containsAny(searchable, "hatchback", "mini", "cooper", "208", "peugeot 308", "punto", "fiat 500", "citigo", "fabia", "scala", "clio", "golf", "focus", "a 180", "i20", "i30", "ceed", "leon", "civic", "astra", "corsa", "polo", "yaris", "micra", "picanto")) {
+        if (containsAny(searchable, "hatchback", "mini", "cooper", "208", "peugeot 308", "punto", "fiat 500", "citigo", "fabia", "scala", "clio", "megane", "golf", "focus", "a 180", "i20", "i30", "ceed", "leon", "civic", "astra", "corsa", "polo", "yaris", "micra", "picanto")) {
             return "HATCHBACK";
         }
 

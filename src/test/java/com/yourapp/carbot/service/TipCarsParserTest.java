@@ -59,6 +59,12 @@ class TipCarsParserTest {
                 "",
                 "https://www.tipcars.com/ford-c-max/kombi/benzin/ford-c-max.html"))
                 .isEqualTo("MINIVAN");
+
+        assertThat(extractCarType(
+                "Audi A5 2.0i 140KW AUT KAMERY SERVISKA",
+                "",
+                "https://www.tipcars.com/audi-a5/limuzina/benzin/audi-a5-2-0i-140kw-aut-kamery-serviska.html"))
+                .isEqualTo("SEDAN");
     }
 
     @Test

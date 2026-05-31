@@ -207,6 +207,14 @@ class SbazarParserTest {
     }
 
     @Test
+    void resolvesFreshSbazarLogSignals() throws Exception {
+        assertThat(resolveFuelType("mitsubishi outlander 2.2 di-d mivec instyle7 4x4", ""))
+                .isEqualTo("DIESEL");
+        assertThat(resolveCarType("renault megane 2 2006", ""))
+                .isEqualTo("HATCHBACK");
+    }
+
+    @Test
     void readsMileageFromTitleBeforeNoisyPageText() throws Exception {
         String identity = "opel astra 1.6 85 kw 101 tis. km";
         String noisyScopedText = identity + " 6022 dalsi metadata";

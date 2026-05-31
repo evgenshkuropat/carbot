@@ -786,7 +786,7 @@ public class TipCarsParser implements CarSourceParser {
             return "HATCHBACK";
         }
 
-        if (normalizedUrl.contains("/liftback/") || normalizedUrl.contains("/sedan/")) {
+        if (normalizedUrl.contains("/liftback/") || normalizedUrl.contains("/sedan/") || normalizedUrl.contains("/limuzina/")) {
             return "SEDAN";
         }
 
