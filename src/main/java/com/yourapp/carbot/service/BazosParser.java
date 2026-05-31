@@ -1009,7 +1009,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " plug-in hybrid ", " plugin hybrid ", " plug in hybrid ",
                 " plug-in ", " plug in ", " phev ",
                 " mild-hybrid ", " mild hybrid ",
-                " hybrid ", " hybridni ", " e-hybrid ", " ehybrid ", " i-mmd ", " immd ", " hev ", " mhev ")) {
+                " hybrid ", " hybridni ", " e-hybrid ", " ehybrid ", " e-tfsi ", " etfsi ", " i-mmd ", " immd ", " hev ", " mhev ")) {
             return "HYBRID";
         }
 
@@ -1022,6 +1022,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 || compact.contains("phev")
                 || compact.contains("mhev")
                 || compact.contains("ehev")
+                || compact.contains("etfsi")
                 || compact.contains("immd")) {
             return "HYBRID";
         }
@@ -1057,6 +1058,8 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " hybridní ",
                 " hybridni ",
                 " tfsi e ",
+                " e-tfsi ",
+                " etfsi ",
                 " tsi e ",
                 " e-hybrid ",
                 " ehybrid ",
@@ -1072,8 +1075,9 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             return "HYBRID";
         }
 
-        if (containsAny(source, " jts ", " twinspark ", " twin spark ", " tbi ", " turbo ",
-                " bmw m3 ", " m3 ")) {
+        if (containsAny(source, " jts ", " twinspark ", " twin spark ", " tbi ", " turbo ", " ts ",
+                " bmw m3 ", " m3 ")
+                || source.matches(".*\\b[0-9][.,][0-9]\\s*t\\b.*")) {
             return "PETROL";
         }
 
@@ -1136,7 +1140,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " tsi ", " tfsi ", " fsi ", " gdi ", " tgdi ", " t-gdi ",
                 " dig-t ", " ig-t ", " igt ", " tce ", " ecoboost ", " mivec ",
                 " vtec ", " vti ", " puretech ", " pt ", " mpi ", " twinair ",
-                " jts ", " twinspark ", " twin spark ", " tbi ", " vvt ", " 16v ", " boosterjet ", " booster jet ",
+                " jts ", " twinspark ", " twin spark ", " tbi ", " ts ", " vvt ", " 16v ", " boosterjet ", " booster jet ",
                 " quadrifoglio ", " qv ",
                 " gti ", " v6 ", " v8 ", " hemi ",
                 " camaro ", " corvette ", " mustang ",
@@ -1166,6 +1170,8 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 || compact.contains("jts")
                 || compact.contains("twinspark")
                 || compact.contains("tbi")
+                || compact.contains("20t")
+                || compact.contains("29bit")
                 || compact.contains("vvt")
                 || compact.contains("boosterjet")) {
             return "PETROL";
@@ -1926,7 +1932,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             return "WAGON";
         }
 
-        if (containsAny(titleSource, " giulia ", " alfa 156 ", " romeo 156 ", " alfa 159 ", " romeo 159 ",
+        if (containsAny(titleSource, " giulia ", " alfa 75 ", " romeo 75 ", " alfa 156 ", " romeo 156 ", " alfa 159 ", " romeo 159 ",
                 " alfa 166 ", " romeo 166 ")) {
             return "SEDAN";
         }
@@ -2165,7 +2171,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " sedan ", " saloon ",
                 " limo ", " limousine ", " limuzína ", " limuzina ",
                 " charger ",
-                " giulia ", " alfa 156 ", " romeo 156 ", " alfa 159 ", " romeo 159 ", " alfa 166 ", " romeo 166 ",
+                " giulia ", " alfa 75 ", " romeo 75 ", " alfa 156 ", " romeo 156 ", " alfa 159 ", " romeo 159 ", " alfa 166 ", " romeo 166 ",
                 " cruze ", " lancer ", " primera ",
                 " s60 ", " peugeot 301 ", " talisman ",
                 " octavia ", " oktavia ", " mazda 6 ", " mazdu 6 ", " superb ", " passat ", " arteon ",
@@ -3513,6 +3519,8 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " tonale ",
                 " brera ",
                 " alfetta ",
+                " alfa 75 ",
+                " romeo 75 ",
                 " alfa 145 ",
                 " alfa 146 ",
                 " alfa 147 ",

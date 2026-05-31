@@ -53,6 +53,9 @@ class BazosParserTest {
         assertThat(extractFuelType("Prodam Mitsubishi Eclipse cross 1,5")).isEqualTo("PETROL");
         assertThat(extractFuelType("Alfa Romeo 156 2.0 JTS 16V Selespeed Distinctive Funny car")).isEqualTo("PETROL");
         assertThat(extractFuelType("Alfa Romeo Stelvio 2.0 Turbo 16V AT8-Q4 Veloce T")).isEqualTo("PETROL");
+        assertThat(extractFuelType("Alfa Romeo GTV 2.0 TS 114 kW 1999")).isEqualTo("PETROL");
+        assertThat(extractFuelType("Alfa Romeo Giulia VELOCE Q4 280PS, 2.0T, ZF8")).isEqualTo("PETROL");
+        assertThat(extractFuelType("Audi A6 Avant 2.0 45 eTFSI 195kW S-tronic")).isEqualTo("HYBRID");
         assertThat(extractFuelType("Honda HR-V 1.5 benzin hybrid")).isEqualTo("HYBRID");
         assertThat(extractFuelType("Honda CR-V 2.0 e:HEV Advance AWD")).isEqualTo("HYBRID");
         assertThat(extractFuelType("Honda CR-V 2.0i-MMD Elegance AWD")).isEqualTo("HYBRID");
@@ -91,6 +94,7 @@ class BazosParserTest {
         assertThat(extractCarType("Suzuki Virara 1.6 Ddis", "", "")).isEqualTo("SUV");
         assertThat(extractCarType("Suzuki Alto,1.0i,50kw", "", "")).isEqualTo("HATCHBACK");
         assertThat(extractCarType("Audi S3", "", "")).isEqualTo("HATCHBACK");
+        assertThat(extractCarType("Alfa Romeo 75 2.0 Twinspark", "", "")).isEqualTo("SEDAN");
         assertThat(extractCarType("Mini Cooper 1.5 i 2018 F 56", "", "")).isEqualTo("HATCHBACK");
         assertThat(extractCarType("BMW 325i e91", "", "")).isEqualTo("WAGON");
         assertThat(extractCarType("BMW F36 430d 258Hp GC 05/2016 original M-Paket", "", "")).isEqualTo("SEDAN");
