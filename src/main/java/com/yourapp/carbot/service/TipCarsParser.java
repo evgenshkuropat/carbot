@@ -523,6 +523,17 @@ public class TipCarsParser implements CarSourceParser {
         }
 
         if (containsAny(source,
+                " plug-in ",
+                " plug in ",
+                " plugin ",
+                " phev ")
+                || compact.contains("plugin")
+                || compact.contains("pluginhybrid")
+                || compact.contains("phev")) {
+            return "PLUGIN_HYBRID";
+        }
+
+        if (containsAny(source,
                 "/elektro/",
                 " elektro ",
                 " electric ",
@@ -549,8 +560,13 @@ public class TipCarsParser implements CarSourceParser {
                 " phev ",
                 " mhev ",
                 " m-hev ",
+                " e-hybrid ",
+                " e hybrid ",
                 " e-cvt ",
-                " ecvt ")) {
+                " ecvt ")
+                || compact.contains("hybrid")
+                || compact.contains("mhev")
+                || compact.contains("ehev")) {
             return "HYBRID";
         }
 

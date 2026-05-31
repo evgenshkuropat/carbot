@@ -68,10 +68,26 @@ class TipCarsParserTest {
         assertThat(buildPageUrl(5)).isEqualTo("https://www.tipcars.com/?str=5-20");
     }
 
+    @Test
+    void resolvesHybridFuelFromTipCarsTitlesBeforePetrolUrl() throws Exception {
+        assertThat(extractFuelType("Toyota C-HR 1.8 Hybrid, Automat"))
+                .isEqualTo("HYBRID");
+        assertThat(extractFuelType("Jeep Renegade 1.5 Turbo e-Hybrid, Automat"))
+                .isEqualTo("HYBRID");
+        assertThat(extractFuelType("Hyundai Tucson 1.6 T-GDI PHEV"))
+                .isEqualTo("PLUGIN_HYBRID");
+    }
+
     private String extractCarType(String title, String text, String url) throws Exception {
         Method method = TipCarsParser.class.getDeclaredMethod("extractCarType", String.class, String.class, String.class);
         method.setAccessible(true);
         return (String) method.invoke(parser, title, text, url);
+    }
+
+    private String extractFuelType(String text) throws Exception {
+        Method method = TipCarsParser.class.getDeclaredMethod("extractFuelType", String.class);
+        method.setAccessible(true);
+        return (String) method.invoke(parser, text);
     }
 
     private String buildPageUrl(int page) throws Exception {
