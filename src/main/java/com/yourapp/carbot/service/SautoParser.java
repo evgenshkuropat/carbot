@@ -1472,8 +1472,14 @@ public class SautoParser implements CarSourceParser {
 
     private String extractFuelType(String text) {
         String normalized = " " + normalizeText(text).toLowerCase(Locale.ROOT) + " ";
+        String compact = normalized.replaceAll("[^a-z0-9]+", "");
 
-        if (containsAny(normalized, " plug-in-hybrid ", " plug in hybrid ", " phev ")) {
+        if (containsAny(normalized,
+                " plug-in-hybrid ", " plug in hybrid ", " plug-in hybrid ", " plugin hybrid ", " phev ")
+                || compact.contains("pluginhybrid")
+                || compact.contains("plugin")
+                || compact.contains("phev")
+                || (compact.contains("ehybrid") && containsAny(normalized, " 3008 ", " xceed ", " xcee ", " 300 ", " 4x4 "))) {
             return "PLUGIN_HYBRID";
         }
         if (containsAny(normalized, " hybridní ", " hybridni ", " hybrid ", " mhev ", " hev ", " 300h ", " 450h ", " 250h ", " xdrive30e ", " t8 ")) {
@@ -1575,6 +1581,7 @@ public class SautoParser implements CarSourceParser {
         String titleSource = " " + normalizeText(safe(title)).toLowerCase(Locale.ROOT) + " ";
         String textSource = " " + normalizeText(safe(text)).toLowerCase(Locale.ROOT) + " ";
         String urlSource = " " + normalizeText(safe(url)).toLowerCase(Locale.ROOT) + " ";
+        String titleCompact = titleSource.replaceAll("[^a-z0-9]+", "");
 
         if (containsAny(titleSource, " corolla sedan ", " corolla sd ")) {
             return "SEDAN";
@@ -1655,7 +1662,12 @@ public class SautoParser implements CarSourceParser {
                 " grand vitara ", " vitara ", " sx4 ", " sx 4 ",
                 " xc90 ", " ex30 ", " ex40 ", " ex90 ", " ux ", " nx ", " rx ",
                 " duster ", " macan ", " cayenne ", " model x ", " model y ", " defender ",
-                " ateca ", " ev6 ", " 2008 ", " eqs suv ", " eqb ", " enyq ", " terramar ")) {
+                " ateca ", " ev3 ", " ev6 ", " xceed ", " xcee ", " xcee-d ",
+                " 2008 ", " eqs suv ", " eqb ", " enyq ", " terramar ")) {
+            return "SUV";
+        }
+
+        if (titleCompact.contains("xceed") || titleCompact.contains("xcee") || titleCompact.contains("ev3")) {
             return "SUV";
         }
 
@@ -1718,6 +1730,10 @@ public class SautoParser implements CarSourceParser {
 
         if (containsAny(urlSource, "/peugeot/206/")) {
             return "HATCHBACK";
+        }
+
+        if (containsAny(urlSource, "/kia/ev3/", "/kia/xcee-d/")) {
+            return "SUV";
         }
 
         if (containsAny(textSource, " suv ", " crossover ", " off-road ", " offroad ")) {

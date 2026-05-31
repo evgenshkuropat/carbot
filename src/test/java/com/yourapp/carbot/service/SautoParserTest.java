@@ -48,6 +48,18 @@ class SautoParserTest {
                 .isEqualTo("COUPE");
         assertThat(extractCarType("Voyah PASSION PHEV PHEV 4x4", "", "https://www.sauto.cz/osobni/detail/voyah/passion-phev/209956629"))
                 .isEqualTo("SEDAN");
+        assertThat(extractCarType("Kia EV3 EARTH 81,4 kWh, ADAS + V2L", "", "https://www.sauto.cz/osobni/detail/kia/ev3/209195907"))
+                .isEqualTo("SUV");
+        assertThat(extractCarType("Kia XCee´d Plug-in-Hybrid, Premium, DPH", "", "https://www.sauto.cz/osobni/detail/kia/xcee-d/209031942"))
+                .isEqualTo("SUV");
+    }
+
+    @Test
+    void resolvesPlugInHybridsFromFreshSautoLogs() throws Exception {
+        assertThat(extractFuelType("Peugeot 3008 e-Hybrid 300, GT, 4X4"))
+                .isEqualTo("PLUGIN_HYBRID");
+        assertThat(extractFuelType("Kia XCee´d Plug-in-Hybrid, Premium, DPH"))
+                .isEqualTo("PLUGIN_HYBRID");
     }
 
     @Test
@@ -79,6 +91,12 @@ class SautoParserTest {
         Method method = SautoParser.class.getDeclaredMethod("extractCarType", String.class, String.class, String.class);
         method.setAccessible(true);
         return (String) method.invoke(parser, title, text, url);
+    }
+
+    private String extractFuelType(String text) throws Exception {
+        Method method = SautoParser.class.getDeclaredMethod("extractFuelType", String.class);
+        method.setAccessible(true);
+        return (String) method.invoke(parser, text);
     }
 
     private Integer extractPriceValueDirect(Document doc, String title, String listingText) throws Exception {
