@@ -26,6 +26,10 @@ class ToyotaProvereneVozyParserTest {
                 .isEqualTo("SUV");
         assertThat(extractCarType("Toyota Avensis", ""))
                 .isEqualTo("SEDAN");
+        assertThat(extractCarType("Toyota Corolla 1,8 HEV Executive záruka 3+2 roky", ""))
+                .isEqualTo("HATCHBACK");
+        assertThat(extractCarType("Toyota Corolla 1,8 HEV Comfort Tech TS", ""))
+                .isEqualTo("WAGON");
     }
 
     @Test
@@ -36,6 +40,8 @@ class ToyotaProvereneVozyParserTest {
                 .isEqualTo("PLUGIN_HYBRID");
         assertThat(mapElectrifiedFuel("Toyota C-HR 2,0 PHEV E-CVT Style"))
                 .isEqualTo("PLUGIN_HYBRID");
+        assertThat(mapElectrifiedFuel("Volvo XC 40 B3 Plus Bright DCT"))
+                .isEqualTo("HYBRID");
     }
 
     private String extractCarType(String title, String text) throws Exception {

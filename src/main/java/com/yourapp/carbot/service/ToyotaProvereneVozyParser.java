@@ -364,6 +364,10 @@ public class ToyotaProvereneVozyParser implements CarSourceParser {
                 && containsAny(tokens, " 2 5 ", " 25 ")) {
             return "HYBRID";
         }
+        if (tokens.contains(" volvo ")
+                && containsAny(tokens, " b3 ", " b4 ", " b5 ", " b6 ")) {
+            return "HYBRID";
+        }
         if (containsAny(tokens, " hybrid ", " hev ", " hsd ", " mhev ", " e cvt ", " ecvt ",
                 " 350h ", " 450h ", " 500h ", " 1.5h ", " 1,5h ", " 1.8h ", " 1,8h ",
                 " 2.0h ", " 2,0h ", " 2.5h ", " 2,5h ")) {
@@ -654,6 +658,11 @@ public class ToyotaProvereneVozyParser implements CarSourceParser {
         if (containsAny(source, " corolla sedan ", " corolla sd ")) {
             return "SEDAN";
         }
+        if (source.contains(" corolla ")
+                && source.contains(" executive ")
+                && !containsAny(source, " corolla sedan ", " corolla sd ", " corolla cross ", " corolla ts ", " touring ", " kombi ", " combi ", " wagon ")) {
+            return "HATCHBACK";
+        }
         if (containsAny(source, " hilux ", " pick-up ", " pickup ", " doublecab ", " double cab ")) {
             return "PICKUP";
         }
@@ -668,7 +677,8 @@ public class ToyotaProvereneVozyParser implements CarSourceParser {
         if (containsAny(source, " proace max ", " proace city ", " proace ", " movano ", " boxer ", " uzitkove ")) {
             return "VAN";
         }
-        if ((source.contains(" auris ") && containsAny(source, " ts ", " touring "))
+        if ((source.contains(" corolla ") && containsAny(source, " ts ", " touring "))
+                || (source.contains(" auris ") && containsAny(source, " ts ", " touring "))
                 || containsAny(source, " corolla touring ", " corolla ts ", " comfort ts ", " auris ts ", " auris touring ",
                 " sports tourer ", " passat ", " octavia combi ")) {
             return "WAGON";
