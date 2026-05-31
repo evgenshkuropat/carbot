@@ -23,7 +23,7 @@ class SbazarParserTest {
         assertThat(resolveFuelType("volvo xc40 2,0 d3 inscription", "")).isEqualTo("DIESEL");
         assertThat(resolveFuelType("bmw rada 2 218i active tourer at led", "")).isEqualTo("PETROL");
         assertThat(resolveFuelType("alfa romeo spider 2.2i jts 185ps exclusive", "")).isEqualTo("PETROL");
-        assertThat(resolveFuelType("bmw rada 3 330e xdrive m-paket propano", "")).isEqualTo("HYBRID");
+        assertThat(resolveFuelType("bmw rada 3 330e xdrive m-paket propano", "")).isEqualTo("PLUGIN_HYBRID");
         assertThat(resolveFuelType("ford escort 1.6 66kw", "")).isEqualTo("PETROL");
         assertThat(resolveFuelType("volkswagen multivan 2.0tdi 103kw highline 4motion", "")).isEqualTo("DIESEL");
         assertThat(resolveTransmission("volkswagen multivan 2.0tdi 103kw highline 4motion", "", "DIESEL")).isEqualTo("-");
@@ -34,7 +34,7 @@ class SbazarParserTest {
         assertThat(resolveFuelType("klima bez koroze 184 tis volkswagen golf 1.6", "")).isEqualTo("PETROL");
         assertThat(resolveFuelType("volkswagen golf, 1.4-59 kw,klima,r.09,nova stk", "")).isEqualTo("PETROL");
         assertThat(resolveFuelType("mercedes benz a 45 amg", "")).isEqualTo("PETROL");
-        assertThat(resolveFuelType("jaecoo 7 1.6 phev shs exclusive", "")).isEqualTo("HYBRID");
+        assertThat(resolveFuelType("jaecoo 7 1.6 phev shs exclusive", "")).isEqualTo("PLUGIN_HYBRID");
         assertThat(resolveFuelType("omoda 9 shs premium", "")).isEqualTo("HYBRID");
         assertThat(resolveFuelType("hyundai inster cross premium", "")).isEqualTo("ELECTRIC");
         assertThat(resolveTransmission("omoda 5 1.6 t 108 kw premium a/t", "", "PETROL")).isEqualTo("AUTOMATIC");
@@ -54,7 +54,7 @@ class SbazarParserTest {
         assertThat(resolveFuelType("mercedes-benz cl 500", "")).isEqualTo("PETROL");
         assertThat(resolveFuelType("jaguar xk8 4.0 209 kw", "")).isEqualTo("PETROL");
         assertThat(resolveFuelType("nissan qashqai tekna e-power 2wd 140kw", "")).isEqualTo("HYBRID");
-        assertThat(resolveFuelType("bmw rada 2 225xe iperformance f45 165kw", "")).isEqualTo("HYBRID");
+        assertThat(resolveFuelType("bmw rada 2 225xe iperformance f45 165kw", "")).isEqualTo("PLUGIN_HYBRID");
         assertThat(resolveFuelType("top motor 4x4 1.8 t 110 kw skoda octavia super", "")).isEqualTo("PETROL");
         assertThat(resolveFuelType("nova stk bez koroze chevrolet cruze 1.6 91kw", "")).isEqualTo("PETROL");
         assertThat(resolveFuelType("ford focus combi 1.6 85 kw", "")).isEqualTo("PETROL");
@@ -71,6 +71,12 @@ class SbazarParserTest {
         assertThat(resolveFuelType("skoda octavia 1.5tgi 96kw dsg ambition 9/20", "")).isEqualTo("CNG");
         assertThat(resolveFuelType("mercedes-benz tridy b b-class 250 edrive 132kw", "")).isEqualTo("ELECTRIC");
         assertThat(resolveFuelType("suzuki sx4 s-cross 1,4 boosterjet premium 2x4", "")).isEqualTo("PETROL");
+        assertThat(resolveFuelType("skoda superb 1.4 tsi 160kw iv sportline dsg", "")).isEqualTo("PLUGIN_HYBRID");
+        assertThat(resolveFuelType("mercedes-benz tridy c e performance 4m amg f1 edit", "")).isEqualTo("PLUGIN_HYBRID");
+        assertThat(resolveFuelType("peugeot 2008 2017 1.2 81kw automat 70 000 km", "")).isEqualTo("PETROL");
+        assertThat(resolveFuelType("suzuki grand vitara 2.4 4x4 uzaverka", "")).isEqualTo("PETROL");
+        assertThat(resolveFuelType("volkswagen golf 3 1.4 cl 44 kw 1993 oldtimer", "")).isEqualTo("PETROL");
+        assertThat(resolveFuelType("dacia duster 1,6", "")).isEqualTo("PETROL");
         assertThat(resolveFuelType("dongfeng u-tour 1,5 t 130 kw exclusivefr 7mist", "")).isEqualTo("PETROL");
         assertThat(resolveTransmission("honda crv 2020 hybrid benzin 72tis.km", "", "HYBRID")).isEqualTo("AUTOMATIC");
         assertThat(resolveTransmission("seat leon, 1,4 tsi e-hybrid fr line led", "", "HYBRID")).isEqualTo("AUTOMATIC");
@@ -151,6 +157,7 @@ class SbazarParserTest {
         assertThat(resolveCarType("hyundai bayon bayon fl 1,0 t-gdi wave", "combi wagon")).isEqualTo("SUV");
         assertThat(resolveCarType("skoda roomster 1.2tsi 63kw nove v cr klima", "")).isEqualTo("MINIVAN");
         assertThat(resolveCarType("seat leon, 1,4 tsi e-hybrid fr line led", "")).isEqualTo("HATCHBACK");
+        assertThat(resolveCarType("seat leon, st fr 1.4tsi92kw 1maj facelift", "")).isEqualTo("WAGON");
         assertThat(resolveCarType("skoda forman confortline", "")).isEqualTo("WAGON");
         assertThat(resolveCarType("audi a6 3.0 tdi 4x4 avant quattro automat sline", "")).isEqualTo("WAGON");
         assertThat(resolveCarType("fiat bravo 2011 1.4 66kw lpg servis nove rozvody", "")).isEqualTo("HATCHBACK");
@@ -192,6 +199,11 @@ class SbazarParserTest {
         assertThat(resolveCarType("citroen jumpy 2.0hdi 94kw 8mist", "")).isEqualTo("MINIVAN");
         assertThat(resolveCarType("renault kangoo 1.6 cng", "")).isEqualTo("MINIVAN");
         assertThat(resolveCarType("mitsubishi colt 1,3 70kw klima", "")).isEqualTo("HATCHBACK");
+        assertThat(resolveCarType("audi a7 3.0 tdi 180 kw quattro", "")).isEqualTo("SEDAN");
+        assertThat(resolveCarType("vw jetta highline 1.4tsi", "")).isEqualTo("SEDAN");
+        assertThat(resolveCarType("kia ev6 gt 430kw 4x4 77kwh zaruka", "")).isEqualTo("SUV");
+        assertThat(resolveCarType("bmw i5 i5 xdrive40 led tazne", "")).isEqualTo("SEDAN");
+        assertThat(resolveCarType("mercedes-benz citan 1.5dci mixto dlouhe", "")).isEqualTo("MINIVAN");
     }
 
     @Test
