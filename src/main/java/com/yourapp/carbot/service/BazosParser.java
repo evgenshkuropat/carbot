@@ -1948,6 +1948,10 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             return "SEDAN";
         }
 
+        if (containsAny(titleSource, " a4b6 ", " a4 b6 ")) {
+            return "SEDAN";
+        }
+
         if (containsAny(titleSource, " s60 ", " s 60 ", " s80 ", " s 80 ", " audi s6 ", " s6 ", " s 6 ")) {
             return "SEDAN";
         }
@@ -1982,6 +1986,10 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
 
         if ((containsAny(titleSource, " bmw ", " 430d ", " 430i ", " 420d ", " 420i ", " 440i ") && containsAny(titleSource, " gc ", " f36 "))
                 || containsAny(titleSource, " bmw f36 ", " f36 430d ", " f36 430i ", " f36 420d ", " f36 420i ", " f36 440i ")) {
+            return "SEDAN";
+        }
+
+        if (containsAny(titleSource, " 330xd ", " 330 xd ")) {
             return "SEDAN";
         }
 
