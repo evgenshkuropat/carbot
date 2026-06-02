@@ -1162,6 +1162,11 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             return "DIESEL";
         }
 
+        if (containsAny(source, " audi s6 ", " s6 ", " s 6 ")
+                && compact.contains("257kw")) {
+            return "DIESEL";
+        }
+
         // PETROL
         if (containsAny(source,
                 " benzin ", " benzín ", " benzinovy ", " benzínový ", " petrol ",
@@ -1249,6 +1254,12 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         }
 
         if (source.contains(" z4 ") && Pattern.compile("\\b3[.,]0\\b").matcher(source).find()) {
+            return "PETROL";
+        }
+
+        if (source.contains(" giulia ")
+                && Pattern.compile("\\b2[.,]0\\b").matcher(source).find()
+                && !containsAny(source, " diesel ", " nafta ", " jtd ", " jtdm ", " td ", " tdi ")) {
             return "PETROL";
         }
 
@@ -1991,8 +2002,13 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             return "WAGON";
         }
 
+        if (containsAny(titleSource, " alfa 156 sw ", " alfa romeo 156 sw ", " romeo 156 sw ",
+                " alfa 159 sw ", " alfa romeo 159 sw ", " romeo 159 sw ")) {
+            return "WAGON";
+        }
+
         if (containsAny(titleSource, " giulia ", " alfa 75 ", " romeo 75 ", " alfa 156 ", " romeo 156 ", " alfa 159 ", " romeo 159 ",
-                " alfa 166 ", " romeo 166 ")) {
+                " ar 159 ", " alfa 166 ", " romeo 166 ")) {
             return "SEDAN";
         }
 
