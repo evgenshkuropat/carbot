@@ -54,6 +54,9 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
     private static final int MIN_VALID_PRICE = 30_000;
     private static final int MAX_VALID_PRICE = 10_000_000;
 
+    private record TitleProfile(String fuelType, String transmission, String carType, boolean strongIdentity) {
+    }
+
     private static final Pattern TYRE_SIZE_PATTERN =
             Pattern.compile("\\b\\d{3}/\\d{2}\\s*[rR]\\s*\\d{2}\\b");
 
@@ -348,7 +351,9 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 year = extractYear("", preview);
             }
             Integer mileage = extractMileage(title, analysisText);
+            TitleProfile titleProfile = inferTitleProfile(title, url);
             String fuelType = firstNonBlank(
+                    titleProfile.fuelType(),
                     extractFuelType(title),
                     extractFuelType(listingText)
             );
@@ -356,6 +361,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             fuelType = correctLikelyFalseElectricFuel(title, fuelType);
             fuelType = correctLikelyNoisyFuel(title, fuelType);
             String transmission = firstNonBlank(
+                    titleProfile.transmission(),
                     extractTransmission(title),
                     extractTransmission(listingText),
                     ("ELECTRIC".equals(fuelType) || looksAutomaticHybridTitle(title, fuelType)) ? "AUTOMATIC" : null
@@ -367,7 +373,11 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 transmission = null;
             }
             String brand = extractBrand(title, analysisText);
-            String carType = extractCarType(title, listingText, url);
+            String carType = firstNonBlank(
+                    titleProfile.carType(),
+                    extractCarType(title, "", url),
+                    extractCarType(title, listingText, url)
+            );
             String imageUrl = extractImageUrl(doc);
 
             if (brand == null && carType == null && !looksLikeRealCar(title, analysisText)) {
@@ -977,6 +987,18 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         }
 
         return null;
+    }
+
+    private TitleProfile inferTitleProfile(String title, String url) {
+        String titleSource = " " + normalizeText(safe(title)).toLowerCase(Locale.ROOT) + " ";
+        String fuelType = extractFuelType(title);
+        String transmission = extractTransmission(title);
+        String carType = extractCarType(title, "", url);
+        boolean strongIdentity = extractBrand(title, title) != null
+                || carType != null
+                || looksLikeRealCar(titleSource, titleSource);
+
+        return new TitleProfile(fuelType, transmission, carType, strongIdentity);
     }
 
     private String extractFuelType(String text) {

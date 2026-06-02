@@ -286,6 +286,26 @@ class BazosParserTest {
     }
 
     @Test
+    void buildsClassificationProfileFromBazosTitleOnly() throws Exception {
+        Object profile = inferTitleProfile(
+                "BMW e46 330ci, M Packet, 170KW, 231 hp",
+                "https://auto.bazos.cz/inzerat/219160039/bmw-e46-330ci-m-packet-170kw-231-hp.php");
+
+        assertThat(titleProfileValue(profile, "fuelType")).isEqualTo("PETROL");
+        assertThat(titleProfileValue(profile, "carType")).isNull();
+        assertThat(titleProfileFlag(profile, "strongIdentity")).isTrue();
+
+        Object plugInProfile = inferTitleProfile(
+                "VW Golf 8 GTE 1.4 TSI Hybrid 150kW DSG",
+                "https://auto.bazos.cz/inzerat/219486608/vw-golf-8-gte-14-tsi-hybrid.php");
+
+        assertThat(titleProfileValue(plugInProfile, "fuelType")).isEqualTo("PLUGIN_HYBRID");
+        assertThat(titleProfileValue(plugInProfile, "transmission")).isEqualTo("AUTOMATIC");
+        assertThat(titleProfileValue(plugInProfile, "carType")).isEqualTo("HATCHBACK");
+        assertThat(titleProfileFlag(plugInProfile, "strongIdentity")).isTrue();
+    }
+
+    @Test
     void resolvesApproximateMileageFromBazosTitles() throws Exception {
         assertThat(extractMileage("Citroen C5 combi diesel 124 xxx km", "")).isEqualTo(124000);
         assertThat(extractMileage("Honda CR-V 2.0 e:HEV Advance AWD, r. 2024, najeto cca 15100", "")).isEqualTo(15100);
@@ -371,5 +391,23 @@ class BazosParserTest {
         Method method = BazosParser.class.getDeclaredMethod("looksCommercialVehicle", String.class, String.class, String.class);
         method.setAccessible(true);
         return (boolean) method.invoke(parser, title, text, url);
+    }
+
+    private Object inferTitleProfile(String title, String url) throws Exception {
+        Method method = BazosParser.class.getDeclaredMethod("inferTitleProfile", String.class, String.class);
+        method.setAccessible(true);
+        return method.invoke(parser, title, url);
+    }
+
+    private String titleProfileValue(Object profile, String methodName) throws Exception {
+        Method method = profile.getClass().getDeclaredMethod(methodName);
+        method.setAccessible(true);
+        return (String) method.invoke(profile);
+    }
+
+    private boolean titleProfileFlag(Object profile, String methodName) throws Exception {
+        Method method = profile.getClass().getDeclaredMethod(methodName);
+        method.setAccessible(true);
+        return (boolean) method.invoke(profile);
     }
 }
