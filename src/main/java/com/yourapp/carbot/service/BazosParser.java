@@ -1034,7 +1034,8 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " plug-in hybrid ", " plugin hybrid ", " plug in hybrid ",
                 " plug-in ", " plug in ", " phev ",
                 " mild-hybrid ", " mild hybrid ",
-                " hybrid ", " hybridni ", " e-hybrid ", " ehybrid ", " e-tfsi ", " etfsi ", " i-mmd ", " immd ", " hev ", " mhev ")) {
+                " hybrid ", " hybridni ", " e-hybrid ", " ehybrid ", " e-tfsi ", " etfsi ", " i-mmd ", " immd ", " hev ", " mhev ",
+                " b5 ", " b6 ")) {
             return "HYBRID";
         }
 
@@ -1092,6 +1093,8 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " immd ",
                 " hev ",
                 " mhev ",
+                " b5 ",
+                " b6 ",
                 " superb iv ",
                 " octavia iv ",
                 " passat gte ",
@@ -1274,12 +1277,21 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         String source = " " + normalizeText(title).toLowerCase(Locale.ROOT) + " ";
         String compact = source.replaceAll("[^a-z0-9]", "");
 
+        if (isExplicitHybridTitle(source, compact)) {
+            return "HYBRID";
+        }
+
         if (containsAny(source, " id.3 ", " id.4 ", " id.5 ", " e-golf ", " electric ", " elektro ", " kwh ")
                 || compact.contains("id3")
                 || compact.contains("id4")
                 || compact.contains("id5")
                 || compact.contains("egolf")) {
             return fuelType;
+        }
+
+        if (containsAny(source, " corolla ", " auris ", " avensis ", " camry ", " yaris ", " rav4 ", " prius ", " c-hr ")
+                && !containsAny(source, " hybrid ", " hev ", " phev ", " plug-in ", " plugin ", " mirai ")) {
+            return extractFuelType(title);
         }
 
         if (source.contains(" carens ") && Pattern.compile("\\b1[\\.,]7\\b").matcher(source).find()) {

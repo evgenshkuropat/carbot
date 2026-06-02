@@ -85,6 +85,8 @@ class BazosParserTest {
         assertThat(extractFuelType("VW Golf 8 GTE 1.4 TSI Hybrid 150kW DSG - zaruka Autodraft")).isEqualTo("PLUGIN_HYBRID");
         assertThat(extractFuelType("Dacia Lodgy MPV r.2022 1,3benz 96kw 1.majitel")).isEqualTo("PETROL");
         assertThat(extractFuelType("Pekna Dacia Logan MCV 1.2...16V")).isEqualTo("PETROL");
+        assertThat(extractFuelType("VOLVO V90 CROSS COUNTRY ULTIMATE B5 173KW 2022 CZ DPH 1MAJ")).isEqualTo("HYBRID");
+        assertThat(extractFuelType("Volvo XC 90 B5 AWD INSCRIPTION")).isEqualTo("HYBRID");
     }
 
     @Test
@@ -191,6 +193,9 @@ class BazosParserTest {
         assertThat(correctLikelyNoisyFuel("Dacia Sandero Stepway", "DIESEL")).isNull();
         assertThat(correctLikelyNoisyFuel("Navara D22 Kingcab 98kw", "PETROL")).isNull();
         assertThat(correctLikelyNoisyFuel("Opel Grandland X 1 majitel servis", "LPG")).isNull();
+        assertThat(correctLikelyFalseElectricFuel("TOYOTA COROLLA 2022", "ELECTRIC")).isNull();
+        assertThat(correctLikelyFalseElectricFuel("Toyota Mirai Executive", "ELECTRIC")).isEqualTo("ELECTRIC");
+        assertThat(correctLikelyFalseElectricFuel("TOYOTA RAV4,Hybrid,Selection,4x4,Tazne", "ELECTRIC")).isEqualTo("HYBRID");
 
         assertThat(looksNonCarListing("Alfa Romeo 156 blatniky", "", "", "")).isTrue();
         assertThat(looksNonCarListing("Znaky Alfa Romeo 74mm", "", "", "")).isTrue();
@@ -353,6 +358,12 @@ class BazosParserTest {
 
     private String correctLikelyNoisyFuel(String title, String fuelType) throws Exception {
         Method method = BazosParser.class.getDeclaredMethod("correctLikelyNoisyFuel", String.class, String.class);
+        method.setAccessible(true);
+        return (String) method.invoke(parser, title, fuelType);
+    }
+
+    private String correctLikelyFalseElectricFuel(String title, String fuelType) throws Exception {
+        Method method = BazosParser.class.getDeclaredMethod("correctLikelyFalseElectricFuel", String.class, String.class);
         method.setAccessible(true);
         return (String) method.invoke(parser, title, fuelType);
     }
