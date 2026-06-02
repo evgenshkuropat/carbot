@@ -607,6 +607,10 @@ public class TipCarsParser implements CarSourceParser {
             return "DIESEL";
         }
 
+        if (source.matches(".*\\b[0-9][.,][0-9]\\s*d\\b.*")) {
+            return "DIESEL";
+        }
+
         if (containsAny(source,
                 "/benzin/",
                 " benzin ",
@@ -736,13 +740,17 @@ public class TipCarsParser implements CarSourceParser {
             return "SEDAN";
         }
 
+        if (containsAny(titleSource, " model 3 ", " tesla model 3 ")) {
+            return "SEDAN";
+        }
+
         if (titleSource.contains(" a3 ") && titleSource.contains(" sportback ")) {
             return "HATCHBACK";
         }
 
         if (containsAny(titleSource,
                 " q3 ", " q5 ", " q7 ", " q8 ",
-                " touareg ", " qashqai ", " kona ", " captur ", " puma ", " crossland ", " range rover ", " glc ",
+                " touareg ", " qashqai ", " pathfinder ", " kona ", " captur ", " puma ", " crossland ", " range rover ", " glc ",
                 " gla ", " glb ", " gle ", " gls ", " yaris cross ", " stonic ", " omoda 5 ", " actyon ")) {
             return "SUV";
         }
@@ -772,7 +780,7 @@ public class TipCarsParser implements CarSourceParser {
         }
 
         // URL от TipCars самый надежный — проверяем первым
-        if (normalizedUrl.contains("/suv/")) {
+        if (normalizedUrl.contains("/suv/") || normalizedUrl.contains("/terenni/") || normalizedUrl.contains("/off-road/")) {
             return "SUV";
         }
 

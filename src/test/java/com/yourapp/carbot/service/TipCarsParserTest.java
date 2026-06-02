@@ -67,6 +67,18 @@ class TipCarsParserTest {
                 .isEqualTo("SEDAN");
 
         assertThat(extractCarType(
+                "Tesla Model 3 Long Range 4WD 74kWh, SoH 89%",
+                "",
+                "https://www.tipcars.com/tesla-model-3/sedan/elektro/tesla-model-3-long-range-4wd-74kwh-soh-89.html"))
+                .isEqualTo("SEDAN");
+
+        assertThat(extractCarType(
+                "Nissan Pathfinder 2.5 dCi, 4X4, 7 mist",
+                "",
+                "https://www.tipcars.com/nissan-pathfinder/terenni/nafta/nissan-pathfinder-2-5-dci-4x4-7-mist.html"))
+                .isEqualTo("SUV");
+
+        assertThat(extractCarType(
                 "Renault ZOE",
                 "",
                 "https://www.tipcars.com/renault-zoe/elektro/renault-zoe.html"))
@@ -90,6 +102,8 @@ class TipCarsParserTest {
                 .isEqualTo("PLUGIN_HYBRID");
         assertThat(extractFuelType("Volvo XC60 2,0 B5 Aut. AWD CZ Dark Plus"))
                 .isEqualTo("HYBRID");
+        assertThat(extractFuelType("BMW Rada 3 3.0D 150kW M PAKET SERVIS. KN."))
+                .isEqualTo("DIESEL");
     }
 
     private String extractCarType(String title, String text, String url) throws Exception {
