@@ -74,6 +74,7 @@ class BazosParserTest {
         assertThat(extractFuelType("Mercedes E43 AMG")).isEqualTo("PETROL");
         assertThat(extractFuelType("Mitsubishi Outlander 2.4i+HYBRID 4x4 SERVISKA TAZNE")).isEqualTo("HYBRID");
         assertThat(extractFuelType("MITSUBISHI ECLIPSE CROSS 2.4 PHEV 138kW 4x4-12/2022-49.949KM")).isEqualTo("PLUGIN_HYBRID");
+        assertThat(extractFuelType("Ford Kuga 2,5PHEV 165KW TitaniumX, Model 023, LED,B&O,vč.DPH")).isEqualTo("PLUGIN_HYBRID");
         assertThat(extractFuelType("Mitsubishi lancer evo")).isEqualTo("PETROL");
         assertThat(extractFuelType("Nissan Primera 1.8 16V 2006")).isEqualTo("PETROL");
         assertThat(extractFuelType("Nissan Micra 1.0 IG-T LED KLIMA")).isEqualTo("PETROL");
@@ -124,6 +125,7 @@ class BazosParserTest {
         assertThat(extractCarType("Fiat500", "", "")).isEqualTo("HATCHBACK");
         assertThat(extractCarType("Fiat 500c 1.2 Lounge 2015", "", "")).isEqualTo("CABRIO");
         assertThat(extractCarType("Fiat Bravo 1,6 JTD, 2008", "", "")).isEqualTo("HATCHBACK");
+        assertThat(extractCarType("HONDA ACCORD TOURER VII EXECUTIVE 2.0 i-VTEC", "", "")).isEqualTo("WAGON");
         assertThat(extractCarType("Ford Focus Tunier 2014", "", "")).isEqualTo("WAGON");
         assertThat(extractCarType("FUSION FACELIFT,1.4 16V 59KW,ROK 2008", "", "")).isEqualTo("HATCHBACK");
         assertThat(extractCarType("HONDA CIVIC TOURER 1.6i DTEC 2016 KAMERA", "", "")).isEqualTo("WAGON");
@@ -190,6 +192,8 @@ class BazosParserTest {
         assertThat(extractTransmission("Toyota Corolla ST 1.8 HEV 103kW e-CVT,2024,35tkm")).isEqualTo("AUTOMATIC");
         assertThat(extractTransmission("Honda CR-V 2.0 e:HEV Advance AWD")).isEqualTo("AUTOMATIC");
         assertThat(extractTransmission("Honda CR-V 2.0i-MMD Elegance AWD")).isEqualTo("AUTOMATIC");
+        assertThat(looksAutomaticHybridTitle("Ford Kuga 2,5PHEV 165KW TitaniumX", "PLUGIN_HYBRID")).isTrue();
+        assertThat(looksAutomaticHybridTitle("CR-V r. 2022 2.0 hybrid 4/4", "HYBRID")).isTrue();
         assertThat(extractTransmission("Citroen Berlingo 1.5 BlueHDi 130S&S MAN 6 SHINE")).isEqualTo("MANUAL");
         assertThat(extractTransmission("Citroen Berlingo 1.6 BlueHDI XTR 100 MAN")).isEqualTo("MANUAL");
         assertThat(looksLikelyFalseAutomatic("PEUGEOT 207 1.4 i BENZIN 70 kW NOVE ROZVODY", "AUTOMATIC")).isTrue();
@@ -360,6 +364,12 @@ class BazosParserTest {
         Method method = BazosParser.class.getDeclaredMethod("looksLikelyFalseAutomatic", String.class, String.class);
         method.setAccessible(true);
         return (boolean) method.invoke(parser, title, transmission);
+    }
+
+    private boolean looksAutomaticHybridTitle(String title, String fuelType) throws Exception {
+        Method method = BazosParser.class.getDeclaredMethod("looksAutomaticHybridTitle", String.class, String.class);
+        method.setAccessible(true);
+        return (boolean) method.invoke(parser, title, fuelType);
     }
 
     private String correctLikelyNoisyFuel(String title, String fuelType) throws Exception {

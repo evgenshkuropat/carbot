@@ -78,6 +78,7 @@ class SbazarParserTest {
         assertThat(resolveFuelType("volkswagen golf 3 1.4 cl 44 kw 1993 oldtimer", "")).isEqualTo("PETROL");
         assertThat(resolveFuelType("dacia duster 1,6", "")).isEqualTo("PETROL");
         assertThat(resolveFuelType("dongfeng u-tour 1,5 t 130 kw exclusivefr 7mist", "")).isEqualTo("PETROL");
+        assertThat(resolveFuelType("hyundai i30 1,5dpi style comfort plus", "")).isEqualTo("PETROL");
         assertThat(resolveTransmission("honda crv 2020 hybrid benzin 72tis.km", "", "HYBRID")).isEqualTo("AUTOMATIC");
         assertThat(resolveTransmission("seat leon, 1,4 tsi e-hybrid fr line led", "", "HYBRID")).isEqualTo("AUTOMATIC");
         assertThat(resolveTransmission("tesla model 3 long range dual motor soh 92", "", "ELECTRIC")).isEqualTo("AUTOMATIC");
@@ -204,6 +205,9 @@ class SbazarParserTest {
         assertThat(resolveCarType("kia ev6 gt 430kw 4x4 77kwh zaruka", "")).isEqualTo("SUV");
         assertThat(resolveCarType("bmw i5 i5 xdrive40 led tazne", "")).isEqualTo("SEDAN");
         assertThat(resolveCarType("mercedes-benz citan 1.5dci mixto dlouhe", "")).isEqualTo("MINIVAN");
+        assertThat(resolveCarType("kia k4 hb 1,6 t-gdi gpf 7dct top", "")).isEqualTo("HATCHBACK");
+        assertThat(resolveCarType("mercedes w447 v250 avantgarde", "")).isEqualTo("MINIVAN");
+        assertThat(resolveCarType("land rover defender 110 hcpu", "")).isEqualTo("PICKUP");
     }
 
     @Test

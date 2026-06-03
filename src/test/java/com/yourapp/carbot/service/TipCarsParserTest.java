@@ -100,6 +100,8 @@ class TipCarsParserTest {
                 .isEqualTo("HYBRID");
         assertThat(extractFuelType("Hyundai Tucson 1.6 T-GDI PHEV"))
                 .isEqualTo("PLUGIN_HYBRID");
+        assertThat(extractFuelType("BMW Rada 2 225xe Active Tourer, 4X4"))
+                .isEqualTo("PLUGIN_HYBRID");
         assertThat(extractFuelType("Volvo XC60 2,0 B5 Aut. AWD CZ Dark Plus"))
                 .isEqualTo("HYBRID");
         assertThat(extractFuelType("BMW Rada 3 3.0D 150kW M PAKET SERVIS. KN."))

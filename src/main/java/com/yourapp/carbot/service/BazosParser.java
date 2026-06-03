@@ -1335,6 +1335,13 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         String source = " " + normalizeText(title).toLowerCase(Locale.ROOT) + " ";
         String compact = source.replaceAll("[^a-z0-9]", "");
 
+        if (containsAny(source, " plug-in ", " plug in ", " phev ", " gte ", " e-hybrid ", " ehybrid ")
+                || compact.contains("plugin")
+                || compact.contains("pluginhybrid")
+                || compact.contains("phev")) {
+            return "PLUGIN_HYBRID";
+        }
+
         if (isExplicitHybridTitle(source, compact)) {
             return "HYBRID";
         }
@@ -1364,7 +1371,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
     }
 
     private boolean looksAutomaticHybridTitle(String title, String fuelType) {
-        if (!"HYBRID".equals(fuelType)) {
+        if (!"HYBRID".equals(fuelType) && !"PLUGIN_HYBRID".equals(fuelType)) {
             return false;
         }
 
@@ -1372,7 +1379,10 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         String compact = source.replaceAll("[^a-z0-9]", "");
         return containsAny(source, " plug-in ", " plug in ", " phev ", " gte ", " e-hybrid ", " ehybrid ")
                 || compact.contains("plugin")
-                || compact.contains("pluginhybrid");
+                || compact.contains("pluginhybrid")
+                || compact.contains("phev")
+                || (containsAny(source, " cr-v ", " cr v ", " crv ", " hr-v ", " hr v ", " hrv ")
+                && containsAny(source, " hybrid ", " hev "));
     }
 
     private boolean isExplicitHybridTitle(String source, String compact) {
@@ -1903,7 +1913,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         }
 
         if (containsAny(titleSource, " g21 ", " e91 ", " c5 tourer ", " citroen c5 tourer ", " c5 x7 ",
-                " civic tourer ", " focus tunier ", " focus turnier ",
+                " accord tourer ", " civic tourer ", " focus tunier ", " focus turnier ",
                 " insignia st ", " insignia sports tourer ", " insignia sport tourer ", " insignia sport taurer ",
                 " astra sports tourer ", " astra sport tourer ", " astra j sports tourer ", " astra k sports tourer ",
                 " astra j sport tourer ", " astra k sport tourer ", " astra sw ", " astra combi ", " astra kombi ", " 308 sw ", " peugeot 308 sw ")) {

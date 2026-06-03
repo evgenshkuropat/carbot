@@ -593,7 +593,7 @@ public class SbazarParser implements CarSourceParser {
         if (containsAny(searchable,
                 "benzin", "benzín", "petrol", "tsi", "tfsi", "tsfi", "fsi",
                 "gdi", "tgdi", "dig-t", "tce", "ecoboost", "mivec", "vtec",
-                "vti", "puretech", "pt", "mpi", "jts", "16v", "18i", "20i", "2 0i",
+                "vti", "puretech", "pt", "mpi", "dpi", "jts", "16v", "18i", "20i", "2 0i",
                 "30i", "40i", "50i", "850i", "14tsi", "20tsi", "turbo", "ti-vct", "pentastar", "hemi",
                 "challenger", "pacifica", "carrera", "cooper s", "gti", "gr86", "gr 86",
                 "t5", " t6 ", "s5", "amg gt", "v8", "v12", "camaro", "corvette", "macan",
@@ -749,13 +749,13 @@ public class SbazarParser implements CarSourceParser {
     }
 
     private String detectCarType(String searchable) {
-        if (containsAny(searchable, "pickup", "pick-up", "ranger", "hilux", "navara", "l200", "amarok", " ram ")) {
+        if (containsAny(searchable, "pickup", "pick-up", "ranger", "hilux", "navara", "l200", "amarok", " ram ", "hcpu")) {
             return "PICKUP";
         }
         if (containsAny(searchable, "volkswagen cc", "vw cc", "passat cc")) {
             return "SEDAN";
         }
-        if (containsAny(searchable, "touran", "sharan", "alhambra", "altea", "s-max", "c-max", "b-max", "galaxy", "zafira", "scenic", "picasso", "roomster", "berlingo", "rifter", "caddy", "citan", "vito", "viano", "v 250", "tridy v", "tridy r", "proace verso", "proace city verso", "multivan", "volkswagen t5", "volkswagen t6", "vw t5", "vw t6", "jumpy", "tourneo custom", "tourneo connect", "u-tour", "u tour", "225xe", "active tourer", " f45 ", "kangoo", "dokker", "lodgy", "jogger", "b180", "b 180", "b200", "b 200", "peugeot 807", " 807 ", "mazda 5", "grandis", "voyager", "pacifica", "grand caravan", "sienna", "ix20", "meriva", "partner tepee", "peugeot partner")) {
+        if (containsAny(searchable, "touran", "sharan", "alhambra", "altea", "s-max", "c-max", "b-max", "galaxy", "zafira", "scenic", "picasso", "roomster", "berlingo", "rifter", "caddy", "citan", "vito", "viano", "v 250", "v250", "w447", "tridy v", "tridy r", "proace verso", "proace city verso", "multivan", "volkswagen t5", "volkswagen t6", "vw t5", "vw t6", "jumpy", "tourneo custom", "tourneo connect", "u-tour", "u tour", "225xe", "active tourer", " f45 ", "kangoo", "dokker", "lodgy", "jogger", "b180", "b 180", "b200", "b 200", "peugeot 807", " 807 ", "mazda 5", "grandis", "voyager", "pacifica", "grand caravan", "sienna", "ix20", "meriva", "partner tepee", "peugeot partner")) {
             return "MINIVAN";
         }
         if (containsAny(searchable, "model 3", "model s", "bmw i5", "audi a7", " a7 ", "jetta", "w220", "w 220", "fluence", "audi s8", " s8 ", "jaguar xf", " xf ")) {
@@ -786,7 +786,7 @@ public class SbazarParser implements CarSourceParser {
                 || searchable.matches(".*\\ba[46]\\b.*\\bavant\\b.*")) {
             return "WAGON";
         }
-        if (containsAny(searchable, "citigo", "rapid", "favorit", "sandero", " rio ", "swift", "starlet", "auris", "mazda 3", "v40", "tridy a", "a 160", "a160", "a 45", "a45", "c3", "fiesta", "a1", "a3", "panda", "bravo", "matiz", "fortwo", "fourtwo", "forfour", "cupra born", "jazz",
+        if (containsAny(searchable, "citigo", "rapid", "favorit", "sandero", " rio ", "swift", "starlet", "auris", "mazda 3", "v40", "tridy a", "a 160", "a160", "a 45", "a45", "c3", "fiesta", "a1", "a3", "panda", "bravo", "matiz", "fortwo", "fourtwo", "forfour", "cupra born", "jazz", "kia k4", " k4 ", " hb ",
                 "id.3", " id 3 ", " id3 ",
                 "peugeot 206", " 206 ", "fabia", "fabie", "bmw 116i", " 116i ", "bmw f20", " f20 ", "escort", "colt")) {
             return "HATCHBACK";
@@ -833,7 +833,7 @@ public class SbazarParser implements CarSourceParser {
         }
 
         if ("PICKUP".equals(scopedType)
-                && !containsAny(identityText, "pickup", "pick-up", "ranger", "hilux", "navara", "l200", "amarok", " ram ")) {
+                && !containsAny(identityText, "pickup", "pick-up", "ranger", "hilux", "navara", "l200", "amarok", " ram ", "hcpu")) {
             return "-";
         }
 
