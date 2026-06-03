@@ -52,6 +52,8 @@ class SautoParserTest {
                 .isEqualTo("SUV");
         assertThat(extractCarType("Kia XCee´d Plug-in-Hybrid, Premium, DPH", "", "https://www.sauto.cz/osobni/detail/kia/xcee-d/209031942"))
                 .isEqualTo("SUV");
+        assertThat(extractCarType("Ford Tourneo Custom ACTIVE L1 2.0 EcoBlue 125kW", "", "https://www.sauto.cz/osobni/detail/ford/tourneo-custom/210429020"))
+                .isEqualTo("MINIVAN");
     }
 
     @Test
@@ -95,6 +97,15 @@ class SautoParserTest {
         assertThat(extractPriceValueDirect(doc, "Citroen C2 1.4HDI MOŽNÉ SPLÁTKY", "")).isEqualTo(33_000);
     }
 
+    @Test
+    void keepsPassengerTourneoCustomFromFreshSautoLogs() throws Exception {
+        assertThat(looksCommercialVehicle(
+                "Ford Tourneo Custom ACTIVE L1 2.0 EcoBlue 125kW",
+                "",
+                "https://www.sauto.cz/osobni/detail/ford/tourneo-custom/210429020"))
+                .isFalse();
+    }
+
     private String extractCarType(String title, String text, String url) throws Exception {
         Method method = SautoParser.class.getDeclaredMethod("extractCarType", String.class, String.class, String.class);
         method.setAccessible(true);
@@ -111,6 +122,12 @@ class SautoParserTest {
         Method method = SautoParser.class.getDeclaredMethod("looksBrokenListing", String.class, String.class, String.class);
         method.setAccessible(true);
         return (boolean) method.invoke(parser, title, listingText, analysisText);
+    }
+
+    private boolean looksCommercialVehicle(String title, String listingText, String url) throws Exception {
+        Method method = SautoParser.class.getDeclaredMethod("looksCommercialVehicle", String.class, String.class, String.class);
+        method.setAccessible(true);
+        return (boolean) method.invoke(parser, title, listingText, url);
     }
 
     private Integer extractPriceValueDirect(Document doc, String title, String listingText) throws Exception {

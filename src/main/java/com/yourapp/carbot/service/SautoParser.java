@@ -807,6 +807,7 @@ public class SautoParser implements CarSourceParser {
                 " vaneo ",
                 " tourneo courier ",
                 " tourneo connect ",
+                " tourneo custom ",
                 " ram ")) {
             return false;
         }
@@ -1617,7 +1618,7 @@ public class SautoParser implements CarSourceParser {
         }
 
         if (containsAny(titleSource, " mpv ", " minivan ", " kangoo ",
-                " kangoo grand ", " tourneo courier ", " tourneo connect ")) {
+                " kangoo grand ", " tourneo courier ", " tourneo connect ", " tourneo custom ")) {
             return "MINIVAN";
         }
 
@@ -1709,7 +1710,7 @@ public class SautoParser implements CarSourceParser {
                 " grand c-max ", " roomster ", " lodgy ", " verso ", " rifter ",
                 " berlingo ", " partner ", " combo ", " doblo ", " vaneo ",
                 " grand voyager ", " voyager ", " modus ",
-                " tourneo courier ", " tourneo connect ")) {
+                " tourneo courier ", " tourneo connect ", " tourneo custom ")) {
             return "MINIVAN";
         }
 
