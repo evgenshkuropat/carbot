@@ -529,6 +529,8 @@ public class TipCarsParser implements CarSourceParser {
                 " phev ",
                 " 225xe ",
                 " 30e ",
+                " 350 de ",
+                " bmw xm ",
                 " e 300 e ")
                 || compact.contains("plugin")
                 || compact.contains("pluginhybrid")
@@ -536,6 +538,9 @@ public class TipCarsParser implements CarSourceParser {
                 || compact.contains("225xe")
                 || compact.contains("xdrive30e")
                 || compact.contains("sdrive30e")
+                || compact.contains("xdrive25e")
+                || compact.contains("sdrive25e")
+                || compact.contains("350de")
                 || compact.contains("30e")
                 || compact.contains("e300e")) {
             return "PLUGIN_HYBRID";
@@ -570,6 +575,7 @@ public class TipCarsParser implements CarSourceParser {
                 " m-hev ",
                 " b5 ",
                 " b6 ",
+                " shs ",
                 " e-hybrid ",
                 " e hybrid ",
                 " e-cvt ",
@@ -759,7 +765,7 @@ public class TipCarsParser implements CarSourceParser {
         if (containsAny(titleSource,
                 " q3 ", " q5 ", " q7 ", " q8 ",
                 " touareg ", " qashqai ", " pathfinder ", " kona ", " captur ", " puma ", " crossland ", " range rover ", " glc ",
-                " gla ", " glb ", " gle ", " gls ", " yaris cross ", " stonic ", " omoda 5 ", " actyon ")) {
+                " gla ", " glb ", " gle ", " gls ", " yaris cross ", " stonic ", " omoda 5 ", " actyon ", " elroq ")) {
             return "SUV";
         }
 
@@ -770,7 +776,8 @@ public class TipCarsParser implements CarSourceParser {
         if (containsAny(titleSource,
                 " c-max ", " c max ", " galaxy ", " berlingo ", " caddy ", " roomster ",
                 " tridy v ", " třídy v ", " tĹ™Ă­dy v ", " vito ", " viano ",
-                " scenic ", " zafira ", " meriva ", " touran ", " sharan ")) {
+                " scenic ", " zafira ", " meriva ", " touran ", " sharan ", " s-max ", " s max ",
+                " c4 picasso ", " picasso ")) {
             return "MINIVAN";
         }
 
@@ -996,7 +1003,7 @@ public class TipCarsParser implements CarSourceParser {
                 " obytna dodavka ", " obytná dodávka ", " camper ", " karavan ", " caravan ",
                 " dodávka ", " dodavka ",
                 " l1h1 ", " l2h2 ", " l3h2 ", " l3h3 ", " valník ", " valnik ",
-                " movano ", " transit custom ", " combo l1 ", " combo l2 ", " combo xl ",
+                " movano ", " transporter ", " transit custom ", " combo l1 ", " combo l2 ", " combo xl ",
                 "/uzitkove/", "/uzitkova/", "/dodavky/");
     }
 

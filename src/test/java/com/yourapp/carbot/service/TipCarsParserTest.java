@@ -83,6 +83,24 @@ class TipCarsParserTest {
                 "",
                 "https://www.tipcars.com/renault-zoe/elektro/renault-zoe.html"))
                 .isEqualTo("HATCHBACK");
+
+        assertThat(extractCarType(
+                "Ford S-MAX 129 kW, ODPOCET DPH",
+                "",
+                "https://www.tipcars.com/ford-s-max/hatchback/nafta/ford-s-max-129-kw-odpocet-dph.html"))
+                .isEqualTo("MINIVAN");
+
+        assertThat(extractCarType(
+                "Skoda Elroq Premium Lodge 85 /82kWH",
+                "",
+                "https://www.tipcars.com/skoda-elroq/mpv/elektro/skoda-elroq-premium-lodge.html"))
+                .isEqualTo("SUV");
+
+        assertThat(extractCarType(
+                "Citroen C4 Picasso 1,2 PureTech 110 MAN",
+                "",
+                "https://www.tipcars.com/citroen-c4-picasso/hatchback/benzin/citroen-c4-picasso.html"))
+                .isEqualTo("MINIVAN");
     }
 
     @Test
@@ -104,8 +122,16 @@ class TipCarsParserTest {
                 .isEqualTo("PLUGIN_HYBRID");
         assertThat(extractFuelType("BMW X3 M Sport xDrive30e"))
                 .isEqualTo("PLUGIN_HYBRID");
+        assertThat(extractFuelType("BMW X1 xDrive25e, CR, 1.MAJ"))
+                .isEqualTo("PLUGIN_HYBRID");
         assertThat(extractFuelType("Mercedes-Benz Tridy E E 300 e 4MATIC"))
                 .isEqualTo("PLUGIN_HYBRID");
+        assertThat(extractFuelType("Mercedes-Benz GLE 2,0 350 de 4MATIC kupe"))
+                .isEqualTo("PLUGIN_HYBRID");
+        assertThat(extractFuelType("BMW XM Label"))
+                .isEqualTo("PLUGIN_HYBRID");
+        assertThat(extractFuelType("Jaecoo 7 Exclusive 1.5t GDI SHS"))
+                .isEqualTo("HYBRID");
         assertThat(extractFuelType("Volvo XC60 2,0 B5 Aut. AWD CZ Dark Plus"))
                 .isEqualTo("HYBRID");
         assertThat(extractFuelType("BMW Rada 3 3.0D 150kW M PAKET SERVIS. KN."))
@@ -122,6 +148,11 @@ class TipCarsParserTest {
         assertThat(looksCommercialOrCamperListing(
                 "Opel Combo L2 (XL) 1.5 CDTi 102k MT6",
                 "https://www.tipcars.com/opel-combo/nafta/opel-combo-l2-xl-1-5-cdti.html",
+                ""))
+                .isTrue();
+        assertThat(looksCommercialOrCamperListing(
+                "Volkswagen Transporter 2.0Tdi 125kw 4x4 CZ DPH",
+                "https://www.tipcars.com/volkswagen-transporter/van/nafta/volkswagen-transporter-2-0tdi.html",
                 ""))
                 .isTrue();
     }
