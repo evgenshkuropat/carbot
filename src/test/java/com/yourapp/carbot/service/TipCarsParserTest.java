@@ -102,10 +102,26 @@ class TipCarsParserTest {
                 .isEqualTo("PLUGIN_HYBRID");
         assertThat(extractFuelType("BMW Rada 2 225xe Active Tourer, 4X4"))
                 .isEqualTo("PLUGIN_HYBRID");
+        assertThat(extractFuelType("Mercedes-Benz Tridy E E 300 e 4MATIC"))
+                .isEqualTo("PLUGIN_HYBRID");
         assertThat(extractFuelType("Volvo XC60 2,0 B5 Aut. AWD CZ Dark Plus"))
                 .isEqualTo("HYBRID");
         assertThat(extractFuelType("BMW Rada 3 3.0D 150kW M PAKET SERVIS. KN."))
                 .isEqualTo("DIESEL");
+    }
+
+    @Test
+    void rejectsFreshCommercialTipCarsStorageCandidates() throws Exception {
+        assertThat(looksCommercialOrCamperListing(
+                "Opel Movano Van L2 (L) 2.2 CDTi 6 MT",
+                "https://www.tipcars.com/opel-movano/nafta/opel-movano-van-l2-l-2-2-cdti-6-mt.html",
+                ""))
+                .isTrue();
+        assertThat(looksCommercialOrCamperListing(
+                "Opel Combo L2 (XL) 1.5 CDTi 102k MT6",
+                "https://www.tipcars.com/opel-combo/nafta/opel-combo-l2-xl-1-5-cdti.html",
+                ""))
+                .isTrue();
     }
 
     private String extractCarType(String title, String text, String url) throws Exception {
@@ -118,6 +134,12 @@ class TipCarsParserTest {
         Method method = TipCarsParser.class.getDeclaredMethod("extractFuelType", String.class);
         method.setAccessible(true);
         return (String) method.invoke(parser, text);
+    }
+
+    private boolean looksCommercialOrCamperListing(String title, String url, String text) throws Exception {
+        Method method = TipCarsParser.class.getDeclaredMethod("looksCommercialOrCamperListing", String.class, String.class, String.class);
+        method.setAccessible(true);
+        return (boolean) method.invoke(parser, title, url, text);
     }
 
     private String buildPageUrl(int page) throws Exception {

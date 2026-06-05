@@ -30,6 +30,10 @@ class ToyotaProvereneVozyParserTest {
                 .isEqualTo("HATCHBACK");
         assertThat(extractCarType("Toyota Corolla 1,8 HEV Comfort Tech TS", ""))
                 .isEqualTo("WAGON");
+        assertThat(extractCarType("Peugeot 3008 ALLURE 1.2 PureTech", ""))
+                .isEqualTo("SUV");
+        assertThat(extractCarType("Ford B-MAX EcoBoost", ""))
+                .isEqualTo("MINIVAN");
     }
 
     @Test

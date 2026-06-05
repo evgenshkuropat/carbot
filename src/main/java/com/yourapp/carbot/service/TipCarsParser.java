@@ -527,11 +527,13 @@ public class TipCarsParser implements CarSourceParser {
                 " plug in ",
                 " plugin ",
                 " phev ",
-                " 225xe ")
+                " 225xe ",
+                " e 300 e ")
                 || compact.contains("plugin")
                 || compact.contains("pluginhybrid")
                 || compact.contains("phev")
-                || compact.contains("225xe")) {
+                || compact.contains("225xe")
+                || compact.contains("e300e")) {
             return "PLUGIN_HYBRID";
         }
 
@@ -990,6 +992,7 @@ public class TipCarsParser implements CarSourceParser {
                 " obytna dodavka ", " obytná dodávka ", " camper ", " karavan ", " caravan ",
                 " dodávka ", " dodavka ",
                 " l1h1 ", " l2h2 ", " l3h2 ", " l3h3 ", " valník ", " valnik ",
+                " movano ", " transit custom ", " combo l1 ", " combo l2 ", " combo xl ",
                 "/uzitkove/", "/uzitkova/", "/dodavky/");
     }
 
