@@ -102,6 +102,8 @@ class TipCarsParserTest {
                 .isEqualTo("PLUGIN_HYBRID");
         assertThat(extractFuelType("BMW Rada 2 225xe Active Tourer, 4X4"))
                 .isEqualTo("PLUGIN_HYBRID");
+        assertThat(extractFuelType("BMW X3 M Sport xDrive30e"))
+                .isEqualTo("PLUGIN_HYBRID");
         assertThat(extractFuelType("Mercedes-Benz Tridy E E 300 e 4MATIC"))
                 .isEqualTo("PLUGIN_HYBRID");
         assertThat(extractFuelType("Volvo XC60 2,0 B5 Aut. AWD CZ Dark Plus"))

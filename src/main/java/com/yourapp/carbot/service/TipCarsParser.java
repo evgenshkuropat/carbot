@@ -528,11 +528,15 @@ public class TipCarsParser implements CarSourceParser {
                 " plugin ",
                 " phev ",
                 " 225xe ",
+                " 30e ",
                 " e 300 e ")
                 || compact.contains("plugin")
                 || compact.contains("pluginhybrid")
                 || compact.contains("phev")
                 || compact.contains("225xe")
+                || compact.contains("xdrive30e")
+                || compact.contains("sdrive30e")
+                || compact.contains("30e")
                 || compact.contains("e300e")) {
             return "PLUGIN_HYBRID";
         }
