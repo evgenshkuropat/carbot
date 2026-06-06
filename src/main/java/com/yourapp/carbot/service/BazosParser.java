@@ -1977,8 +1977,13 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             return "HATCHBACK";
         }
 
+        if (containsAny(titleSource, " audi a3 ", " a3 ")
+                && !containsAny(titleSource, " sedan ", " limousine ", " limuzina ", " cabrio ", " cabriolet ", " kabrio ")) {
+            return "HATCHBACK";
+        }
+
         if (containsAny(titleSource, " multivan ", " nv 200 ", " nv200 ", " almera tino ", " grandis ", " elgrand ", " prius plus ",
-                " traveller ", " travaller ")) {
+                " traveller ", " travaller ", " jumpy multispace ", " multispace ")) {
             return "MINIVAN";
         }
 
@@ -2000,6 +2005,10 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
 
         if (containsAny(titleSource, " a4b6 ", " a4 b6 ")) {
             return "SEDAN";
+        }
+
+        if (containsAny(titleSource, " audi s6 avant ", " s6 avant ")) {
+            return "WAGON";
         }
 
         if (containsAny(titleSource, " s60 ", " s 60 ", " s80 ", " s 80 ", " audi s6 ", " s6 ", " s 6 ")) {
@@ -2228,6 +2237,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " tourneo custom ", " tourneo courier ", " tourneo connect ",
                 " talento kombi ", " talento 8mist ", " talento 8 mist ", " talento 9mist ", " talento 9 mist ",
                 " doblo ", " qubo ", " freemont ", " multipla ", " 500l ", " fiat 500l ", " combo ", " vaneo ",
+                " active tourer ", " f45 ",
                 " picasso ", " grand c4 picasso ", " c4 picasso ",
                 " w246 ", " b 180 ", " b180 ", " b 200 ", " b200 ", " b 250e ", " b250e ",
                 " mazda 5 ",
@@ -2730,7 +2740,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         }
 
         if (containsAny(titleSource, " expert ", " jumpy ", " scudo ", " proace ")
-                && !containsAny(titleSource, " proace verso ", " proace city verso ", " spacetourer ")) {
+                && !containsAny(titleSource, " proace verso ", " proace city verso ", " spacetourer ", " multispace ")) {
             return true;
         }
 
@@ -2770,8 +2780,8 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " proace ")
                 || containsAny(wordSource,
                 " transporter ", " caravelle ", " carawelle ")) {
-            if (containsAny(titleSource, " proace verso ", " proace city verso ", " spacetourer ")
-                    || containsAny(wordSource, " proace verso ", " proace city verso ", " spacetourer ")) {
+            if (containsAny(titleSource, " proace verso ", " proace city verso ", " spacetourer ", " multispace ")
+                    || containsAny(wordSource, " proace verso ", " proace city verso ", " spacetourer ", " multispace ")) {
                 return false;
             }
             return true;
