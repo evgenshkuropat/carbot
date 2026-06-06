@@ -8,6 +8,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import java.io.ByteArrayOutputStream;
+import java.nio.charset.Charset;
+import java.nio.charset.CodingErrorAction;
+import java.nio.charset.StandardCharsets;
 import java.time.Year;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -188,17 +192,19 @@ public class SautoParser implements CarSourceParser {
             }
 
             String carType = extractCarType(title, analysisText, url);
+            String outputTitle = repairMojibake(title);
+            String outputLocation = repairMojibake(location);
 
             if (looksCheapLowQualityListing(title, listingText, analysisText, priceValue, year, mileage)) {
                 log.info("SAUTO SKIP url={} reason=cheap_low_quality_listing title={} price={} year={} mileage={} fuelType={} transmission={} location={}",
-                        safe(url), safe(title), priceValue, year, mileage, safe(fuelType), safe(transmission), safe(location));
+                        safe(url), safe(outputTitle), priceValue, year, mileage, safe(fuelType), safe(transmission), safe(outputLocation));
                 return new ParseResult(null, "cheap_low_quality_listing");
             }
 
             log.info("SAUTO CAR title='{}' price={} location={} year={} mileage={} fuelType={} transmission={} carType={} brand={} url={}",
-                    safe(title),
+                    safe(outputTitle),
                     priceValue,
-                    safe(location),
+                    safe(outputLocation),
                     year,
                     mileage,
                     safe(fuelType),
@@ -209,10 +215,10 @@ public class SautoParser implements CarSourceParser {
 
             CarDto car = new CarDto();
             car.setSource("SAUTO");
-            car.setTitle(title);
+            car.setTitle(outputTitle);
             car.setPrice(formatPrice(priceValue));
             car.setPriceValue(priceValue);
-            car.setLocation(location);
+            car.setLocation(outputLocation);
             car.setUrl(url);
             car.setImageUrl(imageUrl);
             car.setBrand(brand);
@@ -1990,6 +1996,64 @@ public class SautoParser implements CarSourceParser {
         return value.replace('\u00A0', ' ')
                 .replaceAll("\\s+", " ")
                 .trim();
+    }
+
+    private String repairMojibake(String value) {
+        if (value == null || value.isBlank() || mojibakeScore(value) == 0) {
+            return value;
+        }
+
+        try {
+            byte[] bytes = encodeMojibakeBytes(value);
+            String repaired = StandardCharsets.UTF_8
+                    .newDecoder()
+                    .onMalformedInput(CodingErrorAction.REPORT)
+                    .onUnmappableCharacter(CodingErrorAction.REPORT)
+                    .decode(java.nio.ByteBuffer.wrap(bytes))
+                    .toString();
+
+            return mojibakeScore(repaired) < mojibakeScore(value) ? normalizeText(repaired) : value;
+        } catch (Exception e) {
+            return value;
+        }
+    }
+
+    private byte[] encodeMojibakeBytes(String value) throws Exception {
+        ByteArrayOutputStream out = new ByteArrayOutputStream(value.length());
+        Charset windows1250 = Charset.forName("windows-1250");
+
+        for (int i = 0; i < value.length(); i++) {
+            char ch = value.charAt(i);
+            if (ch <= 0xFF) {
+                out.write((byte) ch);
+                continue;
+            }
+
+            byte[] bytes = windows1250
+                    .newEncoder()
+                    .onMalformedInput(CodingErrorAction.REPORT)
+                    .onUnmappableCharacter(CodingErrorAction.REPORT)
+                    .encode(java.nio.CharBuffer.wrap(String.valueOf(ch)))
+                    .array();
+            out.write(bytes[0]);
+        }
+
+        return out.toByteArray();
+    }
+
+    private int mojibakeScore(String value) {
+        if (value == null || value.isBlank()) {
+            return 0;
+        }
+
+        int score = 0;
+        for (int i = 0; i < value.length(); i++) {
+            char ch = value.charAt(i);
+            if (ch == 'Ă' || ch == 'Ä' || ch == 'Ĺ' || ch == 'Â' || ch == 'â') {
+                score++;
+            }
+        }
+        return score;
     }
 
     private String capitalizeWords(String value) {

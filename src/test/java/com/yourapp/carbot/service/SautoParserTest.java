@@ -106,6 +106,20 @@ class SautoParserTest {
                 .isFalse();
     }
 
+    @Test
+    void repairsSautoMojibakeBeforeOutput() throws Exception {
+        assertThat(repairMojibake("Ĺ koda Octavia 2.0 TDI Kombi"))
+                .isEqualTo("Škoda Octavia 2.0 TDI Kombi");
+        assertThat(repairMojibake("CitroĂ«n C4 1.6 HDi, Klima"))
+                .isEqualTo("Citroën C4 1.6 HDi, Klima");
+        assertThat(repairMojibake("Renault Thalia 1.4 16V,zmk.Ĺ™azenĂ­"))
+                .isEqualTo("Renault Thalia 1.4 16V,zmk.řazení");
+        assertThat(repairMojibake("KarvinĂˇ"))
+                .isEqualTo("Karviná");
+        assertThat(repairMojibake("Volvo XC90 T8 ULTRA BRIGHT+4SERVIS/ZĂRUKA"))
+                .isEqualTo("Volvo XC90 T8 ULTRA BRIGHT+4SERVIS/ZÁRUKA");
+    }
+
     private String extractCarType(String title, String text, String url) throws Exception {
         Method method = SautoParser.class.getDeclaredMethod("extractCarType", String.class, String.class, String.class);
         method.setAccessible(true);
@@ -134,5 +148,11 @@ class SautoParserTest {
         Method method = SautoParser.class.getDeclaredMethod("extractPriceValueDirect", Document.class, String.class, String.class);
         method.setAccessible(true);
         return (Integer) method.invoke(parser, doc, title, listingText);
+    }
+
+    private String repairMojibake(String value) throws Exception {
+        Method method = SautoParser.class.getDeclaredMethod("repairMojibake", String.class);
+        method.setAccessible(true);
+        return (String) method.invoke(parser, value);
     }
 }
