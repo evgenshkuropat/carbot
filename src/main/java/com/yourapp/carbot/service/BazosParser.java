@@ -2043,6 +2043,15 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             return "SEDAN";
         }
 
+        if (containsAny(titleSource, " e 220d ", " e220d ", " c 220d ", " c220d ", " c 220 d ", " c220 d ")
+                && containsAny(titleSource, " combi ", " kombi ", " wagon ", " estate ")) {
+            return "WAGON";
+        }
+
+        if (Pattern.compile("(?i).*\\b[ce]\\s*220\\s*d\\s*t\\b.*").matcher(titleSource).matches()) {
+            return "WAGON";
+        }
+
         if (containsAny(titleSource,
                 " e270 ", " e270cdi ", " e 270 ", " e 270 cdi ",
                 " e350 bluetec ", " e 350 bluetec ",
@@ -2112,7 +2121,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             return "COUPE";
         }
 
-        if (containsAny(titleSource, " ix20 ", " ix 20 ", " staria ", " n-box ", " n box ", " orlando ", " hhr ", " freemont ")) {
+        if (containsAny(titleSource, " ix20 ", " ix 20 ", " staria ", " n-box ", " n box ", " orlando ", " hhr ", " freemont ", " venga ", " carnival ")) {
             return "MINIVAN";
         }
 
@@ -2125,7 +2134,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             return "COUPE";
         }
 
-        if (containsAny(titleSource, " accord ", " legend ", " peugeot 301 ", " talisman ", " magentis ")) {
+        if (containsAny(titleSource, " accord ", " legend ", " peugeot 301 ", " talisman ", " magentis ", " optima ", " stinger ")) {
             return "SEDAN";
         }
 
@@ -2180,7 +2189,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " tucson ", " santa fe ", " santafe ", " kona ", " pilot ", " ix55 ",
                 " duster ", " koleos ", " kadjar ",
                 " cr-v ", " cr v ", " crv ", " hr-v ", " hr v ", " hrv ", " rav4 ", " c-hr ", " chr ",
-                " cx-3 ", " cx3 ", " cx-5 ", " cx 5 ", " cx5 ", " cx-7 ", " cx 7 ", " cx7 ",
+                " cx-3 ", " cx3 ", " cx-5 ", " cx 5 ", " cx5 ", " cx-7 ", " cx 7 ", " cx7 ", " tribute ",
                 " macan ", " cayenne ",
                 " ux ", " nx ", " rx ",
                 " enyaq ", " id.4 ", " id.5 ",
@@ -2220,7 +2229,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " talento kombi ", " talento 8mist ", " talento 8 mist ", " talento 9mist ", " talento 9 mist ",
                 " doblo ", " qubo ", " freemont ", " multipla ", " 500l ", " fiat 500l ", " combo ", " vaneo ",
                 " picasso ", " grand c4 picasso ", " c4 picasso ",
-                " w246 ", " b 180 ", " b180 ", " b 200 ", " b200 ",
+                " w246 ", " b 180 ", " b180 ", " b 200 ", " b200 ", " b 250e ", " b250e ",
                 " mazda 5 ",
                 " grand scenic ", " grand scénic ",
                 " kangoo ", " carens ", " fr-v ", " fr v ", " frv ")) {

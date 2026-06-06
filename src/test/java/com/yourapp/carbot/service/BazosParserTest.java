@@ -185,6 +185,10 @@ class BazosParserTest {
         assertThat(extractCarType("Renault Laguna 2", "", "")).isEqualTo("HATCHBACK");
         assertThat(extractCarType("Cupra Tavascan Endurance Electric 210kW", "", "")).isEqualTo("SUV");
         assertThat(extractCarType("Kia Magentis 2.0crdi 103kw Top Stav Nova STK", "", "")).isEqualTo("SEDAN");
+        assertThat(extractCarType("Kia Stinger GT 3.3 T-GDI 4WD 1. majitel", "", "")).isEqualTo("SEDAN");
+        assertThat(extractCarType("Optima", "", "")).isEqualTo("SEDAN");
+        assertThat(extractCarType("Kia Venga", "", "")).isEqualTo("MINIVAN");
+        assertThat(extractCarType("Kia Carnival 2.9 Crdi 136Kw 7mist", "", "")).isEqualTo("MINIVAN");
     }
 
     @Test
@@ -200,8 +204,12 @@ class BazosParserTest {
         assertThat(extractCarType("Mercedes-Benz EQB 250 Progressive 140kW", "", "")).isEqualTo("SUV");
         assertThat(extractCarType("Mercedes E43 AMG", "", "")).isEqualTo("SEDAN");
         assertThat(extractCarType("MERCEDES-BENZ W246 B180 90kw PRAVIDELNY SERVIS TOP VYBAVA", "", "")).isEqualTo("MINIVAN");
+        assertThat(extractCarType("Mercedes-Benz B 250e Progressive Plug-in Hybrid 2021", "", "")).isEqualTo("MINIVAN");
+        assertThat(extractCarType("MERCEDES E 220D 4MATIC COMBI PUVOD CR", "", "")).isEqualTo("WAGON");
+        assertThat(extractCarType("Mercedes-Benz C 220 d T AMG Night Paket, 162 kW, 2023", "", "")).isEqualTo("WAGON");
         assertThat(extractCarType("Mercedes-Benz 126.500 SEC AMG Paket", "", "")).isEqualTo("COUPE");
         assertThat(extractCarType("PRODAM MAZDU 6 GH VE VYBORNEM STAVU", "", "")).isEqualTo("SEDAN");
+        assertThat(extractCarType("Mazda Tribute 3.0 4x4 nova STK", "", "")).isEqualTo("SUV");
     }
 
     @Test
@@ -338,6 +346,12 @@ class BazosParserTest {
                 "Fiat FIORINO QUBO 1.4 - DPH - pouze 154000 km",
                 "",
                 "https://auto.bazos.cz/inzerat/219170188/fiat-fiorino-qubo-14.php"))
+                .isFalse();
+
+        assertThat(looksCommercialVehicle(
+                "Mazda Tribute 3.0 4x4 nova STK",
+                "",
+                "https://auto.bazos.cz/inzerat/219554120/mazda-tribute-30-4x4-nova-stk.php"))
                 .isFalse();
     }
 
