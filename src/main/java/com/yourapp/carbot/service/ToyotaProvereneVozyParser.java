@@ -10,6 +10,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
+import java.nio.charset.CharacterCodingException;
+import java.nio.charset.Charset;
+import java.nio.charset.CodingErrorAction;
+import java.nio.charset.StandardCharsets;
 import java.time.Year;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -257,10 +263,10 @@ public class ToyotaProvereneVozyParser implements CarSourceParser {
 
         CarDto car = new CarDto();
         car.setSource(getSourceName());
-        car.setTitle(title);
+        car.setTitle(repairMojibake(title));
         car.setPrice(formatPrice(priceValue));
         car.setPriceValue(priceValue);
-        car.setLocation(location);
+        car.setLocation(repairMojibake(location));
         car.setUrl(url);
         car.setImageUrl(imageUrl);
         car.setBrand(brand);
@@ -906,6 +912,45 @@ public class ToyotaProvereneVozyParser implements CarSourceParser {
         return value.replace('\u00A0', ' ')
                 .replaceAll("\\s+", " ")
                 .trim();
+    }
+
+    private String repairMojibake(String value) {
+        if (value == null || value.isBlank() || mojibakeScore(value) == 0) {
+            return value;
+        }
+
+        try {
+            ByteBuffer bytes = Charset.forName("windows-1250")
+                    .newEncoder()
+                    .onMalformedInput(CodingErrorAction.REPORT)
+                    .onUnmappableCharacter(CodingErrorAction.REPORT)
+                    .encode(CharBuffer.wrap(value));
+            String repaired = StandardCharsets.UTF_8
+                    .newDecoder()
+                    .onMalformedInput(CodingErrorAction.REPORT)
+                    .onUnmappableCharacter(CodingErrorAction.REPORT)
+                    .decode(bytes)
+                    .toString();
+
+            return mojibakeScore(repaired) < mojibakeScore(value) ? normalizeText(repaired) : value;
+        } catch (CharacterCodingException | IllegalArgumentException e) {
+            return value;
+        }
+    }
+
+    private int mojibakeScore(String value) {
+        if (value == null || value.isBlank()) {
+            return 0;
+        }
+
+        int score = 0;
+        for (int i = 0; i < value.length(); i++) {
+            char ch = value.charAt(i);
+            if (ch == 'Ă' || ch == 'Ä' || ch == 'Ĺ' || ch == 'Â' || ch == 'â') {
+                score++;
+            }
+        }
+        return score;
     }
 
     private String firstNonBlank(String... values) {

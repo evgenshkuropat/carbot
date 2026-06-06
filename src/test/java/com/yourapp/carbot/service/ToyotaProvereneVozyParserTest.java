@@ -48,6 +48,18 @@ class ToyotaProvereneVozyParserTest {
                 .isEqualTo("HYBRID");
     }
 
+    @Test
+    void repairsToyotaProvereneMojibakeBeforeOutput() throws Exception {
+        assertThat(repairMojibake("Ĺ koda Fabia 1.2 HTP / 51 kW"))
+                .isEqualTo("Škoda Fabia 1.2 HTP / 51 kW");
+        assertThat(repairMojibake("TSUSHO ModĹ™any - SkladovĂ© vozy"))
+                .isEqualTo("TSUSHO Modřany - Skladové vozy");
+        assertThat(repairMojibake("Toyota Yaris 1.5 Hybrid - K odbÄ›ru IHNED"))
+                .isEqualTo("Toyota Yaris 1.5 Hybrid - K odběru IHNED");
+        assertThat(repairMojibake("CitroĂ«n C4 1.2PureTech"))
+                .isEqualTo("Citroën C4 1.2PureTech");
+    }
+
     private String extractCarType(String title, String text) throws Exception {
         Method method = ToyotaProvereneVozyParser.class.getDeclaredMethod("extractCarType", String.class, String.class);
         method.setAccessible(true);
@@ -56,6 +68,12 @@ class ToyotaProvereneVozyParserTest {
 
     private String mapElectrifiedFuel(String value) throws Exception {
         Method method = ToyotaProvereneVozyParser.class.getDeclaredMethod("mapElectrifiedFuel", String.class);
+        method.setAccessible(true);
+        return (String) method.invoke(parser, value);
+    }
+
+    private String repairMojibake(String value) throws Exception {
+        Method method = ToyotaProvereneVozyParser.class.getDeclaredMethod("repairMojibake", String.class);
         method.setAccessible(true);
         return (String) method.invoke(parser, value);
     }
