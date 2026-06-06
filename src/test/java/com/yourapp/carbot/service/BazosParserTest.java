@@ -22,6 +22,9 @@ class BazosParserTest {
                 .isEqualTo("VOLKSWAGEN");
         assertThat(extractBrand("Toyata Yaris 1.5 16V, Edice Y20, 41 tis km", ""))
                 .isEqualTo("TOYOTA");
+        assertThat(extractBrand("C3, 1,4i, 54 kw", "")).isEqualTo("CITROEN");
+        assertThat(extractBrand("Abarth 500 Turbo Cabrio 107 kW 2018 CZ puvod", "")).isEqualTo("ABARTH");
+        assertThat(extractBrand("Prodam Fiat Multipla 1.6/16V CNG/2007/6mist", "")).isEqualTo("FIAT");
     }
 
     @Test
@@ -90,6 +93,9 @@ class BazosParserTest {
         assertThat(extractFuelType("Pekna Dacia Logan MCV 1.2...16V")).isEqualTo("PETROL");
         assertThat(extractFuelType("VOLVO V90 CROSS COUNTRY ULTIMATE B5 173KW 2022 CZ DPH 1MAJ")).isEqualTo("HYBRID");
         assertThat(extractFuelType("Volvo XC 90 B5 AWD INSCRIPTION")).isEqualTo("HYBRID");
+        assertThat(extractFuelType("Prodam Fiat Multipla 1.6/16V CNG/2007/6mist")).isEqualTo("CNG");
+        assertThat(extractFuelType("Ford Focus 1.6-16V")).isEqualTo("PETROL");
+        assertThat(extractFuelType("FIAT 500, 1,2, 51kW, r.v:2015")).isEqualTo("PETROL");
     }
 
     @Test
@@ -124,7 +130,11 @@ class BazosParserTest {
         assertThat(extractCarType("Fiat Croma 1,9jtd AUTOMAT 2009", "", "")).isEqualTo("WAGON");
         assertThat(extractCarType("Fiat500", "", "")).isEqualTo("HATCHBACK");
         assertThat(extractCarType("Fiat 500c 1.2 Lounge 2015", "", "")).isEqualTo("CABRIO");
+        assertThat(extractCarType("Fiat 500X - 1.0 FireFly - edice MIRROR", "", "")).isEqualTo("SUV");
+        assertThat(extractCarType("Prodam Fiat Multipla 1.6/16V CNG/2007/6mist", "", "")).isEqualTo("MINIVAN");
         assertThat(extractCarType("Fiat Bravo 1,6 JTD, 2008", "", "")).isEqualTo("HATCHBACK");
+        assertThat(extractCarType("Citroen DS4 Exclusive", "", "")).isEqualTo("HATCHBACK");
+        assertThat(extractCarType("DACIA STEPWAY 1,0 i 66 KW TOP STAV 2017", "", "")).isEqualTo("HATCHBACK");
         assertThat(extractCarType("HONDA ACCORD TOURER VII EXECUTIVE 2.0 i-VTEC", "", "")).isEqualTo("WAGON");
         assertThat(extractCarType("Honda Accord coupe", "", "")).isEqualTo("COUPE");
         assertThat(extractCarType("Honda N-Box Custom 3/2016 136t km JDM", "", "")).isEqualTo("MINIVAN");
@@ -301,6 +311,12 @@ class BazosParserTest {
                 "Citroen HY - W",
                 "",
                 "https://auto.bazos.cz/inzerat/219491815/citroen-hy-w.php"))
+                .isTrue();
+
+        assertThat(looksCommercialVehicle(
+                "Nakladni Berlingo",
+                "",
+                "https://auto.bazos.cz/inzerat/218863810/nakladni-berlingo.php"))
                 .isTrue();
     }
 
