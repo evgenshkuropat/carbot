@@ -1279,6 +1279,16 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             return "PETROL";
         }
 
+        if (containsAny(source, " aveo ", " spark ")
+                && Pattern.compile("\\b[0-9][.,][0-9]\\b").matcher(source).find()) {
+            return "PETROL";
+        }
+
+        if (source.contains(" orlando ")
+                && Pattern.compile("\\b2[.,]0\\b").matcher(source).find()) {
+            return "DIESEL";
+        }
+
         if (Pattern.compile("(?i)\\b[0-9]{3}ci\\b").matcher(source).find()) {
             return "PETROL";
         }
@@ -1335,6 +1345,12 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
 
         String source = " " + normalizeText(title).toLowerCase(Locale.ROOT) + " ";
         if (containsAny(source, " sienna ", " sandero stepway ", " navara d22 ", " grandland x ")
+                && extractFuelType(title) == null) {
+            return null;
+        }
+
+        if ("HYBRID".equals(fuelType)
+                && containsAny(source, " tucson ")
                 && extractFuelType(title) == null) {
             return null;
         }
@@ -1415,7 +1431,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
 
         String source = " " + normalizeText(title).toLowerCase(Locale.ROOT) + " ";
         boolean hasExplicitAutomatic = containsAny(source, " selespeed ", " automat ", " automaticka ", " automatický ",
-                " automatic ", " aut. ", " a/t ", " at6 ", " at8 ", " at/8 ", " dsg ", " cvt ");
+                " automatic ", " aut. ", " a/t ", " at6 ", " at8 ", " at/8 ", " dsg ", " dct ", " cvt ");
         if (hasExplicitAutomatic) {
             return false;
         }
@@ -2109,7 +2125,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             return "COUPE";
         }
 
-        if (containsAny(titleSource, " accord ", " legend ", " peugeot 301 ", " talisman ")) {
+        if (containsAny(titleSource, " accord ", " legend ", " peugeot 301 ", " talisman ", " magentis ")) {
             return "SEDAN";
         }
 

@@ -97,6 +97,9 @@ class BazosParserTest {
         assertThat(extractFuelType("Prodam Fiat Multipla 1.6/16V CNG/2007/6mist")).isEqualTo("CNG");
         assertThat(extractFuelType("Ford Focus 1.6-16V")).isEqualTo("PETROL");
         assertThat(extractFuelType("FIAT 500, 1,2, 51kW, r.v:2015")).isEqualTo("PETROL");
+        assertThat(extractFuelType("Chevrolet Spark 1,0")).isEqualTo("PETROL");
+        assertThat(extractFuelType("Chevrolet aveo 1.4")).isEqualTo("PETROL");
+        assertThat(extractFuelType("Chevrolet Orlando 2,0 96kw")).isEqualTo("DIESEL");
     }
 
     @Test
@@ -181,6 +184,7 @@ class BazosParserTest {
         assertThat(extractCarType("Renault Alaskan", "", "")).isEqualTo("PICKUP");
         assertThat(extractCarType("Renault Laguna 2", "", "")).isEqualTo("HATCHBACK");
         assertThat(extractCarType("Cupra Tavascan Endurance Electric 210kW", "", "")).isEqualTo("SUV");
+        assertThat(extractCarType("Kia Magentis 2.0crdi 103kw Top Stav Nova STK", "", "")).isEqualTo("SEDAN");
     }
 
     @Test
@@ -212,6 +216,7 @@ class BazosParserTest {
         assertThat(extractTransmission("Ford Kuga ST Line 1,5 110 kW benzin 6-ti st.mech.")).isEqualTo("MANUAL");
         assertThat(extractTransmission("Citroen Berlingo 1.5 BlueHDi 130S&S MAN 6 SHINE")).isEqualTo("MANUAL");
         assertThat(extractTransmission("Citroen Berlingo 1.6 BlueHDI XTR 100 MAN")).isEqualTo("MANUAL");
+        assertThat(extractTransmission("Hyundai i30 Kombi 1.6 CRDi 85kW DCT (2018)")).isEqualTo("AUTOMATIC");
         assertThat(looksLikelyFalseAutomatic("PEUGEOT 207 1.4 i BENZIN 70 kW NOVE ROZVODY", "AUTOMATIC")).isTrue();
         assertThat(looksLikelyFalseAutomatic("Peugeot 308 1.6HDI 88KW 9/2015 LED NAVIGACE P. SERVIS", "AUTOMATIC")).isTrue();
         assertThat(looksLikelyFalseAutomatic("Octavia III 2,0TDi 110KW Edition + NAVI tempomat ALU STK", "AUTOMATIC")).isTrue();
@@ -219,6 +224,8 @@ class BazosParserTest {
         assertThat(correctLikelyNoisyFuel("Dacia Sandero Stepway", "DIESEL")).isNull();
         assertThat(correctLikelyNoisyFuel("Navara D22 Kingcab 98kw", "PETROL")).isNull();
         assertThat(correctLikelyNoisyFuel("Opel Grandland X 1 majitel servis", "LPG")).isNull();
+        assertThat(correctLikelyNoisyFuel("Hyundai Tucson N-Line 2025 TOP STAV", "HYBRID")).isNull();
+        assertThat(correctLikelyNoisyFuel("Honda HR-V 1.5 benzin hybrid", "HYBRID")).isEqualTo("HYBRID");
         assertThat(correctLikelyFalseElectricFuel("TOYOTA COROLLA 2022", "ELECTRIC")).isNull();
         assertThat(correctLikelyFalseElectricFuel("Toyota Mirai Executive", "ELECTRIC")).isEqualTo("ELECTRIC");
         assertThat(correctLikelyFalseElectricFuel("TOYOTA RAV4,Hybrid,Selection,4x4,Tazne", "ELECTRIC")).isEqualTo("HYBRID");
