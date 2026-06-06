@@ -39,6 +39,7 @@ class SbazarParserTest {
         assertThat(resolveFuelType("hyundai inster cross premium", "")).isEqualTo("ELECTRIC");
         assertThat(resolveTransmission("omoda 5 1.6 t 108 kw premium a/t", "", "PETROL")).isEqualTo("AUTOMATIC");
         assertThat(resolveFuelType("mazda cx-5 2.2 skyactive 4wd bose sendo", "")).isEqualTo("DIESEL");
+        assertThat(resolveFuelType("mazda cx-5 2.0 kangei 2wd 165 ps", "")).isEqualTo("PETROL");
         assertThat(resolveFuelType("mazda cx-3 2.0 sky-g 121k attraction a/t", "")).isEqualTo("PETROL");
         assertThat(resolveFuelType("alfa romeo 147 gta 3,2busso manual", "")).isEqualTo("PETROL");
         assertThat(resolveFuelType("chevrolet matiz 0.8 rok 2009 krasny stav", "")).isEqualTo("PETROL");
@@ -200,6 +201,9 @@ class SbazarParserTest {
         assertThat(resolveCarType("citroen jumpy 2.0hdi 94kw 8mist", "")).isEqualTo("MINIVAN");
         assertThat(resolveCarType("renault kangoo 1.6 cng", "")).isEqualTo("MINIVAN");
         assertThat(resolveCarType("mitsubishi colt 1,3 70kw klima", "")).isEqualTo("HATCHBACK");
+        assertThat(resolveCarType("peugeot 207 cc 1.6i r.v.2011 serviska stk", "")).isEqualTo("CABRIO");
+        assertThat(resolveCarType("opel agila 1.2 16v gl", "")).isEqualTo("HATCHBACK");
+        assertThat(resolveCarType("opel mokka 1.6 tdci 4x4 innovation xenon navigace", "")).isEqualTo("SUV");
         assertThat(resolveCarType("audi a7 3.0 tdi 180 kw quattro", "")).isEqualTo("SEDAN");
         assertThat(resolveCarType("vw jetta highline 1.4tsi", "")).isEqualTo("SEDAN");
         assertThat(resolveCarType("kia ev6 gt 430kw 4x4 77kwh zaruka", "")).isEqualTo("SUV");
@@ -220,6 +224,7 @@ class SbazarParserTest {
     @Test
     void ignoresPageMetadataYearsAroundListingDates() throws Exception {
         assertThat(extractYear("mitsubishi outlander 2,2 di-d 110kw 4x4 -tk do6/27 vlozeno 2025")).isNull();
+        assertThat(extractYear("peugeot 207 cc 1.6i r.v.2011 serviska stk 09/27 vlozeno 2025")).isEqualTo(2011);
     }
 
     @Test
@@ -236,6 +241,18 @@ class SbazarParserTest {
         String noisyScopedText = identity + " 6022 dalsi metadata";
 
         assertThat(firstInteger(extractMileage(identity), extractMileage(noisyScopedText))).isEqualTo(101_000);
+    }
+
+    @Test
+    void repairsSbazarMojibakeBeforeOutput() throws Exception {
+        assertThat(repairMojibake("v okres Uhersk\u0102\u00A9 Hradi\u0139\u02C7t\u00C4\u203A"))
+                .isEqualTo("v okres Uherské Hradiště");
+        assertThat(repairMojibake("\u0139\u00A0koda Octavia Combi 1.9 TDI 96kw ASZ"))
+                .isEqualTo("Škoda Octavia Combi 1.9 TDI 96kw ASZ");
+        assertThat(repairMojibake("Nov\u0102\u02C7 STK, \u00C4\u015Aesk\u0102\u02C7 L\u0102\u00ADpa"))
+                .isEqualTo("Nová STK, Česká Lípa");
+        assertThat(repairMojibake("BOHAT\u0102\u0081 V\u0102\u0165BAVA"))
+                .isEqualTo("BOHATÁ VÝBAVA");
     }
 
     private String resolveFuelType(String identityText, String scopedText) throws Exception {
@@ -278,6 +295,12 @@ class SbazarParserTest {
         Method method = SbazarParser.class.getDeclaredMethod("extractMileage", String.class);
         method.setAccessible(true);
         return (Integer) method.invoke(parser, searchable);
+    }
+
+    private String repairMojibake(String value) throws Exception {
+        Method method = SbazarParser.class.getDeclaredMethod("repairMojibake", String.class);
+        method.setAccessible(true);
+        return (String) method.invoke(parser, value);
     }
 
     private Integer firstInteger(Integer... values) throws Exception {

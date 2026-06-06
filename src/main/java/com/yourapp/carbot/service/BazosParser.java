@@ -8,6 +8,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import java.io.ByteArrayOutputStream;
+import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
+import java.nio.charset.Charset;
+import java.nio.charset.CodingErrorAction;
+import java.nio.charset.StandardCharsets;
 import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
@@ -399,12 +405,15 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 return ParseResult.skip("suspicious_listing");
             }
 
+            String outputTitle = repairMojibake(title);
+            String outputLocation = repairMojibake(location);
+
             CarDto car = new CarDto();
             car.setSource("BAZOS");
-            car.setTitle(title);
+            car.setTitle(outputTitle);
             car.setPrice(price);
             car.setPriceValue(priceValue);
-            car.setLocation(location);
+            car.setLocation(outputLocation);
             car.setUrl(url);
             car.setImageUrl(imageUrl);
             car.setBrand(brand);
@@ -415,9 +424,9 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             car.setCarType(carType);
 
             log.info("BAZOS CAR title='{}' price={} location={} year={} mileage={} fuelType={} transmission={} carType={} brand={} url={}",
-                    safe(title),
+                    safe(outputTitle),
                     priceValue,
-                    safe(location),
+                    safe(outputLocation),
                     year,
                     mileage,
                     safe(fuelType),
@@ -1443,6 +1452,8 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " manuál ",
                 " manual ",
                 " man. ",
+                " mech. ",
+                " mechanick",
                 " 5stupňová manuální ",
                 " 5stupnova manualni ",
                 " 6stupňová manuální ",
@@ -1456,7 +1467,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             return "MANUAL";
         }
 
-        if (tokens.contains(" 6rychl ") || tokens.contains(" 6ti ")) {
+        if (tokens.contains(" 6rychl ") || tokens.contains(" 6ti ") || tokens.contains(" mech ")) {
             return "MANUAL";
         }
 
@@ -1870,6 +1881,10 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             return "COUPE";
         }
 
+        if (containsAny(titleSource, " accord coupe ", " accord coupé ", " accord coupĂ© ")) {
+            return "COUPE";
+        }
+
         if (containsAny(titleSource, " 500c ", " fiat 500c ")) {
             return "CABRIO";
         }
@@ -2072,7 +2087,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             return "COUPE";
         }
 
-        if (containsAny(titleSource, " ix20 ", " ix 20 ", " orlando ", " hhr ", " freemont ")) {
+        if (containsAny(titleSource, " ix20 ", " ix 20 ", " staria ", " n-box ", " n box ", " orlando ", " hhr ", " freemont ")) {
             return "MINIVAN";
         }
 
@@ -3583,6 +3598,77 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         return value.replace('\u00A0', ' ')
                 .replaceAll("\\s+", " ")
                 .trim();
+    }
+
+    private String repairMojibake(String value) {
+        if (value == null || value.isBlank() || mojibakeScore(value) == 0) {
+            return value;
+        }
+
+        try {
+            byte[] bytes = encodeMojibakeBytes(value);
+            String repaired = StandardCharsets.UTF_8
+                    .newDecoder()
+                    .onMalformedInput(CodingErrorAction.REPORT)
+                    .onUnmappableCharacter(CodingErrorAction.REPORT)
+                    .decode(ByteBuffer.wrap(bytes))
+                    .toString();
+            return mojibakeScore(repaired) < mojibakeScore(value) ? normalizeText(repaired) : value;
+        } catch (Exception e) {
+            return value;
+        }
+    }
+
+    private byte[] encodeMojibakeBytes(String value) throws Exception {
+        ByteArrayOutputStream out = new ByteArrayOutputStream(value.length());
+        Charset windows1250 = Charset.forName("windows-1250");
+
+        for (int offset = 0; offset < value.length(); ) {
+            int codePoint = value.codePointAt(offset);
+            String ch = new String(Character.toChars(codePoint));
+
+            if (codePoint <= 0xFF) {
+                out.write(codePoint);
+            } else {
+                try {
+                    ByteBuffer encoded = windows1250
+                            .newEncoder()
+                            .onMalformedInput(CodingErrorAction.REPORT)
+                            .onUnmappableCharacter(CodingErrorAction.REPORT)
+                            .encode(CharBuffer.wrap(ch));
+                    while (encoded.hasRemaining()) {
+                        out.write(encoded.get() & 0xFF);
+                    }
+                } catch (Exception e) {
+                    out.write(ch.getBytes(StandardCharsets.UTF_8));
+                }
+            }
+
+            offset += Character.charCount(codePoint);
+        }
+
+        return out.toByteArray();
+    }
+
+    private int mojibakeScore(String value) {
+        if (value == null || value.isBlank()) {
+            return 0;
+        }
+
+        int score = 0;
+        for (int offset = 0; offset < value.length(); ) {
+            int codePoint = value.codePointAt(offset);
+            if (codePoint == '\u0102'
+                    || codePoint == '\u00C4'
+                    || codePoint == '\u0139'
+                    || codePoint == '\u00C2'
+                    || codePoint == '\u00E2'
+                    || codePoint == '\uFFFD') {
+                score++;
+            }
+            offset += Character.charCount(codePoint);
+        }
+        return score;
     }
 
     private String shortenForCheck(String value, int maxLen) {

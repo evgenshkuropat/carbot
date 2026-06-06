@@ -10,6 +10,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import java.io.ByteArrayOutputStream;
+import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
+import java.nio.charset.Charset;
+import java.nio.charset.CodingErrorAction;
+import java.nio.charset.StandardCharsets;
 import java.text.Normalizer;
 import java.time.Year;
 import java.util.ArrayList;
@@ -177,12 +183,16 @@ public class SbazarParser implements CarSourceParser {
             return ParseResult.skip("cheap_low_quality_listing", title);
         }
 
+        String location = extractLocation(doc);
+        String outputTitle = repairMojibake(title);
+        String outputLocation = repairMojibake(location);
+
         CarDto car = new CarDto();
         car.setSource(getSourceName());
-        car.setTitle(title);
+        car.setTitle(outputTitle);
         car.setPrice(formatPrice(priceValue));
         car.setPriceValue(priceValue);
-        car.setLocation(extractLocation(doc));
+        car.setLocation(outputLocation);
         car.setUrl(url);
         car.setImageUrl(extractImageUrl(doc));
         String identityText = asciiSearchText(title + " " + url);
@@ -394,7 +404,10 @@ public class SbazarParser implements CarSourceParser {
                 continue;
             }
 
-            if (year >= 1980 && year < currentYear && !isBadYearContext(searchable, matcher.start(), matcher.end())) {
+            if (year >= 1980
+                    && year < currentYear
+                    && (isExplicitVehicleYearContext(searchable, matcher.start(), matcher.end())
+                    || !isBadYearContext(searchable, matcher.start(), matcher.end()))) {
                 validYears.add(year);
             }
         }
@@ -430,6 +443,11 @@ public class SbazarParser implements CarSourceParser {
                 "zaruka", "zaruky", "garance", "stk", "emise",
                 "servis do", "platne do", "platnost", "do roku",
                 "vlozen", "vlozeno", "pridano", "aktualiz", "inzerat");
+    }
+
+    private boolean isExplicitVehicleYearContext(String searchable, int start, int end) {
+        String context = searchable.substring(Math.max(0, start - 16), Math.min(searchable.length(), end + 16));
+        return containsAny(context, "r.v.", "r v", "rok", "rv.", "rv ");
     }
 
     private Integer extractMileageValue(Matcher matcher, boolean thousands) {
@@ -607,7 +625,7 @@ public class SbazarParser implements CarSourceParser {
                 "fiesta 1.4", "fiesta 1,4", "golf 1.6", "golf 1,6",
                 "golf 1.4", "golf 1,4", "octavia 1.6", "octavia 1,6",
                 "clio 1.2", "clio 1,2", "fiesta 1.25", "fiesta 1,25", "meriva 1.4", "meriva 1,4",
-                "a6 c4 1.8", "a6 c4 1,8", "mazda 6 2.0", "mazda 6 2,0",
+                "a6 c4 1.8", "a6 c4 1,8", "mazda 6 2.0", "mazda 6 2,0", "mazda cx-5 2.0", "mazda cx-5 2,0", "cx-5 2.0", "cx-5 2,0",
                 "focus st 2.0", "focus st 2,0", "glc 43", "cla 45",
                 "octavia 1.8 t", "octavia 1,8 t", "cruze 1.6", "cruze 1,6")) {
             return "PETROL";
@@ -770,7 +788,7 @@ public class SbazarParser implements CarSourceParser {
         if (containsAny(searchable, "seat leon", " leon ")) {
             return "HATCHBACK";
         }
-        if (containsAny(searchable, "koleos", "freelander", "bigster", "fiat 500x", "500x")) {
+        if (containsAny(searchable, "mokka", "koleos", "freelander", "bigster", "fiat 500x", "500x")) {
             return "SUV";
         }
         if (containsAny(searchable, "dodge caliber", "caliber")) {
@@ -779,14 +797,14 @@ public class SbazarParser implements CarSourceParser {
         if (containsAny(searchable, "xk8", "cl 500", "cl500")) {
             return "COUPE";
         }
-        if (containsAny(searchable, "cabrio", "kabriolet", "cabriolet", "convertible", "eos", "roadster", "slk", " sl ", "308 cc", "peugeot 308 cc", "500c")) {
+        if (containsAny(searchable, "cabrio", "kabriolet", "cabriolet", "convertible", "eos", "roadster", "slk", " sl ", "207 cc", "peugeot 207 cc", "308 cc", "peugeot 308 cc", "500c")) {
             return "CABRIO";
         }
         if (containsAny(searchable, "octavia scout", "i30 cw", "logan mcv", "proceed", "pro ceed", "combi", "kombi", "variant", "turnier", "shooting brake", "touring", " avant ", "allroad", " sw ", "wagon", "estate", "outback", "v50", "v60", "v70", "v90")
                 || searchable.matches(".*\\ba[46]\\b.*\\bavant\\b.*")) {
             return "WAGON";
         }
-        if (containsAny(searchable, "citigo", "rapid", "favorit", "sandero", " rio ", "swift", "starlet", "auris", "mazda 3", "v40", "tridy a", "a 160", "a160", "a 45", "a45", "c3", "fiesta", "a1", "a3", "panda", "bravo", "matiz", "fortwo", "fourtwo", "forfour", "cupra born", "jazz", "kia k4", " k4 ", " hb ",
+        if (containsAny(searchable, "agila", "citigo", "rapid", "favorit", "sandero", " rio ", "swift", "starlet", "auris", "mazda 3", "v40", "tridy a", "a 160", "a160", "a 45", "a45", "c3", "fiesta", "a1", "a3", "panda", "bravo", "matiz", "fortwo", "fourtwo", "forfour", "cupra born", "jazz", "kia k4", " k4 ", " hb ",
                 "id.3", " id 3 ", " id3 ",
                 "peugeot 206", " 206 ", "fabia", "fabie", "bmw 116i", " 116i ", "bmw f20", " f20 ", "escort", "colt")) {
             return "HATCHBACK";
@@ -930,6 +948,77 @@ public class SbazarParser implements CarSourceParser {
         }
 
         return text.replace('\u00a0', ' ').replaceAll("\\s+", " ").trim();
+    }
+
+    private String repairMojibake(String value) {
+        if (value == null || value.isBlank() || mojibakeScore(value) == 0) {
+            return value;
+        }
+
+        try {
+            byte[] bytes = encodeMojibakeBytes(value);
+            String repaired = StandardCharsets.UTF_8
+                    .newDecoder()
+                    .onMalformedInput(CodingErrorAction.REPORT)
+                    .onUnmappableCharacter(CodingErrorAction.REPORT)
+                    .decode(ByteBuffer.wrap(bytes))
+                    .toString();
+            return mojibakeScore(repaired) < mojibakeScore(value) ? normalizeText(repaired) : value;
+        } catch (Exception e) {
+            return value;
+        }
+    }
+
+    private byte[] encodeMojibakeBytes(String value) throws Exception {
+        ByteArrayOutputStream out = new ByteArrayOutputStream(value.length());
+        Charset windows1250 = Charset.forName("windows-1250");
+
+        for (int offset = 0; offset < value.length(); ) {
+            int codePoint = value.codePointAt(offset);
+            String ch = new String(Character.toChars(codePoint));
+
+            if (codePoint <= 0xFF) {
+                out.write(codePoint);
+            } else {
+                try {
+                    ByteBuffer encoded = windows1250
+                            .newEncoder()
+                            .onMalformedInput(CodingErrorAction.REPORT)
+                            .onUnmappableCharacter(CodingErrorAction.REPORT)
+                            .encode(CharBuffer.wrap(ch));
+                    while (encoded.hasRemaining()) {
+                        out.write(encoded.get() & 0xFF);
+                    }
+                } catch (Exception e) {
+                    out.write(ch.getBytes(StandardCharsets.UTF_8));
+                }
+            }
+
+            offset += Character.charCount(codePoint);
+        }
+
+        return out.toByteArray();
+    }
+
+    private int mojibakeScore(String value) {
+        if (value == null || value.isBlank()) {
+            return 0;
+        }
+
+        int score = 0;
+        for (int offset = 0; offset < value.length(); ) {
+            int codePoint = value.codePointAt(offset);
+            if (codePoint == '\u0102'
+                    || codePoint == '\u00C4'
+                    || codePoint == '\u0139'
+                    || codePoint == '\u00C2'
+                    || codePoint == '\u00E2'
+                    || codePoint == '\uFFFD') {
+                score++;
+            }
+            offset += Character.charCount(codePoint);
+        }
+        return score;
     }
 
     private Integer parseInteger(String raw) {

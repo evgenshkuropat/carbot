@@ -126,6 +126,8 @@ class BazosParserTest {
         assertThat(extractCarType("Fiat 500c 1.2 Lounge 2015", "", "")).isEqualTo("CABRIO");
         assertThat(extractCarType("Fiat Bravo 1,6 JTD, 2008", "", "")).isEqualTo("HATCHBACK");
         assertThat(extractCarType("HONDA ACCORD TOURER VII EXECUTIVE 2.0 i-VTEC", "", "")).isEqualTo("WAGON");
+        assertThat(extractCarType("Honda Accord coupe", "", "")).isEqualTo("COUPE");
+        assertThat(extractCarType("Honda N-Box Custom 3/2016 136t km JDM", "", "")).isEqualTo("MINIVAN");
         assertThat(extractCarType("Ford Focus Tunier 2014", "", "")).isEqualTo("WAGON");
         assertThat(extractCarType("FUSION FACELIFT,1.4 16V 59KW,ROK 2008", "", "")).isEqualTo("HATCHBACK");
         assertThat(extractCarType("HONDA CIVIC TOURER 1.6i DTEC 2016 KAMERA", "", "")).isEqualTo("WAGON");
@@ -152,6 +154,7 @@ class BazosParserTest {
         assertThat(extractCarType("Toyota Starlet", "", "")).isEqualTo("HATCHBACK");
         assertThat(extractCarType("Hyundai SantaFe 4 x 4", "", "")).isEqualTo("SUV");
         assertThat(extractCarType("Hyundai IX 20", "", "")).isEqualTo("MINIVAN");
+        assertThat(extractCarType("Hyundai Staria 2,2 CRD 149 Kw", "", "")).isEqualTo("MINIVAN");
         assertThat(extractCarType("Toyota Aygo 1.0VVT-i 50kw 4/2013", "", "")).isEqualTo("HATCHBACK");
         assertThat(extractCarType("Prodám Toyota Mirai Executive", "", "")).isEqualTo("SEDAN");
         assertThat(extractCarType("Škoda Yeti, 2.0 TDi 4X4 Outdoor Nové Rozvody", "", "")).isEqualTo("SUV");
@@ -194,6 +197,7 @@ class BazosParserTest {
         assertThat(extractTransmission("Honda CR-V 2.0i-MMD Elegance AWD")).isEqualTo("AUTOMATIC");
         assertThat(looksAutomaticHybridTitle("Ford Kuga 2,5PHEV 165KW TitaniumX", "PLUGIN_HYBRID")).isTrue();
         assertThat(looksAutomaticHybridTitle("CR-V r. 2022 2.0 hybrid 4/4", "HYBRID")).isTrue();
+        assertThat(extractTransmission("Ford Kuga ST Line 1,5 110 kW benzin 6-ti st.mech.")).isEqualTo("MANUAL");
         assertThat(extractTransmission("Citroen Berlingo 1.5 BlueHDi 130S&S MAN 6 SHINE")).isEqualTo("MANUAL");
         assertThat(extractTransmission("Citroen Berlingo 1.6 BlueHDI XTR 100 MAN")).isEqualTo("MANUAL");
         assertThat(looksLikelyFalseAutomatic("PEUGEOT 207 1.4 i BENZIN 70 kW NOVE ROZVODY", "AUTOMATIC")).isTrue();
@@ -336,6 +340,19 @@ class BazosParserTest {
                 .isEqualTo(2016);
     }
 
+    @Test
+    void repairsBazosMojibakeBeforeOutput() throws Exception {
+        assertThat(repairMojibake("Ford Kuga 2,0TDCi 140KW 4x4 Nav,Temp,Winterpaket,v\u00C4\u0164. DPH"))
+                .isEqualTo("Ford Kuga 2,0TDCi 140KW 4x4 Nav,Temp,Winterpaket,vč. DPH");
+        assertThat(repairMojibake("Plze\u0139\u0088-jih")).isEqualTo("Plzeň-jih");
+        assertThat(repairMojibake("Honda Jazz 1.2 i 66Kw Nov\u0102\u02C7 STK 65 tkm"))
+                .isEqualTo("Honda Jazz 1.2 i 66Kw Nová STK 65 tkm");
+        assertThat(repairMojibake("Hyundai i20 1.0 T-GDI 74kW 63tkm - z\u0102\u02C7ruka Autodraft"))
+                .isEqualTo("Hyundai i20 1.0 T-GDI 74kW 63tkm - záruka Autodraft");
+        assertThat(repairMojibake("Hyundai i30 kombi 1.5T-GDI 117kw|N-LINE|2022|114tkm|Z\u0102\u0081RUKA"))
+                .isEqualTo("Hyundai i30 kombi 1.5T-GDI 117kw|N-LINE|2022|114tkm|ZÁRUKA");
+    }
+
     private String extractFuelType(String text) throws Exception {
         Method method = BazosParser.class.getDeclaredMethod("extractFuelType", String.class);
         method.setAccessible(true);
@@ -394,6 +411,12 @@ class BazosParserTest {
         Method method = BazosParser.class.getDeclaredMethod("extractYear", String.class, String.class);
         method.setAccessible(true);
         return (Integer) method.invoke(parser, title, text);
+    }
+
+    private String repairMojibake(String value) throws Exception {
+        Method method = BazosParser.class.getDeclaredMethod("repairMojibake", String.class);
+        method.setAccessible(true);
+        return (String) method.invoke(parser, value);
     }
 
     private boolean looksSuspiciousListing(String title, String text) throws Exception {
