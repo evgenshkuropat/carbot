@@ -9,6 +9,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import java.io.ByteArrayOutputStream;
+import java.nio.charset.Charset;
+import java.nio.charset.CodingErrorAction;
+import java.nio.charset.StandardCharsets;
 import java.time.Year;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
@@ -159,13 +163,15 @@ public class TipCarsParser implements CarSourceParser {
             );
 
             String carType = extractCarType(title, "", url);
+            String outputTitle = repairMojibake(title);
+            String outputLocation = repairMojibake(location);
 
             CarDto car = new CarDto();
             car.setSource("TIPCARS");
-            car.setTitle(title);
+            car.setTitle(outputTitle);
             car.setPrice(formatPrice(priceValue));
             car.setPriceValue(priceValue);
-            car.setLocation(location);
+            car.setLocation(outputLocation);
             car.setUrl(url);
             car.setImageUrl(imageUrl);
             car.setBrand(brand);
@@ -176,9 +182,9 @@ public class TipCarsParser implements CarSourceParser {
             car.setCarType(carType);
 
             log.info("TIPCARS CAR title='{}' price={} location={} year={} mileage={} fuelType={} transmission={} carType={} brand={} url={}",
-                    safe(title),
+                    safe(outputTitle),
                     priceValue,
-                    safe(location),
+                    safe(outputLocation),
                     year,
                     mileage,
                     safe(fuelType),
@@ -765,7 +771,7 @@ public class TipCarsParser implements CarSourceParser {
         if (containsAny(titleSource,
                 " q3 ", " q5 ", " q7 ", " q8 ",
                 " touareg ", " qashqai ", " pathfinder ", " kona ", " captur ", " puma ", " crossland ", " range rover ", " glc ",
-                " gla ", " glb ", " gle ", " gls ", " yaris cross ", " stonic ", " omoda 5 ", " actyon ", " elroq ")) {
+                " gla ", " glb ", " gle ", " gls ", " yaris cross ", " stonic ", " omoda 5 ", " actyon ", " elroq ", " 2008 ")) {
             return "SUV";
         }
 
@@ -1116,6 +1122,64 @@ public class TipCarsParser implements CarSourceParser {
         return value.replace('\u00A0', ' ')
                 .replaceAll("\\s+", " ")
                 .trim();
+    }
+
+    private String repairMojibake(String value) {
+        if (value == null || value.isBlank() || mojibakeScore(value) == 0) {
+            return value;
+        }
+
+        try {
+            byte[] bytes = encodeMojibakeBytes(value);
+            String repaired = StandardCharsets.UTF_8
+                    .newDecoder()
+                    .onMalformedInput(CodingErrorAction.REPORT)
+                    .onUnmappableCharacter(CodingErrorAction.REPORT)
+                    .decode(java.nio.ByteBuffer.wrap(bytes))
+                    .toString();
+
+            return mojibakeScore(repaired) < mojibakeScore(value) ? normalizeText(repaired) : value;
+        } catch (Exception e) {
+            return value;
+        }
+    }
+
+    private byte[] encodeMojibakeBytes(String value) throws Exception {
+        ByteArrayOutputStream out = new ByteArrayOutputStream(value.length());
+        Charset windows1250 = Charset.forName("windows-1250");
+
+        for (int i = 0; i < value.length(); i++) {
+            char ch = value.charAt(i);
+            if (ch <= 0xFF) {
+                out.write((byte) ch);
+                continue;
+            }
+
+            byte[] bytes = windows1250
+                    .newEncoder()
+                    .onMalformedInput(CodingErrorAction.REPORT)
+                    .onUnmappableCharacter(CodingErrorAction.REPORT)
+                    .encode(java.nio.CharBuffer.wrap(String.valueOf(ch)))
+                    .array();
+            out.write(bytes[0]);
+        }
+
+        return out.toByteArray();
+    }
+
+    private int mojibakeScore(String value) {
+        if (value == null || value.isBlank()) {
+            return 0;
+        }
+
+        int score = 0;
+        for (int i = 0; i < value.length(); i++) {
+            char ch = value.charAt(i);
+            if (ch == 'Ă' || ch == 'Ä' || ch == 'Ĺ' || ch == 'Â' || ch == 'â') {
+                score++;
+            }
+        }
+        return score;
     }
 
     private String capitalizeWords(String value) {

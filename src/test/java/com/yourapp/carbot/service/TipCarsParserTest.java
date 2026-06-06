@@ -101,6 +101,12 @@ class TipCarsParserTest {
                 "",
                 "https://www.tipcars.com/citroen-c4-picasso/hatchback/benzin/citroen-c4-picasso.html"))
                 .isEqualTo("MINIVAN");
+
+        assertThat(extractCarType(
+                "Peugeot 2008 1.2 Puretech",
+                "",
+                "https://www.tipcars.com/peugeot-2008/hatchback/benzin/peugeot-2008-1-2-puretech.html"))
+                .isEqualTo("SUV");
     }
 
     @Test
@@ -157,6 +163,18 @@ class TipCarsParserTest {
                 .isTrue();
     }
 
+    @Test
+    void repairsTipCarsMojibakeBeforeOutput() throws Exception {
+        assertThat(repairMojibake("Ĺ koda Superb 2,0 TDi Ambition"))
+                .isEqualTo("Škoda Superb 2,0 TDi Ambition");
+        assertThat(repairMojibake("Mazda CX-7 2.2i DISI TURBO AWD, ZĂVÄšS"))
+                .isEqualTo("Mazda CX-7 2.2i DISI TURBO AWD, ZÁVĚS");
+        assertThat(repairMojibake("Ford Focus 1.6i, 2.maj,ÄŚR"))
+                .isEqualTo("Ford Focus 1.6i, 2.maj,ČR");
+        assertThat(repairMojibake("Hyundai Tucson NovĂ˝ Comfort 1,6 T-GDi"))
+                .isEqualTo("Hyundai Tucson Nový Comfort 1,6 T-GDi");
+    }
+
     private String extractCarType(String title, String text, String url) throws Exception {
         Method method = TipCarsParser.class.getDeclaredMethod("extractCarType", String.class, String.class, String.class);
         method.setAccessible(true);
@@ -179,5 +197,11 @@ class TipCarsParserTest {
         Method method = TipCarsParser.class.getDeclaredMethod("buildPageUrl", int.class);
         method.setAccessible(true);
         return (String) method.invoke(parser, page);
+    }
+
+    private String repairMojibake(String value) throws Exception {
+        Method method = TipCarsParser.class.getDeclaredMethod("repairMojibake", String.class);
+        method.setAccessible(true);
+        return (String) method.invoke(parser, value);
     }
 }

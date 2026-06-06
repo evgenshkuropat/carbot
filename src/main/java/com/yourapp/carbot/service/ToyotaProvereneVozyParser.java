@@ -10,9 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import java.nio.ByteBuffer;
-import java.nio.CharBuffer;
-import java.nio.charset.CharacterCodingException;
+import java.io.ByteArrayOutputStream;
 import java.nio.charset.Charset;
 import java.nio.charset.CodingErrorAction;
 import java.nio.charset.StandardCharsets;
@@ -920,22 +918,41 @@ public class ToyotaProvereneVozyParser implements CarSourceParser {
         }
 
         try {
-            ByteBuffer bytes = Charset.forName("windows-1250")
-                    .newEncoder()
-                    .onMalformedInput(CodingErrorAction.REPORT)
-                    .onUnmappableCharacter(CodingErrorAction.REPORT)
-                    .encode(CharBuffer.wrap(value));
+            byte[] bytes = encodeMojibakeBytes(value);
             String repaired = StandardCharsets.UTF_8
                     .newDecoder()
                     .onMalformedInput(CodingErrorAction.REPORT)
                     .onUnmappableCharacter(CodingErrorAction.REPORT)
-                    .decode(bytes)
+                    .decode(java.nio.ByteBuffer.wrap(bytes))
                     .toString();
 
             return mojibakeScore(repaired) < mojibakeScore(value) ? normalizeText(repaired) : value;
-        } catch (CharacterCodingException | IllegalArgumentException e) {
+        } catch (Exception e) {
             return value;
         }
+    }
+
+    private byte[] encodeMojibakeBytes(String value) throws Exception {
+        ByteArrayOutputStream out = new ByteArrayOutputStream(value.length());
+        Charset windows1250 = Charset.forName("windows-1250");
+
+        for (int i = 0; i < value.length(); i++) {
+            char ch = value.charAt(i);
+            if (ch <= 0xFF) {
+                out.write((byte) ch);
+                continue;
+            }
+
+            byte[] bytes = windows1250
+                    .newEncoder()
+                    .onMalformedInput(CodingErrorAction.REPORT)
+                    .onUnmappableCharacter(CodingErrorAction.REPORT)
+                    .encode(java.nio.CharBuffer.wrap(String.valueOf(ch)))
+                    .array();
+            out.write(bytes[0]);
+        }
+
+        return out.toByteArray();
     }
 
     private int mojibakeScore(String value) {

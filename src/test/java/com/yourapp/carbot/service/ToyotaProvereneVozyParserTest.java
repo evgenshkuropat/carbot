@@ -58,6 +58,8 @@ class ToyotaProvereneVozyParserTest {
                 .isEqualTo("Toyota Yaris 1.5 Hybrid - K odběru IHNED");
         assertThat(repairMojibake("CitroĂ«n C4 1.2PureTech"))
                 .isEqualTo("Citroën C4 1.2PureTech");
+        assertThat(repairMojibake("Mazda CX-7 AWD, ZĂVÄšS"))
+                .isEqualTo("Mazda CX-7 AWD, ZÁVĚS");
     }
 
     private String extractCarType(String title, String text) throws Exception {
