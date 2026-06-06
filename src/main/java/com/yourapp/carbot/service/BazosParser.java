@@ -1592,6 +1592,10 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         if (containsAny(compactTitleSource, " seat ")) return "SEAT";
         if (containsAny(compactTitleSource, " suzuki ")) return "SUZUKI";
 
+        if (containsAny(titleSource, " focus ", " mondeo ", " fiesta ", " kuga ", " galaxy ", " ranger ", " mustang ", " tourneo ")) {
+            return "FORD";
+        }
+
         if (containsAny(source,
                 " alfa romeo ", " alfa ", " alfu ", " romeo ",
                 " stelvio ", " giulia ", " giulietta ", " mito ", " alfetta ")) return "ALFA_ROMEO";
@@ -2198,7 +2202,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " c-max ", " c max ", " grand c-max ", " grand c max ",
                 " tourneo custom ", " tourneo courier ", " tourneo connect ",
                 " talento kombi ", " talento 8mist ", " talento 8 mist ", " talento 9mist ", " talento 9 mist ",
-                " doblo ", " freemont ", " multipla ", " 500l ", " fiat 500l ", " combo ", " vaneo ",
+                " doblo ", " qubo ", " freemont ", " multipla ", " 500l ", " fiat 500l ", " combo ", " vaneo ",
                 " picasso ", " grand c4 picasso ", " c4 picasso ",
                 " w246 ", " b 180 ", " b180 ", " b 200 ", " b200 ",
                 " mazda 5 ",
@@ -2713,6 +2717,16 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 && containsAny(repairedTitleSource,
                 " berlingo ", " partner ", " dokker ", " doblo ", " caddy ", " kangoo ")) {
             return true;
+        }
+
+        if (containsAny(repairedTitleSource, " cargo ", " l1h1 ", " l2h1 ")
+                && containsAny(repairedTitleSource,
+                " berlingo ", " partner ", " dokker ", " doblo ", " caddy ", " kangoo ", " fiorino ")) {
+            return true;
+        }
+
+        if (containsAny(titleSource, " qubo ")) {
+            return false;
         }
 
         if (looksLikePassengerCarModel(title)) {

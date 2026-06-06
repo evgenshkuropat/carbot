@@ -25,6 +25,7 @@ class BazosParserTest {
         assertThat(extractBrand("C3, 1,4i, 54 kw", "")).isEqualTo("CITROEN");
         assertThat(extractBrand("Abarth 500 Turbo Cabrio 107 kW 2018 CZ puvod", "")).isEqualTo("ABARTH");
         assertThat(extractBrand("Prodam Fiat Multipla 1.6/16V CNG/2007/6mist", "")).isEqualTo("FIAT");
+        assertThat(extractBrand("Focus combi", "skoda octavia")).isEqualTo("FORD");
     }
 
     @Test
@@ -132,6 +133,7 @@ class BazosParserTest {
         assertThat(extractCarType("Fiat 500c 1.2 Lounge 2015", "", "")).isEqualTo("CABRIO");
         assertThat(extractCarType("Fiat 500X - 1.0 FireFly - edice MIRROR", "", "")).isEqualTo("SUV");
         assertThat(extractCarType("Prodam Fiat Multipla 1.6/16V CNG/2007/6mist", "", "")).isEqualTo("MINIVAN");
+        assertThat(extractCarType("Fiat FIORINO QUBO 1.4 - DPH - pouze 154000 km", "", "")).isEqualTo("MINIVAN");
         assertThat(extractCarType("Fiat Bravo 1,6 JTD, 2008", "", "")).isEqualTo("HATCHBACK");
         assertThat(extractCarType("Citroen DS4 Exclusive", "", "")).isEqualTo("HATCHBACK");
         assertThat(extractCarType("DACIA STEPWAY 1,0 i 66 KW TOP STAV 2017", "", "")).isEqualTo("HATCHBACK");
@@ -318,6 +320,18 @@ class BazosParserTest {
                 "",
                 "https://auto.bazos.cz/inzerat/218863810/nakladni-berlingo.php"))
                 .isTrue();
+
+        assertThat(looksCommercialVehicle(
+                "Fiat Doblo Cargo 1,4 70kW-L1H1-2013 2. maj. CR KLIMA-DPH",
+                "",
+                "https://auto.bazos.cz/inzerat/219715582/fiat-doblo-cargo-14-70kw-l1h1-2013-2-maj-cr-klima-dph.php"))
+                .isTrue();
+
+        assertThat(looksCommercialVehicle(
+                "Fiat FIORINO QUBO 1.4 - DPH - pouze 154000 km",
+                "",
+                "https://auto.bazos.cz/inzerat/219170188/fiat-fiorino-qubo-14.php"))
+                .isFalse();
     }
 
     @Test

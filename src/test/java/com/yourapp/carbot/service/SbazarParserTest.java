@@ -191,6 +191,9 @@ class SbazarParserTest {
         assertThat(resolveCarType("alfa romeo stelvio 2.2 jtdm competizione q4", "")).isEqualTo("SUV");
         assertThat(resolveCarType("suzuki sx4 s-cross 1,4 boosterjet premium 2x4", "")).isEqualTo("SUV");
         assertThat(resolveCarType("peugeot 308 2,0 bhdi 110kw", "")).isEqualTo("HATCHBACK");
+        assertThat(resolveCarType("peugeot 308 1,6 hdi automat", "coupe cabrio")).isEqualTo("HATCHBACK");
+        assertThat(resolveCarType("opel insignia 2.0 aut kamera vyhrev serviska", "")).isEqualTo("SEDAN");
+        assertThat(resolveCarType("opel insignia 2.0cdti manual vyhrev tazne", "")).isEqualTo("SEDAN");
         assertThat(resolveCarType("skoda octavia scout cz dph", "")).isEqualTo("WAGON");
         assertThat(resolveCarType("bmw rada 2 225xe iperformance f45 165kw", "")).isEqualTo("MINIVAN");
         assertThat(resolveCarType("toyota sienna awd 2017 7 mist 8at tazne", "")).isEqualTo("MINIVAN");
@@ -218,6 +221,7 @@ class SbazarParserTest {
     void skipsNonCarSbazarListingsFromFreshLogs() throws Exception {
         assertThat(looksNonCarListing("padlo a rucni pumpicka")).isTrue();
         assertThat(looksNonCarListing("pc pocitac")).isTrue();
+        assertThat(looksNonCarListing("osobni vuz https www sbazar cz inzerat 231248942 osobni vuz")).isTrue();
         assertThat(looksNonCarListing("bmw i3 125 kw 120 ah tep.cerpadlo")).isFalse();
     }
 
@@ -225,6 +229,10 @@ class SbazarParserTest {
     void ignoresPageMetadataYearsAroundListingDates() throws Exception {
         assertThat(extractYear("mitsubishi outlander 2,2 di-d 110kw 4x4 -tk do6/27 vlozeno 2025")).isNull();
         assertThat(extractYear("peugeot 207 cc 1.6i r.v.2011 serviska stk 09/27 vlozeno 2025")).isEqualTo(2011);
+        assertThat(resolveYear("opel insignia 2.0 aut kamera vyhrev serviska", "opel insignia vlozeno 2025"))
+                .isNull();
+        assertThat(resolveYear("opel insignia 2.0 aut kamera vyhrev serviska", "opel insignia rok 2017"))
+                .isEqualTo(2017);
     }
 
     @Test
@@ -289,6 +297,12 @@ class SbazarParserTest {
         Method method = SbazarParser.class.getDeclaredMethod("extractYear", String.class);
         method.setAccessible(true);
         return (Integer) method.invoke(parser, searchable);
+    }
+
+    private Integer resolveYear(String identityText, String scopedText) throws Exception {
+        Method method = SbazarParser.class.getDeclaredMethod("resolveYear", String.class, String.class);
+        method.setAccessible(true);
+        return (Integer) method.invoke(parser, identityText, scopedText);
     }
 
     private Integer extractMileage(String searchable) throws Exception {

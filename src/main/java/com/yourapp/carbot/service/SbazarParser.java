@@ -199,7 +199,7 @@ public class SbazarParser implements CarSourceParser {
         String scopedText = asciiSearchText(title + " " + listingText + " " + url);
 
         car.setBrand(firstDetected(detectBrand(identityText), detectBrand(scopedText)));
-        car.setYear(firstInteger(extractYear(identityText), extractYear(scopedText)));
+        car.setYear(resolveYear(identityText, scopedText));
         car.setMileage(firstInteger(extractMileage(identityText), extractMileage(scopedText)));
         car.setFuelType(resolveFuelType(identityText, scopedText));
         car.setTransmission(resolveTransmission(identityText, scopedText, car.getFuelType()));
@@ -421,6 +421,35 @@ public class SbazarParser implements CarSourceParser {
                 .filter(y -> y < currentYear)
                 .max(Integer::compareTo)
                 .orElse(validYears.get(0));
+    }
+
+    private Integer resolveYear(String identityText, String scopedText) {
+        Integer identityYear = extractYear(identityText);
+        if (identityYear != null) {
+            return identityYear;
+        }
+
+        return extractExplicitVehicleYear(scopedText);
+    }
+
+    private Integer extractExplicitVehicleYear(String searchable) {
+        Matcher matcher = YEAR_PATTERN.matcher(searchable);
+        List<Integer> validYears = new ArrayList<>();
+        int currentYear = Year.now().getValue();
+
+        while (matcher.find()) {
+            int year = Integer.parseInt(matcher.group(1));
+            if (year >= 1980
+                    && year < currentYear
+                    && isExplicitVehicleYearContext(searchable, matcher.start(), matcher.end())
+                    && !isBadYearContext(searchable, matcher.start(), matcher.end())) {
+                validYears.add(year);
+            }
+        }
+
+        return validYears.stream()
+                .max(Integer::compareTo)
+                .orElse(null);
     }
 
     private Integer extractMileage(String searchable) {
@@ -773,6 +802,12 @@ public class SbazarParser implements CarSourceParser {
         if (containsAny(searchable, "volkswagen cc", "vw cc", "passat cc")) {
             return "SEDAN";
         }
+        if (containsAny(searchable, "peugeot 308", " 308 ")) {
+            return "HATCHBACK";
+        }
+        if (containsAny(searchable, "insignia")) {
+            return "SEDAN";
+        }
         if (containsAny(searchable, "touran", "sharan", "alhambra", "altea", "s-max", "c-max", "b-max", "galaxy", "zafira", "scenic", "picasso", "roomster", "berlingo", "rifter", "caddy", "citan", "vito", "viano", "v 250", "v250", "w447", "tridy v", "tridy r", "proace verso", "proace city verso", "multivan", "volkswagen t5", "volkswagen t6", "vw t5", "vw t6", "jumpy", "tourneo custom", "tourneo connect", "u-tour", "u tour", "225xe", "active tourer", " f45 ", "kangoo", "dokker", "lodgy", "jogger", "b180", "b 180", "b200", "b 200", "peugeot 807", " 807 ", "mazda 5", "grandis", "voyager", "pacifica", "grand caravan", "sienna", "ix20", "meriva", "partner tepee", "peugeot partner")) {
             return "MINIVAN";
         }
@@ -863,6 +898,14 @@ public class SbazarParser implements CarSourceParser {
     }
 
     private boolean looksNonCarListing(String searchable) {
+        if ("osobni vuz".equals(searchable)
+                || "osobni auto".equals(searchable)
+                || "auto".equals(searchable)
+                || searchable.startsWith("osobni vuz ")
+                || searchable.startsWith("osobni auto ")) {
+            return true;
+        }
+
         return containsAny(searchable,
                 "nahradni dily", "nahradni dil", "dily na", "rozprodavam", "bouracka na dily",
                 "nabourany", "nabourane", "havarovany", "havarovane", "palubni deska", "airbag",
