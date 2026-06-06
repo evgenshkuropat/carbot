@@ -80,6 +80,10 @@ class SbazarParserTest {
         assertThat(resolveFuelType("dacia duster 1,6", "")).isEqualTo("PETROL");
         assertThat(resolveFuelType("dongfeng u-tour 1,5 t 130 kw exclusivefr 7mist", "")).isEqualTo("PETROL");
         assertThat(resolveFuelType("hyundai i30 1,5dpi style comfort plus", "")).isEqualTo("PETROL");
+        assertThat(resolveFuelType("audi a4 avant 2.0td aut vyhrev senzory", "")).isEqualTo("DIESEL");
+        assertThat(resolveTransmission("audi a4 avant 2.0td aut vyhrev senzory", "", "DIESEL")).isEqualTo("AUTOMATIC");
+        assertThat(resolveFuelType("ssangyong korando 2.2td 4x4 manual", "")).isEqualTo("DIESEL");
+        assertThat(resolveFuelType("skoda octavia iv 2.0 tdi dsg 4x4 150 ps", "")).isEqualTo("DIESEL");
         assertThat(resolveTransmission("honda crv 2020 hybrid benzin 72tis.km", "", "HYBRID")).isEqualTo("AUTOMATIC");
         assertThat(resolveTransmission("seat leon, 1,4 tsi e-hybrid fr line led", "", "HYBRID")).isEqualTo("AUTOMATIC");
         assertThat(resolveTransmission("tesla model 3 long range dual motor soh 92", "", "ELECTRIC")).isEqualTo("AUTOMATIC");
@@ -103,6 +107,8 @@ class SbazarParserTest {
         assertThat(detectBrand("ssangyong tivoli xlv 1.6i 94kw lpg")).isEqualTo("SSANGYONG");
         assertThat(detectBrand("dongfeng t5 evo 1,5 t 130kw dct7 dragonedition")).isEqualTo("DONGFENG");
         assertThat(detectBrand("isuzu d-max v-cross 2.2l 163k 4x4 8st a/t")).isEqualTo("ISUZU");
+        assertThat(detectBrand("opel mokka x 1,6 16v")).isEqualTo("OPEL");
+        assertThat(detectBrand("subaru xv 2.0i 4x4 aut")).isEqualTo("SUBARU");
     }
 
     @Test
@@ -215,6 +221,11 @@ class SbazarParserTest {
         assertThat(resolveCarType("kia k4 hb 1,6 t-gdi gpf 7dct top", "")).isEqualTo("HATCHBACK");
         assertThat(resolveCarType("mercedes w447 v250 avantgarde", "")).isEqualTo("MINIVAN");
         assertThat(resolveCarType("land rover defender 110 hcpu", "")).isEqualTo("PICKUP");
+        assertThat(resolveCarType("citroen c5 1.6hdi r.v.2010", "cabrio coupe")).isEqualTo("SEDAN");
+        assertThat(resolveCarType("kia magentis 2.0crdi top stav", "")).isEqualTo("SEDAN");
+        assertThat(resolveCarType("mazda 6 2.0 121kw skyactiv automat", "minivan mpv")).isEqualTo("SEDAN");
+        assertThat(resolveCarType("ssangyong korando 2.2td 4x4 manual", "")).isEqualTo("SUV");
+        assertThat(resolveCarType("subaru xv 2.0i 4x4 aut", "")).isEqualTo("SUV");
     }
 
     @Test
@@ -223,6 +234,7 @@ class SbazarParserTest {
         assertThat(looksNonCarListing("pc pocitac")).isTrue();
         assertThat(looksNonCarListing("osobni vuz https www sbazar cz inzerat 231248942 osobni vuz")).isTrue();
         assertThat(looksNonCarListing("bmw i3 125 kw 120 ah tep.cerpadlo")).isFalse();
+        assertThat(looksCommercialVehicle("opel vivaro r.v. 2010 https www sbazar cz inzerat 231253178 opel vivaro rv 2010")).isTrue();
     }
 
     @Test
@@ -289,6 +301,12 @@ class SbazarParserTest {
 
     private boolean looksNonCarListing(String searchable) throws Exception {
         Method method = SbazarParser.class.getDeclaredMethod("looksNonCarListing", String.class);
+        method.setAccessible(true);
+        return (boolean) method.invoke(parser, searchable);
+    }
+
+    private boolean looksCommercialVehicle(String searchable) throws Exception {
+        Method method = SbazarParser.class.getDeclaredMethod("looksCommercialVehicle", String.class);
         method.setAccessible(true);
         return (boolean) method.invoke(parser, searchable);
     }
