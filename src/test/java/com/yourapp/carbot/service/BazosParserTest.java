@@ -124,6 +124,7 @@ class BazosParserTest {
         assertThat(extractCarType("BMW 325i e91", "", "")).isEqualTo("WAGON");
         assertThat(extractCarType("BMW 330 xD", "", "")).isEqualTo("SEDAN");
         assertThat(extractCarType("BMW F36 430d 258Hp GC 05/2016 original M-Paket", "", "")).isEqualTo("SEDAN");
+        assertThat(extractCarType("BMW 420D Xdrive 2018", "", "")).isEqualTo("COUPE");
         assertThat(extractCarType("BMW 6 GT xDrive M-Paket", "", "")).isEqualTo("SEDAN");
         assertThat(extractCarType("Audi A6 2.0 TDI AVANT Ultra S-tronic 2015", "", "")).isEqualTo("WAGON");
         assertThat(extractCarType("Audi a4b6 2.5tdi V6 120kw", "", "")).isEqualTo("SEDAN");
