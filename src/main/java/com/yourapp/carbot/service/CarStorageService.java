@@ -367,7 +367,7 @@ public class CarStorageService {
                     "MG", "DS", "LAND_ROVER", "ALFA_ROMEO", "CHEVROLET",
                     "SSANGYONG", "CHRYSLER", "LOTUS", "LAMBORGHINI", "FERRARI",
                     "JAECOO", "OMODA", "SWM", "SMART", "INFINITI", "DONGFENG",
-                    "ISUZU", "CADILLAC", "ALPINA"
+                    "ISUZU", "CADILLAC", "ALPINA", "LANCIA"
             );
 
             if (allowed.contains(upper)) {
@@ -402,6 +402,7 @@ public class CarStorageService {
         if (t.contains("isuzu") || t.contains("d-max") || t.contains("d max")) return "ISUZU";
         if (t.contains("cadillac") || t.contains("ats") || t.contains("ct4")) return "CADILLAC";
         if (t.contains("alpina") || t.contains("xd3")) return "ALPINA";
+        if (t.contains("lancia")) return "LANCIA";
         if (t.contains("peugeot")) return "PEUGEOT";
         if (t.contains("opel")) return "OPEL";
         if (t.contains("mazda")) return "MAZDA";

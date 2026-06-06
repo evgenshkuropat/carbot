@@ -101,6 +101,7 @@ class CarStorageServiceTest {
         assertThat(normalizeBrand("ISUZU", "Isuzu D-Max V-Cross 2.2L")).isEqualTo("ISUZU");
         assertThat(normalizeBrand(null, "Cadillac ATS V")).isEqualTo("CADILLAC");
         assertThat(normalizeBrand(null, "Alpina, XD3 3.0d")).isEqualTo("ALPINA");
+        assertThat(normalizeBrand(null, "Lancia Kappa 2.4JTD 10V Klima")).isEqualTo("LANCIA");
     }
 
     @Test

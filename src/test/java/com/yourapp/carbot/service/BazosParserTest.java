@@ -26,6 +26,8 @@ class BazosParserTest {
         assertThat(extractBrand("Abarth 500 Turbo Cabrio 107 kW 2018 CZ puvod", "")).isEqualTo("ABARTH");
         assertThat(extractBrand("Prodam Fiat Multipla 1.6/16V CNG/2007/6mist", "")).isEqualTo("FIAT");
         assertThat(extractBrand("Focus combi", "skoda octavia")).isEqualTo("FORD");
+        assertThat(extractBrand("Lancia Kappa 2.4JTD 10V Klima, Alcantara, Bez koroze, Servis", ""))
+                .isEqualTo("LANCIA");
     }
 
     @Test
@@ -126,6 +128,7 @@ class BazosParserTest {
         assertThat(extractCarType("Audi A6 2.0 TDI AVANT Ultra S-tronic 2015", "", "")).isEqualTo("WAGON");
         assertThat(extractCarType("Audi a4b6 2.5tdi V6 120kw", "", "")).isEqualTo("SEDAN");
         assertThat(extractCarType("Audi S6 Quattro UVEDENA CENA BEZ DPH", "", "")).isEqualTo("SEDAN");
+        assertThat(extractCarType("AUDI 100 C3 QUATTRO 2.2 100KW 2X UZAVERKA RENOVACE", "", "")).isEqualTo("SEDAN");
         assertThat(extractCarType("Audi S6 Avant 55 TDI Nelakovano Nebourano Servis Audi", "", "")).isEqualTo("WAGON");
         assertThat(extractCarType("Audi A3 / 2018 / 1,6 / 85 kw", "", "")).isEqualTo("HATCHBACK");
         assertThat(extractCarType("BMW M3 MANUAL KOMPRESOR", "", "")).isEqualTo("COUPE");
@@ -133,6 +136,7 @@ class BazosParserTest {
         assertThat(extractCarType("BMW 2, F45, Active Tourer, 225i xDrive LUXURY LINE", "", "")).isEqualTo("MINIVAN");
         assertThat(extractCarType("Citroen C 3 1.5 HDi, Edice Origins Since 1919", "", "")).isEqualTo("HATCHBACK");
         assertThat(extractCarType("Prodam Citroen Jumpy 2.0 HDI Multispace 9.mist", "", "")).isEqualTo("MINIVAN");
+        assertThat(extractCarType("Lancia Kappa 2.4JTD 10V Klima, Alcantara, Bez koroze, Servis", "", "")).isEqualTo("SEDAN");
         assertThat(extractCarType("Fiat Dobló 1,6Jtd MAXI klima+5dveri+CR+64000km", "", "")).isEqualTo("MINIVAN");
         assertThat(extractCarType("Fiat Talento Kombi 1.6turbo 107kw,novy motor 8mist,zaves", "", "")).isEqualTo("MINIVAN");
         assertThat(extractCarType("Fiat Croma 1,9jtd AUTOMAT 2009", "", "")).isEqualTo("WAGON");
