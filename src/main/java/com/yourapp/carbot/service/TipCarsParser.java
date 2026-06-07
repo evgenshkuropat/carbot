@@ -771,7 +771,7 @@ public class TipCarsParser implements CarSourceParser {
         if (containsAny(titleSource,
                 " q3 ", " q5 ", " q7 ", " q8 ",
                 " touareg ", " qashqai ", " pathfinder ", " kona ", " captur ", " puma ", " crossland ", " range rover ", " glc ",
-                " gla ", " glb ", " gle ", " gls ", " yaris cross ", " stonic ", " omoda 5 ", " actyon ", " elroq ", " 2008 ")) {
+                " gla ", " glb ", " gle ", " gls ", " yaris cross ", " stonic ", " omoda 5 ", " actyon ", " elroq ", " macan ", " 2008 ")) {
             return "SUV";
         }
 

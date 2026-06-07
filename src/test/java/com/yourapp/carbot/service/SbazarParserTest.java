@@ -147,6 +147,7 @@ class SbazarParserTest {
         assertThat(resolveCarType("peugeot 2008 e-2008 100kw 136hp", "")).isEqualTo("SUV");
         assertThat(resolveCarType("renault captur evolution tce 115 my25", "")).isEqualTo("SUV");
         assertThat(resolveCarType("hyundai ix35 2,0 crdi serviska", "")).isEqualTo("SUV");
+        assertThat(resolveCarType("ford edge 2,0 ecoblue 175kw st-line", "")).isEqualTo("SUV");
         assertThat(resolveCarType("volkswagen id.4", "")).isEqualTo("SUV");
         assertThat(resolveCarType("mercedes-benz eqe 300 hyperscreen tazne soh98,8", "")).isEqualTo("SEDAN");
         assertThat(resolveCarType("mercedes 211", "")).isEqualTo("SEDAN");
@@ -228,6 +229,7 @@ class SbazarParserTest {
         assertThat(resolveCarType("mercedes-benz citan 1.5dci mixto dlouhe", "")).isEqualTo("MINIVAN");
         assertThat(resolveCarType("kia k4 hb 1,6 t-gdi gpf 7dct top", "")).isEqualTo("HATCHBACK");
         assertThat(resolveCarType("mercedes w447 v250 avantgarde", "")).isEqualTo("MINIVAN");
+        assertThat(resolveCarType("mercedes v 2.2 cdi at 7mist 4x4 dph serviska", "")).isEqualTo("MINIVAN");
         assertThat(resolveCarType("land rover defender 110 hcpu", "")).isEqualTo("PICKUP");
         assertThat(resolveCarType("citroen c5 1.6hdi r.v.2010", "cabrio coupe")).isEqualTo("SEDAN");
         assertThat(resolveCarType("kia magentis 2.0crdi top stav", "")).isEqualTo("SEDAN");

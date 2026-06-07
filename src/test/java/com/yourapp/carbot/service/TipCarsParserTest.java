@@ -107,6 +107,12 @@ class TipCarsParserTest {
                 "",
                 "https://www.tipcars.com/peugeot-2008/hatchback/benzin/peugeot-2008-1-2-puretech.html"))
                 .isEqualTo("SUV");
+
+        assertThat(extractCarType(
+                "Porsche Macan 3.0i AWD PDK7",
+                "",
+                "https://www.tipcars.com/porsche-macan/hatchback/benzin/porsche-macan-3-0i-awd-pdk7-55577322.html"))
+                .isEqualTo("SUV");
     }
 
     @Test
