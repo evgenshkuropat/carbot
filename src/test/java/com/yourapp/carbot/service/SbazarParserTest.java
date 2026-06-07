@@ -263,6 +263,14 @@ class SbazarParserTest {
                 .isEqualTo("DIESEL");
         assertThat(resolveCarType("renault megane 2 2006", ""))
                 .isEqualTo("HATCHBACK");
+        assertThat(resolveCarType("ssangyong rexton 2.2td 4x4 aut kam 7mist tazne", ""))
+                .isEqualTo("SUV");
+        assertThat(resolveCarType("mercedes-benz gl420 cdi 2007", ""))
+                .isEqualTo("SUV");
+        assertThat(resolveCarType("jaguar xe r-sport 20d awd 132kw", ""))
+                .isEqualTo("SEDAN");
+        assertThat(extractMileage("renault clio rok vyroby 2008 km"))
+                .isNull();
     }
 
     @Test
