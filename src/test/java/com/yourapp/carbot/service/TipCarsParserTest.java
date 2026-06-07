@@ -146,6 +146,14 @@ class TipCarsParserTest {
                 .isEqualTo("HYBRID");
         assertThat(extractFuelType("Volvo XC60 2,0 B5 Aut. AWD CZ Dark Plus"))
                 .isEqualTo("HYBRID");
+        assertThat(extractFuelType("Volvo XC40 2,0 B3 Black Edition"))
+                .isEqualTo("HYBRID");
+        assertThat(extractFuelType("Volvo V60 0,0 B4 Plus Dark Plus Dark"))
+                .isEqualTo("HYBRID");
+        assertThat(extractFuelType("Skoda Octavia 1.5 TSI e-tec"))
+                .isEqualTo("HYBRID");
+        assertThat(extractFuelType("Citroen C8 2.0, LPG, 8 mist, Tazne, Klima"))
+                .isEqualTo("LPG");
         assertThat(extractFuelType("BMW Rada 3 3.0D 150kW M PAKET SERVIS. KN."))
                 .isEqualTo("DIESEL");
     }

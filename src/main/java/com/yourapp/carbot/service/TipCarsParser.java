@@ -520,11 +520,11 @@ public class TipCarsParser implements CarSourceParser {
         String source = " " + normalizeText(safe(text)).toLowerCase(Locale.ROOT) + " ";
         String compact = source.replaceAll("[^a-z0-9]", "");
 
-        if (containsAny(source, "/lpg/", " lpg ")) {
+        if (containsAny(source, "/lpg/", " lpg ") || compact.contains("lpg")) {
             return "LPG";
         }
 
-        if (containsAny(source, "/cng/", " cng ")) {
+        if (containsAny(source, "/cng/", " cng ") || compact.contains("cng")) {
             return "CNG";
         }
 
@@ -579,6 +579,8 @@ public class TipCarsParser implements CarSourceParser {
                 " phev ",
                 " mhev ",
                 " m-hev ",
+                " e-tec ",
+                " etec ",
                 " b5 ",
                 " b6 ",
                 " shs ",
@@ -588,6 +590,8 @@ public class TipCarsParser implements CarSourceParser {
                 " ecvt ")
                 || compact.contains("hybrid")
                 || compact.contains("mhev")
+                || compact.contains("etec")
+                || source.matches(".*\\bvolvo\\b.*\\bb[3-6]\\b.*")
                 || compact.contains("ehev")) {
             return "HYBRID";
         }
