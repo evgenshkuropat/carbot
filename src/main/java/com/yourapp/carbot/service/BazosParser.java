@@ -1016,7 +1016,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         String compact = source.replaceAll("[^a-z0-9]", "");
 
         // LPG / CNG first
-        if (containsAny(source, " lpg ") || compact.contains("lpg")) {
+        if (containsAny(source, " lpg ", " plyn ") || compact.contains("lpg")) {
             return "LPG";
         }
 
@@ -1114,7 +1114,10 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         }
 
         if (containsAny(source, " jts ", " twinspark ", " twin spark ", " tbi ", " turbo ", " ts ",
-                " bmw m3 ", " m3 ")
+                " bmw m3 ", " m3 ", " civic type-r ", " civic type r ", " type-r ", " type r ", " typer ", " fn2 ", " ep2 ")
+                || compact.contains("typer")
+                || compact.contains("fn2")
+                || compact.contains("ep2")
                 || source.matches(".*\\b[0-9][.,][0-9]\\s*t\\b.*")) {
             return "PETROL";
         }
@@ -1264,6 +1267,11 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             return "PETROL";
         }
 
+        if (source.contains(" honda city ")
+                && Pattern.compile("\\b1[.,][34]\\b").matcher(source).find()) {
+            return "PETROL";
+        }
+
         if (source.contains(" z4 ") && Pattern.compile("\\b3[.,]0\\b").matcher(source).find()) {
             return "PETROL";
         }
@@ -1373,7 +1381,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             return "HYBRID";
         }
 
-        if (containsAny(source, " lpg ") || compact.contains("lpg")) {
+        if (containsAny(source, " lpg ", " plyn ") || compact.contains("lpg")) {
             return "LPG";
         }
 
@@ -2154,7 +2162,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             return "COUPE";
         }
 
-        if (containsAny(titleSource, " accord ", " legend ", " peugeot 301 ", " talisman ", " magentis ", " optima ", " stinger ")) {
+        if (containsAny(titleSource, " honda city ", " accord ", " legend ", " peugeot 301 ", " talisman ", " magentis ", " optima ", " stinger ")) {
             return "SEDAN";
         }
 

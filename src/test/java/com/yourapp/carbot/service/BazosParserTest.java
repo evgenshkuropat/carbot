@@ -68,6 +68,10 @@ class BazosParserTest {
         assertThat(extractFuelType("Honda CR-V 2.0 e:HEV Advance AWD")).isEqualTo("HYBRID");
         assertThat(extractFuelType("Honda CR-V 2.0i-MMD Elegance AWD")).isEqualTo("HYBRID");
         assertThat(extractFuelType("Honda Jazz 1.4 61kw. r.2005")).isEqualTo("PETROL");
+        assertThat(extractFuelType("Honda Civic 7g, EP2, Sport")).isEqualTo("PETROL");
+        assertThat(extractFuelType("Honda Civic Type-R FN2 (2007)")).isEqualTo("PETROL");
+        assertThat(extractFuelType("Honda Accord Coupe KUZE AUTOMAT PLYN")).isEqualTo("LPG");
+        assertThat(extractFuelType("Prodam Honda City 1,4 73 kw")).isEqualTo("PETROL");
         assertThat(extractFuelType("FIAT 500 1.0 11/2022 DPH 61000km zanovni")).isEqualTo("PETROL");
         assertThat(extractFuelType("Fiat 500 / 0.9 TwinAir / SPORT / 77kW / NAVI")).isEqualTo("PETROL");
         assertThat(extractFuelType("Toyota Yaris Cross, 1.5HEV, Adventure, 4x4")).isEqualTo("HYBRID");
@@ -151,6 +155,7 @@ class BazosParserTest {
         assertThat(extractCarType("DACIA STEPWAY 1,0 i 66 KW TOP STAV 2017", "", "")).isEqualTo("HATCHBACK");
         assertThat(extractCarType("HONDA ACCORD TOURER VII EXECUTIVE 2.0 i-VTEC", "", "")).isEqualTo("WAGON");
         assertThat(extractCarType("Honda Accord coupe", "", "")).isEqualTo("COUPE");
+        assertThat(extractCarType("Prodam Honda City 1,4 73 kw", "", "")).isEqualTo("SEDAN");
         assertThat(extractCarType("Honda N-Box Custom 3/2016 136t km JDM", "", "")).isEqualTo("MINIVAN");
         assertThat(extractCarType("Ford Focus Tunier 2014", "", "")).isEqualTo("WAGON");
         assertThat(extractCarType("FUSION FACELIFT,1.4 16V 59KW,ROK 2008", "", "")).isEqualTo("HATCHBACK");
