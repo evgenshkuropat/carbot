@@ -160,6 +160,8 @@ class BazosParserTest {
         assertThat(extractCarType("Ford Focus Tunier 2014", "", "")).isEqualTo("WAGON");
         assertThat(extractCarType("FUSION FACELIFT,1.4 16V 59KW,ROK 2008", "", "")).isEqualTo("HATCHBACK");
         assertThat(extractCarType("HONDA CIVIC TOURER 1.6i DTEC 2016 KAMERA", "", "")).isEqualTo("WAGON");
+        assertThat(extractCarType("Chevrolet Express Limited SE 2500 6.0", "", "")).isEqualTo("MINIVAN");
+        assertThat(extractCarType("Chevrolet Trailblazer 4.2i,201kw,/LPG", "", "")).isEqualTo("SUV");
         assertThat(extractCarType("Opel Astra J Sports Tourer 1.4i Turbo103Kw r.v.10/2015", "", "")).isEqualTo("WAGON");
         assertThat(extractCarType("Opel Astra K 1,6 CDTI 81kw sport Tourer, Innovation", "", "")).isEqualTo("WAGON");
         assertThat(extractCarType("Opel Astra K 1,6 CDTI 81kw 2016 ST, Innovation", "", "")).isEqualTo("WAGON");

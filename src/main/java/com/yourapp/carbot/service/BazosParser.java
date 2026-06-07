@@ -2225,7 +2225,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " discovery ", " discovery sport ", " defender ",
                 " compass ", " cherokee ", " grand cherokee ",
                 " grand vitara ", " vitara ", " samurai ", " yeti ",
-                " captiva ", " tahoe ", " suburban ", " bolt ev ",
+                " captiva ", " tahoe ", " suburban ", " trailblazer ", " bolt ev ",
                 " model y ",
                 " xv ", " forester ",
                 " mokka ",
@@ -2261,7 +2261,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " w246 ", " b 180 ", " b180 ", " b 200 ", " b200 ", " b 250e ", " b250e ",
                 " mazda 5 ",
                 " grand scenic ", " grand scénic ",
-                " kangoo ", " carens ", " fr-v ", " fr v ", " frv ")) {
+                " kangoo ", " carens ", " fr-v ", " fr v ", " frv ", " express ")) {
             return "MINIVAN";
         }
 
