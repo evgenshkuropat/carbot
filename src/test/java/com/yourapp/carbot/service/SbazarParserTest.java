@@ -74,6 +74,7 @@ class SbazarParserTest {
         assertThat(resolveFuelType("suzuki sx4 s-cross 1,4 boosterjet premium 2x4", "")).isEqualTo("PETROL");
         assertThat(resolveFuelType("skoda superb 1.4 tsi 160kw iv sportline dsg", "")).isEqualTo("PLUGIN_HYBRID");
         assertThat(resolveFuelType("mercedes-benz tridy c e performance 4m amg f1 edit", "")).isEqualTo("PLUGIN_HYBRID");
+        assertThat(resolveFuelType("volkswagen passat 2.0 tsi elegance r line dsg", "")).isEqualTo("PETROL");
         assertThat(resolveFuelType("peugeot 2008 2017 1.2 81kw automat 70 000 km", "")).isEqualTo("PETROL");
         assertThat(resolveFuelType("suzuki grand vitara 2.4 4x4 uzaverka", "")).isEqualTo("PETROL");
         assertThat(resolveFuelType("volkswagen golf 3 1.4 cl 44 kw 1993 oldtimer", "")).isEqualTo("PETROL");
@@ -206,6 +207,7 @@ class SbazarParserTest {
         assertThat(resolveCarType("alfa romeo stelvio 2.2 jtdm competizione q4", "")).isEqualTo("SUV");
         assertThat(resolveCarType("suzuki sx4 s-cross 1,4 boosterjet premium 2x4", "")).isEqualTo("SUV");
         assertThat(resolveCarType("peugeot 308 2,0 bhdi 110kw", "")).isEqualTo("HATCHBACK");
+        assertThat(resolveCarType("peugeot 308 sw 1,2 pt eat8 pripravujeme", "")).isEqualTo("WAGON");
         assertThat(resolveCarType("peugeot 308 1,6 hdi automat", "coupe cabrio")).isEqualTo("HATCHBACK");
         assertThat(resolveCarType("opel insignia 2.0 aut kamera vyhrev serviska", "")).isEqualTo("SEDAN");
         assertThat(resolveCarType("opel insignia 2.0cdti manual vyhrev tazne", "")).isEqualTo("SEDAN");
@@ -243,6 +245,8 @@ class SbazarParserTest {
         assertThat(looksNonCarListing("padlo a rucni pumpicka")).isTrue();
         assertThat(looksNonCarListing("pc pocitac")).isTrue();
         assertThat(looksNonCarListing("osobni vuz https www sbazar cz inzerat 231248942 osobni vuz")).isTrue();
+        assertThat(looksNonCarListing("auto https www sbazar cz inzerat 231274019 auto")).isTrue();
+        assertThat(looksNonCarListing("triumph america lt cr 2015")).isTrue();
         assertThat(looksNonCarListing("bmw i3 125 kw 120 ah tep.cerpadlo")).isFalse();
         assertThat(looksCommercialVehicle("opel vivaro r.v. 2010 https www sbazar cz inzerat 231253178 opel vivaro rv 2010")).isTrue();
     }
@@ -269,6 +273,8 @@ class SbazarParserTest {
                 .isEqualTo("SUV");
         assertThat(resolveCarType("jaguar xe r-sport 20d awd 132kw", ""))
                 .isEqualTo("SEDAN");
+        assertThat(resolveCarType("pajero pinin 3.2 did tazne", ""))
+                .isEqualTo("SUV");
         assertThat(extractMileage("renault clio rok vyroby 2008 km"))
                 .isNull();
     }

@@ -605,7 +605,7 @@ public class SbazarParser implements CarSourceParser {
 
         if (containsAny(searchable,
                 "plug-in", "plugin", "phev", " gte ",
-                "tfsi e", "tsi e", " e-performance", " e performance",
+                "tfsi e", " e-performance", " e performance",
                 "superb iv", "kodiaq iv", "225xe", "iperformance",
                 "330e", " 330 e ", "530e", " 530 e ")) {
             return "PLUGIN_HYBRID";
@@ -619,7 +619,7 @@ public class SbazarParser implements CarSourceParser {
 
         if (containsAny(searchable,
                 "plug-in", "plugin", "phev", "hybrid", " hev ", " mhev ", " etsi ", " gte ",
-                "tfsi e", "tsi e", " shs ", "e-power", "epower", "225xe", "iperformance",
+                "tfsi e", " shs ", "e-power", "epower", "225xe", "iperformance",
                 " t8 ", "recharge",
                 "330e", " 330 e ", "530e", " 530 e ", " b5 ")) {
             return "HYBRID";
@@ -751,7 +751,7 @@ public class SbazarParser implements CarSourceParser {
                     || identityText.matches(".*\\b[0-9][.,][0-9]\\s*d\\b.*")
                     || identityText.matches(".*\\bd\\s*[0-9]\\b.*");
             case "HYBRID", "PLUGIN_HYBRID" -> containsAny(identityText, "plug-in", "plugin", "phev", "hybrid", " hev ", " mhev ",
-                    " gte ", "tfsi e", "tsi e", " shs ", "e-power", "epower", "225xe", "iperformance",
+                    " gte ", "tfsi e", " shs ", "e-power", "epower", "225xe", "iperformance",
                     " t8 ", "recharge", "superb iv", "kodiaq iv", " b5 ", "e-performance", "e performance",
                     "330e", " 330 e ", "530e", " 530 e ");
             case "LPG" -> containsAny(identityText, "lpg");
@@ -840,6 +840,10 @@ public class SbazarParser implements CarSourceParser {
         if (containsAny(searchable, "magentis")) {
             return "SEDAN";
         }
+        if (containsAny(searchable, "peugeot 308", " 308 ")
+                && containsAny(searchable, " sw ", "combi", "kombi", "wagon")) {
+            return "WAGON";
+        }
         if (containsAny(searchable, "peugeot 308", " 308 ")) {
             return "HATCHBACK";
         }
@@ -885,7 +889,7 @@ public class SbazarParser implements CarSourceParser {
         if (containsAny(searchable, "cruze", "superb", "s40", "s90", "mazda 6")) {
             return "SEDAN";
         }
-        if (containsAny(searchable, "suv", "kodiaq", "karoq", "kamiq", "yeti", "enyaq", "tiguan", "touareg", "t-roc", "t roc", "troc", "t-cross", "t cross", "kadjar", "captur", "qashqai", "x-trail", "terrano", "pathfinder", "padfinder", "patrol", "land cruiser", "defender", "bmw x1", "bmw x 1", "bmw x2", "bmw x 2", "bmw x3", "bmw x4", "bmw x5", "bmw x6", "bmw x7", "fx35", "fx-35", "q3", "q5", "q7", "q8", "wrangler", "compass", "cherokee", "discovery", "sportage", "sorento", "stonic", "xceed", "xcee", "ev6", "tucson", "santa fe", "bayon", "inster", "ix35", "rav4", "c-hr", " chr ", "cr-v", "hr-v", "cx-3", "cx3", "cx-5", "cx-7", "cx7", "c-crosser", "ioniq 5", "outlander", "formentor", "edge", "kuga", "crossland", "glk", "glb", "gla", "gl 420", "gl420", "gl 450", "glc", "gle", "gls", "tridy g", "g320", "c5 aircross", "evoque", "range rover", "tarraco", "arona", "stelvio", "xc40", "xc60", "xc90", "xc 70", "xc70", "duster", "tivoli", "korando", "rexton", "ateca", "sx4", "s-cross", "s cross", "jimny", "dongfeng mage", "t5 evo", "dongfeng t5", "omoda 5", "omoda 9", "jaecoo", "mg zs", "mgs5", "peugeot 2008", "peugeot 3008", "3008", "peugeot 5008", "5008", "ignis", "vitara", "macan", "cayenne", "urus", "lexus nx", "nx350h", "forester", "subaru xv", " xv ", "asx", "austral", "ix55", "id.4", " id 4 ", " id4 ", "id.5", " id 5 ", " id5 ")) {
+        if (containsAny(searchable, "suv", "kodiaq", "karoq", "kamiq", "yeti", "enyaq", "tiguan", "touareg", "t-roc", "t roc", "troc", "t-cross", "t cross", "kadjar", "captur", "qashqai", "x-trail", "terrano", "pathfinder", "padfinder", "patrol", "pajero", "pinin", "land cruiser", "defender", "bmw x1", "bmw x 1", "bmw x2", "bmw x 2", "bmw x3", "bmw x4", "bmw x5", "bmw x6", "bmw x7", "fx35", "fx-35", "q3", "q5", "q7", "q8", "wrangler", "compass", "cherokee", "discovery", "sportage", "sorento", "stonic", "xceed", "xcee", "ev6", "tucson", "santa fe", "bayon", "inster", "ix35", "rav4", "c-hr", " chr ", "cr-v", "hr-v", "cx-3", "cx3", "cx-5", "cx-7", "cx7", "c-crosser", "ioniq 5", "outlander", "formentor", "edge", "kuga", "crossland", "glk", "glb", "gla", "gl 420", "gl420", "gl 450", "glc", "gle", "gls", "tridy g", "g320", "c5 aircross", "evoque", "range rover", "tarraco", "arona", "stelvio", "xc40", "xc60", "xc90", "xc 70", "xc70", "duster", "tivoli", "korando", "rexton", "ateca", "sx4", "s-cross", "s cross", "jimny", "dongfeng mage", "t5 evo", "dongfeng t5", "omoda 5", "omoda 9", "jaecoo", "mg zs", "mgs5", "peugeot 2008", "peugeot 3008", "3008", "peugeot 5008", "5008", "ignis", "vitara", "macan", "cayenne", "urus", "lexus nx", "nx350h", "forester", "subaru xv", " xv ", "asx", "austral", "ix55", "id.4", " id 4 ", " id4 ", "id.5", " id 5 ", " id5 ")) {
             return "SUV";
         }
         if (containsAny(searchable, "coupe", "mustang", " tt ", "370z", "350z", "brz", "challenger", "carrera", "911", "s5", "amg gt", "mercedes-benz cl,", " tridy cl", "clk", "camaro", "f-type", "f type", "bmw m2", " m2 ", "rada 4", "bmw 4", "m440i", "440i")) {
@@ -945,7 +949,8 @@ public class SbazarParser implements CarSourceParser {
                 || "osobni auto".equals(searchable)
                 || "auto".equals(searchable)
                 || searchable.startsWith("osobni vuz ")
-                || searchable.startsWith("osobni auto ")) {
+                || searchable.startsWith("osobni auto ")
+                || searchable.startsWith("auto ")) {
             return true;
         }
 
@@ -957,7 +962,7 @@ public class SbazarParser implements CarSourceParser {
                 "motor na", "prevodovka", "svetlo", "svetel", "sedacky", "volant", "katalyzator", "servisni knizka",
                 "autoradio", "auto radio", "navigace tomtom", "stresni nosic", "stresni nosnik", "zamky centralni",
                 "centralni zamky", "zamykani zpatecky", "sterac", "sterace", "pc pocitac", "pocitac",
-                " padlo ", "rucni pumpicka", "pumpicka", "cmx", "rebel");
+                " padlo ", "rucni pumpicka", "pumpicka", "cmx", "rebel", "triumph america");
     }
 
     private boolean looksCommercialVehicle(String searchable) {
