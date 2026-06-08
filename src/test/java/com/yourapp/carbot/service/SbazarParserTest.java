@@ -77,6 +77,13 @@ class SbazarParserTest {
         assertThat(resolveFuelType("volkswagen passat 2.0 tsi elegance r line dsg", "")).isEqualTo("PETROL");
         assertThat(resolveFuelType("peugeot 2008 2017 1.2 81kw automat 70 000 km", "")).isEqualTo("PETROL");
         assertThat(resolveFuelType("suzuki grand vitara 2.4 4x4 uzaverka", "")).isEqualTo("PETROL");
+        assertThat(resolveFuelType("suzuki grand vitara 4x4 2,0 103 kw tazne", "")).isEqualTo("PETROL");
+        assertThat(resolveFuelType("suzuki swift 1.2 violet edition 2015", "")).isEqualTo("PETROL");
+        assertThat(resolveFuelType("nissan patrol 4x4 3,0 di turbo 116kw", "")).isEqualTo("DIESEL");
+        assertThat(resolveFuelType("infiniti fx37 s 4x4 3,7 v6 235kw", "")).isEqualTo("PETROL");
+        assertThat(resolveFuelType("mercedes e240 w211", "")).isEqualTo("PETROL");
+        assertThat(resolveFuelType("mercedes benz clk 200 kompressor automat", "")).isEqualTo("PETROL");
+        assertThat(resolveFuelType("mercedes-benz tridy c c200 1.6 automat 46000 km", "")).isEqualTo("PETROL");
         assertThat(resolveFuelType("volkswagen golf 3 1.4 cl 44 kw 1993 oldtimer", "")).isEqualTo("PETROL");
         assertThat(resolveFuelType("dacia duster 1,6", "")).isEqualTo("PETROL");
         assertThat(resolveFuelType("dongfeng u-tour 1,5 t 130 kw exclusivefr 7mist", "")).isEqualTo("PETROL");
@@ -217,6 +224,7 @@ class SbazarParserTest {
         assertThat(resolveCarType("toyota starlet", "")).isEqualTo("HATCHBACK");
         assertThat(resolveCarType("toyota auris 1.4 d-4d 66kw koupeno cr 2016", "")).isEqualTo("HATCHBACK");
         assertThat(resolveCarType("toyota land cruiser 2,8 mhev invincible", "")).isEqualTo("SUV");
+        assertThat(resolveCarType("toyota urban cruiser 1,3i 74 kw spojka stk", "")).isEqualTo("SUV");
         assertThat(resolveCarType("nissan terrano ii 2.7td 92kw puvod cr nova stk", "")).isEqualTo("SUV");
         assertThat(resolveCarType("citroen jumpy 2.0hdi 94kw 8mist", "")).isEqualTo("MINIVAN");
         assertThat(resolveCarType("renault kangoo 1.6 cng", "")).isEqualTo("MINIVAN");
@@ -224,6 +232,7 @@ class SbazarParserTest {
         assertThat(resolveCarType("peugeot 207 cc 1.6i r.v.2011 serviska stk", "")).isEqualTo("CABRIO");
         assertThat(resolveCarType("opel agila 1.2 16v gl", "")).isEqualTo("HATCHBACK");
         assertThat(resolveCarType("opel mokka 1.6 tdci 4x4 innovation xenon navigace", "")).isEqualTo("SUV");
+        assertThat(resolveCarType("opel cascada 2.0cdti 121kw 165k", "")).isEqualTo("CABRIO");
         assertThat(resolveCarType("audi a7 3.0 tdi 180 kw quattro", "")).isEqualTo("SEDAN");
         assertThat(resolveCarType("vw jetta highline 1.4tsi", "")).isEqualTo("SEDAN");
         assertThat(resolveCarType("kia ev6 gt 430kw 4x4 77kwh zaruka", "")).isEqualTo("SUV");
@@ -238,6 +247,13 @@ class SbazarParserTest {
         assertThat(resolveCarType("mazda 6 2.0 121kw skyactiv automat", "minivan mpv")).isEqualTo("SEDAN");
         assertThat(resolveCarType("ssangyong korando 2.2td 4x4 manual", "")).isEqualTo("SUV");
         assertThat(resolveCarType("subaru xv 2.0i 4x4 aut", "")).isEqualTo("SUV");
+        assertThat(resolveCarType("dacia logan 1,2 16v klima navi temp", "")).isEqualTo("SEDAN");
+        assertThat(resolveCarType("mercedes e240 w211", "")).isEqualTo("SEDAN");
+        assertThat(resolveCarType("mitsubishi outlender", "")).isEqualTo("SUV");
+        assertThat(resolveCarType("infiniti fx37 s 4x4 3,7 v6 235kw", "")).isEqualTo("SUV");
+        assertThat(resolveCarType("toyota corolla verso automat 1,8i vvt-i", "")).isEqualTo("MINIVAN");
+        assertThat(resolveCarType("mercedes-benz tridy m ml 320 3,0d v6", "")).isEqualTo("SUV");
+        assertThat(resolveCarType("bmw rada 4 420d 2,0 gran kupe automat", "")).isEqualTo("SEDAN");
     }
 
     @Test
@@ -245,7 +261,11 @@ class SbazarParserTest {
         assertThat(looksNonCarListing("padlo a rucni pumpicka")).isTrue();
         assertThat(looksNonCarListing("pc pocitac")).isTrue();
         assertThat(looksNonCarListing("osobni vuz https www sbazar cz inzerat 231248942 osobni vuz")).isTrue();
+        assertThat(looksNonCarListing("osobni vuz opel corsa e 1.4 xel automat")).isFalse();
         assertThat(looksNonCarListing("auto https www sbazar cz inzerat 231274019 auto")).isTrue();
+        assertThat(looksNonCarListing("nissan qashqai parkovaci senzor")).isTrue();
+        assertThat(looksNonCarListing("nissan qashqai sklo zrcatka")).isTrue();
+        assertThat(looksNonCarListing("suzuki vitara zadni sklo")).isTrue();
         assertThat(looksNonCarListing("triumph america lt cr 2015")).isTrue();
         assertThat(looksNonCarListing("bmw i3 125 kw 120 ah tep.cerpadlo")).isFalse();
         assertThat(looksCommercialVehicle("opel vivaro r.v. 2010 https www sbazar cz inzerat 231253178 opel vivaro rv 2010")).isTrue();
