@@ -1180,6 +1180,11 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             return "DIESEL";
         }
 
+        if (containsAny(source, " audi 100 ", " 100 c3 ")
+                && Pattern.compile("\\b2[.,]2\\b").matcher(source).find()) {
+            return "PETROL";
+        }
+
         // PETROL
         if (containsAny(source,
                 " benzin ", " benzín ", " benzinovy ", " benzínový ", " petrol ",
@@ -1574,7 +1579,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         if (containsAny(titleSource, " škoda ", " skoda ")) return "SKODA";
         if (containsAny(titleSource, " volkswagen ", " vw ")) return "VOLKSWAGEN";
         if (containsAny(titleSource, " id.3 ", " id3 ", " id.4 ", " id4 ", " id.5 ", " id5 ")) return "VOLKSWAGEN";
-        if (containsAny(titleSource, " audi ")) return "AUDI";
+        if (containsAny(titleSource, " audi ", " s4 quattro ")) return "AUDI";
         if (containsAny(titleSource, " bmw ")) return "BMW";
         if (containsAny(titleSource, " mercedes ", " mercedes-benz ")) return "MERCEDES";
         if (containsAny(titleSource, " lexus ")) return "LEXUS";
@@ -1627,7 +1632,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         if (containsAny(source, " abarth ")) return "ABARTH";
         if (containsAny(source, " škoda ", " skoda ")) return "SKODA";
         if (containsAny(source, " volkswagen ", " vw ")) return "VOLKSWAGEN";
-        if (containsAny(source, " audi ")) return "AUDI";
+        if (containsAny(source, " audi ", " s4 quattro ")) return "AUDI";
         if (containsAny(source, " bmw ")) return "BMW";
         if (containsAny(source, " mercedes ", " mercedes-benz ")) return "MERCEDES";
         if (containsAny(source, " lexus ")) return "LEXUS";
@@ -1770,6 +1775,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " xdrive ")) return "BMW";
         if (containsAny(source,
                 " a3 ", " a4 ", " a5 ", " a6 ", " a7 ", " a8 ",
+                " s4 quattro ",
                 " a6c7 ", " q3 ", " q4 ", " q5 ", " sq7 ", " rs3 ", " rs 3 ",
                 " rs6 ", " rs 6 ", " etron ", " e-tron ")) return "AUDI";
         if (source.contains(" q7 ")) return "AUDI";
@@ -1883,6 +1889,10 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             return "SUV";
         }
 
+        if (containsAny(titleSource, " s4 quattro ", " audi s4 ")) {
+            return "SEDAN";
+        }
+
         if (containsAny(titleSource, " jimny ", " samurai ", " virara ", " tarraco ")) {
             return "SUV";
         }
@@ -1940,7 +1950,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             return "SEDAN";
         }
 
-        if (containsAny(titleSource, " i-miev ", " i miev ", " imiev ", " id.3 ", " id3 ", " pixo ", " ampera ",
+        if (containsAny(titleSource, " i-miev ", " i miev ", " imiev ", " id.3 ", " id3 ", " pixo ", " ypsilon ", " ampera ",
                 " ds4 ")) {
             return "HATCHBACK";
         }
@@ -3901,6 +3911,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " thalia ",
                 " e-tron ",
                 " etron ",
+                " s4 quattro ",
                 " q7 ",
                 " q5 ",
                 " q4 ",

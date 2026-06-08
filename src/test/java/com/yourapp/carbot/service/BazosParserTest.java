@@ -28,6 +28,8 @@ class BazosParserTest {
         assertThat(extractBrand("Focus combi", "skoda octavia")).isEqualTo("FORD");
         assertThat(extractBrand("Lancia Kappa 2.4JTD 10V Klima, Alcantara, Bez koroze, Servis", ""))
                 .isEqualTo("LANCIA");
+        assertThat(extractBrand("S4 Quattro BSR 402PS 1.majitel koupeno v CR full servis -DPH", ""))
+                .isEqualTo("AUDI");
     }
 
     @Test
@@ -50,6 +52,8 @@ class BazosParserTest {
         assertThat(extractFuelType("BMW M3 MANUAL KOMPRESOR")).isEqualTo("PETROL");
         assertThat(extractFuelType("BMW Z4 3.0 si MANUAL Coupe")).isEqualTo("PETROL");
         assertThat(extractFuelType("Audi A6 Allroad 235 kW")).isEqualTo("DIESEL");
+        assertThat(extractFuelType("AUDI 100 C3 QUATTRO 2.2 100KW 2X UZAVERKA RENOVACE"))
+                .isEqualTo("PETROL");
     }
 
     @Test
@@ -132,6 +136,8 @@ class BazosParserTest {
         assertThat(extractCarType("BMW 6 GT xDrive M-Paket", "", "")).isEqualTo("SEDAN");
         assertThat(extractCarType("Audi A6 2.0 TDI AVANT Ultra S-tronic 2015", "", "")).isEqualTo("WAGON");
         assertThat(extractCarType("Audi a4b6 2.5tdi V6 120kw", "", "")).isEqualTo("SEDAN");
+        assertThat(extractCarType("S4 Quattro BSR 402PS 1.majitel koupeno v CR full servis -DPH", "", ""))
+                .isEqualTo("SEDAN");
         assertThat(extractCarType("Audi S6 Quattro UVEDENA CENA BEZ DPH", "", "")).isEqualTo("SEDAN");
         assertThat(extractCarType("AUDI 100 C3 QUATTRO 2.2 100KW 2X UZAVERKA RENOVACE", "", "")).isEqualTo("SEDAN");
         assertThat(extractCarType("Audi S6 Avant 55 TDI Nelakovano Nebourano Servis Audi", "", "")).isEqualTo("WAGON");
@@ -142,6 +148,7 @@ class BazosParserTest {
         assertThat(extractCarType("Citroen C 3 1.5 HDi, Edice Origins Since 1919", "", "")).isEqualTo("HATCHBACK");
         assertThat(extractCarType("Prodam Citroen Jumpy 2.0 HDI Multispace 9.mist", "", "")).isEqualTo("MINIVAN");
         assertThat(extractCarType("Lancia Kappa 2.4JTD 10V Klima, Alcantara, Bez koroze, Servis", "", "")).isEqualTo("SEDAN");
+        assertThat(extractCarType("Lancia Ypsilon Gold 1.2i", "", "")).isEqualTo("HATCHBACK");
         assertThat(extractCarType("Fiat Dobló 1,6Jtd MAXI klima+5dveri+CR+64000km", "", "")).isEqualTo("MINIVAN");
         assertThat(extractCarType("Fiat Talento Kombi 1.6turbo 107kw,novy motor 8mist,zaves", "", "")).isEqualTo("MINIVAN");
         assertThat(extractCarType("Fiat Croma 1,9jtd AUTOMAT 2009", "", "")).isEqualTo("WAGON");
@@ -271,6 +278,12 @@ class BazosParserTest {
         assertThat(looksNonCarListing("Levy halogen Alfa Romeo Giulietta", "", "", "")).isTrue();
         assertThat(looksNonCarListing("Original setrvacnik Lancia Fiat 1.2 8v / 16v", "", "", "")).isTrue();
         assertThat(looksNonCarListing("Sada OEM filtru Alfa 159", "", "", "")).isTrue();
+        assertThat(looksNonCarListing(
+                "S4 Quattro BSR 402PS 1.majitel koupeno v CR full servis -DPH",
+                "",
+                "https://auto.bazos.cz/inzerat/219539804/s4-quattro-1majitel-koupeno-v-cr-full-servis-odpocet-dph.php",
+                ""))
+                .isFalse();
     }
 
     @Test
