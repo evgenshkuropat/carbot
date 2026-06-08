@@ -671,7 +671,8 @@ public class ToyotaProvereneVozyParser implements CarSourceParser {
             return "PICKUP";
         }
         if (containsAny(source, " yaris cross ", " aygo x ", " corolla cross ", " rav4 ", " c-hr ", " chr ", " bz4x ",
-                " highlander ", " lexus rx ", " lexus nx ", " sportage ", " touareg ", " vitara ", " cr-v ", " crv ", " ecosport ", " 2008 ", " 3008 ")) {
+                " highlander ", " lexus rx ", " lexus nx ", " lexus lbx ", " lbx ", " bj30 ",
+                " sportage ", " touareg ", " vitara ", " cr-v ", " crv ", " ecosport ", " 2008 ", " 3008 ")) {
             return "SUV";
         }
         if (containsAny(source, " proace verso ", " proace city verso ", " touran ", " roomster ",
@@ -686,6 +687,9 @@ public class ToyotaProvereneVozyParser implements CarSourceParser {
                 || containsAny(source, " corolla touring ", " corolla ts ", " comfort ts ", " auris ts ", " auris touring ",
                 " sports tourer ", " passat ", " octavia combi ")) {
             return "WAGON";
+        }
+        if (containsAny(source, " cyberster ", " roadster ", " cabrio ", " kabrio ", " convertible ")) {
+            return "CABRIO";
         }
         if (containsAny(source, " lexus lc ", " lc 500 ", " coupe ", " sportovni ", " supra ", " gt86 ")) {
             return "COUPE";

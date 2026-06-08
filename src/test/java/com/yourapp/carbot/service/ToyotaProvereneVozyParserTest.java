@@ -34,6 +34,12 @@ class ToyotaProvereneVozyParserTest {
                 .isEqualTo("SUV");
         assertThat(extractCarType("Ford B-MAX EcoBoost", ""))
                 .isEqualTo("MINIVAN");
+        assertThat(extractCarType("Lexus LBX 1,5 HEV Original Edition 4x4", ""))
+                .isEqualTo("SUV");
+        assertThat(extractCarType("Baic BJ30 BJ30 HEV 1.5T 209kW 2DHT 4x4 ALL IN MY25", ""))
+                .isEqualTo("SUV");
+        assertThat(extractCarType("MG Cyberster GT EV 77kWh 375kW 4x4", ""))
+                .isEqualTo("CABRIO");
     }
 
     @Test
