@@ -54,6 +54,12 @@ class SautoParserTest {
                 .isEqualTo("SUV");
         assertThat(extractCarType("Ford Tourneo Custom ACTIVE L1 2.0 EcoBlue 125kW", "", "https://www.sauto.cz/osobni/detail/ford/tourneo-custom/210429020"))
                 .isEqualTo("MINIVAN");
+        assertThat(extractCarType("Ford Fusion 1,4 benzin automat", "kombi", "https://www.sauto.cz/osobni/detail/ford/fusion/210570779"))
+                .isEqualTo("MINIVAN");
+        assertThat(extractCarType("Peugeot 807 nova STK", "kombi", "https://www.sauto.cz/osobni/detail/peugeot/807/210495290"))
+                .isEqualTo("MINIVAN");
+        assertThat(extractCarType("Peugeot 607 2.2 HDI, CR,1.maj, Klima", "", "https://www.sauto.cz/osobni/detail/peugeot/607/210149540"))
+                .isEqualTo("SEDAN");
     }
 
     @Test
@@ -64,6 +70,8 @@ class SautoParserTest {
                 .isEqualTo("PLUGIN_HYBRID");
         assertThat(extractFuelType("Kia XCee´d Plug-in-Hybrid, Premium, DPH"))
                 .isEqualTo("PLUGIN_HYBRID");
+        assertThat(extractFuelType("Opel Combo 1.4 i 66 kw"))
+                .isEqualTo("PETROL");
     }
 
     @Test

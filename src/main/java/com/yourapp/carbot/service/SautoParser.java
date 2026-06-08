@@ -1501,6 +1501,10 @@ public class SautoParser implements CarSourceParser {
         if (containsAny(normalized, " elektro ", " elektrické ", " elektricke ", " electric ", " ev ", " kwh ", " soh ")) {
             return "ELECTRIC";
         }
+        if (containsAny(normalized, " combo ")
+                && Pattern.compile("\\b1[,.]4\\s*i\\b|\\b1[,.]4i\\b").matcher(normalized).find()) {
+            return "PETROL";
+        }
         if (containsAny(normalized, " nafta ", " diesel ", " tdi ", " tdci ", " hdi ", " dci ", " cdi ", " crdi ", " jtd ")) {
             return "DIESEL";
         }
@@ -1656,7 +1660,15 @@ public class SautoParser implements CarSourceParser {
             return "MINIVAN";
         }
 
+        if (containsAny(titleSource, " ford fusion ", " peugeot 807 ")) {
+            return "MINIVAN";
+        }
+
         if (containsAny(titleSource, " accent ", " mondeo ", " nubira ", " voyah passion ", " passion phev ")) {
+            return "SEDAN";
+        }
+
+        if (containsAny(titleSource, " peugeot 607 ")) {
             return "SEDAN";
         }
 
