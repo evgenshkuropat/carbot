@@ -378,6 +378,9 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             if (looksLikelyFalseManual(title, transmission)) {
                 transmission = null;
             }
+            if ("ELECTRIC".equals(fuelType)) {
+                transmission = "AUTOMATIC";
+            }
             String brand = extractBrand(title, analysisText);
             String carType = firstNonBlank(
                     titleProfile.carType(),
@@ -1185,6 +1188,11 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             return "PETROL";
         }
 
+        if (source.contains(" sienna ")
+                && !containsAny(source, " diesel ", " nafta ", " hybrid ", " hev ", " phev ", " electric ", " elektro ")) {
+            return "PETROL";
+        }
+
         // PETROL
         if (containsAny(source,
                 " benzin ", " benzín ", " benzinovy ", " benzínový ", " petrol ",
@@ -1357,6 +1365,10 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         }
 
         String source = " " + normalizeText(title).toLowerCase(Locale.ROOT) + " ";
+        if (source.contains(" sienna ") && "DIESEL".equals(fuelType)) {
+            return extractFuelType(title);
+        }
+
         if (containsAny(source, " sienna ", " sandero stepway ", " navara d22 ", " grandland x ")
                 && extractFuelType(title) == null) {
             return null;
@@ -1507,6 +1519,12 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         }
 
         if (containsAny(tokens, " automat ", " aut ", " at ", " a t ", " at8 ", " at6 ", " mta ", " selespeed ")) {
+            return "AUTOMATIC";
+        }
+
+        if (containsAny(tokens,
+                " dsg ", " dct ", " cvt ", " ecvt ", " eat8 ", " edcs ",
+                " stronic ", " tiptronic ", " powershift ", " multitronic ", " steptronic ", " xtronic ")) {
             return "AUTOMATIC";
         }
 
@@ -1955,6 +1973,10 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             return "HATCHBACK";
         }
 
+        if (containsAny(titleSource, " volkswagen up ", " vw up ", " vw up! ", " up! ", " up 1.0 ", " up 10mpi ")) {
+            return "HATCHBACK";
+        }
+
         if (containsAny(titleSource, " terrano ")) {
             return "SUV";
         }
@@ -2354,6 +2376,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " charger ",
                 " giulia ", " alfa 75 ", " romeo 75 ", " alfa 156 ", " romeo 156 ", " alfa 159 ", " romeo 159 ", " alfa 166 ", " romeo 166 ",
                 " cruze ", " lancer ", " primera ",
+                " lexus is ",
                 " s60 ", " peugeot 301 ", " talisman ",
                 " octavia ", " oktavia ", " mazda 6 ", " mazdu 6 ", " superb ", " passat ", " arteon ",
                 " a4 ", " a6 ", " a7 ", " a8 ", " s5 ", " s7 ", " s8 ",
@@ -3004,6 +3027,11 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         String analysis = " " + shortenForCheck(normalizeText(analysisText).toLowerCase(Locale.ROOT), 900) + " ";
         String compactTitleValue = compactSearchText(title);
         String asciiTitleValue = asciiSearchText(title);
+
+        if (startsWithAny(asciiTitleValue, "strecha ")
+                || containsAny(asciiTitleValue, " auto pro vozickare ", " auto s rampou ", " ztp ", " plasty do masky ")) {
+            return true;
+        }
 
         if (startsWithAny(titleValue,
                 "motor ",
@@ -3877,6 +3905,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " touareg ",
                 " kodiaq ",
                 " karoq ",
+                " kamiq ",
                 " rav ",
                 " qashqai ",
                 " juke ",
@@ -3912,6 +3941,9 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " e-tron ",
                 " etron ",
                 " s4 quattro ",
+                " lexus is ",
+                " volkswagen up ",
+                " vw up ",
                 " q7 ",
                 " q5 ",
                 " q4 ",

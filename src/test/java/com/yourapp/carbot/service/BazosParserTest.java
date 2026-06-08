@@ -110,6 +110,7 @@ class BazosParserTest {
         assertThat(extractFuelType("Chevrolet Spark 1,0")).isEqualTo("PETROL");
         assertThat(extractFuelType("Chevrolet aveo 1.4")).isEqualTo("PETROL");
         assertThat(extractFuelType("Chevrolet Orlando 2,0 96kw")).isEqualTo("DIESEL");
+        assertThat(extractFuelType("Toyota Sienna AWD 2017 7 mist 8AT tazne")).isEqualTo("PETROL");
     }
 
     @Test
@@ -189,6 +190,7 @@ class BazosParserTest {
         assertThat(extractCarType("Toyota 4runner - SPECIAL z mise OSN", "", "")).isEqualTo("SUV");
         assertThat(extractCarType("Toyota Prius Plus 7mist+LPG 2013", "", "")).isEqualTo("MINIVAN");
         assertThat(extractCarType("Toyota Sienna AWD 2017 7 mist 8AT tazne", "", "")).isEqualTo("MINIVAN");
+        assertThat(extractCarType("Lexus IS 220d", "", "")).isEqualTo("SEDAN");
         assertThat(extractCarType("Toyota Starlet", "", "")).isEqualTo("HATCHBACK");
         assertThat(extractCarType("Hyundai SantaFe 4 x 4", "", "")).isEqualTo("SUV");
         assertThat(extractCarType("Hyundai IX 20", "", "")).isEqualTo("MINIVAN");
@@ -200,6 +202,7 @@ class BazosParserTest {
         assertThat(extractCarType("VW Passat B8 Varian TDI 110kW DSG", "", "")).isEqualTo("WAGON");
         assertThat(extractCarType("VW Arteon SB 2.0 TDI 110kW DSG R-Line", "", "")).isEqualTo("WAGON");
         assertThat(extractCarType("VW GOLF PLUS 1,4 TSi 90 KW TOP STAV", "", "")).isEqualTo("MINIVAN");
+        assertThat(extractCarType("Volkswagen UP 1.0MPI KLIMA", "", "")).isEqualTo("HATCHBACK");
         assertThat(extractCarType("Volvo S80 2.4D5 120 kW Klima Tempomat CR", "", "")).isEqualTo("SEDAN");
         assertThat(extractCarType("Volvo v 90", "", "")).isEqualTo("WAGON");
         assertThat(extractCarType("Audi A2 1.4 TDI STK 2028", "", "")).isEqualTo("HATCHBACK");
@@ -248,10 +251,11 @@ class BazosParserTest {
         assertThat(extractTransmission("Citroen Berlingo 1.5 BlueHDi 130S&S MAN 6 SHINE")).isEqualTo("MANUAL");
         assertThat(extractTransmission("Citroen Berlingo 1.6 BlueHDI XTR 100 MAN")).isEqualTo("MANUAL");
         assertThat(extractTransmission("Hyundai i30 Kombi 1.6 CRDi 85kW DCT (2018)")).isEqualTo("AUTOMATIC");
+        assertThat(extractTransmission("Skoda Octavia 4 combi RS 2.0TDi,147kW,DSG,4x4")).isEqualTo("AUTOMATIC");
         assertThat(looksLikelyFalseAutomatic("PEUGEOT 207 1.4 i BENZIN 70 kW NOVE ROZVODY", "AUTOMATIC")).isTrue();
         assertThat(looksLikelyFalseAutomatic("Peugeot 308 1.6HDI 88KW 9/2015 LED NAVIGACE P. SERVIS", "AUTOMATIC")).isTrue();
         assertThat(looksLikelyFalseAutomatic("Octavia III 2,0TDi 110KW Edition + NAVI tempomat ALU STK", "AUTOMATIC")).isTrue();
-        assertThat(correctLikelyNoisyFuel("Toyota Sienna AWD 2017 7 mist 8AT tazne", "DIESEL")).isNull();
+        assertThat(correctLikelyNoisyFuel("Toyota Sienna AWD 2017 7 mist 8AT tazne", "DIESEL")).isEqualTo("PETROL");
         assertThat(correctLikelyNoisyFuel("Dacia Sandero Stepway", "DIESEL")).isNull();
         assertThat(correctLikelyNoisyFuel("Navara D22 Kingcab 98kw", "PETROL")).isNull();
         assertThat(correctLikelyNoisyFuel("Opel Grandland X 1 majitel servis", "LPG")).isNull();
@@ -278,6 +282,8 @@ class BazosParserTest {
         assertThat(looksNonCarListing("Levy halogen Alfa Romeo Giulietta", "", "", "")).isTrue();
         assertThat(looksNonCarListing("Original setrvacnik Lancia Fiat 1.2 8v / 16v", "", "", "")).isTrue();
         assertThat(looksNonCarListing("Sada OEM filtru Alfa 159", "", "", "")).isTrue();
+        assertThat(looksNonCarListing("Strecha Toyota MR2, pasy, plasty do masky", "", "", "")).isTrue();
+        assertThat(looksNonCarListing("Auto pro vozickare/ZTP/auto s rampou", "", "", "")).isTrue();
         assertThat(looksNonCarListing(
                 "S4 Quattro BSR 402PS 1.majitel koupeno v CR full servis -DPH",
                 "",
@@ -292,6 +298,7 @@ class BazosParserTest {
         assertThat(looksSuspiciousListing("Alfa Romeo 159", "")).isFalse();
         assertThat(looksSuspiciousListing("SKODA FABIA 3 1,0MPi 44kW Koup.CR,1.majitel,Serv. kniha,2019", "rezervace")).isFalse();
         assertThat(looksSuspiciousListing("SKODA SCALA 1,0TSi 70kW Koup.CR,1.majitel,LED,2022,119tkm", "rezervace")).isFalse();
+        assertThat(looksSuspiciousListing("SKODA KAMIQ 1,0TSi 81kW Koup.CR,1.majitel,TAZNE,2022,DPH", "rezervace")).isFalse();
         assertThat(looksSuspiciousListing("VW ARTEON 2,0TDi 110kW DSG ELEGANCE CR 2022 NYNI PO SERVISE", "rezervace")).isFalse();
         assertThat(looksSuspiciousListing("SKODA OCTAVIA IV 1,5TSi G-TEC 96kW Koup.CR,50.000km2022", "rezervace")).isFalse();
         assertThat(looksSuspiciousListing("OPEL e-CORSA 100kW ELEGANCE electro Koup.CR,1.majitel,2023", "rezervace")).isFalse();
