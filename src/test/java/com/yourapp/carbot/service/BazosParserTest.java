@@ -30,6 +30,10 @@ class BazosParserTest {
                 .isEqualTo("LANCIA");
         assertThat(extractBrand("S4 Quattro BSR 402PS 1.majitel koupeno v CR full servis -DPH", ""))
                 .isEqualTo("AUDI");
+        assertThat(extractBrand("Prugeot 208,1.2,VTi", ""))
+                .isEqualTo("PEUGEOT");
+        assertThat(extractBrand("Nissan Pulsar 1.2 85kW 2015 CZ", ""))
+                .isEqualTo("NISSAN");
     }
 
     @Test
@@ -111,6 +115,10 @@ class BazosParserTest {
         assertThat(extractFuelType("Chevrolet aveo 1.4")).isEqualTo("PETROL");
         assertThat(extractFuelType("Chevrolet Orlando 2,0 96kw")).isEqualTo("DIESEL");
         assertThat(extractFuelType("Toyota Sienna AWD 2017 7 mist 8AT tazne")).isEqualTo("PETROL");
+        assertThat(extractFuelType("Nissan Pixo 1.0 50 kW Pure Drive klima servis")).isEqualTo("PETROL");
+        assertThat(extractFuelType("Peugeot 108 1.0benzin servisni hostorie")).isEqualTo("PETROL");
+        assertThat(extractFuelType("Opel Corsa 1.4, rok 2018, najeto 156tkm")).isEqualTo("PETROL");
+        assertThat(extractFuelType("Opel Mokka 1,2, Ultimate r.v.2022 naj.30000.-km")).isEqualTo("PETROL");
     }
 
     @Test
@@ -174,13 +182,16 @@ class BazosParserTest {
         assertThat(extractCarType("Opel Astra K 1,6 CDTI 81kw sport Tourer, Innovation", "", "")).isEqualTo("WAGON");
         assertThat(extractCarType("Opel Astra K 1,6 CDTI 81kw 2016 ST, Innovation", "", "")).isEqualTo("WAGON");
         assertThat(extractCarType("Opel Insignia Sport Taurer", "", "")).isEqualTo("WAGON");
+        assertThat(extractCarType("OPEL ASTRA SPORTS TOUER 1.6CDTI 81KW EDITION", "", "")).isEqualTo("WAGON");
         assertThat(extractCarType("Nissan Primera P12 2.2D", "", "")).isEqualTo("SEDAN");
+        assertThat(extractCarType("Nissan Pulsar 1.2 85kW 2015 CZ", "", "")).isEqualTo("HATCHBACK");
         assertThat(extractCarType("Nissan Elgrand 3.5 V6", "", "")).isEqualTo("MINIVAN");
         assertThat(extractCarType("OPEL AMPERA PLUGIN-HYBRID ELEKTRO", "", "")).isEqualTo("HATCHBACK");
         assertThat(extractCarType("Opel Crossland X 1.2i 81kw Inovation", "", "")).isEqualTo("SUV");
         assertThat(extractCarType("OPEL VECTRA C 2.2i 16V EDICE", "", "")).isEqualTo("SEDAN");
         assertThat(extractCarType("Prodame Peugeot Travaller", "", "")).isEqualTo("MINIVAN");
         assertThat(extractCarType("Peugeot Traveller 2.0 Blue-HDi Allure L2", "", "")).isEqualTo("MINIVAN");
+        assertThat(extractCarType("Peugeot 108 1.0benzin servisni hostorie", "", "")).isEqualTo("HATCHBACK");
         assertThat(extractCarType("PEUGEOT 301 1.2 60kW rok 2016", "", "")).isEqualTo("SEDAN");
         assertThat(extractCarType("Toyota Corolla ST 1.8 HEV 103kW e-CVT,2024,35tkm", "", "")).isEqualTo("WAGON");
         assertThat(extractCarType("Toyota Rav 4 2.0D 85Kw Nova STK, 4x4", "", "")).isEqualTo("SUV");
@@ -370,6 +381,12 @@ class BazosParserTest {
                 "Citroen HY - W",
                 "",
                 "https://auto.bazos.cz/inzerat/219491815/citroen-hy-w.php"))
+                .isTrue();
+
+        assertThat(looksCommercialVehicle(
+                "NISSAN NT400 CABSTAR SKLOPKA 3.0 dci 150 PS",
+                "",
+                "https://auto.bazos.cz/inzerat/218825089/nissan-nt400-cabstar-sklopka.php"))
                 .isTrue();
 
         assertThat(looksCommercialVehicle(
