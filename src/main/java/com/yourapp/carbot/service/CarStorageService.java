@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
+import java.text.Normalizer;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.regex.Matcher;
@@ -783,7 +784,6 @@ public class CarStorageService {
 
     private boolean looksLikeRealCar(String title) {
         String t = title.toLowerCase(Locale.ROOT);
-
         return t.contains("škoda")
                 || t.contains("skoda")
                 || t.contains("audi")
@@ -935,11 +935,22 @@ public class CarStorageService {
     }
 
     private boolean looksLikeBadTitle(String title) {
+        String ascii = Normalizer.normalize(title.toLowerCase(Locale.ROOT), Normalizer.Form.NFD).replaceAll("\\p{M}", "");
         String t = title.toLowerCase(Locale.ROOT);
 
         return t.contains("hledám auto")
                 || t.contains("hledam auto")
                 || t.equals("osobni automobil")
+                || t.contains("rezervace")
+                || ascii.contains("rezervace")
+                || t.contains("rezervovano")
+                || ascii.contains("rezervovano")
+                || t.contains("zarezervovano")
+                || ascii.contains("zarezervovano")
+                || t.contains("zalohovano")
+                || ascii.contains("zalohovano")
+                || t.contains("pripravujeme")
+                || ascii.contains("pripravujeme")
                 || t.equals("osobnĂ­ automobil")
                 || t.contains("koupím auto")
                 || t.contains("koupim auto")

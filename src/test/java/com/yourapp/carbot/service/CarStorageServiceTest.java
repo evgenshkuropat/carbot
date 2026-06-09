@@ -107,6 +107,9 @@ class CarStorageServiceTest {
     @Test
     void rejectsGenericCarTitles() throws Exception {
         assertThat(looksLikeBadTitle("Osobni automobil")).isTrue();
+        assertThat(looksLikeBadTitle("Toyota Camry, 2.5 Hybrid Executive REZERVACE")).isTrue();
+        assertThat(looksLikeBadTitle("Seat Tarraco, 2,0 TDI 4x4 DSG PŘIPRAVUJEME")).isTrue();
+        assertThat(looksLikeBadTitle("Volkswagen T-Roc, 2.0 TDI 110 kW DSG SPORT")).isFalse();
     }
 
     private String normalizeFuelType(String fuelType, String title) throws Exception {
