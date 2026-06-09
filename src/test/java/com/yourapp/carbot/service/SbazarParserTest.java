@@ -86,6 +86,10 @@ class SbazarParserTest {
         assertThat(resolveFuelType("mercedes-benz tridy c c200 1.6 automat 46000 km", "")).isEqualTo("PETROL");
         assertThat(resolveFuelType("volkswagen golf 3 1.4 cl 44 kw 1993 oldtimer", "")).isEqualTo("PETROL");
         assertThat(resolveFuelType("dacia duster 1,6", "")).isEqualTo("PETROL");
+        assertThat(resolveFuelType("dacia logan mcv 1.0sce puvod cr odpdph manualni", "")).isEqualTo("PETROL");
+        assertThat(resolveFuelType("suzuki samurai 1.3 4x4 1994 celoplech", "")).isEqualTo("PETROL");
+        assertThat(resolveFuelType("saab 9-3 1,9 tid 110kw automat 2xkola", "")).isEqualTo("DIESEL");
+        assertThat(resolveFuelType("ostatni ktm x-bow gt-xr 2024 nove", "")).isEqualTo("PETROL");
         assertThat(resolveFuelType("dongfeng u-tour 1,5 t 130 kw exclusivefr 7mist", "")).isEqualTo("PETROL");
         assertThat(resolveFuelType("hyundai i30 1,5dpi style comfort plus", "")).isEqualTo("PETROL");
         assertThat(resolveFuelType("audi a4 avant 2.0td aut vyhrev senzory", "")).isEqualTo("DIESEL");
@@ -117,6 +121,8 @@ class SbazarParserTest {
         assertThat(detectBrand("isuzu d-max v-cross 2.2l 163k 4x4 8st a/t")).isEqualTo("ISUZU");
         assertThat(detectBrand("opel mokka x 1,6 16v")).isEqualTo("OPEL");
         assertThat(detectBrand("subaru xv 2.0i 4x4 aut")).isEqualTo("SUBARU");
+        assertThat(detectBrand("saab 9-3 1,9 tid 110kw automat 2xkola")).isEqualTo("SAAB");
+        assertThat(detectBrand("ostatni ktm x-bow gt-xr 2024 nove")).isEqualTo("KTM");
     }
 
     @Test
@@ -130,6 +136,22 @@ class SbazarParserTest {
         assertThat(resolveCarType("mercedes-benz tridy e 220cdi amg paket", "")).isEqualTo("SEDAN");
         assertThat(resolveCarType("audi a8 3,0 50 tdi quattro laser dph", "")).isEqualTo("SEDAN");
         assertThat(resolveCarType("mercedes-benz tridy c 43 amg 4matic", "")).isEqualTo("SEDAN");
+        assertThat(resolveCarType("volkswagen taigo 1,5 tsi dsg r-line led assist", "")).isEqualTo("SUV");
+        assertThat(resolveCarType("vw golf plus 2.0tdi 103 kw dsg", "")).isEqualTo("MINIVAN");
+        assertThat(resolveCarType("ford fusion 1.4i 16v klima tazne alu manualni", "")).isEqualTo("MINIVAN");
+        assertThat(resolveCarType("suzuki samurai 1.3 4x4 1994 celoplech", "")).isEqualTo("SUV");
+        assertThat(resolveCarType("fiat sedici 1.9jtd 4x4 klimatizace", "")).isEqualTo("SUV");
+        assertThat(resolveCarType("citroen c4 2022 nafta automat dph", "")).isEqualTo("HATCHBACK");
+        assertThat(resolveCarType("opel grandland 2021 automat dph", "")).isEqualTo("SUV");
+        assertThat(resolveCarType("honda insight 1.3i hybrid automat klima alu", "")).isEqualTo("HATCHBACK");
+        assertThat(resolveCarType("ford puma gen-e premium 123kw 43 kwh", "")).isEqualTo("SUV");
+        assertThat(resolveCarType("toyota avensis com 1.8i 95kw r.2005", "")).isEqualTo("WAGON");
+        assertThat(resolveCarType("hyundai i10 1.1i rv 2011", "")).isEqualTo("HATCHBACK");
+        assertThat(resolveCarType("suzuki splash 1.0i 48kw r.5/2011", "")).isEqualTo("HATCHBACK");
+        assertThat(resolveCarType("mitsubishi eclipse cross 1,5 t-gdi 120kw cr", "")).isEqualTo("SUV");
+        assertThat(resolveCarType("toyota proace city 1.5 d-4d 100 active swb cr", "")).isEqualTo("MINIVAN");
+        assertThat(resolveCarType("ostatni ktm x-bow gt-xr 2024 nove", "")).isEqualTo("COUPE");
+        assertThat(resolveCarType("saab 9-3 1,9 tid 110kw automat 2xkola", "")).isEqualTo("SEDAN");
         assertThat(resolveCarType("vw id 3 pro performance rv.2024", "")).isEqualTo("HATCHBACK");
         assertThat(resolveCarType("smart fourtwo 451 cdi l6e", "")).isEqualTo("HATCHBACK");
         assertThat(resolveCarType("smart forfour eq comfort 60 kw", "")).isEqualTo("HATCHBACK");
