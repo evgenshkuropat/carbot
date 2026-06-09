@@ -107,8 +107,13 @@ class CarStorageServiceTest {
     @Test
     void rejectsGenericCarTitles() throws Exception {
         assertThat(looksLikeBadTitle("Osobni automobil")).isTrue();
+        assertThat(looksLikeBadTitle("Skoda")).isTrue();
+        assertThat(looksLikeBadTitle("BMW")).isTrue();
+        assertThat(looksLikeBadTitle("Toyota")).isTrue();
         assertThat(looksLikeBadTitle("Toyota Camry, 2.5 Hybrid Executive REZERVACE")).isTrue();
         assertThat(looksLikeBadTitle("Seat Tarraco, 2,0 TDI 4x4 DSG PŘIPRAVUJEME")).isTrue();
+        assertThat(looksLikeBadTitle("BMW X5")).isFalse();
+        assertThat(looksLikeBadTitle("Volkswagen Golf")).isFalse();
         assertThat(looksLikeBadTitle("Volkswagen T-Roc, 2.0 TDI 110 kW DSG SPORT")).isFalse();
     }
 

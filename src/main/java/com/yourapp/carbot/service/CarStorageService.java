@@ -937,6 +937,9 @@ public class CarStorageService {
     private boolean looksLikeBadTitle(String title) {
         String ascii = Normalizer.normalize(title.toLowerCase(Locale.ROOT), Normalizer.Form.NFD).replaceAll("\\p{M}", "");
         String t = title.toLowerCase(Locale.ROOT);
+        if (looksLikeBrandOnlyTitle(ascii)) {
+            return true;
+        }
 
         return t.contains("hledám auto")
                 || t.contains("hledam auto")
@@ -966,6 +969,13 @@ public class CarStorageService {
                 || t.contains("motorka")
                 || t.contains("motocykl")
                 || t.contains("skutr");
+    }
+
+    private boolean looksLikeBrandOnlyTitle(String asciiTitle) {
+        String compact = asciiTitle
+                .replaceAll("[^a-z0-9]+", " ")
+                .trim();
+        return compact.matches("skoda|audi|bmw|mercedes|mercedes benz|volkswagen|vw|toyota|ford|renault|hyundai|kia|chevrolet|peugeot|opel|mazda|honda|volvo|seat|dacia|fiat|tesla|cupra|subaru|nissan|suzuki|jeep|mini|lexus|porsche|mitsubishi|isuzu|cadillac|alpina|land rover|alfa romeo|citroen|citro n");
     }
 
     private <T> boolean updateIfDifferent(ValueSupplier<T> getter,
