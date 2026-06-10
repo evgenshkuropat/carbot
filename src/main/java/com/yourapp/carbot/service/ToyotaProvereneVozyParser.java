@@ -664,7 +664,7 @@ public class ToyotaProvereneVozyParser implements CarSourceParser {
         }
         if (source.contains(" corolla ")
                 && source.contains(" executive ")
-                && !containsAny(source, " corolla sedan ", " corolla sd ", " corolla cross ", " corolla ts ", " touring ", " kombi ", " combi ", " wagon ")) {
+                && !containsAny(source, " corolla sedan ", " corolla sd ", " corolla cross ", " corolla ts ", " ts ", " touring ", " kombi ", " combi ", " wagon ")) {
             return "HATCHBACK";
         }
         if (containsAny(source, " hilux ", " pick-up ", " pickup ", " doublecab ", " double cab ")) {
@@ -676,10 +676,10 @@ public class ToyotaProvereneVozyParser implements CarSourceParser {
             return "SUV";
         }
         if (containsAny(source, " proace verso ", " proace city verso ", " touran ", " roomster ",
-                " berlingo ", " c3 picasso ", " c4 picasso ", " verso ", " b-max ", " b max ")) {
+                " berlingo ", " c3 picasso ", " c4 picasso ", " verso ", " b-max ", " b max ", " venga ")) {
             return "MINIVAN";
         }
-        if (containsAny(source, " proace max ", " proace city ", " proace ", " movano ", " boxer ", " uzitkove ")) {
+        if (containsAny(source, " proace max ", " proace city ", " proace ", " movano ", " boxer ", " jumper ", " ducato ", " uzitkove ")) {
             return "VAN";
         }
         if ((source.contains(" corolla ") && containsAny(source, " ts ", " touring "))

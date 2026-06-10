@@ -1054,7 +1054,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " plug-in ", " plug in ", " phev ",
                 " mild-hybrid ", " mild hybrid ",
                 " hybrid ", " hybridni ", " e-hybrid ", " ehybrid ", " e-tfsi ", " etfsi ", " i-mmd ", " immd ", " hev ", " mhev ",
-                " b5 ", " b6 ")) {
+                " b3 ", " b4 ", " b5 ", " b6 ")) {
             return "HYBRID";
         }
 
@@ -1120,6 +1120,8 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " mhev ",
                 " b5 ",
                 " b6 ",
+                " b3 ",
+                " b4 ",
                 " superb iv ",
                 " octavia iv ",
                 " passat gte ",
@@ -2359,6 +2361,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
 
         if (containsAny(titleSource,
                 " cc ", " 206cc ", " 207cc ", " 307cc ", " 308cc ",
+                " c70 ",
                 " cabrio ", " kabrio ",
                 " roadster ", " spyder ", " spider ",
                 " convertible ", " cabriolet ",

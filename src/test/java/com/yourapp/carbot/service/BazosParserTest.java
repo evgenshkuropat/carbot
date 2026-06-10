@@ -108,6 +108,7 @@ class BazosParserTest {
         assertThat(extractFuelType("Pekna Dacia Logan MCV 1.2...16V")).isEqualTo("PETROL");
         assertThat(extractFuelType("VOLVO V90 CROSS COUNTRY ULTIMATE B5 173KW 2022 CZ DPH 1MAJ")).isEqualTo("HYBRID");
         assertThat(extractFuelType("Volvo XC 90 B5 AWD INSCRIPTION")).isEqualTo("HYBRID");
+        assertThat(extractFuelType("Volvo XC40 B3 5/2026 PLUS BLACK EDITION , DPH , 465km")).isEqualTo("HYBRID");
         assertThat(extractFuelType("Volvo XC60 R-DESIGN D4 140 kW AWD")).isEqualTo("DIESEL");
         assertThat(extractFuelType("Volvo V40 D2 2.0 88kW 2016 Ocean Race")).isEqualTo("DIESEL");
         assertThat(extractFuelType("Volvo XC70 D5 Summum AWD Aut 136 kW")).isEqualTo("DIESEL");
@@ -229,6 +230,7 @@ class BazosParserTest {
                 .isEqualTo("MINIVAN");
         assertThat(extractCarType("Volkswagen UP 1.0MPI KLIMA", "", "")).isEqualTo("HATCHBACK");
         assertThat(extractCarType("Volvo S80 2.4D5 120 kW Klima Tempomat CR", "", "")).isEqualTo("SEDAN");
+        assertThat(extractCarType("Volvo C70 2.0d 5valec automat 130kW", "", "")).isEqualTo("CABRIO");
         assertThat(extractCarType("Volvo v 90", "", "")).isEqualTo("WAGON");
         assertThat(extractCarType("Audi A2 1.4 TDI STK 2028", "", "")).isEqualTo("HATCHBACK");
         assertThat(extractCarType("Renault Talisman 1.6dCI MANUAL VYHREV TAZNE", "", "")).isEqualTo("SEDAN");

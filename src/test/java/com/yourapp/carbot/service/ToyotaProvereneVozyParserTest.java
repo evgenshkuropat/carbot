@@ -30,12 +30,18 @@ class ToyotaProvereneVozyParserTest {
                 .isEqualTo("HATCHBACK");
         assertThat(extractCarType("Toyota Corolla 1,8 HEV Comfort Tech TS", ""))
                 .isEqualTo("WAGON");
+        assertThat(extractCarType("Toyota Corolla 2,0 HEV Executive TS", ""))
+                .isEqualTo("WAGON");
         assertThat(extractCarType("Peugeot 3008 ALLURE 1.2 PureTech", ""))
                 .isEqualTo("SUV");
         assertThat(extractCarType("Suzuki Ignis 1,2 DualJet Premium", ""))
                 .isEqualTo("SUV");
         assertThat(extractCarType("Ford B-MAX EcoBoost", ""))
                 .isEqualTo("MINIVAN");
+        assertThat(extractCarType("Kia Venga 1.6i, CR-1m, 2x kola, manual", ""))
+                .isEqualTo("MINIVAN");
+        assertThat(extractCarType("Citroen Jumper 2.2HDi, L1H1, CR-1, tazne, DPH", ""))
+                .isEqualTo("VAN");
         assertThat(extractCarType("Lexus LBX 1,5 HEV Original Edition 4x4", ""))
                 .isEqualTo("SUV");
         assertThat(extractCarType("Baic BJ30 BJ30 HEV 1.5T 209kW 2DHT 4x4 ALL IN MY25", ""))
