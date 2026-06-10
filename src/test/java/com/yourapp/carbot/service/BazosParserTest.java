@@ -120,6 +120,7 @@ class BazosParserTest {
         assertThat(extractFuelType("Opel Corsa 1.4, rok 2018, najeto 156tkm")).isEqualTo("PETROL");
         assertThat(extractFuelType("Opel Mokka 1,2, Ultimate r.v.2022 naj.30000.-km")).isEqualTo("PETROL");
         assertThat(extractFuelType("Dacia Duster 1.6 SCe 84Kw 1.majitel 109000km uplny servis")).isEqualTo("PETROL");
+        assertThat(extractFuelType("Lexus RX 400h")).isEqualTo("HYBRID");
     }
 
     @Test
@@ -131,6 +132,7 @@ class BazosParserTest {
         assertThat(extractCarType("Suzuki Jimny 1.3 i 2015", "", "")).isEqualTo("SUV");
         assertThat(extractCarType("suzuki jimny 4x4", "", "")).isEqualTo("SUV");
         assertThat(extractCarType("Suzuki Samurai 1.3", "", "")).isEqualTo("SUV");
+        assertThat(extractCarType("Suzuki Ignis 1.2 Spajacie z. za karavan, Bluetooth", "", "")).isEqualTo("SUV");
         assertThat(extractCarType("Prodam Suzuki sx4,1.6", "", "")).isEqualTo("SUV");
         assertThat(extractCarType("Suzuki Virara 1.6 Ddis", "", "")).isEqualTo("SUV");
         assertThat(extractCarType("Suzuki Alto,1.0i,50kw", "", "")).isEqualTo("HATCHBACK");
@@ -196,6 +198,7 @@ class BazosParserTest {
         assertThat(extractCarType("PEUGEOT 301 1.2 60kW rok 2016", "", "")).isEqualTo("SEDAN");
         assertThat(extractCarType("Toyota Corolla ST 1.8 HEV 103kW e-CVT,2024,35tkm", "", "")).isEqualTo("WAGON");
         assertThat(extractCarType("Toyota Rav 4 2.0D 85Kw Nova STK, 4x4", "", "")).isEqualTo("SUV");
+        assertThat(extractCarType("Toyota CH-R 1.8 hybrid", "", "")).isEqualTo("SUV");
         assertThat(extractCarType("Toyota Aoris", "", "")).isEqualTo("HATCHBACK");
         assertThat(extractCarType("Toyota Camry Executive HYBRID", "", "")).isEqualTo("SEDAN");
         assertThat(extractCarType("Toyota Yaris Cross, 1.5HEV, Adventure, 4x4", "", "")).isEqualTo("SUV");

@@ -1057,9 +1057,15 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             return "HYBRID";
         }
 
+        if (Pattern.compile("(?i)\\b(?:ct|is|gs|ls|nx|rx|ux|es|toyota|lexus)?\\s*[2345][05]0\\s*h\\b")
+                .matcher(source).find()) {
+            return "HYBRID";
+        }
+
         if (compact.contains("hybrid")
                 || compact.contains("phev")
                 || compact.contains("mhev")
+                || compact.matches(".*(?:ct|is|gs|ls|nx|rx|ux|es)?[2345][05]0h.*")
                 || compact.contains("ehev")
                 || compact.contains("etfsi")
                 || compact.contains("immd")) {
@@ -1912,7 +1918,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             return "WAGON";
         }
 
-        if (containsAny(titleSource, " yaris cross ", " rav4 ", " rav 4 ", " 4runner ", " 4 runner ", " yeti ",
+        if (containsAny(titleSource, " yaris cross ", " rav4 ", " rav 4 ", " c-hr ", " ch-r ", " chr ", " 4runner ", " 4 runner ", " yeti ",
                 " fiat 500x ", " 500x ")) {
             return "SUV";
         }
@@ -1925,7 +1931,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             return "SEDAN";
         }
 
-        if (containsAny(titleSource, " jimny ", " samurai ", " virara ", " tarraco ")) {
+        if (containsAny(titleSource, " jimny ", " samurai ", " virara ", " ignis ", " tarraco ")) {
             return "SUV";
         }
 
@@ -2262,7 +2268,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " rdx ",
                 " tucson ", " santa fe ", " santafe ", " kona ", " pilot ", " ix55 ",
                 " duster ", " koleos ", " kadjar ",
-                " cr-v ", " cr v ", " crv ", " hr-v ", " hr v ", " hrv ", " rav4 ", " c-hr ", " chr ",
+                " cr-v ", " cr v ", " crv ", " hr-v ", " hr v ", " hrv ", " rav4 ", " c-hr ", " ch-r ", " chr ",
                 " cx-3 ", " cx3 ", " cx-5 ", " cx 5 ", " cx5 ", " cx-7 ", " cx 7 ", " cx7 ", " tribute ",
                 " macan ", " cayenne ",
                 " ux ", " nx ", " rx ",
