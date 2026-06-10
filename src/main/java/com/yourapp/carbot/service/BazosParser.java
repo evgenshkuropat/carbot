@@ -1116,7 +1116,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             return "HYBRID";
         }
 
-        if (containsAny(source, " jts ", " twinspark ", " twin spark ", " tbi ", " turbo ", " ts ",
+        if (containsAny(source, " jts ", " twinspark ", " twin spark ", " tbi ", " turbo ", " ts ", " sce ",
                 " bmw m3 ", " m3 ", " civic type-r ", " civic type r ", " type-r ", " type r ", " typer ", " fn2 ", " ep2 ")
                 || compact.contains("typer")
                 || compact.contains("fn2")
@@ -1197,7 +1197,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         if (containsAny(source,
                 " benzin ", " benzín ", " benzinovy ", " benzínový ", " petrol ",
                 " tsi ", " tfsi ", " fsi ", " gdi ", " tgdi ", " t-gdi ",
-                " dig-t ", " ig-t ", " igt ", " tce ", " ecoboost ", " mivec ",
+                " dig-t ", " ig-t ", " igt ", " tce ", " sce ", " ecoboost ", " mivec ",
                 " vtec ", " vti ", " puretech ", " pt ", " mpi ", " twinair ",
                 " jts ", " twinspark ", " twin spark ", " tbi ", " ts ", " vvt ", " 16v ", " boosterjet ", " booster jet ",
                 " quadrifoglio ", " qv ",
@@ -1227,6 +1227,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 || compact.contains("gdi")
                 || compact.contains("tgdi")
                 || compact.contains("tce")
+                || compact.contains("sce")
                 || compact.contains("ecoboost")
                 || compact.contains("mivec")
                 || compact.contains("vtec")
@@ -1416,6 +1417,10 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         }
 
         if (containsAny(source, " benzin ", " benzín ", " petrol ")) {
+            return "PETROL";
+        }
+
+        if (containsAny(source, " sce ")) {
             return "PETROL";
         }
 
@@ -2772,7 +2777,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             case "c3aircross" -> slug.contains("-c3-aircross-");
             case "ds3" -> slug.contains("-ds3-") || slug.contains("-ds-3-");
             case "c3" -> slug.contains("-c3-");
-            case "c4" -> slug.contains("-c4-");
+            case "c4" -> slug.contains("-c4-") || slug.contains("-ec4-") || slug.contains("-e-c4-");
             case "c5" -> slug.contains("-c5-");
             case "a8" -> slug.contains("-a8-") || slug.contains("-a8l-");
             default -> slug.contains("-" + model + "-");

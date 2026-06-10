@@ -119,6 +119,7 @@ class BazosParserTest {
         assertThat(extractFuelType("Peugeot 108 1.0benzin servisni hostorie")).isEqualTo("PETROL");
         assertThat(extractFuelType("Opel Corsa 1.4, rok 2018, najeto 156tkm")).isEqualTo("PETROL");
         assertThat(extractFuelType("Opel Mokka 1,2, Ultimate r.v.2022 naj.30000.-km")).isEqualTo("PETROL");
+        assertThat(extractFuelType("Dacia Duster 1.6 SCe 84Kw 1.majitel 109000km uplny servis")).isEqualTo("PETROL");
     }
 
     @Test
@@ -336,6 +337,10 @@ class BazosParserTest {
         assertThat(looksTitleUrlMismatch(
                 "CITROEN C4 GRAND PICASSO 1.6i MANUAL LED KEYLESS TAZNE ZAR.",
                 "https://auto.bazos.cz/inzerat/219556468/citroen-c4-picasso-16i-manual-led-keyless-go-tazne-zarizeni.php"))
+                .isFalse();
+        assertThat(looksTitleUrlMismatch(
+                "Citroen C4 zaruka elektro",
+                "https://auto.bazos.cz/inzerat/219841903/citroen-ec4-zaruka.php"))
                 .isFalse();
     }
 
