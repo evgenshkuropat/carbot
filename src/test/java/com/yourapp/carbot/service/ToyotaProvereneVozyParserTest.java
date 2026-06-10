@@ -32,6 +32,8 @@ class ToyotaProvereneVozyParserTest {
                 .isEqualTo("WAGON");
         assertThat(extractCarType("Peugeot 3008 ALLURE 1.2 PureTech", ""))
                 .isEqualTo("SUV");
+        assertThat(extractCarType("Suzuki Ignis 1,2 DualJet Premium", ""))
+                .isEqualTo("SUV");
         assertThat(extractCarType("Ford B-MAX EcoBoost", ""))
                 .isEqualTo("MINIVAN");
         assertThat(extractCarType("Lexus LBX 1,5 HEV Original Edition 4x4", ""))

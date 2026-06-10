@@ -672,7 +672,7 @@ public class ToyotaProvereneVozyParser implements CarSourceParser {
         }
         if (containsAny(source, " yaris cross ", " aygo x ", " corolla cross ", " rav4 ", " c-hr ", " chr ", " bz4x ",
                 " highlander ", " lexus rx ", " lexus nx ", " lexus lbx ", " lbx ", " bj30 ",
-                " sportage ", " touareg ", " vitara ", " cr-v ", " crv ", " ecosport ", " 2008 ", " 3008 ")) {
+                " sportage ", " touareg ", " vitara ", " ignis ", " cr-v ", " crv ", " ecosport ", " 2008 ", " 3008 ")) {
             return "SUV";
         }
         if (containsAny(source, " proace verso ", " proace city verso ", " touran ", " roomster ",
