@@ -60,6 +60,12 @@ class SautoParserTest {
                 .isEqualTo("MINIVAN");
         assertThat(extractCarType("Peugeot 607 2.2 HDI, CR,1.maj, Klima", "", "https://www.sauto.cz/osobni/detail/peugeot/607/210149540"))
                 .isEqualTo("SEDAN");
+        assertThat(extractCarType("Renault Megane 1.5dCi,AC,temp", "", "https://www.sauto.cz/osobni/detail/renault/megane/210270278"))
+                .isEqualTo("HATCHBACK");
+        assertThat(extractCarType("Mercedes-Benz Tridy C 1.8 kompresor Dovoz z Nemecka", "", "https://www.sauto.cz/osobni/detail/mercedes-benz/tridy-c/210060683"))
+                .isEqualTo("SEDAN");
+        assertThat(extractCarType("Volkswagen Bora 1,4 16V KLIMATIZACE", "", "https://www.sauto.cz/osobni/detail/volkswagen/bora/210543449"))
+                .isEqualTo("SEDAN");
     }
 
     @Test

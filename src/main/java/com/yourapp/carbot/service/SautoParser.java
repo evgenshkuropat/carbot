@@ -1761,6 +1761,15 @@ public class SautoParser implements CarSourceParser {
             return "SUV";
         }
 
+        if (containsAny(urlSource, "/mercedes-benz/tridy-c/", "/volkswagen/bora/")) {
+            return "SEDAN";
+        }
+
+        if (containsAny(urlSource, "/renault/megane/")
+                && !containsAny(titleSource + " " + textSource, " kombi ", " combi ", " grandtour ", " estate ", " wagon ")) {
+            return "HATCHBACK";
+        }
+
         if (containsAny(textSource, " suv ", " crossover ", " off-road ", " offroad ")) {
             return "SUV";
         }
