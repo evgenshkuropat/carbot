@@ -108,6 +108,13 @@ class BazosParserTest {
         assertThat(extractFuelType("Pekna Dacia Logan MCV 1.2...16V")).isEqualTo("PETROL");
         assertThat(extractFuelType("VOLVO V90 CROSS COUNTRY ULTIMATE B5 173KW 2022 CZ DPH 1MAJ")).isEqualTo("HYBRID");
         assertThat(extractFuelType("Volvo XC 90 B5 AWD INSCRIPTION")).isEqualTo("HYBRID");
+        assertThat(extractFuelType("Volvo XC60 R-DESIGN D4 140 kW AWD")).isEqualTo("DIESEL");
+        assertThat(extractFuelType("Volvo V40 D2 2.0 88kW 2016 Ocean Race")).isEqualTo("DIESEL");
+        assertThat(extractFuelType("Volvo XC70 D5 Summum AWD Aut 136 kW")).isEqualTo("DIESEL");
+        assertThat(extractFuelType("XC90 T8")).isEqualTo("PLUGIN_HYBRID");
+        assertThat(extractFuelType("S90, 2,0T,T8,408koni,1.maj.odpocet DPH")).isEqualTo("PLUGIN_HYBRID");
+        assertThat(preferExplicitTitleFuelType("VW T6.1 CALIFORNIA BEACH/110KW/DSG/2020/VIRTUAL/Kuchyn/tazne",
+                "PLUGIN_HYBRID")).isNull();
         assertThat(extractFuelType("Prodam Fiat Multipla 1.6/16V CNG/2007/6mist")).isEqualTo("CNG");
         assertThat(extractFuelType("Ford Focus 1.6-16V")).isEqualTo("PETROL");
         assertThat(extractFuelType("FIAT 500, 1,2, 51kW, r.v:2015")).isEqualTo("PETROL");
@@ -200,6 +207,7 @@ class BazosParserTest {
         assertThat(extractCarType("Toyota Rav 4 2.0D 85Kw Nova STK, 4x4", "", "")).isEqualTo("SUV");
         assertThat(extractCarType("Toyota CH-R 1.8 hybrid", "", "")).isEqualTo("SUV");
         assertThat(extractCarType("Toyota Aoris", "", "")).isEqualTo("HATCHBACK");
+        assertThat(extractCarType("Toyota Avensis T25 2.0/93kw/D4D", "", "")).isEqualTo("SEDAN");
         assertThat(extractCarType("Toyota Camry Executive HYBRID", "", "")).isEqualTo("SEDAN");
         assertThat(extractCarType("Toyota Yaris Cross, 1.5HEV, Adventure, 4x4", "", "")).isEqualTo("SUV");
         assertThat(extractCarType("Toyota 4runner - SPECIAL z mise OSN", "", "")).isEqualTo("SUV");
@@ -217,6 +225,8 @@ class BazosParserTest {
         assertThat(extractCarType("VW Passat B8 Varian TDI 110kW DSG", "", "")).isEqualTo("WAGON");
         assertThat(extractCarType("VW Arteon SB 2.0 TDI 110kW DSG R-Line", "", "")).isEqualTo("WAGON");
         assertThat(extractCarType("VW GOLF PLUS 1,4 TSi 90 KW TOP STAV", "", "")).isEqualTo("MINIVAN");
+        assertThat(extractCarType("VW T6.1 CALIFORNIA BEACH/110KW/DSG/2020/VIRTUAL/Kuchyn/tazne", "", ""))
+                .isEqualTo("MINIVAN");
         assertThat(extractCarType("Volkswagen UP 1.0MPI KLIMA", "", "")).isEqualTo("HATCHBACK");
         assertThat(extractCarType("Volvo S80 2.4D5 120 kW Klima Tempomat CR", "", "")).isEqualTo("SEDAN");
         assertThat(extractCarType("Volvo v 90", "", "")).isEqualTo("WAGON");
@@ -515,6 +525,12 @@ class BazosParserTest {
 
     private String correctLikelyFalseElectricFuel(String title, String fuelType) throws Exception {
         Method method = BazosParser.class.getDeclaredMethod("correctLikelyFalseElectricFuel", String.class, String.class);
+        method.setAccessible(true);
+        return (String) method.invoke(parser, title, fuelType);
+    }
+
+    private String preferExplicitTitleFuelType(String title, String fuelType) throws Exception {
+        Method method = BazosParser.class.getDeclaredMethod("preferExplicitTitleFuelType", String.class, String.class);
         method.setAccessible(true);
         return (String) method.invoke(parser, title, fuelType);
     }

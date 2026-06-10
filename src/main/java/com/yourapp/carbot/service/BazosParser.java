@@ -1037,6 +1037,12 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             return "PLUGIN_HYBRID";
         }
 
+        if ((containsAny(source, " volvo ", " xc60 ", " xc90 ", " v60 ", " v90 ", " s60 ", " s90 ")
+                || compact.matches(".*(?:volvo|xc60|xc90|v60|v90|s60|s90).*"))
+                && (containsAny(source, " t8 ", " t 8 ") || compact.contains("t8"))) {
+            return "PLUGIN_HYBRID";
+        }
+
         if (Pattern.compile("(?i)\\b[0-9][\\.,][0-9]\\s*phev\\b")
                 .matcher(source).find()
                 || compact.contains("phev")) {
@@ -1132,6 +1138,12 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         }
 
         // DIESEL
+        if (containsAny(source, " volvo ", " xc40 ", " xc60 ", " xc70 ", " xc90 ",
+                " v40 ", " v50 ", " v60 ", " v70 ", " v90 ", " s40 ", " s60 ", " s80 ", " s90 ", " c70 ")
+                && Pattern.compile("(?i)\\bd\\s*[2345]\\b|\\b[2345]\\s*d\\b").matcher(source).find()) {
+            return "DIESEL";
+        }
+
         if (containsAny(source,
                 " diesel ", " nafta ",
                 " tdi ", " tdci ", " cdi ", " crdi ", " hdi ", " dci ",
@@ -1408,6 +1420,13 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 || compact.contains("pluginhybrid")
                 || compact.contains("phev")) {
             return "PLUGIN_HYBRID";
+        }
+
+        if ("PLUGIN_HYBRID".equals(fuelType)
+                && containsAny(source, " california ")
+                && containsAny(source, " vw ", " volkswagen ", " t6 ", " t6.1 ")
+                && !containsAny(source, " hybrid ", " plug-in ", " plug in ", " plugin ", " phev ", " gte ", " e-hybrid ", " ehybrid ")) {
+            return extractFuelType(title);
         }
 
         if (isExplicitHybridTitle(source, compact)) {
@@ -1903,6 +1922,11 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             return "SEDAN";
         }
 
+        if (containsAny(titleSource, " avensis ")
+                && !containsAny(titleSource, " kombi ", " combi ", " wagon ", " touring ", " sw ")) {
+            return "SEDAN";
+        }
+
         if (containsAny(titleSource, " corolla st ", " corolla ts ", " corolla touring ", " corolla sports touring ",
                 " a4 avant ", " a6 avant ", " arteon sb ", " arteon shooting brake ",
                 " passat variant ", " passat varian ")) {
@@ -2045,7 +2069,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             return "HATCHBACK";
         }
 
-        if (containsAny(titleSource, " multivan ", " nv 200 ", " nv200 ", " almera tino ", " grandis ", " elgrand ", " prius plus ",
+        if (containsAny(titleSource, " multivan ", " california ", " nv 200 ", " nv200 ", " almera tino ", " grandis ", " elgrand ", " prius plus ",
                 " traveller ", " travaller ", " jumpy multispace ", " multispace ")) {
             return "MINIVAN";
         }
