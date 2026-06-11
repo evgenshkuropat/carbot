@@ -60,6 +60,8 @@ class ToyotaProvereneVozyParserTest {
                 .isEqualTo("PLUGIN_HYBRID");
         assertThat(mapElectrifiedFuel("Toyota C-HR 2,0 PHEV E-CVT Style"))
                 .isEqualTo("PLUGIN_HYBRID");
+        assertThat(mapElectrifiedFuel("Toyota C-HR 1.8 Style"))
+                .isEqualTo("HYBRID");
         assertThat(mapElectrifiedFuel("Toyota C-HR 2.0Hybrid,CZ,1Maj,Style"))
                 .isEqualTo("HYBRID");
         assertThat(mapElectrifiedFuel("Volvo XC 40 B3 Plus Bright DCT"))

@@ -372,6 +372,10 @@ public class ToyotaProvereneVozyParser implements CarSourceParser {
                 && containsAny(tokens, " b3 ", " b4 ", " b5 ", " b6 ")) {
             return "HYBRID";
         }
+        if (containsAny(tokens, " c hr ", " chr ")
+                && containsAny(tokens, " 1 8 ", " 2 0 ")) {
+            return "HYBRID";
+        }
         if (containsAny(tokens, " hybrid ", " hev ", " hsd ", " mhev ", " e cvt ", " ecvt ",
                 " 350h ", " 450h ", " 500h ", " 1.5h ", " 1,5h ", " 1.8h ", " 1,8h ",
                 " 2.0h ", " 2,0h ", " 2.5h ", " 2,5h ")
