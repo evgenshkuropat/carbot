@@ -775,7 +775,8 @@ public class TipCarsParser implements CarSourceParser {
         if (containsAny(titleSource,
                 " q3 ", " q5 ", " q7 ", " q8 ",
                 " touareg ", " qashqai ", " pathfinder ", " kona ", " captur ", " puma ", " crossland ", " range rover ", " glc ",
-                " gla ", " glb ", " gle ", " gls ", " yaris cross ", " stonic ", " omoda 5 ", " actyon ", " elroq ", " macan ", " 2008 ")) {
+                " gla ", " glb ", " gle ", " gls ", " yaris cross ", " stonic ", " ateca ", " kamiq ",
+                " omoda 5 ", " actyon ", " elroq ", " macan ", " 2008 ")) {
             return "SUV";
         }
 
@@ -784,7 +785,7 @@ public class TipCarsParser implements CarSourceParser {
         }
 
         if (containsAny(titleSource,
-                " c-max ", " c max ", " galaxy ", " berlingo ", " caddy ", " roomster ",
+                " c-max ", " c max ", " galaxy ", " berlingo ", " caddy ", " roomster ", " sportsvan ", " scudo ",
                 " tridy v ", " třídy v ", " tĹ™Ă­dy v ", " vito ", " viano ",
                 " scenic ", " zafira ", " meriva ", " touran ", " sharan ", " s-max ", " s max ",
                 " c4 picasso ", " picasso ")) {

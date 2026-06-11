@@ -113,6 +113,30 @@ class TipCarsParserTest {
                 "",
                 "https://www.tipcars.com/porsche-macan/hatchback/benzin/porsche-macan-3-0i-awd-pdk7-55577322.html"))
                 .isEqualTo("SUV");
+
+        assertThat(extractCarType(
+                "Seat Ateca",
+                "",
+                "https://www.tipcars.com/seat-ateca/hatchback/benzin/seat-ateca-100168344.html"))
+                .isEqualTo("SUV");
+
+        assertThat(extractCarType(
+                "Skoda Kamiq 1.5 TSI 110 kW Style DSG",
+                "",
+                "https://www.tipcars.com/skoda-kamiq/hatchback/benzin/skoda-kamiq-1-5-tsi-110-kw-style-dsg.html"))
+                .isEqualTo("SUV");
+
+        assertThat(extractCarType(
+                "Volkswagen Golf Sportsvan 1,6 TDI BMT, WEBASTO",
+                "",
+                "https://www.tipcars.com/volkswagen-golf-sportsvan/mpv/nafta/volkswagen-golf-sportsvan-1-6-tdi-bmt-webasto.html"))
+                .isEqualTo("MINIVAN");
+
+        assertThat(extractCarType(
+                "Fiat Scudo 2,0 JTD 110CV L",
+                "",
+                "https://www.tipcars.com/fiat-scudo/kombi/nafta/fiat-scudo-2-0-jtd-110cv-l.html"))
+                .isEqualTo("MINIVAN");
     }
 
     @Test
