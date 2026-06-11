@@ -99,6 +99,8 @@ class SbazarParserTest {
         assertThat(resolveFuelType("jeep compass 1.3 110kw limited kamera navi", "")).isEqualTo("PETROL");
         assertThat(resolveFuelType("toyota yaris 1.0 vvt-i 51kw cr", "")).isEqualTo("PETROL");
         assertThat(resolveFuelType("prodam toyota yaris 1.33 vvt-i 73kw automat", "")).isEqualTo("PETROL");
+        assertThat(resolveFuelType("volkswagen e-up 60 kw serviska top stav", "")).isEqualTo("ELECTRIC");
+        assertThat(resolveFuelType("porsche cayman gt4 wrap od koenigsegg znama historie", "")).isEqualTo("PETROL");
         assertThat(resolveFuelType("skoda octavia iv 2.0 tdi dsg 4x4 150 ps", "")).isEqualTo("DIESEL");
         assertThat(resolveTransmission("honda crv 2020 hybrid benzin 72tis.km", "", "HYBRID")).isEqualTo("AUTOMATIC");
         assertThat(resolveTransmission("seat leon, 1,4 tsi e-hybrid fr line led", "", "HYBRID")).isEqualTo("AUTOMATIC");
@@ -281,6 +283,11 @@ class SbazarParserTest {
         assertThat(resolveCarType("lexus gx 460 4,6 v8", "")).isEqualTo("SUV");
         assertThat(resolveCarType("volkswagen passat highline 2,0 tdi 103kw dsg kola", "")).isEqualTo("SEDAN");
         assertThat(resolveCarType("bmw x3 xdrive30i koupeno v cr serviska 1.majitel", "")).isEqualTo("SUV");
+        assertThat(resolveCarType("bentley continental gt v12 434 kw breitling masaze", "")).isEqualTo("COUPE");
+        assertThat(resolveCarType("porsche cayman gt4 wrap od koenigsegg znama historie", "")).isEqualTo("COUPE");
+        assertThat(resolveCarType("volkswagen california 2.0 tdi dsg abt xnh camper", "")).isEqualTo("MINIVAN");
+        assertThat(resolveCarType("audi s6 55tdi 257kw virtual led kuze záruka", "")).isEqualTo("SEDAN");
+        assertThat(resolveCarType("audi s7 sportback 3.0 tfsi", "")).isEqualTo("SEDAN");
         assertThat(resolveCarType("renault modus 1,2i 55kw stk do 6/2028", "")).isEqualTo("MINIVAN");
         assertThat(resolveCarType("hyundai kona 1,0 t-gdi 88 kw comfort", "")).isEqualTo("SUV");
         assertThat(resolveCarType("toyota corolla verso automat 1,8i vvt-i", "")).isEqualTo("MINIVAN");
