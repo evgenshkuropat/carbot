@@ -374,7 +374,8 @@ public class ToyotaProvereneVozyParser implements CarSourceParser {
         }
         if (containsAny(tokens, " hybrid ", " hev ", " hsd ", " mhev ", " e cvt ", " ecvt ",
                 " 350h ", " 450h ", " 500h ", " 1.5h ", " 1,5h ", " 1.8h ", " 1,8h ",
-                " 2.0h ", " 2,0h ", " 2.5h ", " 2,5h ")) {
+                " 2.0h ", " 2,0h ", " 2.5h ", " 2,5h ")
+                || compact.contains("hybrid")) {
             return "HYBRID";
         }
 
@@ -679,7 +680,7 @@ public class ToyotaProvereneVozyParser implements CarSourceParser {
                 " berlingo ", " c3 picasso ", " c4 picasso ", " verso ", " b-max ", " b max ", " venga ")) {
             return "MINIVAN";
         }
-        if (containsAny(source, " proace max ", " proace city ", " proace ", " movano ", " boxer ", " jumper ", " ducato ", " uzitkove ")) {
+        if (containsAny(source, " proace max ", " proace city ", " proace ", " transit courier ", " movano ", " boxer ", " jumper ", " ducato ", " uzitkove ")) {
             return "VAN";
         }
         if ((source.contains(" corolla ") && containsAny(source, " ts ", " touring "))

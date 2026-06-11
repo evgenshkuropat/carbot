@@ -42,6 +42,8 @@ class ToyotaProvereneVozyParserTest {
                 .isEqualTo("MINIVAN");
         assertThat(extractCarType("Citroen Jumper 2.2HDi, L1H1, CR-1, tazne, DPH", ""))
                 .isEqualTo("VAN");
+        assertThat(extractCarType("Ford Transit Courier 1,0 ECB Trend", ""))
+                .isEqualTo("VAN");
         assertThat(extractCarType("Lexus LBX 1,5 HEV Original Edition 4x4", ""))
                 .isEqualTo("SUV");
         assertThat(extractCarType("Baic BJ30 BJ30 HEV 1.5T 209kW 2DHT 4x4 ALL IN MY25", ""))
@@ -58,6 +60,8 @@ class ToyotaProvereneVozyParserTest {
                 .isEqualTo("PLUGIN_HYBRID");
         assertThat(mapElectrifiedFuel("Toyota C-HR 2,0 PHEV E-CVT Style"))
                 .isEqualTo("PLUGIN_HYBRID");
+        assertThat(mapElectrifiedFuel("Toyota C-HR 2.0Hybrid,CZ,1Maj,Style"))
+                .isEqualTo("HYBRID");
         assertThat(mapElectrifiedFuel("Volvo XC 40 B3 Plus Bright DCT"))
                 .isEqualTo("HYBRID");
     }
