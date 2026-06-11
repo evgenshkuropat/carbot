@@ -95,6 +95,10 @@ class SbazarParserTest {
         assertThat(resolveFuelType("audi a4 avant 2.0td aut vyhrev senzory", "")).isEqualTo("DIESEL");
         assertThat(resolveTransmission("audi a4 avant 2.0td aut vyhrev senzory", "", "DIESEL")).isEqualTo("AUTOMATIC");
         assertThat(resolveFuelType("ssangyong korando 2.2td 4x4 manual", "")).isEqualTo("DIESEL");
+        assertThat(resolveFuelType("jeep cherokee 2.2 147kw 4x4 limited kuze nav", "")).isEqualTo("DIESEL");
+        assertThat(resolveFuelType("jeep compass 1.3 110kw limited kamera navi", "")).isEqualTo("PETROL");
+        assertThat(resolveFuelType("toyota yaris 1.0 vvt-i 51kw cr", "")).isEqualTo("PETROL");
+        assertThat(resolveFuelType("prodam toyota yaris 1.33 vvt-i 73kw automat", "")).isEqualTo("PETROL");
         assertThat(resolveFuelType("skoda octavia iv 2.0 tdi dsg 4x4 150 ps", "")).isEqualTo("DIESEL");
         assertThat(resolveTransmission("honda crv 2020 hybrid benzin 72tis.km", "", "HYBRID")).isEqualTo("AUTOMATIC");
         assertThat(resolveTransmission("seat leon, 1,4 tsi e-hybrid fr line led", "", "HYBRID")).isEqualTo("AUTOMATIC");
@@ -233,6 +237,7 @@ class SbazarParserTest {
         assertThat(resolveCarType("dongfeng t5 evo 1,5 t 130kw dct7 dragonedition", "")).isEqualTo("SUV");
         assertThat(resolveCarType("bmw x2 sdrive 18d m-paket", "")).isEqualTo("SUV");
         assertThat(resolveCarType("seat arona 1,6 tdi 85kw fr", "")).isEqualTo("SUV");
+        assertThat(resolveCarType("klima bez koroze tempomat seat toledo 1.9 tdi 81kw", "")).isEqualTo("SEDAN");
         assertThat(resolveCarType("alfa romeo stelvio 2.2 jtdm competizione q4", "")).isEqualTo("SUV");
         assertThat(resolveCarType("suzuki sx4 s-cross 1,4 boosterjet premium 2x4", "")).isEqualTo("SUV");
         assertThat(resolveCarType("peugeot 308 2,0 bhdi 110kw", "")).isEqualTo("HATCHBACK");
@@ -273,6 +278,11 @@ class SbazarParserTest {
         assertThat(resolveCarType("mercedes e240 w211", "")).isEqualTo("SEDAN");
         assertThat(resolveCarType("mitsubishi outlender", "")).isEqualTo("SUV");
         assertThat(resolveCarType("infiniti fx37 s 4x4 3,7 v6 235kw", "")).isEqualTo("SUV");
+        assertThat(resolveCarType("lexus gx 460 4,6 v8", "")).isEqualTo("SUV");
+        assertThat(resolveCarType("volkswagen passat highline 2,0 tdi 103kw dsg kola", "")).isEqualTo("SEDAN");
+        assertThat(resolveCarType("bmw x3 xdrive30i koupeno v cr serviska 1.majitel", "")).isEqualTo("SUV");
+        assertThat(resolveCarType("renault modus 1,2i 55kw stk do 6/2028", "")).isEqualTo("MINIVAN");
+        assertThat(resolveCarType("hyundai kona 1,0 t-gdi 88 kw comfort", "")).isEqualTo("SUV");
         assertThat(resolveCarType("toyota corolla verso automat 1,8i vvt-i", "")).isEqualTo("MINIVAN");
         assertThat(resolveCarType("mercedes-benz tridy m ml 320 3,0d v6", "")).isEqualTo("SUV");
         assertThat(resolveCarType("bmw rada 4 420d 2,0 gran kupe automat", "")).isEqualTo("SEDAN");
