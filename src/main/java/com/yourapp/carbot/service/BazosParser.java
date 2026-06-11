@@ -1139,6 +1139,11 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             return "PETROL";
         }
 
+        if (source.contains(" panda ")
+                && Pattern.compile("(?i)\\b1[\\.,][12]\\s*i?\\b").matcher(source).find()) {
+            return "PETROL";
+        }
+
         // DIESEL
         if (containsAny(source, " volvo ", " xc40 ", " xc60 ", " xc70 ", " xc90 ",
                 " v40 ", " v50 ", " v60 ", " v70 ", " v90 ", " s40 ", " s60 ", " s80 ", " s90 ", " c70 ")
@@ -2042,7 +2047,8 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         }
 
         if (containsAny(titleSource, " g21 ", " e91 ", " c5 tourer ", " citroen c5 tourer ", " c5 x7 ",
-                " accord tourer ", " civic tourer ", " focus tunier ", " focus turnier ",
+                " accord tourer ", " accord kombi ", " accord combi ", " accord wagon ",
+                " civic tourer ", " focus tunier ", " focus turnier ",
                 " insignia st ", " insignia sports tourer ", " insignia sport tourer ", " insignia sport taurer ",
                 " astra sports tourer ", " astra sport tourer ", " astra sports touer ", " astra sport touer ", " astra j sports tourer ", " astra k sports tourer ",
                 " astra j sport tourer ", " astra k sport tourer ", " astra sw ", " astra combi ", " astra kombi ", " 308 sw ", " peugeot 308 sw ")) {
@@ -2238,6 +2244,10 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
 
         if (containsAny(titleSource, " civic coupe ", " civic coupĂ© ", " civic si ", " fg2 ", " crx ")) {
             return "COUPE";
+        }
+
+        if (containsAny(titleSource, " covic ")) {
+            return "HATCHBACK";
         }
 
         if (containsAny(titleSource, " honda city ", " accord ", " legend ", " peugeot 301 ", " talisman ", " magentis ", " optima ", " stinger ")) {
