@@ -66,6 +66,8 @@ class SautoParserTest {
                 .isEqualTo("SEDAN");
         assertThat(extractCarType("Volkswagen Bora 1,4 16V KLIMATIZACE", "", "https://www.sauto.cz/osobni/detail/volkswagen/bora/210543449"))
                 .isEqualTo("SEDAN");
+        assertThat(extractCarType("Dongfeng DF 6 P\u0159ov\u011b\u0159en\u00fd v\u016fz", "", "https://www.sauto.cz/osobni/detail/dongfeng/df-6/210454796"))
+                .isEqualTo("PICKUP");
     }
 
     @Test
@@ -132,6 +134,18 @@ class SautoParserTest {
                 .isEqualTo("Karviná");
         assertThat(repairMojibake("Volvo XC90 T8 ULTRA BRIGHT+4SERVIS/ZĂRUKA"))
                 .isEqualTo("Volvo XC90 T8 ULTRA BRIGHT+4SERVIS/ZÁRUKA");
+    }
+
+    @Test
+    void repairsSingleEncodedSautoMojibakeBeforeOutput() throws Exception {
+        assertThat(repairMojibake("Ĺ koda Fabia 1.4, po STK, oblĂ­benĂ˝ vĹŻz"))
+                .isEqualTo("Škoda Fabia 1.4, po STK, oblíbený vůz");
+        assertThat(repairMojibake("KarvinĂˇ"))
+                .isEqualTo("Karviná");
+        assertThat(repairMojibake("KĹŻĹľe"))
+                .isEqualTo("Kůže");
+        assertThat(repairMojibake("TAĹ˝NĂ‰ ZAĹĂŤZENĂŤ"))
+                .isEqualTo("TAŽNÉ ZAŘÍZENÍ");
     }
 
     private String extractCarType(String title, String text, String url) throws Exception {

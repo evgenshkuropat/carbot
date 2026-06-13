@@ -1734,11 +1734,12 @@ public class SautoParser implements CarSourceParser {
 
         if (containsAny(titleSource,
                 " ram 1500 ", " ram 2500 ", " ram 3500 ", " dodge ram ",
-                " ranger ", " hilux ", " amarok ", " navara ", " l200 ", " gladiator ")) {
+                " ranger ", " hilux ", " amarok ", " navara ", " l200 ", " gladiator ",
+                " dongfeng df 6 ", " df 6 ")) {
             return "PICKUP";
         }
 
-        if (containsAny(urlSource, "/ram/", "/gladiator/", "/amarok/", "/hilux/", "/ranger/")) {
+        if (containsAny(urlSource, "/ram/", "/gladiator/", "/amarok/", "/hilux/", "/ranger/", "/dongfeng/df-6/")) {
             return "PICKUP";
         }
 
@@ -2020,7 +2021,7 @@ public class SautoParser implements CarSourceParser {
     }
 
     private String repairMojibake(String value) {
-        if (value == null || value.isBlank() || mojibakeScore(value) == 0) {
+        if (value == null || value.isBlank() || (!looksLikeMojibake(value) && mojibakeScore(value) == 0)) {
             return value;
         }
 
@@ -2033,7 +2034,12 @@ public class SautoParser implements CarSourceParser {
                     .decode(java.nio.ByteBuffer.wrap(bytes))
                     .toString();
 
-            return mojibakeScore(repaired) < mojibakeScore(value) ? normalizeText(repaired) : value;
+            if (mojibakeScore(repaired) < mojibakeScore(value)
+                    || (looksLikeMojibake(value) && !looksLikeMojibake(repaired))) {
+                return normalizeText(repaired);
+            }
+
+            return value;
         } catch (Exception e) {
             return value;
         }
@@ -2060,6 +2066,34 @@ public class SautoParser implements CarSourceParser {
         }
 
         return out.toByteArray();
+    }
+
+    private boolean looksLikeMojibake(String value) {
+        if (value == null || value.isBlank()) {
+            return false;
+        }
+
+        for (int i = 0; i < value.length(); i++) {
+            int codePoint = value.codePointAt(i);
+            if (codePoint > Character.MAX_VALUE) {
+                i++;
+            }
+            if (codePoint == 0x0102 // Ă
+                    || codePoint == 0x0139 // Ĺ
+                    || codePoint == 0x00C4 // Ä
+                    || codePoint == 0x00C2 // Â
+                    || codePoint == 0x015A // Ś
+                    || codePoint == 0x017B // Ż
+                    || codePoint == 0x013E // ľ
+                    || codePoint == 0x0165 // ť
+                    || codePoint == 0x02C7 // ˇ
+                    || codePoint == 0x02DD // ˝
+                    || codePoint == 0x2030) { // ‰
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private int mojibakeScore(String value) {
