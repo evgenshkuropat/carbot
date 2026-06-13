@@ -88,6 +88,10 @@ class CarStorageServiceTest {
         assertThat(normalizeCarType("HATCHBACK", "Suzuki SX4 S-Cross 1,4 BoosterJet Premium")).isEqualTo("SUV");
         assertThat(normalizeCarType(null, "Skoda Octavia Scout CZ DPH")).isEqualTo("WAGON");
         assertThat(normalizeCarType("HATCHBACK", "BMW Rada 2 225xe iPERFORMANCE F45 165kW")).isEqualTo("MINIVAN");
+        assertThat(normalizeCarType("WAGON", "Citroen C8 2.2HDI/AT/CR/Exclusive/7.Mist")).isEqualTo("MINIVAN");
+        assertThat(normalizeCarType("WAGON", "Citroen Berlingo 1,6HDi 2xSOUPACKY")).isEqualTo("MINIVAN");
+        assertThat(normalizeCarType("WAGON", "Peugeot Partner 1,6HDi 2xSOUPACKY")).isEqualTo("MINIVAN");
+        assertThat(normalizeCarType("WAGON", "Renault Twingo 1.2 Dynamique PANORAMA")).isEqualTo("HATCHBACK");
     }
 
     @Test

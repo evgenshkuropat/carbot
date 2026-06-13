@@ -156,6 +156,7 @@ class BazosParserTest {
         assertThat(extractCarType("BMW F36 430d 258Hp GC 05/2016 original M-Paket", "", "")).isEqualTo("SEDAN");
         assertThat(extractCarType("BMW 420D Xdrive 2018", "", "")).isEqualTo("COUPE");
         assertThat(extractCarType("BMW 6 GT xDrive M-Paket", "", "")).isEqualTo("SEDAN");
+        assertThat(extractCarType("BMW F10 523i, 185tis, 3.0, 150kW, automat", "", "")).isEqualTo("SEDAN");
         assertThat(extractCarType("Audi A6 2.0 TDI AVANT Ultra S-tronic 2015", "", "")).isEqualTo("WAGON");
         assertThat(extractCarType("Audi a4b6 2.5tdi V6 120kw", "", "")).isEqualTo("SEDAN");
         assertThat(extractCarType("S4 Quattro BSR 402PS 1.majitel koupeno v CR full servis -DPH", "", ""))
@@ -181,6 +182,7 @@ class BazosParserTest {
         assertThat(extractCarType("Fiat FIORINO QUBO 1.4 - DPH - pouze 154000 km", "", "")).isEqualTo("MINIVAN");
         assertThat(extractCarType("Fiat Bravo 1,6 JTD, 2008", "", "")).isEqualTo("HATCHBACK");
         assertThat(extractCarType("Citroen DS4 Exclusive", "", "")).isEqualTo("HATCHBACK");
+        assertThat(extractCarType("Citroen eC4 zaruka elektro", "", "https://auto.bazos.cz/inzerat/219841903/citroen-ec4-zaruka.php")).isEqualTo("HATCHBACK");
         assertThat(extractCarType("DACIA STEPWAY 1,0 i 66 KW TOP STAV 2017", "", "")).isEqualTo("HATCHBACK");
         assertThat(extractCarType("HONDA ACCORD TOURER VII EXECUTIVE 2.0 i-VTEC", "", "")).isEqualTo("WAGON");
         assertThat(extractCarType("Honda Accord kombi 2,0i-Vtec slusny stav servis STK", "", "")).isEqualTo("WAGON");
@@ -435,6 +437,12 @@ class BazosParserTest {
                 "Mazda Tribute 3.0 4x4 nova STK",
                 "",
                 "https://auto.bazos.cz/inzerat/219554120/mazda-tribute-30-4x4-nova-stk.php"))
+                .isFalse();
+
+        assertThat(looksCommercialVehicle(
+                "BMW X 5 3.0 D, 2021 rok, 93 tisic najeto",
+                "",
+                "https://auto.bazos.cz/inzerat/219905143/bmw-x-5-30-d-2021-rok-93-tisic-najeto.php"))
                 .isFalse();
     }
 

@@ -67,7 +67,7 @@ public class CarFilterMatcher {
 
         if (storedType == null || storedType.isBlank()) {
             storedType = detectedType;
-        } else if (!isBlank(detectedType) && shouldPreferDetectedCarType(storedType, detectedType)) {
+        } else if (!isBlank(detectedType) && shouldPreferDetectedCarType(storedType, detectedType, car.getTitle())) {
             storedType = detectedType;
         }
 
@@ -86,7 +86,7 @@ public class CarFilterMatcher {
         return false;
     }
 
-    private boolean shouldPreferDetectedCarType(String storedType, String detectedType) {
+    private boolean shouldPreferDetectedCarType(String storedType, String detectedType, String rawTitle) {
         if (isBlank(detectedType)) {
             return false;
         }
@@ -99,8 +99,9 @@ public class CarFilterMatcher {
 
         return switch (detectedType) {
             case "SUV" -> storedType.equals("HATCHBACK") || storedType.equals("SEDAN");
-            case "MINIVAN" -> storedType.equals("HATCHBACK") || storedType.equals("SEDAN");
-            case "HATCHBACK" -> storedType.equals("MINIVAN");
+            case "MINIVAN" -> storedType.equals("HATCHBACK") || storedType.equals("SEDAN") || storedType.equals("WAGON");
+            case "HATCHBACK" -> storedType.equals("MINIVAN")
+                    || (storedType.equals("WAGON") && containsAny(" " + normalizeText(rawTitle) + " ", " TWINGO "));
             case "SEDAN" -> storedType.equals("HATCHBACK");
             default -> false;
         };
@@ -236,8 +237,10 @@ public class CarFilterMatcher {
                 " ALHAMBRA ",
                 " SCENIC ",
                 " ESPACE ",
+                " C8 ",
                 " BERLINGO ",
                 " RIFTER ",
+                " PARTNER ",
                 " PARTNER TEPEE ",
                 " ZAFIRA ",
                 " MERIVA ",
@@ -297,6 +300,7 @@ public class CarFilterMatcher {
         if (containsAny(title,
                 " HATCHBACK ",
                 " SPACEBACK ",
+                " TWINGO ",
                 " CLIO ",
                 " FABIA ",
                 " SCALA ",

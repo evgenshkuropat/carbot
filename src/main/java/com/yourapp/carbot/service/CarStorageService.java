@@ -602,15 +602,15 @@ public class CarStorageService {
     private String normalizeCarType(String carType, String title) {
         String lower = safe(title).toLowerCase(Locale.ROOT);
 
-        if (containsAny(lower, "picasso", "roomster")) {
+        if (containsAny(lower, "picasso", "roomster", "citroen c8", "citroën c8", " c8 ")) {
             return "MINIVAN";
         }
 
-        if (containsAny(lower, "b-max", "b max", "volkswagen t5", "volkswagen t6", "vw t5", "vw t6", "caddy", "tourneo custom", "tourneo courier", "tourneo connect", "proace verso", "proace city verso", "renault trafic", "opel vivaro", "nissan primastar", "u-tour", "u tour", "225xe", "active tourer", " f45 ", "jogger")) {
+        if (containsAny(lower, "b-max", "b max", "volkswagen t5", "volkswagen t6", "vw t5", "vw t6", "caddy", "berlingo", "peugeot partner", "citroen partner", "citroën partner", "partner tepee", "tourneo custom", "tourneo courier", "tourneo connect", "proace verso", "proace city verso", "renault trafic", "opel vivaro", "nissan primastar", "u-tour", "u tour", "225xe", "active tourer", " f45 ", "jogger")) {
             return "MINIVAN";
         }
 
-        if (containsAny(lower, "matiz", "bravo", "caliber")) {
+        if (containsAny(lower, "matiz", "bravo", "caliber", "twingo")) {
             return "HATCHBACK";
         }
 
