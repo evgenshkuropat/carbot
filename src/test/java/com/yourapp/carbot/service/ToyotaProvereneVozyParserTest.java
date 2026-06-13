@@ -86,6 +86,18 @@ class ToyotaProvereneVozyParserTest {
                 .isEqualTo("Mazda CX-7 AWD, ZÁVĚS");
     }
 
+    @Test
+    void repairsFreshToyotaProvereneMojibakeFromLogs() throws Exception {
+        assertThat(repairMojibake("Uhersk\u0102\u00A9 Hradi\u0139\u02C7t\u00C4\u203A"))
+                .isEqualTo("Uhersk\u00E9 Hradi\u0161t\u011B");
+        assertThat(repairMojibake("\u0139\u00A0koda Citigo 1.0 MPI 55kW Style"))
+                .isEqualTo("\u0160koda Citigo 1.0 MPI 55kW Style");
+        assertThat(repairMojibake("Citro\u0102\u00ABn C5 Aircross 1.6PureTech,133kW,AT8,CZ,SHINE"))
+                .isEqualTo("Citro\u00EBn C5 Aircross 1.6PureTech,133kW,AT8,CZ,SHINE");
+        assertThat(repairMojibake("Opel Zafira 1.6CDTI,88kW,7M\u0102\u00ADst,Ta\u0139\u013En\u0102\u00A9"))
+                .isEqualTo("Opel Zafira 1.6CDTI,88kW,7M\u00EDst,Ta\u017En\u00E9");
+    }
+
     private String extractCarType(String title, String text) throws Exception {
         Method method = ToyotaProvereneVozyParser.class.getDeclaredMethod("extractCarType", String.class, String.class);
         method.setAccessible(true);

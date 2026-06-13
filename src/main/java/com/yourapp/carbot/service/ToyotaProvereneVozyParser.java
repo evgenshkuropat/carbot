@@ -972,6 +972,23 @@ public class ToyotaProvereneVozyParser implements CarSourceParser {
             return 0;
         }
 
+        int broadScore = 0;
+        for (int offset = 0; offset < value.length(); ) {
+            int codePoint = value.codePointAt(offset);
+            if (codePoint == '\u0102'
+                    || codePoint == '\u00C4'
+                    || codePoint == '\u0139'
+                    || codePoint == '\u00C2'
+                    || codePoint == '\u00E2'
+                    || codePoint == '\uFFFD') {
+                broadScore++;
+            }
+            offset += Character.charCount(codePoint);
+        }
+        if (broadScore > 0) {
+            return broadScore;
+        }
+
         int score = 0;
         for (int i = 0; i < value.length(); i++) {
             char ch = value.charAt(i);
