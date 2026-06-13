@@ -1043,6 +1043,12 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             return "PLUGIN_HYBRID";
         }
 
+        if ((containsAny(source, " volvo ", " xc40 ", " xc60 ", " xc90 ", " v60 ", " v90 ", " s60 ", " s90 ")
+                || compact.matches(".*(?:volvo|xc40|xc60|xc90|v60|v90|s60|s90).*"))
+                && containsAny(source, " b3 ", " b4 ", " b5 ", " b6 ")) {
+            return "HYBRID";
+        }
+
         if (Pattern.compile("(?i)\\b[0-9][\\.,][0-9]\\s*phev\\b")
                 .matcher(source).find()
                 || compact.contains("phev")) {
@@ -1054,7 +1060,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " plug-in ", " plug in ", " phev ",
                 " mild-hybrid ", " mild hybrid ",
                 " hybrid ", " hybridni ", " e-hybrid ", " ehybrid ", " e-tfsi ", " etfsi ", " i-mmd ", " immd ", " hev ", " mhev ",
-                " b3 ", " b4 ", " b5 ", " b6 ")) {
+                " superb iv ", " octavia iv ", " passat gte ", " golf gte ", " prius ")) {
             return "HYBRID";
         }
 
@@ -1118,10 +1124,6 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " immd ",
                 " hev ",
                 " mhev ",
-                " b5 ",
-                " b6 ",
-                " b3 ",
-                " b4 ",
                 " superb iv ",
                 " octavia iv ",
                 " passat gte ",
@@ -1272,7 +1274,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         }
 
         if ((containsAny(source, " vitara ", " virara ", " jimny ", " sx4 ", " s-cross ", " s cross ", " alto ")
-                || Pattern.compile("\\bs\\s*[x×]?\\s*4\\b").matcher(source).find())
+                || Pattern.compile("\\bs\\s*[x×]\\s*4\\b").matcher(source).find())
                 && Pattern.compile("\\b(?:1[.,][0346]|2[.,]4)\\b").matcher(source).find()) {
             return "PETROL";
         }
@@ -1967,7 +1969,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         }
 
         if (containsAny(titleSource, " sx4 ", " sx 4 ", " s-cross ", " s cross ")
-                || Pattern.compile("\\bs\\s*[x×]?\\s*4\\b").matcher(titleSource).find()) {
+                || Pattern.compile("\\bs\\s*[x×]\\s*4\\b").matcher(titleSource).find()) {
             return "SUV";
         }
 

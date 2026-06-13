@@ -49,6 +49,7 @@ class BazosParserTest {
     @Test
     void resolvesFuelFromBmwAndAudiBazosTitles() throws Exception {
         assertThat(extractFuelType("Audi S3")).isEqualTo("PETROL");
+        assertThat(extractFuelType("Audi A4 B5 1.9 TDI S4 LOOK")).isEqualTo("DIESEL");
         assertThat(extractFuelType("BMW. 118d")).isEqualTo("DIESEL");
         assertThat(extractFuelType("BMW 320xd 135kw automat xdrive")).isEqualTo("DIESEL");
         assertThat(extractFuelType("BMW 530xd E61 LCI M-paket")).isEqualTo("DIESEL");
@@ -144,6 +145,7 @@ class BazosParserTest {
         assertThat(extractCarType("Suzuki Samurai 1.3", "", "")).isEqualTo("SUV");
         assertThat(extractCarType("Suzuki Ignis 1.2 Spajacie z. za karavan, Bluetooth", "", "")).isEqualTo("SUV");
         assertThat(extractCarType("Prodam Suzuki sx4,1.6", "", "")).isEqualTo("SUV");
+        assertThat(extractCarType("Prodam Suzuki S X4 1.6", "", "")).isEqualTo("SUV");
         assertThat(extractCarType("Suzuki Virara 1.6 Ddis", "", "")).isEqualTo("SUV");
         assertThat(extractCarType("Suzuki Alto,1.0i,50kw", "", "")).isEqualTo("HATCHBACK");
         assertThat(extractCarType("Audi S3", "", "")).isEqualTo("HATCHBACK");
@@ -167,6 +169,7 @@ class BazosParserTest {
         assertThat(extractCarType("AUDI 100 C3 QUATTRO 2.2 100KW 2X UZAVERKA RENOVACE", "", "")).isEqualTo("SEDAN");
         assertThat(extractCarType("Audi S6 Avant 55 TDI Nelakovano Nebourano Servis Audi", "", "")).isEqualTo("WAGON");
         assertThat(extractCarType("Audi A3 / 2018 / 1,6 / 85 kw", "", "")).isEqualTo("HATCHBACK");
+        assertThat(extractCarType("Audi A4 B5 1.9 TDI S4 LOOK", "", "")).isEqualTo("SEDAN");
         assertThat(extractCarType("BMW M3 MANUAL KOMPRESOR", "", "")).isEqualTo("COUPE");
         assertThat(extractCarType("BMW Z4 3.0 si MANUAL Coupe", "", "")).isEqualTo("COUPE");
         assertThat(extractCarType("BMW 2, F45, Active Tourer, 225i xDrive LUXURY LINE", "", "")).isEqualTo("MINIVAN");
