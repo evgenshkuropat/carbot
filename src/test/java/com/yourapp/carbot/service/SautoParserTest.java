@@ -148,6 +148,22 @@ class SautoParserTest {
                 .isEqualTo("TAŽNÉ ZAŘÍZENÍ");
     }
 
+    @Test
+    void repairsFreshSautoMojibakeFromLogs() throws Exception {
+        assertThat(repairMojibake("Volkswagen Passat 1.9 TDI, za skv\u00C4\u203Alou cenu"))
+                .isEqualTo("Volkswagen Passat 1.9 TDI, za skv\u011Blou cenu");
+        assertThat(repairMojibake("Citro\u0102\u00ABn C4 1.6 HDi, Klima, pln\u00C4\u203A poj\u0102\u00ADzdn\u0102\u00BD"))
+                .isEqualTo("Citro\u00EBn C4 1.6 HDi, Klima, pln\u011B poj\u00EDzdn\u00FD");
+        assertThat(repairMojibake("Renault Thalia 1.4 16V,zmk.\u0139\u2122azen\u0102\u00AD"))
+                .isEqualTo("Renault Thalia 1.4 16V,zmk.\u0159azen\u00ED");
+        assertThat(repairMojibake("Renault M\u0102\u00A9gane 1.6 16V, Ta\u0139\u013En\u0102\u00A9, Klima"))
+                .isEqualTo("Renault M\u00E9gane 1.6 16V, Ta\u017En\u00E9, Klima");
+        assertThat(repairMojibake("\u0139\u00A0koda Fabia 1.2 12V,\u00C4\u015AR"))
+                .isEqualTo("\u0160koda Fabia 1.2 12V,\u010CR");
+        assertThat(repairMojibake("Karvin\u0102\u02C7"))
+                .isEqualTo("Karvin\u00E1");
+    }
+
     private String extractCarType(String title, String text, String url) throws Exception {
         Method method = SautoParser.class.getDeclaredMethod("extractCarType", String.class, String.class, String.class);
         method.setAccessible(true);

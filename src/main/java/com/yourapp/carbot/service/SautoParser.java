@@ -2049,20 +2049,28 @@ public class SautoParser implements CarSourceParser {
         ByteArrayOutputStream out = new ByteArrayOutputStream(value.length());
         Charset windows1250 = Charset.forName("windows-1250");
 
-        for (int i = 0; i < value.length(); i++) {
-            char ch = value.charAt(i);
-            if (ch <= 0xFF) {
-                out.write((byte) ch);
-                continue;
+        for (int offset = 0; offset < value.length(); ) {
+            int codePoint = value.codePointAt(offset);
+            String ch = new String(Character.toChars(codePoint));
+
+            if (codePoint <= 0xFF) {
+                out.write(codePoint);
+            } else {
+                try {
+                    java.nio.ByteBuffer encoded = windows1250
+                            .newEncoder()
+                            .onMalformedInput(CodingErrorAction.REPORT)
+                            .onUnmappableCharacter(CodingErrorAction.REPORT)
+                            .encode(java.nio.CharBuffer.wrap(ch));
+                    while (encoded.hasRemaining()) {
+                        out.write(encoded.get() & 0xFF);
+                    }
+                } catch (Exception e) {
+                    out.write(ch.getBytes(StandardCharsets.UTF_8));
+                }
             }
 
-            byte[] bytes = windows1250
-                    .newEncoder()
-                    .onMalformedInput(CodingErrorAction.REPORT)
-                    .onUnmappableCharacter(CodingErrorAction.REPORT)
-                    .encode(java.nio.CharBuffer.wrap(String.valueOf(ch)))
-                    .array();
-            out.write(bytes[0]);
+            offset += Character.charCount(codePoint);
         }
 
         return out.toByteArray();
@@ -2099,6 +2107,23 @@ public class SautoParser implements CarSourceParser {
     private int mojibakeScore(String value) {
         if (value == null || value.isBlank()) {
             return 0;
+        }
+
+        int broadScore = 0;
+        for (int offset = 0; offset < value.length(); ) {
+            int codePoint = value.codePointAt(offset);
+            if (codePoint == 0x0102
+                    || codePoint == 0x00C4
+                    || codePoint == 0x0139
+                    || codePoint == 0x00C2
+                    || codePoint == 0x00E2
+                    || codePoint == 0xFFFD) {
+                broadScore++;
+            }
+            offset += Character.charCount(codePoint);
+        }
+        if (broadScore > 0) {
+            return broadScore;
         }
 
         int score = 0;
