@@ -512,6 +512,26 @@ class BazosParserTest {
                 .isEqualTo("Přerov");
     }
 
+    @Test
+    void repairsFreshBazosMojibakeFromLogs() throws Exception {
+        assertThat(repairMojibake("Doma\u0139\u013Elice"))
+                .isEqualTo("Doma\u017Elice");
+        assertThat(repairMojibake("Prod\u0102\u02C7m Nissan Micra 1.2i automat"))
+                .isEqualTo("Prod\u00E1m Nissan Micra 1.2i automat");
+        assertThat(repairMojibake("P\u0139\u2122\u0102\u00ADbram"))
+                .isEqualTo("P\u0159\u00EDbram");
+        assertThat(repairMojibake("Hodon\u0102\u00ADn"))
+                .isEqualTo("Hodon\u00EDn");
+        assertThat(repairMojibake("\u0102\u0161st\u0102\u00AD nad Labem"))
+                .isEqualTo("\u00DAst\u00ED nad Labem");
+        assertThat(repairMojibake("\u0139\u00A0umperk"))
+                .isEqualTo("\u0160umperk");
+        assertThat(repairMojibake("Krom\u00C4\u203A\u0139\u2122\u0102\u00AD\u0139\u013E"))
+                .isEqualTo("Krom\u011B\u0159\u00ED\u017E");
+        assertThat(repairMojibake("OPEL ASTRA 1.6 CDTI 81 kW | 2019 | TA\u0139\u02DDN\u0102\u2030"))
+                .isEqualTo("OPEL ASTRA 1.6 CDTI 81 kW | 2019 | TA\u017DN\u00C9");
+    }
+
     private String extractFuelType(String text) throws Exception {
         Method method = BazosParser.class.getDeclaredMethod("extractFuelType", String.class);
         method.setAccessible(true);

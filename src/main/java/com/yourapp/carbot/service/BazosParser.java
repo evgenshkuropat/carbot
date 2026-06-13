@@ -3790,21 +3790,31 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             return value;
         }
 
+        String current = value;
         try {
-            byte[] bytes = encodeMojibakeBytes(value);
-            String repaired = StandardCharsets.UTF_8
-                    .newDecoder()
-                    .onMalformedInput(CodingErrorAction.REPORT)
-                    .onUnmappableCharacter(CodingErrorAction.REPORT)
-                    .decode(ByteBuffer.wrap(bytes))
-                    .toString();
-            if (mojibakeScore(repaired) < mojibakeScore(value)
-                    || (looksLikeMojibake(value) && !looksLikeMojibake(repaired))) {
-                return normalizeText(repaired);
+            for (int attempt = 0; attempt < 3; attempt++) {
+                if (!looksLikeMojibake(current) && mojibakeScore(current) == 0) {
+                    break;
+                }
+
+                byte[] bytes = encodeMojibakeBytes(current);
+                String repaired = StandardCharsets.UTF_8
+                        .newDecoder()
+                        .onMalformedInput(CodingErrorAction.REPORT)
+                        .onUnmappableCharacter(CodingErrorAction.REPORT)
+                        .decode(ByteBuffer.wrap(bytes))
+                        .toString();
+
+                if (mojibakeScore(repaired) < mojibakeScore(current)
+                        || (looksLikeMojibake(current) && !looksLikeMojibake(repaired))) {
+                    current = normalizeText(repaired);
+                } else {
+                    break;
+                }
             }
-            return value;
+            return current;
         } catch (Exception e) {
-            return value;
+            return current;
         }
     }
 
