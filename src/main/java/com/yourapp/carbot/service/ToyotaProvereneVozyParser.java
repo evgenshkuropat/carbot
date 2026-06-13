@@ -667,6 +667,9 @@ public class ToyotaProvereneVozyParser implements CarSourceParser {
         if (containsAny(source, " corolla sedan ", " corolla sd ")) {
             return "SEDAN";
         }
+        if (containsAny(source, " kombi ", " combi ", " wagon ", " variant ", " sports tourer ", " sw ")) {
+            return "WAGON";
+        }
         if (source.contains(" corolla ")
                 && source.contains(" executive ")
                 && !containsAny(source, " corolla sedan ", " corolla sd ", " corolla cross ", " corolla ts ", " ts ", " touring ", " kombi ", " combi ", " wagon ")) {

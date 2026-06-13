@@ -22,6 +22,10 @@ class ToyotaProvereneVozyParserTest {
                 .isEqualTo("SEDAN");
         assertThat(extractCarType("Skoda Octavia 1.2 TSI / 77 kW", ""))
                 .isEqualTo("SEDAN");
+        assertThat(extractCarType("Skoda Octavia 2.0TDI 103kW Elegance Edition Combi", ""))
+                .isEqualTo("WAGON");
+        assertThat(extractCarType("Skoda Fabia 1.2HTP ambiente combi", ""))
+                .isEqualTo("WAGON");
         assertThat(extractCarType("Toyota Aygo X 1.5 Hybrid 116k", ""))
                 .isEqualTo("SUV");
         assertThat(extractCarType("Toyota Avensis", ""))
