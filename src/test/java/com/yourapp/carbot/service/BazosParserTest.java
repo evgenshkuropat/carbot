@@ -157,6 +157,8 @@ class BazosParserTest {
         assertThat(extractCarType("BMW 420D Xdrive 2018", "", "")).isEqualTo("COUPE");
         assertThat(extractCarType("BMW 6 GT xDrive M-Paket", "", "")).isEqualTo("SEDAN");
         assertThat(extractCarType("BMW F10 523i, 185tis, 3.0, 150kW, automat", "", "")).isEqualTo("SEDAN");
+        assertThat(extractCarType("BMW 530D XDRIVE 210kW FACELIFT 2021 AUTOMAT / HEADup VIRTUAL", "", "")).isEqualTo("SEDAN");
+        assertThat(extractCarType("BMW 530d UVEDENA CENA BEZ DPH", "", "")).isEqualTo("SEDAN");
         assertThat(extractCarType("Audi A6 2.0 TDI AVANT Ultra S-tronic 2015", "", "")).isEqualTo("WAGON");
         assertThat(extractCarType("Audi a4b6 2.5tdi V6 120kw", "", "")).isEqualTo("SEDAN");
         assertThat(extractCarType("S4 Quattro BSR 402PS 1.majitel koupeno v CR full servis -DPH", "", ""))
@@ -493,6 +495,18 @@ class BazosParserTest {
                 .isEqualTo("Hyundai i20 1.0 T-GDI 74kW 63tkm - záruka Autodraft");
         assertThat(repairMojibake("Hyundai i30 kombi 1.5T-GDI 117kw|N-LINE|2022|114tkm|Z\u0102\u0081RUKA"))
                 .isEqualTo("Hyundai i30 kombi 1.5T-GDI 117kw|N-LINE|2022|114tkm|ZÁRUKA");
+    }
+
+    @Test
+    void repairsSingleEncodedBazosMojibakeBeforeOutput() throws Exception {
+        assertThat(repairMojibake("PlzeĹ-jih"))
+                .isEqualTo("Plzeň-jih");
+        assertThat(repairMojibake("Audi Q3 1.4TFSI 110KW MANUĂL LED SENZORY SERVISKA TAĹ˝NĂ‰"))
+                .isEqualTo("Audi Q3 1.4TFSI 110KW MANUÁL LED SENZORY SERVISKA TAŽNÉ");
+        assertThat(repairMojibake("MladĂˇ Boleslav"))
+                .isEqualTo("Mladá Boleslav");
+        assertThat(repairMojibake("PĹ™erov"))
+                .isEqualTo("Přerov");
     }
 
     private String extractFuelType(String text) throws Exception {

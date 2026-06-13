@@ -2456,6 +2456,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " eqe ", " eqs ",
                 " cls ", " cla ",
                 " 520 ", " 525 ", " 530 ", " 540 ",
+                " 520d ", " 530d ", " 530xd ", " 540d ",
                 " c180 ", " c 180 ", " c180k ", " c 180k ", " c220d ", " c 220 ", " c-class ", " e-class ",
                 " thalia ")) {
             return "SEDAN";
@@ -3783,7 +3784,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
     }
 
     private String repairMojibake(String value) {
-        if (value == null || value.isBlank() || mojibakeScore(value) == 0) {
+        if (value == null || value.isBlank() || (!looksLikeMojibake(value) && mojibakeScore(value) == 0)) {
             return value;
         }
 
@@ -3795,7 +3796,11 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                     .onUnmappableCharacter(CodingErrorAction.REPORT)
                     .decode(ByteBuffer.wrap(bytes))
                     .toString();
-            return mojibakeScore(repaired) < mojibakeScore(value) ? normalizeText(repaired) : value;
+            if (mojibakeScore(repaired) < mojibakeScore(value)
+                    || (looksLikeMojibake(value) && !looksLikeMojibake(repaired))) {
+                return normalizeText(repaired);
+            }
+            return value;
         } catch (Exception e) {
             return value;
         }
@@ -3830,6 +3835,33 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         }
 
         return out.toByteArray();
+    }
+
+    private boolean looksLikeMojibake(String value) {
+        if (value == null || value.isBlank()) {
+            return false;
+        }
+
+        for (int offset = 0; offset < value.length(); ) {
+            int codePoint = value.codePointAt(offset);
+            if (codePoint == 0x0102 // Ă
+                    || codePoint == 0x0139 // Ĺ
+                    || codePoint == 0x00C4 // Ä
+                    || codePoint == 0x00C2 // Â
+                    || codePoint == 0x015A // Ś
+                    || codePoint == 0x017B // Ż
+                    || codePoint == 0x013E // ľ
+                    || codePoint == 0x0165 // ť
+                    || codePoint == 0x02C7 // ˇ
+                    || codePoint == 0x02DD // ˝
+                    || codePoint == 0x2030 // ‰
+                    || (codePoint >= 0x0080 && codePoint <= 0x009F)) {
+                return true;
+            }
+            offset += Character.charCount(codePoint);
+        }
+
+        return false;
     }
 
     private int mojibakeScore(String value) {
