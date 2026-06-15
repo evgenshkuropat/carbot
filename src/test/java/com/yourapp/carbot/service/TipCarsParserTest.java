@@ -202,7 +202,26 @@ class TipCarsParserTest {
     }
 
     @Test
-    void repairsTipCarsMojibakeBeforeOutput() throws Exception {
+    void repairsFreshTipCarsMojibakeFromLogs() throws Exception {
+        assertThat(repairMojibake("\u0139\u00A0koda Fabia 1,2HTP Klimatizace"))
+                .isEqualTo("\u0160koda Fabia 1,2HTP Klimatizace");
+        assertThat(repairMojibake("Opel Crossland X 1.2T AUTOMAT NOV\u0102\u2030 ROZVODY"))
+                .isEqualTo("Opel Crossland X 1.2T AUTOMAT NOV\u00C9 ROZVODY");
+        assertThat(repairMojibake("Audi A6 3.0 TDI, 210kw, ta\u0139\u013En\u0102\u00A9"))
+                .isEqualTo("Audi A6 3.0 TDI, 210kw, ta\u017En\u00E9");
+        assertThat(repairMojibake("Renault M\u0102\u00A9gane 1.5DCi INTENS automat"))
+                .isEqualTo("Renault M\u00E9gane 1.5DCi INTENS automat");
+        assertThat(repairMojibake("BMW \u0139\u0098ada 5 540d xDrive Touring"))
+                .isEqualTo("BMW \u0158ada 5 540d xDrive Touring");
+        assertThat(repairMojibake("Mercedes-Benz T\u0139\u2122\u0102\u00ADdy A A 200 Progressive linie"))
+                .isEqualTo("Mercedes-Benz T\u0159\u00EDdy A A 200 Progressive linie");
+        assertThat(repairMojibake("Zl\u0102\u00ADn"))
+                .isEqualTo("Zl\u00EDn");
+        assertThat(repairMojibake("Peugeot 208 1.5 HDI 75 KW,1.MAJ,\u00C4\u015AR,DPH..."))
+                .isEqualTo("Peugeot 208 1.5 HDI 75 KW,1.MAJ,\u010CR,DPH...");
+    }
+
+    void repairsTipCarsMojibakeBeforeOutputLegacy() throws Exception {
         assertThat(repairMojibake("Ĺ koda Superb 2,0 TDi Ambition"))
                 .isEqualTo("Škoda Superb 2,0 TDi Ambition");
         assertThat(repairMojibake("Mazda CX-7 2.2i DISI TURBO AWD, ZĂVÄšS"))

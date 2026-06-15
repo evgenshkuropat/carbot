@@ -10,6 +10,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayOutputStream;
+import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
 import java.nio.charset.Charset;
 import java.nio.charset.CodingErrorAction;
 import java.nio.charset.StandardCharsets;
@@ -1130,22 +1132,35 @@ public class TipCarsParser implements CarSourceParser {
     }
 
     private String repairMojibake(String value) {
-        if (value == null || value.isBlank() || mojibakeScore(value) == 0) {
+        if (value == null || value.isBlank() || (!looksLikeMojibake(value) && mojibakeScore(value) == 0)) {
             return value;
         }
 
+        String current = value;
         try {
-            byte[] bytes = encodeMojibakeBytes(value);
-            String repaired = StandardCharsets.UTF_8
-                    .newDecoder()
-                    .onMalformedInput(CodingErrorAction.REPORT)
-                    .onUnmappableCharacter(CodingErrorAction.REPORT)
-                    .decode(java.nio.ByteBuffer.wrap(bytes))
-                    .toString();
+            for (int attempt = 0; attempt < 3; attempt++) {
+                if (!looksLikeMojibake(current) && mojibakeScore(current) == 0) {
+                    break;
+                }
 
-            return mojibakeScore(repaired) < mojibakeScore(value) ? normalizeText(repaired) : value;
+                byte[] bytes = encodeMojibakeBytes(current);
+                String repaired = StandardCharsets.UTF_8
+                        .newDecoder()
+                        .onMalformedInput(CodingErrorAction.REPORT)
+                        .onUnmappableCharacter(CodingErrorAction.REPORT)
+                        .decode(ByteBuffer.wrap(bytes))
+                        .toString();
+
+                if (mojibakeScore(repaired) < mojibakeScore(current)
+                        || (looksLikeMojibake(current) && !looksLikeMojibake(repaired))) {
+                    current = normalizeText(repaired);
+                } else {
+                    break;
+                }
+            }
+            return current;
         } catch (Exception e) {
-            return value;
+            return current;
         }
     }
 
@@ -1153,26 +1168,82 @@ public class TipCarsParser implements CarSourceParser {
         ByteArrayOutputStream out = new ByteArrayOutputStream(value.length());
         Charset windows1250 = Charset.forName("windows-1250");
 
-        for (int i = 0; i < value.length(); i++) {
-            char ch = value.charAt(i);
-            if (ch <= 0xFF) {
-                out.write((byte) ch);
-                continue;
+        for (int offset = 0; offset < value.length(); ) {
+            int codePoint = value.codePointAt(offset);
+            String ch = new String(Character.toChars(codePoint));
+
+            if (codePoint <= 0xFF) {
+                out.write(codePoint);
+            } else {
+                try {
+                    ByteBuffer encoded = windows1250
+                            .newEncoder()
+                            .onMalformedInput(CodingErrorAction.REPORT)
+                            .onUnmappableCharacter(CodingErrorAction.REPORT)
+                            .encode(CharBuffer.wrap(ch));
+                    while (encoded.hasRemaining()) {
+                        out.write(encoded.get() & 0xFF);
+                    }
+                } catch (Exception e) {
+                    out.write(ch.getBytes(StandardCharsets.UTF_8));
+                }
             }
 
-            byte[] bytes = windows1250
-                    .newEncoder()
-                    .onMalformedInput(CodingErrorAction.REPORT)
-                    .onUnmappableCharacter(CodingErrorAction.REPORT)
-                    .encode(java.nio.CharBuffer.wrap(String.valueOf(ch)))
-                    .array();
-            out.write(bytes[0]);
+            offset += Character.charCount(codePoint);
         }
 
         return out.toByteArray();
     }
 
+    private boolean looksLikeMojibake(String value) {
+        if (value == null || value.isBlank()) {
+            return false;
+        }
+
+        for (int offset = 0; offset < value.length(); ) {
+            int codePoint = value.codePointAt(offset);
+            if (codePoint == 0x0102
+                    || codePoint == 0x0139
+                    || codePoint == 0x00C4
+                    || codePoint == 0x00C2
+                    || codePoint == 0x015A
+                    || codePoint == 0x017B
+                    || codePoint == 0x013E
+                    || codePoint == 0x0165
+                    || codePoint == 0x02C7
+                    || codePoint == 0x02DD
+                    || codePoint == 0x2030
+                    || (codePoint >= 0x0080 && codePoint <= 0x009F)) {
+                return true;
+            }
+            offset += Character.charCount(codePoint);
+        }
+
+        return false;
+    }
+
     private int mojibakeScore(String value) {
+        if (value == null || value.isBlank()) {
+            return 0;
+        }
+
+        int score = 0;
+        for (int offset = 0; offset < value.length(); ) {
+            int codePoint = value.codePointAt(offset);
+            if (codePoint == '\u0102'
+                    || codePoint == '\u00C4'
+                    || codePoint == '\u0139'
+                    || codePoint == '\u00C2'
+                    || codePoint == '\u00E2'
+                    || codePoint == '\uFFFD') {
+                score++;
+            }
+            offset += Character.charCount(codePoint);
+        }
+        return score;
+    }
+
+    private int mojibakeScoreLegacy(String value) {
         if (value == null || value.isBlank()) {
             return 0;
         }
