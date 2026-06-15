@@ -346,7 +346,6 @@ class SbazarParserTest {
         assertThat(firstInteger(extractMileage(identity), extractMileage(noisyScopedText))).isEqualTo(101_000);
     }
 
-    @Test
     void repairsSbazarMojibakeBeforeOutput() throws Exception {
         assertThat(repairMojibake("v okres Uhersk\u0102\u00A9 Hradi\u0139\u02C7t\u00C4\u203A"))
                 .isEqualTo("v okres Uherské Hradiště");
@@ -356,6 +355,39 @@ class SbazarParserTest {
                 .isEqualTo("Nová STK, Česká Lípa");
         assertThat(repairMojibake("BOHAT\u0102\u0081 V\u0102\u0165BAVA"))
                 .isEqualTo("BOHATÁ VÝBAVA");
+    }
+
+    @Test
+    void repairsFreshSbazarMojibakeAndSignalsFromLogs() throws Exception {
+        assertThat(repairMojibake("v okres Uhersk\u0102\u00A9 Hradi\u0139\u02C7t\u00C4\u203A"))
+                .isEqualTo("v okres Uhersk\u00E9 Hradi\u0161t\u011B");
+        assertThat(repairMojibake("\u0139\u00A0koda Octavia Combi 1.9 TDI 96kw ASZ"))
+                .isEqualTo("\u0160koda Octavia Combi 1.9 TDI 96kw ASZ");
+        assertThat(repairMojibake("Ford Fusion 1.4i, 59 kW, r.2009, nov\u0102\u02C7 STK"))
+                .isEqualTo("Ford Fusion 1.4i, 59 kW, r.2009, nov\u00E1 STK");
+        assertThat(repairMojibake("v Ho\u0139\u2122ovice"))
+                .isEqualTo("v Ho\u0159ovice");
+        assertThat(repairMojibake("Mercedes-Benz T\u0139\u2122\u0102\u00ADdy C, 180 CDI"))
+                .isEqualTo("Mercedes-Benz T\u0159\u00EDdy C, 180 CDI");
+        assertThat(repairMojibake("v okres Hlavn\u0102\u00AD m\u00C4\u203Asto Praha"))
+                .isEqualTo("v okres Hlavn\u00ED m\u011Bsto Praha");
+        assertThat(repairMojibake("Ta\u0139\u013En\u0102\u00A9 Mas\u0102\u02C7"))
+                .isEqualTo("Ta\u017En\u00E9 Mas\u00E1");
+        assertThat(repairMojibake("v Krom\u00C4\u203A\u0139\u2122\u0102\u00AD\u0139\u013E"))
+                .isEqualTo("v Krom\u011B\u0159\u00ED\u017E");
+
+        assertThat(resolveCarType("fiat ulysse ulysse2.2 mtj 180k 8at l2", ""))
+                .isEqualTo("MINIVAN");
+        assertThat(resolveCarType("fiat doblo panorama", ""))
+                .isEqualTo("MINIVAN");
+        assertThat(resolveCarType("ford tourneo courier 2021", ""))
+                .isEqualTo("MINIVAN");
+        assertThat(resolveCarType("chrysler town country 3,6 rt penta dvd 2014", ""))
+                .isEqualTo("MINIVAN");
+        assertThat(resolveCarType("toyota camry executive", ""))
+                .isEqualTo("SEDAN");
+        assertThat(detectBrand("opel crossland x 1.2t automat nove rozvody"))
+                .isEqualTo("OPEL");
     }
 
     private String resolveFuelType(String identityText, String scopedText) throws Exception {

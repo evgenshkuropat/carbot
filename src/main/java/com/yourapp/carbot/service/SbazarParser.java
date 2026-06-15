@@ -567,7 +567,7 @@ public class SbazarParser implements CarSourceParser {
                 {"FORD", "ford", "focus", "mondeo", "kuga", "s-max", "galaxy", "ranger"},
                 {"SUBARU", "subaru", "legacy", "forester", "outback", "xv"},
                 {"AUDI", "audi", "a3", "a4", "a5", "a6", "s5", "q3", "q5", "q7", "q8"},
-                {"BMW", "bmw", "x1", "x 1", "x3", "x4", "x5", "x6", "i5", "e90", "325xi"},
+                {"BMW", "bmw", "bmw x1", "bmw x 1", "x3", "x4", "x5", "x6", "i5", "e90", "325xi"},
                 {"KIA", "kia", "ceed", "sportage", "sorento", "picanto"},
                 {"SEAT", "seat", "ibiza", "leon", "altea"},
                 {"OPEL", "opel", "astra", "corsa", "zafira", "mokka"},
@@ -867,10 +867,10 @@ public class SbazarParser implements CarSourceParser {
         if (containsAny(searchable, "insignia")) {
             return "SEDAN";
         }
-        if (containsAny(searchable, "touran", "sharan", "alhambra", "altea", "s-max", "c-max", "b-max", "galaxy", "zafira", "scenic", "modus", "picasso", "roomster", "berlingo", "rifter", "caddy", "citan", "vito", "viano", "mercedes v ", "v 250", "v250", "w447", "tridy v", "tridy r", "proace verso", "proace city", "proace city verso", "multivan", "california", "volkswagen t5", "volkswagen t6", "vw t5", "vw t6", "jumpy", "trafic", "traffic", "sportsvan", "golf plus", "ford fusion", "tourneo custom", "tourneo connect", "u-tour", "u tour", "225xe", "active tourer", " f45 ", "kangoo", "dokker", "lodgy", "jogger", "b180", "b 180", "b200", "b 200", "peugeot 807", " 807 ", "mazda 5", "grandis", "voyager", "pacifica", "grand caravan", "sienna", "corolla verso", "ix20", "meriva", "partner tepee", "peugeot partner")) {
+        if (containsAny(searchable, "touran", "sharan", "alhambra", "altea", "s-max", "c-max", "b-max", "galaxy", "zafira", "scenic", "modus", "picasso", "roomster", "berlingo", "rifter", "caddy", "citan", "vito", "viano", "mercedes v ", "v 250", "v250", "w447", "tridy v", "tridy r", "proace verso", "proace city", "proace city verso", "multivan", "california", "volkswagen t5", "volkswagen t6", "vw t5", "vw t6", "jumpy", "trafic", "traffic", "sportsvan", "golf plus", "ford fusion", "tourneo custom", "tourneo connect", "tourneo courier", "u-tour", "u tour", "225xe", "active tourer", " f45 ", "kangoo", "dokker", "lodgy", "jogger", "b180", "b 180", "b200", "b 200", "peugeot 807", " 807 ", "mazda 5", "grandis", "voyager", "town country", "town & country", "pacifica", "grand caravan", "sienna", "corolla verso", "ix20", "meriva", "partner tepee", "peugeot partner", "fiat ulysse", "ulysse", "fiat doblo", "doblo")) {
             return "MINIVAN";
         }
-        if (containsAny(searchable, "model 3", "model s", "bmw i5", "eqe", "audi a7", " a7 ", "jetta", "w220", "w 220", "w211", "w 211", "fluence", "audi s8", " s8 ", "jaguar xf", " xf ", "jaguar xe", "mercedes 211")) {
+        if (containsAny(searchable, "model 3", "model s", "toyota camry", "camry", "bmw i5", "eqe", "audi a7", " a7 ", "jetta", "w220", "w 220", "w211", "w 211", "fluence", "audi s8", " s8 ", "jaguar xf", " xf ", "jaguar xe", "mercedes 211")) {
             return "SEDAN";
         }
         if (searchable.matches(".*\\bforman\\b.*")) {
@@ -1068,21 +1068,35 @@ public class SbazarParser implements CarSourceParser {
     }
 
     private String repairMojibake(String value) {
-        if (value == null || value.isBlank() || mojibakeScore(value) == 0) {
+        if (value == null || value.isBlank() || (!looksLikeMojibake(value) && mojibakeScore(value) == 0)) {
             return value;
         }
 
+        String current = value;
         try {
-            byte[] bytes = encodeMojibakeBytes(value);
-            String repaired = StandardCharsets.UTF_8
-                    .newDecoder()
-                    .onMalformedInput(CodingErrorAction.REPORT)
-                    .onUnmappableCharacter(CodingErrorAction.REPORT)
-                    .decode(ByteBuffer.wrap(bytes))
-                    .toString();
-            return mojibakeScore(repaired) < mojibakeScore(value) ? normalizeText(repaired) : value;
+            for (int attempt = 0; attempt < 3; attempt++) {
+                if (!looksLikeMojibake(current) && mojibakeScore(current) == 0) {
+                    break;
+                }
+
+                byte[] bytes = encodeMojibakeBytes(current);
+                String repaired = StandardCharsets.UTF_8
+                        .newDecoder()
+                        .onMalformedInput(CodingErrorAction.REPORT)
+                        .onUnmappableCharacter(CodingErrorAction.REPORT)
+                        .decode(ByteBuffer.wrap(bytes))
+                        .toString();
+
+                if (mojibakeScore(repaired) < mojibakeScore(current)
+                        || (looksLikeMojibake(current) && !looksLikeMojibake(repaired))) {
+                    current = normalizeText(repaired);
+                } else {
+                    break;
+                }
+            }
+            return current;
         } catch (Exception e) {
-            return value;
+            return current;
         }
     }
 
@@ -1115,6 +1129,33 @@ public class SbazarParser implements CarSourceParser {
         }
 
         return out.toByteArray();
+    }
+
+    private boolean looksLikeMojibake(String value) {
+        if (value == null || value.isBlank()) {
+            return false;
+        }
+
+        for (int offset = 0; offset < value.length(); ) {
+            int codePoint = value.codePointAt(offset);
+            if (codePoint == 0x0102
+                    || codePoint == 0x0139
+                    || codePoint == 0x00C4
+                    || codePoint == 0x00C2
+                    || codePoint == 0x015A
+                    || codePoint == 0x017B
+                    || codePoint == 0x013E
+                    || codePoint == 0x0165
+                    || codePoint == 0x02C7
+                    || codePoint == 0x02DD
+                    || codePoint == 0x2030
+                    || (codePoint >= 0x0080 && codePoint <= 0x009F)) {
+                return true;
+            }
+            offset += Character.charCount(codePoint);
+        }
+
+        return false;
     }
 
     private int mojibakeScore(String value) {
