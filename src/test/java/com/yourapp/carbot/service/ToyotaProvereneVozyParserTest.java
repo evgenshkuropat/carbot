@@ -72,7 +72,6 @@ class ToyotaProvereneVozyParserTest {
                 .isEqualTo("HYBRID");
     }
 
-    @Test
     void repairsToyotaProvereneMojibakeBeforeOutput() throws Exception {
         assertThat(repairMojibake("Ĺ koda Fabia 1.2 HTP / 51 kW"))
                 .isEqualTo("Škoda Fabia 1.2 HTP / 51 kW");
@@ -87,6 +86,16 @@ class ToyotaProvereneVozyParserTest {
     }
 
     @Test
+    void repairsToyotaProvereneMojibakeToFinalCzechText() throws Exception {
+        assertThat(repairMojibake("\u0139\u00A0koda Fabia 1.2 HTP / 51 kW"))
+                .isEqualTo("\u0160koda Fabia 1.2 HTP / 51 kW");
+        assertThat(repairMojibake("TSUSHO Mod\u0139\u2122any - Skladov\u0102\u00A9 vozy"))
+                .isEqualTo("TSUSHO Mod\u0159any - Skladov\u00E9 vozy");
+        assertThat(repairMojibake("Citro\u0102\u00ABn C4 1.2PureTech"))
+                .isEqualTo("Citro\u00EBn C4 1.2PureTech");
+    }
+
+    @Test
     void repairsFreshToyotaProvereneMojibakeFromLogs() throws Exception {
         assertThat(repairMojibake("Uhersk\u0102\u00A9 Hradi\u0139\u02C7t\u00C4\u203A"))
                 .isEqualTo("Uhersk\u00E9 Hradi\u0161t\u011B");
@@ -96,6 +105,18 @@ class ToyotaProvereneVozyParserTest {
                 .isEqualTo("Citro\u00EBn C5 Aircross 1.6PureTech,133kW,AT8,CZ,SHINE");
         assertThat(repairMojibake("Opel Zafira 1.6CDTI,88kW,7M\u0102\u00ADst,Ta\u0139\u013En\u0102\u00A9"))
                 .isEqualTo("Opel Zafira 1.6CDTI,88kW,7M\u00EDst,Ta\u017En\u00E9");
+        assertThat(repairMojibake("Tsusho Praha Pr\u0139\u017Bhonice"))
+                .isEqualTo("Tsusho Praha Pr\u016Fhonice");
+        assertThat(repairMojibake("Emil Frey ojet\u0102\u00A9 vozy"))
+                .isEqualTo("Emil Frey ojet\u00E9 vozy");
+        assertThat(repairMojibake("Toyota Aygo 1.0i, \u00C4\u015AR, X-play, automat"))
+                .isEqualTo("Toyota Aygo 1.0i, \u010CR, X-play, automat");
+        assertThat(repairMojibake("T\u0139\u2122inec"))
+                .isEqualTo("T\u0159inec");
+        assertThat(repairMojibake("\u0139\u00A0umperk"))
+                .isEqualTo("\u0160umperk");
+        assertThat(repairMojibake("pouze do vyprod\u0102\u02C7n\u0102\u00AD"))
+                .isEqualTo("pouze do vyprod\u00E1n\u00ED");
     }
 
     private String extractCarType(String title, String text) throws Exception {
