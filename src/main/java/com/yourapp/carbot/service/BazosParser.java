@@ -1977,7 +1977,9 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             return "MINIVAN";
         }
 
-        if (containsAny(titleSource, " leon st ", " seat leon st ")) {
+        if (containsAny(titleSource, " leon st ", " seat leon st ", " ibiza combi ", " ibiza kombi ",
+                " ibiza st ", " ibiza sportstourer ", " ibiza sport tourer ")
+                || (containsAny(titleSource, " ibiza ") && containsAny(titleSource, " combi ", " kombi "))) {
             return "WAGON";
         }
 
@@ -1985,7 +1987,12 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             return "HATCHBACK";
         }
 
-        if (containsAny(titleSource, " ibiza ", " alto ")) {
+        if (containsAny(titleSource, " peugeot 405 ", " 405 sri ")
+                && !containsAny(titleSource, " break ", " combi ", " kombi ", " wagon ", " sw ")) {
+            return "SEDAN";
+        }
+
+        if (containsAny(titleSource, " ibiza ", " alto ", " twingo ")) {
             return "HATCHBACK";
         }
 

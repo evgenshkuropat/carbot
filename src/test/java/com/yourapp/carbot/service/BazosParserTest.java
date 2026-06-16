@@ -140,6 +140,8 @@ class BazosParserTest {
         assertThat(extractCarType("Seat Leon ST 1.2 TSI, 81kW, r2017", "", "")).isEqualTo("WAGON");
         assertThat(extractCarType("Seat Altea XL 1.6 TDI 77 kW Automat", "", "")).isEqualTo("MINIVAN");
         assertThat(extractCarType("Seat ibiza", "", "")).isEqualTo("HATCHBACK");
+        assertThat(extractCarType("SEAT IBIZA 1.0 MPi 55kW KOMBI 2016", "", "")).isEqualTo("WAGON");
+        assertThat(extractCarType("Seat IBIZA combi, 1.2 TSI, 77kW, NOVA STK, TOP STAV", "", "")).isEqualTo("WAGON");
         assertThat(extractCarType("Suzuki Jimny 1.3 i 2015", "", "")).isEqualTo("SUV");
         assertThat(extractCarType("suzuki jimny 4x4", "", "")).isEqualTo("SUV");
         assertThat(extractCarType("Suzuki Samurai 1.3", "", "")).isEqualTo("SUV");
@@ -215,6 +217,7 @@ class BazosParserTest {
         assertThat(extractCarType("Peugeot Traveller 2.0 Blue-HDi Allure L2", "", "")).isEqualTo("MINIVAN");
         assertThat(extractCarType("Peugeot 108 1.0benzin servisni hostorie", "", "")).isEqualTo("HATCHBACK");
         assertThat(extractCarType("PEUGEOT 301 1.2 60kW rok 2016", "", "")).isEqualTo("SEDAN");
+        assertThat(extractCarType("Peugeot 405 SRI 2,0", "", "")).isEqualTo("SEDAN");
         assertThat(extractCarType("Toyota Corolla ST 1.8 HEV 103kW e-CVT,2024,35tkm", "", "")).isEqualTo("WAGON");
         assertThat(extractCarType("Toyota Rav 4 2.0D 85Kw Nova STK, 4x4", "", "")).isEqualTo("SUV");
         assertThat(extractCarType("Toyota CH-R 1.8 hybrid", "", "")).isEqualTo("SUV");
@@ -247,6 +250,7 @@ class BazosParserTest {
         assertThat(extractCarType("Renault Talisman 1.6dCI MANUAL VYHREV TAZNE", "", "")).isEqualTo("SEDAN");
         assertThat(extractCarType("Renault Alaskan", "", "")).isEqualTo("PICKUP");
         assertThat(extractCarType("Renault Laguna 2", "", "")).isEqualTo("HATCHBACK");
+        assertThat(extractCarType("RENAULT TWINGO 1.0i 51kW 2018 POUZE 15 603KM", "", "")).isEqualTo("HATCHBACK");
         assertThat(extractCarType("Cupra Tavascan Endurance Electric 210kW", "", "")).isEqualTo("SUV");
         assertThat(extractCarType("Kia Magentis 2.0crdi 103kw Top Stav Nova STK", "", "")).isEqualTo("SEDAN");
         assertThat(extractCarType("Kia Stinger GT 3.3 T-GDI 4WD 1. majitel", "", "")).isEqualTo("SEDAN");
@@ -530,6 +534,30 @@ class BazosParserTest {
                 .isEqualTo("Krom\u011B\u0159\u00ED\u017E");
         assertThat(repairMojibake("OPEL ASTRA 1.6 CDTI 81 kW | 2019 | TA\u0139\u02DDN\u0102\u2030"))
                 .isEqualTo("OPEL ASTRA 1.6 CDTI 81 kW | 2019 | TA\u017DN\u00C9");
+    }
+
+    @Test
+    void repairsJuneBazosMojibakeFromLogs() throws Exception {
+        assertThat(repairMojibake("PEUGEOT 207 1.4 i BENZ\u0102\u0164N 70 kW NOVE ROZVODY"))
+                .isEqualTo("PEUGEOT 207 1.4 i BENZ\u00CDN 70 kW NOVE ROZVODY");
+        assertThat(repairMojibake("Brunt\u0102\u02C7l"))
+                .isEqualTo("Brunt\u00E1l");
+        assertThat(repairMojibake("\u00C4\u015AR"))
+                .isEqualTo("\u010CR");
+        assertThat(repairMojibake("P\u0139\u2122\u0102\u00ADbram"))
+                .isEqualTo("P\u0159\u00EDbram");
+        assertThat(repairMojibake("VYH\u0139\u0098EV"))
+                .isEqualTo("VYH\u0158EV");
+        assertThat(repairMojibake("TA\u0139\u02DDN\u0102\u2030 V\u0102\u0165H\u0139\u0098EV"))
+                .isEqualTo("TA\u017DN\u00C9 V\u00DDH\u0158EV");
+        assertThat(repairMojibake("M\u0102\u00A9gane"))
+                .isEqualTo("M\u00E9gane");
+        assertThat(repairMojibake("\u0139\u00A0umperk"))
+                .isEqualTo("\u0160umperk");
+        assertThat(repairMojibake("K\u0139\u00AE\u0139\u02DDE").codePoints().toArray())
+                .containsExactly('K', 0x016E, 0x017D, 'E');
+        assertThat(repairMojibake("\u0102\u0161st\u0102\u00AD nad Orlic\u0102\u00AD"))
+                .isEqualTo("\u00DAst\u00ED nad Orlic\u00ED");
     }
 
     private String extractFuelType(String text) throws Exception {
