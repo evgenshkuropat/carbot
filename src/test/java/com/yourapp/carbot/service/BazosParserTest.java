@@ -182,6 +182,7 @@ class BazosParserTest {
         assertThat(extractCarType("Fiat Dobló 1,6Jtd MAXI klima+5dveri+CR+64000km", "", "")).isEqualTo("MINIVAN");
         assertThat(extractCarType("Fiat Talento Kombi 1.6turbo 107kw,novy motor 8mist,zaves", "", "")).isEqualTo("MINIVAN");
         assertThat(extractCarType("Fiat Croma 1,9jtd AUTOMAT 2009", "", "")).isEqualTo("WAGON");
+        assertThat(extractCarType("Fiat Stilo 1.9jtd dovoz, 100tkm, servisni knizka top stav", "", "")).isEqualTo("HATCHBACK");
         assertThat(extractCarType("Fiat500", "", "")).isEqualTo("HATCHBACK");
         assertThat(extractCarType("Fiat 500c 1.2 Lounge 2015", "", "")).isEqualTo("CABRIO");
         assertThat(extractCarType("Fiat 500X - 1.0 FireFly - edice MIRROR", "", "")).isEqualTo("SUV");
@@ -194,12 +195,15 @@ class BazosParserTest {
         assertThat(extractCarType("HONDA ACCORD TOURER VII EXECUTIVE 2.0 i-VTEC", "", "")).isEqualTo("WAGON");
         assertThat(extractCarType("Honda Accord kombi 2,0i-Vtec slusny stav servis STK", "", "")).isEqualTo("WAGON");
         assertThat(extractCarType("Honda Accord coupe", "", "")).isEqualTo("COUPE");
+        assertThat(extractCarType("Honda Acoord 8G 2.0 I-VTEC", "", "")).isEqualTo("SEDAN");
         assertThat(extractCarType("Prodam Honda City 1,4 73 kw", "", "")).isEqualTo("SEDAN");
         assertThat(extractCarType("Honda Covic 2.2 CTDi,103kw, nova STK.", "", "")).isEqualTo("HATCHBACK");
         assertThat(extractCarType("Honda N-Box Custom 3/2016 136t km JDM", "", "")).isEqualTo("MINIVAN");
         assertThat(extractCarType("Ford Focus Tunier 2014", "", "")).isEqualTo("WAGON");
         assertThat(extractCarType("FUSION FACELIFT,1.4 16V 59KW,ROK 2008", "", "")).isEqualTo("HATCHBACK");
+        assertThat(extractCarType("Ford f-150 5.4 lpgrv. 2010, double cab,2 m korba", "", "")).isEqualTo("PICKUP");
         assertThat(extractCarType("HONDA CIVIC TOURER 1.6i DTEC 2016 KAMERA", "", "")).isEqualTo("WAGON");
+        assertThat(extractCarType("Honda F-RV 1,8 V-Tec 108kW 6-mist", "", "")).isEqualTo("MINIVAN");
         assertThat(extractCarType("Chevrolet Express Limited SE 2500 6.0", "", "")).isEqualTo("MINIVAN");
         assertThat(extractCarType("Chevrolet Trailblazer 4.2i,201kw,/LPG", "", "")).isEqualTo("SUV");
         assertThat(extractCarType("Opel Astra J Sports Tourer 1.4i Turbo103Kw r.v.10/2015", "", "")).isEqualTo("WAGON");
@@ -326,6 +330,7 @@ class BazosParserTest {
         assertThat(looksNonCarListing("Sada OEM filtru Alfa 159", "", "", "")).isTrue();
         assertThat(looksNonCarListing("Strecha Toyota MR2, pasy, plasty do masky", "", "", "")).isTrue();
         assertThat(looksNonCarListing("Auto pro vozickare/ZTP/auto s rampou", "", "", "")).isTrue();
+        assertThat(looksNonCarListing("Honda CBX 1000", "", "https://auto.bazos.cz/inzerat/218943387/elektricke-auto.php", "")).isTrue();
         assertThat(looksNonCarListing(
                 "S4 Quattro BSR 402PS 1.majitel koupeno v CR full servis -DPH",
                 "",

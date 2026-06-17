@@ -1927,6 +1927,14 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         String textSource = " " + normalizeText(safe(text)).toLowerCase(Locale.ROOT) + " ";
         String urlSource = " " + normalizeText(safe(url)).toLowerCase(Locale.ROOT) + " ";
 
+        if (containsAny(titleSource, " f-150 ", " f 150 ", " f150 ")) {
+            return "PICKUP";
+        }
+
+        if (containsAny(titleSource, " fr-v ", " fr v ", " frv ", " f-rv ", " f rv ")) {
+            return "MINIVAN";
+        }
+
         if (containsAny(titleSource, " corolla sedan ", " corolla sd ", " camry ")) {
             return "SEDAN";
         }
@@ -2259,7 +2267,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             return "HATCHBACK";
         }
 
-        if (containsAny(titleSource, " honda city ", " accord ", " legend ", " peugeot 301 ", " talisman ", " magentis ", " optima ", " stinger ")) {
+        if (containsAny(titleSource, " honda city ", " accord ", " acoord ", " legend ", " peugeot 301 ", " talisman ", " magentis ", " optima ", " stinger ")) {
             return "SEDAN";
         }
 
@@ -2410,7 +2418,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " 116i ", " 118i ", " 120i ", " 116d ", " 118d ", " 120d ",
                 " agila ", " karl ", " astra ", " corsa ", " fusion ", " starlet ", " 1007 ", " 107 ", " 147 ", " 206 ", " 207 ", " 208 ", " 308 ",
                 " sandero ", " stepway ", " logan ", " scala ", " citigo ", " laguna ",
-                " fiat 500 ", " fiat500 ", " tipo ", " fiat tipo ", " bravo ",
+                " fiat 500 ", " fiat500 ", " tipo ", " fiat tipo ", " bravo ", " stilo ",
                 " auris ", " aoris ", " prius ", " corolla ", " corsa ", " mazda 3 ", " rapid ", " yaris ", " getz ", " soul ")) {
             return "HATCHBACK";
         }
@@ -3102,6 +3110,10 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
 
         if (startsWithAny(asciiTitleValue, "strecha ")
                 || containsAny(asciiTitleValue, " auto pro vozickare ", " auto s rampou ", " ztp ", " plasty do masky ")) {
+            return true;
+        }
+
+        if (containsAny(asciiTitleValue, " honda cbx ", " cbx 1000 ")) {
             return true;
         }
 
