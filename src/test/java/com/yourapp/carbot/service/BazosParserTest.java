@@ -107,6 +107,8 @@ class BazosParserTest {
         assertThat(extractFuelType("VW Golf 8 GTE 1.4 TSI Hybrid 150kW DSG - zaruka Autodraft")).isEqualTo("PLUGIN_HYBRID");
         assertThat(extractFuelType("Dacia Lodgy MPV r.2022 1,3benz 96kw 1.majitel")).isEqualTo("PETROL");
         assertThat(extractFuelType("Pekna Dacia Logan MCV 1.2...16V")).isEqualTo("PETROL");
+        assertThat(extractFuelType("Citroen C3 1.2 60 kw r.v 2016 115000 km")).isEqualTo("PETROL");
+        assertThat(extractFuelType("Fiat Tipo 2017 Lounge 1.6 E-Torq EVO 81 kW - automat 6st.")).isEqualTo("PETROL");
         assertThat(extractFuelType("VOLVO V90 CROSS COUNTRY ULTIMATE B5 173KW 2022 CZ DPH 1MAJ")).isEqualTo("HYBRID");
         assertThat(extractFuelType("Volvo XC 90 B5 AWD INSCRIPTION")).isEqualTo("HYBRID");
         assertThat(extractFuelType("Volvo XC40 B3 5/2026 PLUS BLACK EDITION , DPH , 465km")).isEqualTo("HYBRID");
@@ -176,6 +178,7 @@ class BazosParserTest {
         assertThat(extractCarType("BMW Z4 3.0 si MANUAL Coupe", "", "")).isEqualTo("COUPE");
         assertThat(extractCarType("BMW 2, F45, Active Tourer, 225i xDrive LUXURY LINE", "", "")).isEqualTo("MINIVAN");
         assertThat(extractCarType("Citroen C 3 1.5 HDi, Edice Origins Since 1919", "", "")).isEqualTo("HATCHBACK");
+        assertThat(extractCarType("Citroen c-elysee 1.2", "", "")).isEqualTo("SEDAN");
         assertThat(extractCarType("Prodam Citroen Jumpy 2.0 HDI Multispace 9.mist", "", "")).isEqualTo("MINIVAN");
         assertThat(extractCarType("Lancia Kappa 2.4JTD 10V Klima, Alcantara, Bez koroze, Servis", "", "")).isEqualTo("SEDAN");
         assertThat(extractCarType("Lancia Ypsilon Gold 1.2i", "", "")).isEqualTo("HATCHBACK");
@@ -377,6 +380,10 @@ class BazosParserTest {
                 "Citroen C4 zaruka elektro",
                 "https://auto.bazos.cz/inzerat/219841903/citroen-ec4-zaruka.php"))
                 .isFalse();
+        assertThat(looksBrandMismatch(
+                "Fiat Tipo 2017 Lounge 1.6 E-Torq EVO 81 kW - automat 6st.",
+                "https://auto.bazos.cz/inzerat/220183066/alfa-romeo-giulietta-2015-14-turbo-turismo-125kw.php"))
+                .isTrue();
     }
 
     @Test
@@ -651,6 +658,12 @@ class BazosParserTest {
 
     private boolean looksTitleUrlMismatch(String title, String url) throws Exception {
         Method method = BazosParser.class.getDeclaredMethod("looksTitleUrlMismatch", String.class, String.class);
+        method.setAccessible(true);
+        return (boolean) method.invoke(parser, title, url);
+    }
+
+    private boolean looksBrandMismatch(String title, String url) throws Exception {
+        Method method = BazosParser.class.getDeclaredMethod("looksBrandMismatch", String.class, String.class);
         method.setAccessible(true);
         return (boolean) method.invoke(parser, title, url);
     }

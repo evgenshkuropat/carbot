@@ -1303,8 +1303,12 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             return "PETROL";
         }
 
-        if (containsAny(source, " peugeot 108 ", " peugeot 107 ", " nissan pixo ", " pixo ", " opel corsa ", " opel mokka ")
+        if (containsAny(source, " citroen c3 ", " citroen c 3 ", " fiat tipo ", " peugeot 108 ", " peugeot 107 ", " nissan pixo ", " pixo ", " opel corsa ", " opel mokka ")
                 && Pattern.compile("\\b1[.,][024]\\b").matcher(source).find()) {
+            return "PETROL";
+        }
+
+        if (containsAny(source, " e-torq ", " etorq ")) {
             return "PETROL";
         }
 
@@ -2267,7 +2271,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             return "HATCHBACK";
         }
 
-        if (containsAny(titleSource, " honda city ", " accord ", " acoord ", " legend ", " peugeot 301 ", " talisman ", " magentis ", " optima ", " stinger ")) {
+        if (containsAny(titleSource, " honda city ", " accord ", " acoord ", " legend ", " peugeot 301 ", " c-elysee ", " c elysee ", " celysee ", " talisman ", " magentis ", " optima ", " stinger ")) {
             return "SEDAN";
         }
 
@@ -2695,6 +2699,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         if (url.contains("-mazda-")) return "MAZDA";
         if (url.contains("-citroen-") || url.contains("-citreon-")) return "CITROEN";
         if (url.contains("-fiat-")) return "FIAT";
+        if (url.contains("-alfa-romeo-")) return "ALFA_ROMEO";
         if (url.contains("-nissan-")) return "NISSAN";
         if (url.contains("-honda-")) return "HONDA";
         if (url.contains("-suzuki-")) return "SUZUKI";
