@@ -180,6 +180,7 @@ public class SautoParser implements CarSourceParser {
                     extractFuelType(description),
                     extractFuelType(analysisText)
             );
+            fuelType = correctLikelyFalseElectricFuel(title, fuelType);
 
             String transmission = firstNonBlank(
                     extractTransmission(title),
@@ -1521,6 +1522,53 @@ public class SautoParser implements CarSourceParser {
         return null;
     }
 
+    private String correctLikelyFalseElectricFuel(String title, String fuelType) {
+        if (!"ELECTRIC".equals(fuelType)) {
+            return fuelType;
+        }
+
+        String source = " " + normalizeText(title).toLowerCase(Locale.ROOT) + " ";
+        String compact = source.replaceAll("[^a-z0-9]+", "");
+
+        if (containsAny(source,
+                " elektro ", " elektrickĂ© ", " elektricke ", " electric ", " elektromobil ",
+                " ev ", " e-tron ", " etron ", " id.3 ", " id.4 ", " id.5 ", " kwh ", " soh ")
+                || compact.contains("egolf")
+                || compact.contains("ev3")
+                || compact.contains("id3")
+                || compact.contains("id4")
+                || compact.contains("id5")
+                || compact.contains("kwh")) {
+            return fuelType;
+        }
+
+        if (containsAny(source, " hybrid ", " phev ", " plug-in ", " plugin ", " mhev ", " hev ", " gte ")) {
+            return extractFuelType(title);
+        }
+
+        String titleFuel = extractFuelType(title);
+        if (titleFuel != null) {
+            return titleFuel;
+        }
+
+        if (looksLikeConventionalCombustionEngine(source)) {
+            return "PETROL";
+        }
+
+        return null;
+    }
+
+    private boolean looksLikeConventionalCombustionEngine(String source) {
+        if (containsAny(source,
+                " tdi ", " tdci ", " hdi ", " dci ", " cdi ", " crdi ", " jtd ", " diesel ", " nafta ")) {
+            return false;
+        }
+
+        return Pattern.compile("\\b[0-9][,.][0-9]\\s*(?:i|mpi|tsi|tfsi|fsi|vti|vtec|kw|16v|12v)?\\b")
+                .matcher(source)
+                .find();
+    }
+
     private boolean isAutomaticHybridTitle(String title, String fuelType) {
         if (!"HYBRID".equals(fuelType) && !"PLUGIN_HYBRID".equals(fuelType)) {
             return false;
@@ -2025,23 +2073,32 @@ public class SautoParser implements CarSourceParser {
             return value;
         }
 
+        String current = value;
         try {
-            byte[] bytes = encodeMojibakeBytes(value);
-            String repaired = StandardCharsets.UTF_8
-                    .newDecoder()
-                    .onMalformedInput(CodingErrorAction.REPORT)
-                    .onUnmappableCharacter(CodingErrorAction.REPORT)
-                    .decode(java.nio.ByteBuffer.wrap(bytes))
-                    .toString();
+            for (int attempt = 0; attempt < 3; attempt++) {
+                if (!looksLikeMojibake(current) && mojibakeScore(current) == 0) {
+                    break;
+                }
 
-            if (mojibakeScore(repaired) < mojibakeScore(value)
-                    || (looksLikeMojibake(value) && !looksLikeMojibake(repaired))) {
-                return normalizeText(repaired);
+                byte[] bytes = encodeMojibakeBytes(current);
+                String repaired = StandardCharsets.UTF_8
+                        .newDecoder()
+                        .onMalformedInput(CodingErrorAction.REPORT)
+                        .onUnmappableCharacter(CodingErrorAction.REPORT)
+                        .decode(java.nio.ByteBuffer.wrap(bytes))
+                        .toString();
+
+                if (mojibakeScore(repaired) < mojibakeScore(current)
+                        || (looksLikeMojibake(current) && !looksLikeMojibake(repaired))) {
+                    current = normalizeText(repaired);
+                } else {
+                    break;
+                }
             }
 
-            return value;
+            return current;
         } catch (Exception e) {
-            return value;
+            return current;
         }
     }
 
@@ -2117,7 +2174,8 @@ public class SautoParser implements CarSourceParser {
                     || codePoint == 0x0139
                     || codePoint == 0x00C2
                     || codePoint == 0x00E2
-                    || codePoint == 0xFFFD) {
+                    || codePoint == 0xFFFD
+                    || (codePoint >= 0x0080 && codePoint <= 0x009F)) {
                 broadScore++;
             }
             offset += Character.charCount(codePoint);

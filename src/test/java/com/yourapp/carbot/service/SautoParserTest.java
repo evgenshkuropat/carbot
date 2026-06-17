@@ -83,6 +83,16 @@ class SautoParserTest {
     }
 
     @Test
+    void correctsFalseElectricFuelFromSautoEquipmentText() throws Exception {
+        assertThat(correctLikelyFalseElectricFuel(
+                "Volkswagen Golf 1.6 74kW, CLIMAtronic, el.okna",
+                "ELECTRIC"))
+                .isEqualTo("PETROL");
+        assertThat(correctLikelyFalseElectricFuel("Kia EV3 EARTH 81,4 kWh, ADAS + V2L", "ELECTRIC"))
+                .isEqualTo("ELECTRIC");
+    }
+
+    @Test
     void rejectsDriveableListingsWithFaultsFromFreshSautoLogs() throws Exception {
         assertThat(looksBrokenListing("Ford Focus 1.6 Ecoboost -poj\u00edzdn\u00e9/z\u00e1vada", "", ""))
                 .isTrue();
@@ -162,6 +172,12 @@ class SautoParserTest {
                 .isEqualTo("\u0160koda Fabia 1.2 12V,\u010CR");
         assertThat(repairMojibake("Karvin\u0102\u02C7"))
                 .isEqualTo("Karvin\u00E1");
+        assertThat(repairMojibake("Mercedes-Benz T\u0139\u2122\u0102\u00ADdy A 170, NOV\u0102\u0081 CENA, Klima"))
+                .isEqualTo("Mercedes-Benz T\u0159\u00EDdy A 170, NOV\u00C1 CENA, Klima");
+        assertThat(repairMojibake("Volkswagen Polo 1,2 i KLIMA,TA\u0139\u02DDN\u0102\u2030 ZA\u0139\u0098\u0102\u0164ZEN\u0102\u0164"))
+                .isEqualTo("Volkswagen Polo 1,2 i KLIMA,TA\u017DN\u00C9 ZA\u0158\u00CDZEN\u00CD");
+        assertThat(repairMojibake("Plze\u0139\u0088"))
+                .isEqualTo("Plze\u0148");
     }
 
     private String extractCarType(String title, String text, String url) throws Exception {
@@ -174,6 +190,12 @@ class SautoParserTest {
         Method method = SautoParser.class.getDeclaredMethod("extractFuelType", String.class);
         method.setAccessible(true);
         return (String) method.invoke(parser, text);
+    }
+
+    private String correctLikelyFalseElectricFuel(String title, String fuelType) throws Exception {
+        Method method = SautoParser.class.getDeclaredMethod("correctLikelyFalseElectricFuel", String.class, String.class);
+        method.setAccessible(true);
+        return (String) method.invoke(parser, title, fuelType);
     }
 
     private boolean looksBrokenListing(String title, String listingText, String analysisText) throws Exception {
