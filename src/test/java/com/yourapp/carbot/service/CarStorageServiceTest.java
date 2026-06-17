@@ -109,6 +109,19 @@ class CarStorageServiceTest {
     }
 
     @Test
+    void repairsMojibakeBeforeStorageNormalization() throws Exception {
+        assertThat(cleanText("BMW X3 M50 xDrive, Nez\u0102\u02C7visl\u0102\u00A9, Ta\u0139\u013En\u0102\u00A9"))
+                .isEqualTo("BMW X3 M50 xDrive, Nez\u00E1visl\u00E9, Ta\u017En\u00E9");
+        assertThat(cleanText("Toyota ProAce Verso 2.0D, \u00C4\u015AR-1m, Family L2, DPH"))
+                .isEqualTo("Toyota ProAce Verso 2.0D, \u010CR-1m, Family L2, DPH");
+        assertThat(cleanText("\u0139\u00A0koda Scala 1.0TGI STYLE ACC 2XKOLA LED"))
+                .isEqualTo("\u0160koda Scala 1.0TGI STYLE ACC 2XKOLA LED");
+        assertThat(cleanText("Citro\u0102\u00ABn C3 1,4 HDi CZ 1 maj DPH"))
+                .isEqualTo("Citro\u00EBn C3 1,4 HDi CZ 1 maj DPH");
+        assertThat(cleanText("Mlad\u0102\u02C7 Boleslav")).isEqualTo("Mlad\u00E1 Boleslav");
+    }
+
+    @Test
     void rejectsGenericCarTitles() throws Exception {
         assertThat(looksLikeBadTitle("Osobni automobil")).isTrue();
         assertThat(looksLikeBadTitle("Skoda")).isTrue();
@@ -143,6 +156,12 @@ class CarStorageServiceTest {
         Method method = CarStorageService.class.getDeclaredMethod("normalizeBrand", String.class, String.class);
         method.setAccessible(true);
         return (String) method.invoke(service, brand, title);
+    }
+
+    private String cleanText(String value) throws Exception {
+        Method method = CarStorageService.class.getDeclaredMethod("cleanText", String.class);
+        method.setAccessible(true);
+        return (String) method.invoke(service, value);
     }
 
     private boolean looksLikeBadTitle(String title) throws Exception {

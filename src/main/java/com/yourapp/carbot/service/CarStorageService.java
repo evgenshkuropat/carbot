@@ -8,6 +8,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
+import java.io.ByteArrayOutputStream;
+import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
+import java.nio.charset.Charset;
+import java.nio.charset.CodingErrorAction;
+import java.nio.charset.StandardCharsets;
 import java.text.Normalizer;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -131,7 +137,7 @@ public class CarStorageService {
 
     private void normalizeIncoming(CarDto car) {
         car.setSource(clean(car.getSource()));
-        car.setTitle(clean(car.getTitle()));
+        car.setTitle(cleanText(car.getTitle()));
         car.setPrice(clean(car.getPrice()));
         car.setLocation(normalizeLocation(car.getLocation()));
         car.setUrl(clean(car.getUrl()));
@@ -295,7 +301,7 @@ public class CarStorageService {
     }
 
     private String normalizeLocation(String location) {
-        String value = clean(location);
+        String value = cleanText(location);
         if (value == null) {
             return null;
         }
@@ -998,6 +1004,124 @@ public class CarStorageService {
 
         String trimmed = value.trim();
         return trimmed.isEmpty() ? null : trimmed;
+    }
+
+    private String cleanText(String value) {
+        String cleaned = clean(value);
+        return cleaned == null ? null : repairMojibake(cleaned);
+    }
+
+    private String repairMojibake(String value) {
+        if (value == null || value.isBlank() || (!looksLikeMojibake(value) && mojibakeScore(value) == 0)) {
+            return value;
+        }
+
+        String current = value;
+        try {
+            for (int attempt = 0; attempt < 3; attempt++) {
+                if (!looksLikeMojibake(current) && mojibakeScore(current) == 0) {
+                    break;
+                }
+
+                byte[] bytes = encodeMojibakeBytes(current);
+                String repaired = StandardCharsets.UTF_8
+                        .newDecoder()
+                        .onMalformedInput(CodingErrorAction.REPORT)
+                        .onUnmappableCharacter(CodingErrorAction.REPORT)
+                        .decode(ByteBuffer.wrap(bytes))
+                        .toString();
+
+                if (mojibakeScore(repaired) < mojibakeScore(current)
+                        || (looksLikeMojibake(current) && !looksLikeMojibake(repaired))) {
+                    current = repaired.replaceAll("\\s+", " ").trim();
+                } else {
+                    break;
+                }
+            }
+            return current;
+        } catch (Exception e) {
+            return current;
+        }
+    }
+
+    private byte[] encodeMojibakeBytes(String value) throws Exception {
+        ByteArrayOutputStream out = new ByteArrayOutputStream(value.length());
+        Charset windows1250 = Charset.forName("windows-1250");
+
+        for (int offset = 0; offset < value.length(); ) {
+            int codePoint = value.codePointAt(offset);
+            String ch = new String(Character.toChars(codePoint));
+
+            if (codePoint <= 0xFF) {
+                out.write(codePoint);
+            } else {
+                try {
+                    ByteBuffer encoded = windows1250
+                            .newEncoder()
+                            .onMalformedInput(CodingErrorAction.REPORT)
+                            .onUnmappableCharacter(CodingErrorAction.REPORT)
+                            .encode(CharBuffer.wrap(ch));
+                    while (encoded.hasRemaining()) {
+                        out.write(encoded.get() & 0xFF);
+                    }
+                } catch (Exception e) {
+                    out.write(ch.getBytes(StandardCharsets.UTF_8));
+                }
+            }
+
+            offset += Character.charCount(codePoint);
+        }
+
+        return out.toByteArray();
+    }
+
+    private boolean looksLikeMojibake(String value) {
+        if (value == null || value.isBlank()) {
+            return false;
+        }
+
+        for (int offset = 0; offset < value.length(); ) {
+            int codePoint = value.codePointAt(offset);
+            if (codePoint == 0x0102
+                    || codePoint == 0x0139
+                    || codePoint == 0x00C4
+                    || codePoint == 0x00C2
+                    || codePoint == 0x015A
+                    || codePoint == 0x017B
+                    || codePoint == 0x013E
+                    || codePoint == 0x0165
+                    || codePoint == 0x02C7
+                    || codePoint == 0x02DD
+                    || codePoint == 0x2030
+                    || (codePoint >= 0x0080 && codePoint <= 0x009F)) {
+                return true;
+            }
+            offset += Character.charCount(codePoint);
+        }
+
+        return false;
+    }
+
+    private int mojibakeScore(String value) {
+        if (value == null || value.isBlank()) {
+            return 0;
+        }
+
+        int score = 0;
+        for (int offset = 0; offset < value.length(); ) {
+            int codePoint = value.codePointAt(offset);
+            if (codePoint == '\u0102'
+                    || codePoint == '\u00C4'
+                    || codePoint == '\u0139'
+                    || codePoint == '\u00C2'
+                    || codePoint == '\u00E2'
+                    || codePoint == '\uFFFD'
+                    || (codePoint >= 0x0080 && codePoint <= 0x009F)) {
+                score++;
+            }
+            offset += Character.charCount(codePoint);
+        }
+        return score;
     }
 
     private String safe(String value) {
