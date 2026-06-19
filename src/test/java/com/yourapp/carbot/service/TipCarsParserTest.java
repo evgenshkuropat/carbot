@@ -137,6 +137,37 @@ class TipCarsParserTest {
                 "",
                 "https://www.tipcars.com/fiat-scudo/kombi/nafta/fiat-scudo-2-0-jtd-110cv-l.html"))
                 .isEqualTo("MINIVAN");
+
+        assertThat(extractCarType(
+                "Skoda Enyaq iV 80 150kW TZ DPH SOH 91%",
+                "",
+                "https://www.tipcars.com/skoda-enyaq/kombi/elektro/skoda-enyaq.html"))
+                .isEqualTo("SUV");
+        assertThat(extractCarType(
+                "Volkswagen Multivan 4MOTION DSG HIGHLINE",
+                "",
+                "https://www.tipcars.com/volkswagen-multivan/kombi/nafta/volkswagen-multivan.html"))
+                .isEqualTo("MINIVAN");
+        assertThat(extractCarType(
+                "Kia XCeed 1,6 T-GDi 7DCT",
+                "",
+                "https://www.tipcars.com/kia-xceed/cuv/benzin/kia-xceed.html"))
+                .isEqualTo("SUV");
+        assertThat(extractCarType(
+                "Citroen C3 Aircross 1.2i",
+                "",
+                "https://www.tipcars.com/citroen-c3-aircross/hatchback/benzin/citroen-c3-aircross.html"))
+                .isEqualTo("SUV");
+        assertThat(extractCarType(
+                "Peugeot 5008 1.2i 96kW",
+                "",
+                "https://www.tipcars.com/peugeot-5008/kombi/benzin/peugeot-5008.html"))
+                .isEqualTo("SUV");
+        assertThat(extractCarType(
+                "Volkswagen Tiguan Allspace 1,5 TSi",
+                "",
+                "https://www.tipcars.com/volkswagen-tiguan-allspace/kombi/benzin/volkswagen-tiguan-allspace.html"))
+                .isEqualTo("SUV");
     }
 
     @Test
@@ -177,6 +208,12 @@ class TipCarsParserTest {
         assertThat(extractFuelType("Skoda Octavia 1.5 TSI e-tec"))
                 .isEqualTo("HYBRID");
         assertThat(extractFuelType("Citroen C8 2.0, LPG, 8 mist, Tazne, Klima"))
+                .isEqualTo("LPG");
+        assertThat(extractFuelType("Mercedes-Benz GLC 300 de 4M AMG"))
+                .isEqualTo("PLUGIN_HYBRID");
+        assertThat(extractFuelType("Volkswagen Touareg eHybrid 3.0 V6 TSI"))
+                .isEqualTo("PLUGIN_HYBRID");
+        assertThat(extractFuelType("Dacia Duster 1,0 TCe ECO-G Expression"))
                 .isEqualTo("LPG");
         assertThat(extractFuelType("BMW Rada 3 3.0D 150kW M PAKET SERVIS. KN."))
                 .isEqualTo("DIESEL");

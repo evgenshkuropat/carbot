@@ -526,6 +526,10 @@ public class TipCarsParser implements CarSourceParser {
             return "LPG";
         }
 
+        if (containsAny(source, " eco-g ", " eco g ") || compact.contains("ecog")) {
+            return "LPG";
+        }
+
         if (containsAny(source, "/cng/", " cng ") || compact.contains("cng")) {
             return "CNG";
         }
@@ -537,9 +541,11 @@ public class TipCarsParser implements CarSourceParser {
                 " phev ",
                 " 225xe ",
                 " 30e ",
+                " 300 de ",
                 " 350 de ",
                 " bmw xm ",
-                " e 300 e ")
+                " e 300 e ",
+                " ehybrid ")
                 || compact.contains("plugin")
                 || compact.contains("pluginhybrid")
                 || compact.contains("phev")
@@ -549,6 +555,7 @@ public class TipCarsParser implements CarSourceParser {
                 || compact.contains("xdrive25e")
                 || compact.contains("sdrive25e")
                 || compact.contains("350de")
+                || compact.contains("300de")
                 || compact.contains("30e")
                 || compact.contains("e300e")) {
             return "PLUGIN_HYBRID";
@@ -761,6 +768,15 @@ public class TipCarsParser implements CarSourceParser {
         String normalizedUrl = url == null ? "" : url.toLowerCase(Locale.ROOT);
 
         String titleSource = " " + normalizeText(safe(title)).toLowerCase(Locale.ROOT) + " ";
+
+        if (containsAny(titleSource,
+                " enyaq ", " tiguan allspace ", " c3 aircross ", " peugeot 5008 ", " xceed ")) {
+            return "SUV";
+        }
+
+        if (containsAny(titleSource, " multivan ", " marco polo ")) {
+            return "MINIVAN";
+        }
 
         if (containsAny(titleSource, " corolla sedan ", " corolla sd ")) {
             return "SEDAN";
