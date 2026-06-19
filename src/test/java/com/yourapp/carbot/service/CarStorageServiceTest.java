@@ -1,5 +1,6 @@
 package com.yourapp.carbot.service;
 
+import com.yourapp.carbot.service.dto.CarDto;
 import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.Method;
@@ -122,6 +123,19 @@ class CarStorageServiceTest {
     }
 
     @Test
+    void keepsRealCitroenWithExtraWheelsAndRejectsAirConditioningService() throws Exception {
+        CarDto citroen = car("Citroen C3 1,2 i 60kW klima,zaves,2x kola");
+        citroen.setBrand("CITROEN");
+        citroen.setFuelType("PETROL");
+        citroen.setCarType("HATCHBACK");
+        assertThat(isValidForSave(citroen, 129_000)).isTrue();
+
+        CarDto serviceListing = car("Prodej + montaz + servis klimatizaci dle vykonu");
+        serviceListing.setCarType("SEDAN");
+        assertThat(isValidForSave(serviceListing, 20_000)).isFalse();
+    }
+
+    @Test
     void rejectsGenericCarTitles() throws Exception {
         assertThat(looksLikeBadTitle("Osobni automobil")).isTrue();
         assertThat(looksLikeBadTitle("Skoda")).isTrue();
@@ -162,6 +176,17 @@ class CarStorageServiceTest {
         Method method = CarStorageService.class.getDeclaredMethod("cleanText", String.class);
         method.setAccessible(true);
         return (String) method.invoke(service, value);
+    }
+
+    private CarDto car(String title) {
+        return new CarDto("TEST", title, "129000", 129_000, "Praha",
+                "https://example.com/car", null);
+    }
+
+    private boolean isValidForSave(CarDto car, Integer priceValue) throws Exception {
+        Method method = CarStorageService.class.getDeclaredMethod("isValidForSave", CarDto.class, Integer.class);
+        method.setAccessible(true);
+        return (boolean) method.invoke(service, car, priceValue);
     }
 
     private boolean looksLikeBadTitle(String title) throws Exception {

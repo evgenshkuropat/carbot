@@ -223,6 +223,10 @@ public class CarStorageService {
             return false;
         }
 
+        if (looksLikeNonCarService(title) && !looksLikeRealCar(title)) {
+            return false;
+        }
+
         if (looksLikeCommercialVehicle(title)) {
             return false;
         }
@@ -805,6 +809,8 @@ public class CarStorageService {
                 || t.contains("chevrolet")
                 || t.contains("corvette")
                 || t.contains("camaro")
+                || t.contains("citroen")
+                || t.contains("citroën")
                 || t.contains("peugeot")
                 || t.contains("opel")
                 || t.contains("mazda")
@@ -906,6 +912,16 @@ public class CarStorageService {
                 || t.contains("sterace")
                 || t.matches(".*\\b\\d{3}/\\d{2}r\\d{2}\\b.*")
                 || t.matches(".*\\b\\d{3}/\\d{2}/r\\d{2}\\b.*");
+    }
+
+    private boolean looksLikeNonCarService(String title) {
+        String ascii = Normalizer.normalize(title.toLowerCase(Locale.ROOT), Normalizer.Form.NFD)
+                .replaceAll("\\p{M}", "");
+
+        return containsAny(ascii,
+                "servis klimatizac",
+                "montaz klimatizac",
+                "prodej klimatizac");
     }
 
     private boolean looksLikeCommercialVehicle(String title) {
