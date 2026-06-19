@@ -230,7 +230,11 @@ public class ToyotaProvereneVozyParser implements CarSourceParser {
                 extractMainPrice(detailText),
                 extractMainPrice(containerText)
         );
-        Integer year = firstNonNull(validYear(parseIntSafe(extractDetailValue(detailDoc, "productionDate"))), extractYear(combinedText));
+        Integer year = firstNonNull(
+                validYear(parseIntSafe(extractDetailValue(detailDoc, "productionDate"))),
+                extractYear(combinedText),
+                extractYearFromTitle(title)
+        );
         Integer mileage = firstNonNull(parseIntSafe(extractDetailValue(detailDoc, "mileageFromOdometer")), extractMileage(combinedText));
         String fuelType = mapFuel(extractValueAfterLabel(containerText, "Palivo"));
         String transmission = mapTransmission(extractValueAfterLabel(containerText, "Převodovka"));
@@ -622,6 +626,15 @@ public class ToyotaProvereneVozyParser implements CarSourceParser {
         return null;
     }
 
+    private Integer extractYearFromTitle(String title) {
+        Matcher matcher = Pattern.compile("\\b(19\\d{2}|20\\d{2})\\b").matcher(safe(title));
+        Integer year = null;
+        while (matcher.find()) {
+            year = validYear(parseIntSafe(matcher.group(1)));
+        }
+        return year;
+    }
+
     private String mapCarType(String value) {
         if (value == null) return null;
         String v = normalizeAscii(value).toLowerCase(Locale.ROOT);
@@ -666,6 +679,12 @@ public class ToyotaProvereneVozyParser implements CarSourceParser {
     private String extractCarType(String title, String text) {
         String source = " " + normalizeAscii(safe(title) + " " + safe(text)).toLowerCase(Locale.ROOT) + " ";
 
+        if (containsAny(source, " mercedes-benz gle ", " mercedes benz gle ", " skoda yeti ")) {
+            return "SUV";
+        }
+        if (containsAny(source, " subaru outback ", " outback ")) {
+            return "WAGON";
+        }
         if (containsAny(source, " corolla sedan ", " corolla sd ")) {
             return "SEDAN";
         }

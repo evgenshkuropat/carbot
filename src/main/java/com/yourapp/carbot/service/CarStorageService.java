@@ -378,7 +378,7 @@ public class CarStorageService {
                     "MG", "DS", "LAND_ROVER", "ALFA_ROMEO", "CHEVROLET",
                     "SSANGYONG", "CHRYSLER", "LOTUS", "LAMBORGHINI", "FERRARI",
                     "JAECOO", "OMODA", "SWM", "SMART", "INFINITI", "DONGFENG",
-                    "ISUZU", "CADILLAC", "ALPINA", "LANCIA"
+                    "ISUZU", "CADILLAC", "ALPINA", "LANCIA", "SAAB", "RAM"
             );
 
             if (allowed.contains(upper)) {
@@ -414,6 +414,8 @@ public class CarStorageService {
         if (t.contains("cadillac") || t.contains("ats") || t.contains("ct4")) return "CADILLAC";
         if (t.contains("alpina") || t.contains("xd3")) return "ALPINA";
         if (t.contains("lancia")) return "LANCIA";
+        if (t.contains("saab")) return "SAAB";
+        if (t.contains("ram 1500") || t.contains("ram 2500") || t.contains("ram 3500")) return "RAM";
         if (t.contains("peugeot")) return "PEUGEOT";
         if (t.contains("opel")) return "OPEL";
         if (t.contains("mazda")) return "MAZDA";
@@ -834,6 +836,10 @@ public class CarStorageService {
                 || t.contains("alpina")
                 || t.contains("land rover")
                 || t.contains("alfa romeo")
+                || t.contains("saab")
+                || t.contains("ram 1500")
+                || t.contains("ram 2500")
+                || t.contains("ram 3500")
                 || t.contains("combi")
                 || t.contains("kombi")
                 || t.contains("hatchback")
@@ -948,12 +954,7 @@ public class CarStorageService {
                 || t.contains("obytná auta")
                 || t.contains("obytna auta")
                 || t.contains("mikrobus")
-                || t.contains("autobus")
-                || t.contains("pickup")
-                || t.contains("pick-up")
-                || t.contains("ram 1500")
-                || t.contains("ram 2500")
-                || t.contains("ram 3500");
+                || t.contains("autobus");
     }
 
     private boolean looksLikeBadTitle(String title) {

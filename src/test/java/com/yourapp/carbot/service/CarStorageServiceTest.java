@@ -136,6 +136,21 @@ class CarStorageServiceTest {
     }
 
     @Test
+    void keepsSaabWithExtraWheelsAndRamPickup() throws Exception {
+        CarDto saab = car("Saab 9-3 2.0TiD 110KW man - 2x KOLA");
+        saab.setBrand("SAAB");
+        saab.setFuelType("DIESEL");
+        saab.setCarType("WAGON");
+        assertThat(isValidForSave(saab, 129_000)).isTrue();
+
+        CarDto ram = car("RAM 1500 TRX 6.2 V8");
+        ram.setBrand("RAM");
+        ram.setFuelType("PETROL");
+        ram.setCarType("PICKUP");
+        assertThat(isValidForSave(ram, 1_500_000)).isTrue();
+    }
+
+    @Test
     void rejectsGenericCarTitles() throws Exception {
         assertThat(looksLikeBadTitle("Osobni automobil")).isTrue();
         assertThat(looksLikeBadTitle("Skoda")).isTrue();

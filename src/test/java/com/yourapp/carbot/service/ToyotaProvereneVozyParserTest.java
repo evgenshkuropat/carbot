@@ -54,6 +54,17 @@ class ToyotaProvereneVozyParserTest {
                 .isEqualTo("SUV");
         assertThat(extractCarType("MG Cyberster GT EV 77kWh 375kW 4x4", ""))
                 .isEqualTo("CABRIO");
+        assertThat(extractCarType("Subaru OUTBACK 2.5i,129kW,4x4,CZ,1Maj,Tazne", ""))
+                .isEqualTo("WAGON");
+        assertThat(extractCarType("Mercedes-Benz GLE 450 4MATIC AMG Styling", ""))
+                .isEqualTo("SUV");
+        assertThat(extractCarType("Skoda Yeti 1.8TSI 112kW Elegance Outdoor 4x4 DSG", ""))
+                .isEqualTo("SUV");
+    }
+
+    @Test
+    void extractsYearFromFreshTitleWhenStructuredYearIsMissing() throws Exception {
+        assertThat(extractYearFromTitle("Kia K4 1,0 T-GDi GPF SPIN (2026)")).isEqualTo(2026);
     }
 
     @Test
@@ -123,6 +134,12 @@ class ToyotaProvereneVozyParserTest {
         Method method = ToyotaProvereneVozyParser.class.getDeclaredMethod("extractCarType", String.class, String.class);
         method.setAccessible(true);
         return (String) method.invoke(parser, title, text);
+    }
+
+    private Integer extractYearFromTitle(String title) throws Exception {
+        Method method = ToyotaProvereneVozyParser.class.getDeclaredMethod("extractYearFromTitle", String.class);
+        method.setAccessible(true);
+        return (Integer) method.invoke(parser, title);
     }
 
     private String mapElectrifiedFuel(String value) throws Exception {
