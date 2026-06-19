@@ -97,6 +97,8 @@ class BazosParserTest {
         assertThat(extractFuelType("Mitsubishi lancer evo")).isEqualTo("PETROL");
         assertThat(extractFuelType("Nissan Primera 1.8 16V 2006")).isEqualTo("PETROL");
         assertThat(extractFuelType("Nissan Micra 1.0 IG-T LED KLIMA")).isEqualTo("PETROL");
+        assertThat(extractFuelType("Nissan Micra 1.2 59kw r.v.2011")).isEqualTo("PETROL");
+        assertThat(extractFuelType("Nissan 200SX 2,0 16V S14 Racing Edition SR20DET")).isEqualTo("PETROL");
         assertThat(extractFuelType("Opel Crossland 1.2T 81kW LED LIMITED CARPLAY")).isEqualTo("PETROL");
         assertThat(extractFuelType("Toyota GR86 executive manualni prev. odpocet DPH")).isEqualTo("PETROL");
         assertThat(extractFuelType("Toyota GR Yaris s upravami za skoro 700.000,-")).isEqualTo("PETROL");
@@ -138,6 +140,7 @@ class BazosParserTest {
 
     @Test
     void resolvesCarTypesFromBazosTitles() throws Exception {
+        assertThat(extractCarType("Opel Insignia Country Tourer 4x4 tazne manual", "", "")).isEqualTo("WAGON");
         assertThat(extractCarType("Seat Leon1.5 TSi 96kW 1majitel CR Xcellence", "", "")).isEqualTo("HATCHBACK");
         assertThat(extractCarType("Seat Leon ST 1.2 TSI, 81kW, r2017", "", "")).isEqualTo("WAGON");
         assertThat(extractCarType("Seat Altea XL 1.6 TDI 77 kW Automat", "", "")).isEqualTo("MINIVAN");
@@ -383,6 +386,16 @@ class BazosParserTest {
         assertThat(looksBrandMismatch(
                 "Fiat Tipo 2017 Lounge 1.6 E-Torq EVO 81 kW - automat 6st.",
                 "https://auto.bazos.cz/inzerat/220183066/alfa-romeo-giulietta-2015-14-turbo-turismo-125kw.php"))
+                .isTrue();
+        assertThat(looksBrandMismatch(
+                "Lancer 2.0did sedan (vw tdi) 103kw, 1. majitel",
+                "https://auto.bazos.cz/inzerat/219696461/lancer-20did-sedan-vw-tdi-103kw-1-majitel.php"))
+                .isFalse();
+    }
+
+    @Test
+    void rejectsExplicitMotorFailureFromFreshLogs() throws Exception {
+        assertThat(looksBrokenOrForPartsListing("Opel Astra SW 1.5CDTI DPH CR Motor k.o", ""))
                 .isTrue();
     }
 
@@ -666,6 +679,12 @@ class BazosParserTest {
         Method method = BazosParser.class.getDeclaredMethod("looksBrandMismatch", String.class, String.class);
         method.setAccessible(true);
         return (boolean) method.invoke(parser, title, url);
+    }
+
+    private boolean looksBrokenOrForPartsListing(String title, String text) throws Exception {
+        Method method = BazosParser.class.getDeclaredMethod("looksBrokenOrForPartsListing", String.class, String.class);
+        method.setAccessible(true);
+        return (boolean) method.invoke(parser, title, text);
     }
 
     private boolean looksCommercialVehicle(String title, String text, String url) throws Exception {

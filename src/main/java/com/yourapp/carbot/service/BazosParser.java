@@ -1146,6 +1146,10 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             return "PETROL";
         }
 
+        if (containsAny(source, " nissan 200sx ", " 200sx ", " sr20det ")) {
+            return "PETROL";
+        }
+
         // DIESEL
         if (containsAny(source, " volvo ", " xc40 ", " xc60 ", " xc70 ", " xc90 ",
                 " v40 ", " v50 ", " v60 ", " v70 ", " v90 ", " s40 ", " s60 ", " s80 ", " s90 ", " c70 ")
@@ -1303,7 +1307,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             return "PETROL";
         }
 
-        if (containsAny(source, " citroen c3 ", " citroen c 3 ", " fiat tipo ", " peugeot 108 ", " peugeot 107 ", " nissan pixo ", " pixo ", " opel corsa ", " opel mokka ")
+        if (containsAny(source, " citroen c3 ", " citroen c 3 ", " fiat tipo ", " peugeot 108 ", " peugeot 107 ", " nissan pixo ", " pixo ", " nissan micra ", " micra ", " opel corsa ", " opel mokka ")
                 && Pattern.compile("\\b1[.,][024]\\b").matcher(source).find()) {
             return "PETROL";
         }
@@ -2063,6 +2067,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
 
         if (containsAny(titleSource,
                 " shooting brake ", " all-terrain ", " all terrain ",
+                " insignia country tourer ",
                 " c 220 cdi t ", " c220 cdi t ", " c 220d t ", " c220d t ")) {
             return "WAGON";
         }
@@ -2680,6 +2685,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 .replace('_', '-')
                 .replaceAll("[^a-z0-9]+", "-") + "-";
 
+        if (url.contains("-lancer-")) return "MITSUBISHI";
         if (url.contains("-skoda-")) return "SKODA";
         if (url.contains("-volkswagen-") || url.contains("-vw-")) return "VOLKSWAGEN";
         if (url.contains("-audi-")) return "AUDI";
@@ -3491,6 +3497,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " náhradní díly ", " nahradni dily ",
                 " rozprodej na díly ", " rozprodej na dily ",
                 " rozprodám ", " rozprodam ",
+                " motor k.o ", " motor k.o. ", " motor ko ",
                 " vada motoru ", " závada motoru ", " zavada motoru ",
                 " zadřený motor ", " zadreny motor ",
                 " nepojízdný ", " nepojizdny ",
