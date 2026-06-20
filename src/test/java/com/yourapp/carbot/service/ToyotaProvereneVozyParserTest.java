@@ -60,6 +60,10 @@ class ToyotaProvereneVozyParserTest {
                 .isEqualTo("SUV");
         assertThat(extractCarType("Skoda Yeti 1.8TSI 112kW Elegance Outdoor 4x4 DSG", ""))
                 .isEqualTo("SUV");
+        assertThat(extractCarType("Ford EDGE Vignale 2.0 TDCi AWD", ""))
+                .isEqualTo("SUV");
+        assertThat(extractCarType("Toyota Corolla 1.8 Hybrid GR-Sport Dynamic", ""))
+                .isEqualTo("HATCHBACK");
     }
 
     @Test

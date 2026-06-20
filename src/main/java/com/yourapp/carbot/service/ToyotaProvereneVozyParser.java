@@ -679,7 +679,7 @@ public class ToyotaProvereneVozyParser implements CarSourceParser {
     private String extractCarType(String title, String text) {
         String source = " " + normalizeAscii(safe(title) + " " + safe(text)).toLowerCase(Locale.ROOT) + " ";
 
-        if (containsAny(source, " mercedes-benz gle ", " mercedes benz gle ", " skoda yeti ")) {
+        if (containsAny(source, " mercedes-benz gle ", " mercedes benz gle ", " skoda yeti ", " ford edge ")) {
             return "SUV";
         }
         if (containsAny(source, " subaru outback ", " outback ")) {
@@ -693,6 +693,11 @@ public class ToyotaProvereneVozyParser implements CarSourceParser {
         }
         if (source.contains(" corolla ")
                 && source.contains(" executive ")
+                && !containsAny(source, " corolla sedan ", " corolla sd ", " corolla cross ", " corolla ts ", " ts ", " touring ", " kombi ", " combi ", " wagon ")) {
+            return "HATCHBACK";
+        }
+        if (source.contains(" corolla ")
+                && containsAny(source, " gr-sport dynamic ", " gr sport dynamic ")
                 && !containsAny(source, " corolla sedan ", " corolla sd ", " corolla cross ", " corolla ts ", " ts ", " touring ", " kombi ", " combi ", " wagon ")) {
             return "HATCHBACK";
         }
