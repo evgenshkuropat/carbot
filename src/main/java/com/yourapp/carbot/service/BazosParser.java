@@ -1146,6 +1146,12 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             return "PETROL";
         }
 
+        if (source.contains(" seat leon ")
+                && source.contains(" cupra ")
+                && Pattern.compile("\\b300\\b").matcher(source).find()) {
+            return "PETROL";
+        }
+
         if (containsAny(source, " nissan 200sx ", " 200sx ", " sr20det ")) {
             return "PETROL";
         }
@@ -1410,6 +1416,11 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         }
 
         String source = " " + normalizeText(title).toLowerCase(Locale.ROOT) + " ";
+        if ("DIESEL".equals(fuelType)
+                && source.contains(" kangoo ")
+                && Pattern.compile("\\b1[\\.,]2\\b").matcher(source).find()) {
+            return "PETROL";
+        }
         if (source.contains(" sienna ") && "DIESEL".equals(fuelType)) {
             return extractFuelType(title);
         }
@@ -1537,8 +1548,9 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
     }
 
     private String extractTransmission(String text) {
-        String source = " " + normalizeText(text).toLowerCase(Locale.ROOT) + " ";
-        String tokens = " " + normalizeText(text).toLowerCase(Locale.ROOT)
+        String repairedText = repairMojibake(text);
+        String source = " " + normalizeText(repairedText).toLowerCase(Locale.ROOT) + " ";
+        String tokens = " " + normalizeText(repairedText).toLowerCase(Locale.ROOT)
                 .replaceAll("[^a-z0-9]+", " ")
                 .replaceAll("\\s+", " ")
                 .trim() + " ";
@@ -1549,7 +1561,9 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " manuální ",
                 " manualni ",
                 " manuál ",
+                " manuál",
                 " manual ",
+                " manual",
                 " man. ",
                 " mech. ",
                 " mechanick",
@@ -1863,6 +1877,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         if (source.contains(" grand cherokee ")) return "JEEP";
         if (source.contains(" cayenne ")) return "PORSCHE";
         if (source.contains(" 2008 ")) return "PEUGEOT";
+        if (source.contains(" 508 ")) return "PEUGEOT";
         if (source.contains(" 308 ")) return "PEUGEOT";
         if (source.contains(" corsa ")) return "OPEL";
         if (source.contains(" mazda 3 ")) return "MAZDA";
@@ -1968,7 +1983,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         }
 
         if (containsAny(titleSource, " yaris cross ", " rav4 ", " rav 4 ", " c-hr ", " ch-r ", " chr ", " 4runner ", " 4 runner ", " yeti ",
-                " fiat 500x ", " 500x ")) {
+                " fiat 500x ", " 500x ", " antara ")) {
             return "SUV";
         }
 
@@ -1995,6 +2010,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
 
         if (containsAny(titleSource, " leon st ", " seat leon st ", " ibiza combi ", " ibiza kombi ",
                 " ibiza st ", " ibiza sportstourer ", " ibiza sport tourer ")
+                || (titleSource.contains(" seat leon ") && Pattern.compile("\\bst\\b").matcher(titleSource).find())
                 || (containsAny(titleSource, " ibiza ") && containsAny(titleSource, " combi ", " kombi "))) {
             return "WAGON";
         }
@@ -2737,6 +2753,9 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         if (containsAny(source, " id.4 ", " id4 ")) return "id4";
         if (containsAny(source, " beetle ")) return "beetle";
         if (containsAny(source, " scirocco ")) return "scirocco";
+
+        if (containsAny(source, " twingo ")) return "twingo";
+        if (containsAny(source, " clio ")) return "clio";
 
         if (containsAny(source, " xc40 ")) return "xc40";
         if (containsAny(source, " xc60 ")) return "xc60";
@@ -3563,7 +3582,9 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 || cleanTitle.equals("prodám")
                 || cleanTitle.equals("prodej")
                 || cleanTitle.equals("na prodej")
-                || cleanTitle.equals("auto")) {
+                || cleanTitle.equals("auto")
+                || cleanTitleAsciiTrimmed.equals("prodam avto")
+                || cleanTitleAsciiTrimmed.equals("prodam auto")) {
             return true;
         }
 

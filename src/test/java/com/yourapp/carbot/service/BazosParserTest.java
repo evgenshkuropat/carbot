@@ -34,6 +34,7 @@ class BazosParserTest {
                 .isEqualTo("PEUGEOT");
         assertThat(extractBrand("Nissan Pulsar 1.2 85kW 2015 CZ", ""))
                 .isEqualTo("NISSAN");
+        assertThat(extractBrand("508 1.6HDI 82kw", "")).isEqualTo("PEUGEOT");
     }
 
     @Test
@@ -99,6 +100,7 @@ class BazosParserTest {
         assertThat(extractFuelType("Nissan Micra 1.0 IG-T LED KLIMA")).isEqualTo("PETROL");
         assertThat(extractFuelType("Nissan Micra 1.2 59kw r.v.2011")).isEqualTo("PETROL");
         assertThat(extractFuelType("Nissan 200SX 2,0 16V S14 Racing Edition SR20DET")).isEqualTo("PETROL");
+        assertThat(extractFuelType("Seat Leon Cupra 300 ST ACC DCC")).isEqualTo("PETROL");
         assertThat(extractFuelType("Opel Crossland 1.2T 81kW LED LIMITED CARPLAY")).isEqualTo("PETROL");
         assertThat(extractFuelType("Toyota GR86 executive manualni prev. odpocet DPH")).isEqualTo("PETROL");
         assertThat(extractFuelType("Toyota GR Yaris s upravami za skoro 700.000,-")).isEqualTo("PETROL");
@@ -141,6 +143,8 @@ class BazosParserTest {
     @Test
     void resolvesCarTypesFromBazosTitles() throws Exception {
         assertThat(extractCarType("Opel Insignia Country Tourer 4x4 tazne manual", "", "")).isEqualTo("WAGON");
+        assertThat(extractCarType("Opel Antara", "", "")).isEqualTo("SUV");
+        assertThat(extractCarType("Seat Leon Cupra 300 ST ACC DCC", "", "")).isEqualTo("WAGON");
         assertThat(extractCarType("Seat Leon1.5 TSi 96kW 1majitel CR Xcellence", "", "")).isEqualTo("HATCHBACK");
         assertThat(extractCarType("Seat Leon ST 1.2 TSI, 81kW, r2017", "", "")).isEqualTo("WAGON");
         assertThat(extractCarType("Seat Altea XL 1.6 TDI 77 kW Automat", "", "")).isEqualTo("MINIVAN");
@@ -391,12 +395,25 @@ class BazosParserTest {
                 "Lancer 2.0did sedan (vw tdi) 103kw, 1. majitel",
                 "https://auto.bazos.cz/inzerat/219696461/lancer-20did-sedan-vw-tdi-103kw-1-majitel.php"))
                 .isFalse();
+        assertThat(looksModelUrlMismatch(
+                "RENAULT TWINGO 1,2 16v CTYRVAL",
+                "https://auto.bazos.cz/inzerat/219681639/renault-clio-12-16v-ctyrval.php"))
+                .isTrue();
     }
 
     @Test
     void rejectsExplicitMotorFailureFromFreshLogs() throws Exception {
         assertThat(looksBrokenOrForPartsListing("Opel Astra SW 1.5CDTI DPH CR Motor k.o", ""))
                 .isTrue();
+    }
+
+    @Test
+    void correctsFreshRenaultAndGenericListingSignals() throws Exception {
+        assertThat(correctLikelyNoisyFuel("1.Majitel Renault Kangoo 1.2...2017", "DIESEL"))
+                .isEqualTo("PETROL");
+        assertThat(extractTransmission("RENAULT SCENIC 1.5DCi MANUĂL. ALU"))
+                .isEqualTo("MANUAL");
+        assertThat(looksSuspiciousListing("prodam avto", "")).isTrue();
     }
 
     @Test
@@ -677,6 +694,12 @@ class BazosParserTest {
 
     private boolean looksBrandMismatch(String title, String url) throws Exception {
         Method method = BazosParser.class.getDeclaredMethod("looksBrandMismatch", String.class, String.class);
+        method.setAccessible(true);
+        return (boolean) method.invoke(parser, title, url);
+    }
+
+    private boolean looksModelUrlMismatch(String title, String url) throws Exception {
+        Method method = BazosParser.class.getDeclaredMethod("looksModelUrlMismatch", String.class, String.class);
         method.setAccessible(true);
         return (boolean) method.invoke(parser, title, url);
     }
