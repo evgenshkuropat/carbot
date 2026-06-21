@@ -140,6 +140,9 @@ class BazosParserTest {
         assertThat(extractFuelType("Opel Mokka 1,2, Ultimate r.v.2022 naj.30000.-km")).isEqualTo("PETROL");
         assertThat(extractFuelType("Dacia Duster 1.6 SCe 84Kw 1.majitel 109000km uplny servis")).isEqualTo("PETROL");
         assertThat(extractFuelType("Lexus RX 400h")).isEqualTo("HYBRID");
+        assertThat(looksAutomaticHybridTitle("Lexus RX 400h", "HYBRID")).isTrue();
+        assertThat(extractFuelType("Toyota Aygo")).isEqualTo("PETROL");
+        assertThat(extractFuelType("Volvo C30 T5- Vyjimecna motorizace 227HP")).isEqualTo("PETROL");
         assertThat(extractFuelType("Civic 1.8l 103kw GT")).isEqualTo("PETROL");
     }
 
@@ -166,6 +169,7 @@ class BazosParserTest {
         assertThat(extractCarType("Alfa Romeo 75 2.0 Twinspark", "", "")).isEqualTo("SEDAN");
         assertThat(extractCarType("AR 159 1.75TBi", "", "")).isEqualTo("SEDAN");
         assertThat(extractCarType("Alfa Romeo 156 SW 2.4 JTD 20v TI", "", "")).isEqualTo("WAGON");
+        assertThat(extractCarType("Volvo C30 T5- Vyjimecna motorizace 227HP", "", "")).isEqualTo("HATCHBACK");
         assertThat(extractCarType("Honda Accord VIII Tourer 2.2 i-DTEC 110 kW", "", "")).isEqualTo("WAGON");
         assertThat(extractCarType("Hyundai i30N Performance", "", "")).isEqualTo("HATCHBACK");
         assertThat(extractCarType("Mini Cooper 1.5 i 2018 F 56", "", "")).isEqualTo("HATCHBACK");
@@ -308,6 +312,9 @@ class BazosParserTest {
         assertThat(extractTransmission("Honda CR-V 2.0i-MMD Elegance AWD")).isEqualTo("AUTOMATIC");
         assertThat(extractTransmission("Honda Jazz 1.4 i-VTEC, r.v. 2010, i-Shift")).isEqualTo("AUTOMATIC");
         assertThat(extractTransmission("Honda CRV 2,2 i-DTEC Automat, odpocet DPH")).isEqualTo("AUTOMATIC");
+        assertThat(extractTransmission("VOLVO V90 2,0 221kW B6 AWD 4x4 INSCRIPTION Auto 2021 CR DPH"))
+                .isEqualTo("AUTOMATIC");
+        assertThat(extractTransmission("Toyota Prius 30 2011 lpg 1.8")).isEqualTo("AUTOMATIC");
         assertThat(looksAutomaticHybridTitle("Ford Kuga 2,5PHEV 165KW TitaniumX", "PLUGIN_HYBRID")).isTrue();
         assertThat(looksAutomaticHybridTitle("Ford Kuga 2,5 140kW 4x4 AWD ST-LINE", "HYBRID")).isTrue();
         assertThat(looksAutomaticHybridTitle("CR-V r. 2022 2.0 hybrid 4/4", "HYBRID")).isTrue();
@@ -365,6 +372,7 @@ class BazosParserTest {
         assertThat(looksSuspiciousListing("SKODA SCALA 1,0TSi 70kW Koup.CR,1.majitel,LED,2022,119tkm", "rezervace")).isFalse();
         assertThat(looksSuspiciousListing("SKODA KAMIQ 1,0TSi 81kW Koup.CR,1.majitel,TAZNE,2022,DPH", "rezervace")).isFalse();
         assertThat(looksSuspiciousListing("VW ARTEON 2,0TDi 110kW DSG ELEGANCE CR 2022 NYNI PO SERVISE", "rezervace")).isFalse();
+        assertThat(looksSuspiciousListing("VW ARTEON 2,0TDi 110kW DSG ELEGANCE ÄŚR 2022 NYNĂŤ PO SERVISE", "rezervace")).isFalse();
         assertThat(looksSuspiciousListing("SKODA OCTAVIA IV 1,5TSi G-TEC 96kW Koup.CR,50.000km2022", "rezervace")).isFalse();
         assertThat(looksSuspiciousListing("OPEL e-CORSA 100kW ELEGANCE electro Koup.CR,1.majitel,2023", "rezervace")).isFalse();
         assertThat(looksSuspiciousListing("OPEL MOKKA 1,4T 112kW 4x4 Automat,TAZNE,Koup.CR,90.0000km", "rezervace")).isFalse();
@@ -427,6 +435,10 @@ class BazosParserTest {
                 .isFalse();
         assertThat(looksBrokenOrForPartsListing(
                 "HYUNDAI IX55 CRDi 4WD koupeno v CR, jen 167t.KM",
+                "nefunkcni polozka v okolnim textu"))
+                .isFalse();
+        assertThat(looksBrokenOrForPartsListing(
+                "Volvo S90 B5 AWD 173 kW 6/2023 Inscription CR 1. majitel",
                 "nefunkcni polozka v okolnim textu"))
                 .isFalse();
     }
