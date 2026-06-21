@@ -175,6 +175,10 @@ class TipCarsParserTest {
         assertThat(buildPageUrl(1)).isEqualTo("https://www.tipcars.com/osobni/");
         assertThat(buildPageUrl(2)).isEqualTo("https://www.tipcars.com/?str=2-20");
         assertThat(buildPageUrl(5)).isEqualTo("https://www.tipcars.com/?str=5-20");
+        assertThat(extractYear("Zalozeno 2012", "Ford Mustang Rok vyroby 1966, Ford Mustang"))
+                .isEqualTo(1966);
+        assertThat(extractYear("Prvni registrace 2017", "Peugeot 2008 1.2 PureTech"))
+                .isEqualTo(2017);
     }
 
     @Test
@@ -297,6 +301,12 @@ class TipCarsParserTest {
         Method method = TipCarsParser.class.getDeclaredMethod("buildPageUrl", int.class);
         method.setAccessible(true);
         return (String) method.invoke(parser, page);
+    }
+
+    private Integer extractYear(String text, String title) throws Exception {
+        Method method = TipCarsParser.class.getDeclaredMethod("extractYear", String.class, String.class);
+        method.setAccessible(true);
+        return (Integer) method.invoke(parser, text, title);
     }
 
     private String repairMojibake(String value) throws Exception {

@@ -36,6 +36,7 @@ public class TipCarsParser implements CarSourceParser {
 
     private static final int CURRENT_YEAR = Year.now().getValue();
     private static final int MIN_YEAR = 1990;
+    private static final int MIN_TITLE_YEAR = 1900;
     private static final int MAX_REASONABLE_PRICE = 10_000_000;
 
     @Override
@@ -346,6 +347,11 @@ public class TipCarsParser implements CarSourceParser {
     }
 
     private Integer extractYear(String text, String title) {
+        Integer titleYear = extractTitleYear(title);
+        if (titleYear != null) {
+            return titleYear;
+        }
+
         String combined = normalizeText(safe(title) + " " + safe(text));
 
         Matcher labeled = Pattern.compile(
@@ -372,6 +378,28 @@ public class TipCarsParser implements CarSourceParser {
 
             Integer year = parseIntSafe(rawYear);
             if (isValidYear(year)) {
+                return year;
+            }
+        }
+
+        return null;
+    }
+
+    private Integer extractTitleYear(String title) {
+        String normalizedTitle = normalizeText(safe(title));
+        Matcher matcher = Pattern.compile("\\b(19\\d{2}|20\\d{2})\\b").matcher(normalizedTitle);
+
+        while (matcher.find()) {
+            String rawYear = matcher.group(1);
+            String lower = normalizedTitle.toLowerCase(Locale.ROOT);
+            if (("2008".equals(rawYear) && lower.contains("peugeot 2008"))
+                    || ("3008".equals(rawYear) && lower.contains("peugeot 3008"))
+                    || ("5008".equals(rawYear) && lower.contains("peugeot 5008"))) {
+                continue;
+            }
+
+            Integer year = parseIntSafe(rawYear);
+            if (year != null && year >= MIN_TITLE_YEAR && year <= CURRENT_YEAR + 1) {
                 return year;
             }
         }
