@@ -199,7 +199,7 @@ public class SbazarParser implements CarSourceParser {
         String scopedText = asciiSearchText(title + " " + listingText + " " + url);
 
         car.setBrand(firstDetected(detectBrand(identityText), detectBrand(scopedText)));
-        car.setYear(resolveYear(identityText, scopedText));
+        car.setYear(resolveYear(asciiSearchText(title), scopedText));
         car.setMileage(firstInteger(extractMileage(identityText), extractMileage(scopedText)));
         car.setFuelType(resolveFuelType(identityText, scopedText));
         car.setTransmission(resolveTransmission(identityText, scopedText, car.getFuelType()));
@@ -609,8 +609,13 @@ public class SbazarParser implements CarSourceParser {
                 "plug-in", "plugin", "phev", " gte ",
                 "tfsi e", " e-performance", " e performance",
                 "superb iv", "kodiaq iv", "225xe", "iperformance",
-                "330e", " 330 e ", "530e", " 530 e ")) {
+                "300e", " 300 e ", "330e", " 330 e ", "530e", " 530 e ")) {
             return "PLUGIN_HYBRID";
+        }
+
+        if (containsAny(searchable, "volvo", "xc40", "xc60", "xc90", "v60", "v90", "s60", "s90")
+                && containsAny(searchable, " b3 ", " b4 ", " b5 ", " b6 ", "2.0b3", "2.0b4", "2.0b5", "2.0b6")) {
+            return "HYBRID";
         }
 
         if (containsAny(searchable, "superb", "octavia", "kodiaq")
@@ -770,7 +775,7 @@ public class SbazarParser implements CarSourceParser {
             case "HYBRID", "PLUGIN_HYBRID" -> containsAny(identityText, "plug-in", "plugin", "phev", "hybrid", " hev ", " mhev ",
                     " gte ", "tfsi e", " shs ", "e-power", "epower", "225xe", "iperformance",
                     " t8 ", "recharge", "superb iv", "kodiaq iv", " b5 ", "e-performance", "e performance",
-                    "330e", " 330 e ", "530e", " 530 e ");
+                    "300e", " 300 e ", "330e", " 330 e ", "530e", " 530 e ");
             case "LPG" -> containsAny(identityText, "lpg");
             case "CNG" -> containsAny(identityText, "cng", "g-tec", "g tec", "gtec");
             default -> true;
@@ -837,6 +842,12 @@ public class SbazarParser implements CarSourceParser {
             return "AUTOMATIC";
         }
 
+        if (("HYBRID".equals(fuelType) || "PLUGIN_HYBRID".equals(fuelType))
+                && containsAny(identityText, "camry", "corolla", "rav4", "yaris", "300e", " 300 e ")
+                && !containsAny(identityText, "manual", "manualni", "man.", " mt ", "6mt", "5mt")) {
+            return "AUTOMATIC";
+        }
+
         return scopedTransmission;
     }
 
@@ -853,6 +864,17 @@ public class SbazarParser implements CarSourceParser {
         if (containsAny(searchable, "citroen c5", "citroen c 5", " c5 ")
                 && !containsAny(searchable, "aircross", "tourer", "kombi", "combi")) {
             return "SEDAN";
+        }
+        if (containsAny(searchable, "peugeot 301", " 301 ")) {
+            return "SEDAN";
+        }
+        if (containsAny(searchable, "peugeot 508", " 508 ")
+                && !containsAny(searchable, " sw ", "kombi", "combi", "wagon")) {
+            return "SEDAN";
+        }
+        if (containsAny(searchable, "mercedes-benz cle", "mercedes benz cle", " mercedes cle ", " cle ")
+                && !containsAny(searchable, "cabrio", "kabrio", "convertible")) {
+            return "COUPE";
         }
         if (containsAny(searchable, "magentis")) {
             return "SEDAN";
@@ -988,6 +1010,7 @@ public class SbazarParser implements CarSourceParser {
                 "autoradio", "auto radio", "navigace tomtom", "stresni nosic", "stresni nosnik", "zamky centralni",
                 "centralni zamky", "zamykani zpatecky", "sterac", "sterace", "pc pocitac", "pocitac",
                 "parkovaci senzor", "sklo zrcatka", "zadni sklo",
+                "posilovac krouticiho momentu",
                 " padlo ", "rucni pumpicka", "pumpicka", "cmx", "rebel", "triumph america");
     }
 

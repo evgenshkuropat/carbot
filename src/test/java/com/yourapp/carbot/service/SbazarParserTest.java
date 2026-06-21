@@ -67,6 +67,9 @@ class SbazarParserTest {
         assertThat(resolveFuelType("peugeot 2008 e-2008 100kw 136hp", "")).isEqualTo("ELECTRIC");
         assertThat(resolveFuelType("bmw x7 xdrive40d", "")).isEqualTo("DIESEL");
         assertThat(resolveFuelType("mercedes-benz glc 43 amg 4matic", "")).isEqualTo("PETROL");
+        assertThat(resolveFuelType("mercedes benz glc 300e", "")).isEqualTo("PLUGIN_HYBRID");
+        assertThat(resolveTransmission("mercedes benz glc 300e", "", "PLUGIN_HYBRID")).isEqualTo("AUTOMATIC");
+        assertThat(resolveFuelType("volvo xc60 2.0b4 4x4 145kw cr dph core", "")).isEqualTo("HYBRID");
         assertThat(resolveFuelType("toyota gr86 executive manualni prev odpocet dph", "")).isEqualTo("PETROL");
         assertThat(resolveFuelType("vw golf 8 variant 1.5 etsi 110kw dsg", "")).isEqualTo("HYBRID");
         assertThat(resolveFuelType("skoda octavia 1.5tgi 96kw dsg ambition 9/20", "")).isEqualTo("CNG");
@@ -103,6 +106,7 @@ class SbazarParserTest {
         assertThat(resolveFuelType("porsche cayman gt4 wrap od koenigsegg znama historie", "")).isEqualTo("PETROL");
         assertThat(resolveFuelType("skoda octavia iv 2.0 tdi dsg 4x4 150 ps", "")).isEqualTo("DIESEL");
         assertThat(resolveTransmission("honda crv 2020 hybrid benzin 72tis.km", "", "HYBRID")).isEqualTo("AUTOMATIC");
+        assertThat(resolveTransmission("toyota camry 2.5 hybrid executive 169kw", "", "HYBRID")).isEqualTo("AUTOMATIC");
         assertThat(resolveTransmission("seat leon, 1,4 tsi e-hybrid fr line led", "", "HYBRID")).isEqualTo("AUTOMATIC");
         assertThat(resolveTransmission("tesla model 3 long range dual motor soh 92", "", "ELECTRIC")).isEqualTo("AUTOMATIC");
     }
@@ -293,6 +297,9 @@ class SbazarParserTest {
         assertThat(resolveCarType("toyota corolla verso automat 1,8i vvt-i", "")).isEqualTo("MINIVAN");
         assertThat(resolveCarType("mercedes-benz tridy m ml 320 3,0d v6", "")).isEqualTo("SUV");
         assertThat(resolveCarType("bmw rada 4 420d 2,0 gran kupe automat", "")).isEqualTo("SEDAN");
+        assertThat(resolveCarType("peugeot 301 1.2 puretech 2017", "")).isEqualTo("SEDAN");
+        assertThat(resolveCarType("peugeot 508gt plug in hybrid 165kw e-eat8", "")).isEqualTo("SEDAN");
+        assertThat(resolveCarType("mercedes-benz cle 200 amg line", "")).isEqualTo("COUPE");
     }
 
     @Test
@@ -307,6 +314,7 @@ class SbazarParserTest {
         assertThat(looksNonCarListing("suzuki vitara zadni sklo")).isTrue();
         assertThat(looksNonCarListing("triumph america lt cr 2015")).isTrue();
         assertThat(looksNonCarListing("bmw i3 125 kw 120 ah tep.cerpadlo")).isFalse();
+        assertThat(looksNonCarListing("posilovac krouticiho momentu")).isTrue();
         assertThat(looksCommercialVehicle("opel vivaro r.v. 2010 https www sbazar cz inzerat 231253178 opel vivaro rv 2010")).isTrue();
     }
 
@@ -318,6 +326,10 @@ class SbazarParserTest {
                 .isNull();
         assertThat(resolveYear("opel insignia 2.0 aut kamera vyhrev serviska", "opel insignia rok 2017"))
                 .isEqualTo(2017);
+        assertThat(resolveYear("seat leon 2007 2.0 tdi dsg", "seat leon https www sbazar cz inzerat 231659934"))
+                .isEqualTo(2007);
+        assertThat(resolveYear("skoda yeti 1.2 tsi dsg 2011", "skoda yeti https www.sbazar.cz inzerat 228718145"))
+                .isEqualTo(2011);
     }
 
     @Test
