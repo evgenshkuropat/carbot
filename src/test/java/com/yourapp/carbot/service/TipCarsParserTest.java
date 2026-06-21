@@ -217,6 +217,12 @@ class TipCarsParserTest {
                 .isEqualTo("LPG");
         assertThat(extractFuelType("BMW Rada 3 3.0D 150kW M PAKET SERVIS. KN."))
                 .isEqualTo("DIESEL");
+        assertThat(extractFuelType("Peugeot 2008 Active 1.2 PureTech"))
+                .isEqualTo("PETROL");
+        assertThat(extractFuelType("Citroen C3 Aircross Feel 1.2 PureTech, Serv.kniha"))
+                .isEqualTo("PETROL");
+        assertThat(extractFuelType("Peugeot 3008 Hybrid 145 PureTech"))
+                .isEqualTo("HYBRID");
     }
 
     @Test

@@ -599,7 +599,7 @@ public class TipCarsParser implements CarSourceParser {
                 " ecvt ")
                 || compact.contains("hybrid")
                 || compact.contains("mhev")
-                || compact.contains("etec")
+                || (compact.contains("etec") && !compact.contains("puretech"))
                 || source.matches(".*\\bvolvo\\b.*\\bb[3-6]\\b.*")
                 || compact.contains("ehev")) {
             return "HYBRID";
@@ -656,6 +656,7 @@ public class TipCarsParser implements CarSourceParser {
                 " t-gdi ",
                 " tce ",
                 " ecoboost ",
+                " puretech ",
                 " skyactiv-g ",
                 " vvt-i ")) {
             return "PETROL";
@@ -668,6 +669,7 @@ public class TipCarsParser implements CarSourceParser {
                 || compact.contains("tgdi")
                 || compact.contains("tce")
                 || compact.contains("ecoboost")
+                || compact.contains("puretech")
                 || compact.contains("skyactivg")) {
             return "PETROL";
         }
