@@ -35,6 +35,8 @@ class BazosParserTest {
         assertThat(extractBrand("Nissan Pulsar 1.2 85kW 2015 CZ", ""))
                 .isEqualTo("NISSAN");
         assertThat(extractBrand("508 1.6HDI 82kw", "")).isEqualTo("PEUGEOT");
+        assertThat(extractBrand("Prodam Hondu HRV, nejvyssi vybava Advance,2022", ""))
+                .isEqualTo("HONDA");
     }
 
     @Test
@@ -138,6 +140,7 @@ class BazosParserTest {
         assertThat(extractFuelType("Opel Mokka 1,2, Ultimate r.v.2022 naj.30000.-km")).isEqualTo("PETROL");
         assertThat(extractFuelType("Dacia Duster 1.6 SCe 84Kw 1.majitel 109000km uplny servis")).isEqualTo("PETROL");
         assertThat(extractFuelType("Lexus RX 400h")).isEqualTo("HYBRID");
+        assertThat(extractFuelType("Civic 1.8l 103kw GT")).isEqualTo("PETROL");
     }
 
     @Test
@@ -163,6 +166,8 @@ class BazosParserTest {
         assertThat(extractCarType("Alfa Romeo 75 2.0 Twinspark", "", "")).isEqualTo("SEDAN");
         assertThat(extractCarType("AR 159 1.75TBi", "", "")).isEqualTo("SEDAN");
         assertThat(extractCarType("Alfa Romeo 156 SW 2.4 JTD 20v TI", "", "")).isEqualTo("WAGON");
+        assertThat(extractCarType("Honda Accord VIII Tourer 2.2 i-DTEC 110 kW", "", "")).isEqualTo("WAGON");
+        assertThat(extractCarType("Hyundai i30N Performance", "", "")).isEqualTo("HATCHBACK");
         assertThat(extractCarType("Mini Cooper 1.5 i 2018 F 56", "", "")).isEqualTo("HATCHBACK");
         assertThat(extractCarType("BMW 325i e91", "", "")).isEqualTo("WAGON");
         assertThat(extractCarType("BMW 330 xD", "", "")).isEqualTo("SEDAN");
@@ -301,7 +306,10 @@ class BazosParserTest {
         assertThat(extractTransmission("Toyota Corolla ST 1.8 HEV 103kW e-CVT,2024,35tkm")).isEqualTo("AUTOMATIC");
         assertThat(extractTransmission("Honda CR-V 2.0 e:HEV Advance AWD")).isEqualTo("AUTOMATIC");
         assertThat(extractTransmission("Honda CR-V 2.0i-MMD Elegance AWD")).isEqualTo("AUTOMATIC");
+        assertThat(extractTransmission("Honda Jazz 1.4 i-VTEC, r.v. 2010, i-Shift")).isEqualTo("AUTOMATIC");
+        assertThat(extractTransmission("Honda CRV 2,2 i-DTEC Automat, odpocet DPH")).isEqualTo("AUTOMATIC");
         assertThat(looksAutomaticHybridTitle("Ford Kuga 2,5PHEV 165KW TitaniumX", "PLUGIN_HYBRID")).isTrue();
+        assertThat(looksAutomaticHybridTitle("Ford Kuga 2,5 140kW 4x4 AWD ST-LINE", "HYBRID")).isTrue();
         assertThat(looksAutomaticHybridTitle("CR-V r. 2022 2.0 hybrid 4/4", "HYBRID")).isTrue();
         assertThat(extractTransmission("Ford Kuga ST Line 1,5 110 kW benzin 6-ti st.mech.")).isEqualTo("MANUAL");
         assertThat(extractTransmission("Citroen Berlingo 1.5 BlueHDi 130S&S MAN 6 SHINE")).isEqualTo("MANUAL");
@@ -399,12 +407,28 @@ class BazosParserTest {
                 "RENAULT TWINGO 1,2 16v CTYRVAL",
                 "https://auto.bazos.cz/inzerat/219681639/renault-clio-12-16v-ctyrval.php"))
                 .isTrue();
+        assertThat(looksModelUrlMismatch(
+                "HYUNDAI i10 OBSAH 1,1i, KLIMA",
+                "https://auto.bazos.cz/inzerat/220273544/hyundai-i-10-obsah-11i-klima.php"))
+                .isFalse();
+        assertThat(looksModelUrlMismatch(
+                "HYUNDAI IX20 1.4 i BENZIN",
+                "https://auto.bazos.cz/inzerat/219505357/hyundai-ix-20-16-i-benzin.php"))
+                .isFalse();
     }
 
     @Test
     void rejectsExplicitMotorFailureFromFreshLogs() throws Exception {
         assertThat(looksBrokenOrForPartsListing("Opel Astra SW 1.5CDTI DPH CR Motor k.o", ""))
                 .isTrue();
+        assertThat(looksBrokenOrForPartsListing(
+                "Hyundai Ioniq 5, STYLE 77,4 kWh SOH 96,3%; 800V; cerpadlo",
+                "vadny dil v doporucenem inzeratu"))
+                .isFalse();
+        assertThat(looksBrokenOrForPartsListing(
+                "HYUNDAI IX55 CRDi 4WD koupeno v CR, jen 167t.KM",
+                "nefunkcni polozka v okolnim textu"))
+                .isFalse();
     }
 
     @Test
