@@ -301,6 +301,8 @@ class BazosParserTest {
         assertThat(extractCarType("Mercedes-Benz 126.500 SEC AMG Paket", "", "")).isEqualTo("COUPE");
         assertThat(extractCarType("PRODAM MAZDU 6 GH VE VYBORNEM STAVU", "", "")).isEqualTo("SEDAN");
         assertThat(extractCarType("Mazda Tribute 3.0 4x4 nova STK", "", "")).isEqualTo("SUV");
+        assertThat(extractCarType("AUDI A1 1.2 TFSI 2012", "", "")).isEqualTo("HATCHBACK");
+        assertThat(extractCarType("C5 2.2HDI 16V BREAK D. rv.11.2006", "", "")).isEqualTo("WAGON");
     }
 
     @Test
@@ -318,6 +320,7 @@ class BazosParserTest {
         assertThat(looksAutomaticHybridTitle("Ford Kuga 2,5PHEV 165KW TitaniumX", "PLUGIN_HYBRID")).isTrue();
         assertThat(looksAutomaticHybridTitle("Ford Kuga 2,5 140kW 4x4 AWD ST-LINE", "HYBRID")).isTrue();
         assertThat(looksAutomaticHybridTitle("CR-V r. 2022 2.0 hybrid 4/4", "HYBRID")).isTrue();
+        assertThat(looksAutomaticHybridTitle("BMW X5 xDrive 45e 290kW 2020", "HYBRID")).isTrue();
         assertThat(extractTransmission("Ford Kuga ST Line 1,5 110 kW benzin 6-ti st.mech.")).isEqualTo("MANUAL");
         assertThat(extractTransmission("Citroen Berlingo 1.5 BlueHDi 130S&S MAN 6 SHINE")).isEqualTo("MANUAL");
         assertThat(extractTransmission("Citroen Berlingo 1.6 BlueHDI XTR 100 MAN")).isEqualTo("MANUAL");
@@ -326,6 +329,8 @@ class BazosParserTest {
         assertThat(looksLikelyFalseAutomatic("PEUGEOT 207 1.4 i BENZIN 70 kW NOVE ROZVODY", "AUTOMATIC")).isTrue();
         assertThat(looksLikelyFalseAutomatic("Peugeot 308 1.6HDI 88KW 9/2015 LED NAVIGACE P. SERVIS", "AUTOMATIC")).isTrue();
         assertThat(looksLikelyFalseAutomatic("Octavia III 2,0TDi 110KW Edition + NAVI tempomat ALU STK", "AUTOMATIC")).isTrue();
+        assertThat(looksLikelyFalseAutomatic("Dacia Duster 1.6 16V - BENZIN - 4X4", "AUTOMATIC")).isTrue();
+        assertThat(looksLikelyFalseAutomatic("Citroen Berlingo 1.6 HDI 84KW", "AUTOMATIC")).isTrue();
         assertThat(correctLikelyNoisyFuel("Toyota Sienna AWD 2017 7 mist 8AT tazne", "DIESEL")).isEqualTo("PETROL");
         assertThat(correctLikelyNoisyFuel("Dacia Sandero Stepway", "DIESEL")).isNull();
         assertThat(correctLikelyNoisyFuel("Navara D22 Kingcab 98kw", "PETROL")).isNull();
@@ -441,6 +446,10 @@ class BazosParserTest {
                 "Volvo S90 B5 AWD 173 kW 6/2023 Inscription CR 1. majitel",
                 "nefunkcni polozka v okolnim textu"))
                 .isFalse();
+        assertThat(looksBrokenOrForPartsListing(
+                "BMW 520d xDrive 2012 135kw",
+                "nepojizdny v doporucenem inzeratu"))
+                .isFalse();
     }
 
     @Test
@@ -531,6 +540,12 @@ class BazosParserTest {
                 "",
                 "https://auto.bazos.cz/inzerat/219905143/bmw-x-5-30-d-2021-rok-93-tisic-najeto.php"))
                 .isFalse();
+
+        assertThat(looksCommercialVehicle(
+                "BMW 545i V8 MANUAL Mpaket + LPG, sport. podvozek BILSTEIN",
+                "",
+                "https://auto.bazos.cz/inzerat/220390449/bmw-545i-v8-manual-mpaket-lpg.php"))
+                .isFalse();
     }
 
     @Test
@@ -567,6 +582,8 @@ class BazosParserTest {
                 .isEqualTo(2011);
         assertThat(extractYear("Nissan Qashqai 2016r 112tis Najezd", "2012"))
                 .isEqualTo(2016);
+        assertThat(extractYear("Citroen C5 Aircross 1,5 HDI, 72tis.km,r.v.02/22", ""))
+                .isEqualTo(2022);
     }
 
     @Test

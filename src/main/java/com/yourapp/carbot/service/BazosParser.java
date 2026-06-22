@@ -866,6 +866,16 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
     }
 
     private Integer extractYearFromTitle(String normalizedTitle) {
+        Matcher monthYearMatcher = Pattern.compile(
+                "(?i)(?:r\\.v\\.?|rv|rok)?\\s*[:\\-\\.]?\\s*(?:0?[1-9]|1[0-2])\\s*/\\s*'?([0-9]{2})\\b"
+        ).matcher(normalizedTitle);
+        if (monthYearMatcher.find()) {
+            Integer year = parseShortYearCandidate(monthYearMatcher.group(1));
+            if (year != null) {
+                return year;
+            }
+        }
+
         Matcher matcher = Pattern.compile(
                 "(?i)(?:rok vĂ˝roby|rok vyroby|r\\.v\\.?|r\\.|rv|rok|model)\\s*[:\\-\\.]?\\s*(?:\\d{1,2}\\s*/\\s*)?(19\\d{2}|20\\d{2})"
         ).matcher(normalizedTitle);
@@ -1517,6 +1527,8 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 || compact.contains("plugin")
                 || compact.contains("pluginhybrid")
                 || compact.contains("phev")
+                || (containsAny(source, " bmw ")
+                && Pattern.compile("(?:225|230|320|330|530|545|745|750|30|40|45|50)e(?:xdrive)?").matcher(compact).find())
                 || containsAny(source, " kuga ")
                 || containsAny(source, " prius ")
                 || (containsAny(source, " toyota ", " lexus ", " auris ", " yaris ", " corolla ", " rav4 ", " rx ")
@@ -1555,7 +1567,8 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " peugeot 107 ", " peugeot 206 ", " peugeot 207 ", " peugeot 208 ", " peugeot 301 ",
                 " i20 ", " i30 ", " ix20 ", " tucson ", " aveo ",
                 " peugeot 308 ", " 308 ",
-                " octavia ", " oktavia ");
+                " octavia ", " oktavia ",
+                " duster ", " berlingo ");
     }
 
     private boolean looksLikelyFalseManual(String title, String transmission) {
@@ -1975,6 +1988,10 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         String textSource = " " + normalizeText(safe(text)).toLowerCase(Locale.ROOT) + " ";
         String urlSource = " " + normalizeText(safe(url)).toLowerCase(Locale.ROOT) + " ";
 
+        if (containsAny(titleSource, " c5 ", " citroen c5 ") && containsAny(titleSource, " break ")) {
+            return "WAGON";
+        }
+
         if (containsAny(titleSource, " f-150 ", " f 150 ", " f150 ")) {
             return "PICKUP";
         }
@@ -2053,7 +2070,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             return "HATCHBACK";
         }
 
-        if (containsAny(titleSource, " audi s3 ", " s3 ", " s 3 ", " mini cooper ", " cooper ")) {
+        if (containsAny(titleSource, " audi a1 ", " a1 ", " audi s3 ", " s3 ", " s 3 ", " mini cooper ", " cooper ")) {
             return "HATCHBACK";
         }
 
@@ -2519,7 +2536,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " řada 3 ", " rada 3 ", " řada 5 ", " rada 5 ", " řada 7 ", " rada 7 ",
                 " 318d ", " 320d ", " 320xd ", " 330d ", " 318i ", " 320i ", " 330i ",
                 " 730d ", " 730i ", " 740d ", " 740i ", " 750d ", " 750i ",
-                " 540ix ", " 540i ", " 540d ", " gran turismo ",
+                " 540ix ", " 540i ", " 540d ", " 545i ", " gran turismo ",
                 " c5 ", " mondeo ", " mondeo sedan ", " mirai ",
                 " lancia kappa ", " kappa ",
                 " 508 ",
@@ -3530,6 +3547,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
 
         if (containsAny(titleSource, " mustang ", " civic type r ", " cr-v ", " cr v ", " crv ", " duster ", " stelvio ", " chevrolet ssr ", " spark ", " stonic ",
                 " ioniq ", " ix55 ", " volvo s90 ", " s90 ",
+                " bmw 520d ", " 520d ",
                 " passat ", " golf ", " tiguan ", " touareg ", " t-roc ", " troc ", " touran ")
                 && !containsAny(titleSource, " na dily ", " na nd ", " nahradni dily ", " nepojizdny ", " nepojizdne ", " vadny ", " vadne ",
                 " k oprave ", " na opravu ")) {
