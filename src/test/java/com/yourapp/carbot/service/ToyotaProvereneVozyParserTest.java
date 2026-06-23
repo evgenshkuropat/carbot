@@ -87,6 +87,7 @@ class ToyotaProvereneVozyParserTest {
                 .isEqualTo("HYBRID");
     }
 
+    @Test
     void repairsToyotaProvereneMojibakeBeforeOutput() throws Exception {
         assertThat(repairMojibake("Ĺ koda Fabia 1.2 HTP / 51 kW"))
                 .isEqualTo("Škoda Fabia 1.2 HTP / 51 kW");
@@ -132,6 +133,18 @@ class ToyotaProvereneVozyParserTest {
                 .isEqualTo("\u0160umperk");
         assertThat(repairMojibake("pouze do vyprod\u0102\u02C7n\u0102\u00AD"))
                 .isEqualTo("pouze do vyprod\u00E1n\u00ED");
+    }
+
+    @Test
+    void repairsCurrentToyotaProvereneMojibakeFromLogs() throws Exception {
+        assertThat(repairMojibake("Toyota C-HR 1.8HEV, \u00C4\u015AR-1m, Style, DPH"))
+                .isEqualTo("Toyota C-HR 1.8HEV, \u010CR-1m, Style, DPH");
+        assertThat(repairMojibake("Tsusho Praha Pr\u0139\u017Bhonice"))
+                .isEqualTo("Tsusho Praha Pr\u016Fhonice");
+        assertThat(repairMojibake("Citro\u0102\u00ABn C4 1.2 Puretech"))
+                .isEqualTo("Citro\u00EBn C4 1.2 Puretech");
+        assertThat(repairMojibake("\u0139\u00A0koda Octavia 1.6 TDI Combi"))
+                .isEqualTo("\u0160koda Octavia 1.6 TDI Combi");
     }
 
     private String extractCarType(String title, String text) throws Exception {
