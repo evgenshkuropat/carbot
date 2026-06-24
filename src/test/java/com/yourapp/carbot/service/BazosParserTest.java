@@ -326,6 +326,10 @@ class BazosParserTest {
         assertThat(extractTransmission("Citroen Berlingo 1.6 BlueHDI XTR 100 MAN")).isEqualTo("MANUAL");
         assertThat(extractTransmission("Hyundai i30 Kombi 1.6 CRDi 85kW DCT (2018)")).isEqualTo("AUTOMATIC");
         assertThat(extractTransmission("Skoda Octavia 4 combi RS 2.0TDi,147kW,DSG,4x4")).isEqualTo("AUTOMATIC");
+        assertThat(extractTransmission("Ĺ koda Octavia 4 RS combi 2.0TSi,180kW,DSG,Canton,22TKM"))
+                .isEqualTo("AUTOMATIC");
+        assertThat(extractTransmission("Ĺ koda Octavia 4 combi RS 2.0TDi,147kW,DSG,TaĹľnĂ©,Panorama,DPH"))
+                .isEqualTo("AUTOMATIC");
         assertThat(looksLikelyFalseAutomatic("PEUGEOT 207 1.4 i BENZIN 70 kW NOVE ROZVODY", "AUTOMATIC")).isTrue();
         assertThat(looksLikelyFalseAutomatic("Peugeot 308 1.6HDI 88KW 9/2015 LED NAVIGACE P. SERVIS", "AUTOMATIC")).isTrue();
         assertThat(looksLikelyFalseAutomatic("Octavia III 2,0TDi 110KW Edition + NAVI tempomat ALU STK", "AUTOMATIC")).isTrue();
@@ -653,6 +657,20 @@ class BazosParserTest {
                 .containsExactly('K', 0x016E, 0x017D, 'E');
         assertThat(repairMojibake("\u0102\u0161st\u0102\u00AD nad Orlic\u0102\u00AD"))
                 .isEqualTo("\u00DAst\u00ED nad Orlic\u00ED");
+    }
+
+    @Test
+    void repairsCurrentBazosMojibakeFromLogs() throws Exception {
+        assertThat(repairMojibake("Ĺ koda Superb III combi 2.0 TDi,147kW,DSG,4x4,Sportline,Webas"))
+                .isEqualTo("Škoda Superb III combi 2.0 TDi,147kW,DSG,4x4,Sportline,Webas");
+        assertThat(repairMojibake("Ĺ koda Enyaq 80iV 82kWH,150kW,LED,TaĹľnĂ©,1.maj,NezĂˇvislĂˇ klima"))
+                .isEqualTo("Škoda Enyaq 80iV 82kWH,150kW,LED,Tažné,1.maj,Nezávislá klima");
+        assertThat(repairMojibake("Rychnov nad KnÄ›Ĺľnou"))
+                .isEqualTo("Rychnov nad Kněžnou");
+        assertThat(repairMojibake("Toyota Proace Verso 2.0 D-4D, 9 MĂŤST, LONG"))
+                .isEqualTo("Toyota Proace Verso 2.0 D-4D, 9 MÍST, LONG");
+        assertThat(repairMojibake("ÄŚeskĂ© BudÄ›jovice"))
+                .isEqualTo("České Budějovice");
     }
 
     private String extractFuelType(String text) throws Exception {
