@@ -632,6 +632,7 @@ public class SautoParser implements CarSourceParser {
         }
 
         return containsAny(normalized,
+                " na dojetĂ­ ", " na dojeti ", " nebo nd ", " nebo na nd ",
                 " převzetí leasingu ", " prevzeti leasingu ",
                 " přenechání leasingu ", " prenechani leasingu ",
                 " operativní leasing ", " operativni leasing ",
@@ -747,7 +748,9 @@ public class SautoParser implements CarSourceParser {
         ).toLowerCase(Locale.ROOT) + " ";
         String compact = normalized.replaceAll("[^a-z0-9]+", "");
 
-        if (compact.contains("pojizdnezavada") || compact.contains("pojzdnzvada")) {
+        if (compact.contains("pojizdnezavada")
+                || compact.contains("pojzdnzvada")
+                || (compact.contains("nadojeti") && compact.contains("nd"))) {
             return true;
         }
 
@@ -1708,7 +1711,7 @@ public class SautoParser implements CarSourceParser {
             return "MINIVAN";
         }
 
-        if (containsAny(titleSource, " ford fusion ", " peugeot 807 ")) {
+        if (containsAny(titleSource, " ford fusion ", " peugeot 807 ", " c3 picasso ", " c4 picasso ", " picasso ")) {
             return "MINIVAN";
         }
 
@@ -1758,7 +1761,8 @@ public class SautoParser implements CarSourceParser {
                 " clio ", " fabia ", " scala ", " polo ", " golf ", " fiesta ",
                 " corsa ", " i20 ", " i30 ", " ceed ", " mazda 3 ", " a-class ",
                 " třídy a ", " tridy a ", " civic ", " megane ", " c2 ", " c3 ",
-                " xsara ", " agila ", " punto ", " 207 ", " 208 ", " i3 ", " r5 ", " id.3 ", " id3 ")) {
+                " xsara ", " agila ", " punto ", " aveo ", " 207 ", " 208 ", " i3 ", " r5 ", " id.3 ", " id3 ",
+                " ev4 hb ")) {
             return "HATCHBACK";
         }
 
@@ -1803,6 +1807,10 @@ public class SautoParser implements CarSourceParser {
         }
 
         if (containsAny(urlSource, "/peugeot/206/")) {
+            return "HATCHBACK";
+        }
+
+        if (containsAny(urlSource, "/kia/ev4/")) {
             return "HATCHBACK";
         }
 

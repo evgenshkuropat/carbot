@@ -68,6 +68,12 @@ class SautoParserTest {
                 .isEqualTo("SEDAN");
         assertThat(extractCarType("Dongfeng DF 6 P\u0159ov\u011b\u0159en\u00fd v\u016fz", "", "https://www.sauto.cz/osobni/detail/dongfeng/df-6/210454796"))
                 .isEqualTo("PICKUP");
+        assertThat(extractCarType("Kia EV4 HB 4x2 GT-LINE 150kW + 81,4kWh", "", "https://www.sauto.cz/osobni/detail/kia/ev4/209302944"))
+                .isEqualTo("HATCHBACK");
+        assertThat(extractCarType("Chevrolet Aveo 1.4 16V,CR,AC,tazne", "", "https://www.sauto.cz/osobni/detail/chevrolet/aveo/210648305"))
+                .isEqualTo("HATCHBACK");
+        assertThat(extractCarType("Citroen C3 Picasso 1.6 HDI 68kw 2011 r.", "", "https://www.sauto.cz/osobni/detail/citroen/c3-picasso/210520973"))
+                .isEqualTo("MINIVAN");
     }
 
     @Test
@@ -95,6 +101,8 @@ class SautoParserTest {
     @Test
     void rejectsDriveableListingsWithFaultsFromFreshSautoLogs() throws Exception {
         assertThat(looksBrokenListing("Ford Focus 1.6 Ecoboost -poj\u00edzdn\u00e9/z\u00e1vada", "", ""))
+                .isTrue();
+        assertThat(looksBrokenListing("Fiat Sedici 1,6 16V 4x4 na dojeti nebo ND", "", ""))
                 .isTrue();
     }
 
