@@ -37,6 +37,10 @@ class BazosParserTest {
         assertThat(extractBrand("508 1.6HDI 82kw", "")).isEqualTo("PEUGEOT");
         assertThat(extractBrand("Prodam Hondu HRV, nejvyssi vybava Advance,2022", ""))
                 .isEqualTo("HONDA");
+        assertThat(extractBrand("Dacia Bigster journey hybrid 155", ""))
+                .isEqualTo("DACIA");
+        assertThat(extractBrand("Doblo 1,3 jtd,37tis.km,1.maj.CR,odpocet dph", "skoda octavia"))
+                .isEqualTo("FIAT");
     }
 
     @Test
@@ -141,6 +145,8 @@ class BazosParserTest {
         assertThat(extractFuelType("Opel Corsa 1.4, rok 2018, najeto 156tkm")).isEqualTo("PETROL");
         assertThat(extractFuelType("Opel Mokka 1,2, Ultimate r.v.2022 naj.30000.-km")).isEqualTo("PETROL");
         assertThat(extractFuelType("Dacia Duster 1.6 SCe 84Kw 1.majitel 109000km uplny servis")).isEqualTo("PETROL");
+        assertThat(extractFuelType("Dacia Dokker 1.3 75kw 1.Maj CR DPH")).isEqualTo("PETROL");
+        assertThat(extractFuelType("https://auto.bazos.cz/inzerat/219335979/duster-4x4-12-hybrid.php")).isEqualTo("HYBRID");
         assertThat(extractFuelType("Lexus RX 400h")).isEqualTo("HYBRID");
         assertThat(looksAutomaticHybridTitle("Lexus RX 400h", "HYBRID")).isTrue();
         assertThat(extractFuelType("Toyota Aygo")).isEqualTo("PETROL");
@@ -216,6 +222,7 @@ class BazosParserTest {
         assertThat(extractCarType("Citroen DS4 Exclusive", "", "")).isEqualTo("HATCHBACK");
         assertThat(extractCarType("Citroen eC4 zaruka elektro", "", "https://auto.bazos.cz/inzerat/219841903/citroen-ec4-zaruka.php")).isEqualTo("HATCHBACK");
         assertThat(extractCarType("DACIA STEPWAY 1,0 i 66 KW TOP STAV 2017", "", "")).isEqualTo("HATCHBACK");
+        assertThat(extractCarType("Dacia Bigster journey hybrid 155", "", "")).isEqualTo("SUV");
         assertThat(extractCarType("HONDA ACCORD TOURER VII EXECUTIVE 2.0 i-VTEC", "", "")).isEqualTo("WAGON");
         assertThat(extractCarType("Honda Accord kombi 2,0i-Vtec slusny stav servis STK", "", "")).isEqualTo("WAGON");
         assertThat(extractCarType("Honda Accord coupe", "", "")).isEqualTo("COUPE");
@@ -326,12 +333,14 @@ class BazosParserTest {
         assertThat(looksAutomaticHybridTitle("Ford Kuga 2,5 140kW 4x4 AWD ST-LINE", "HYBRID")).isTrue();
         assertThat(looksAutomaticHybridTitle("CR-V r. 2022 2.0 hybrid 4/4", "HYBRID")).isTrue();
         assertThat(looksAutomaticHybridTitle("BMW X5 xDrive 45e 290kW 2020", "HYBRID")).isTrue();
+        assertThat(looksAutomaticHybridTitle("Dacia Bigster journey hybrid 155", "HYBRID")).isTrue();
         assertThat(looksLikelyFalseManual("BMW X5 xDrive 45e 290kW 2020", "MANUAL")).isTrue();
         assertThat(extractTransmission("Ford Kuga ST Line 1,5 110 kW benzin 6-ti st.mech.")).isEqualTo("MANUAL");
         assertThat(extractTransmission("Citroen Berlingo 1.5 BlueHDi 130S&S MAN 6 SHINE")).isEqualTo("MANUAL");
         assertThat(extractTransmission("Citroen Berlingo 1.6 BlueHDI XTR 100 MAN")).isEqualTo("MANUAL");
         assertThat(extractTransmission("Hyundai i30 Kombi 1.6 CRDi 85kW DCT (2018)")).isEqualTo("AUTOMATIC");
         assertThat(extractTransmission("BMW 750 XDRIVE 400 PS LASER LIGHT M-PACK")).isEqualTo("AUTOMATIC");
+        assertThat(extractTransmission("Dacia Duster TCe 150 EDC, TOP, DPH")).isEqualTo("AUTOMATIC");
         assertThat(extractTransmission("Skoda Octavia 4 combi RS 2.0TDi,147kW,DSG,4x4")).isEqualTo("AUTOMATIC");
         assertThat(extractTransmission("Ĺ koda Octavia 4 RS combi 2.0TSi,180kW,DSG,Canton,22TKM"))
                 .isEqualTo("AUTOMATIC");
@@ -341,6 +350,10 @@ class BazosParserTest {
         assertThat(looksLikelyFalseAutomatic("Peugeot 308 1.6HDI 88KW 9/2015 LED NAVIGACE P. SERVIS", "AUTOMATIC")).isTrue();
         assertThat(looksLikelyFalseAutomatic("Octavia III 2,0TDi 110KW Edition + NAVI tempomat ALU STK", "AUTOMATIC")).isTrue();
         assertThat(looksLikelyFalseAutomatic("Dacia Duster 1.6 16V - BENZIN - 4X4", "AUTOMATIC")).isTrue();
+        assertThat(looksLikelyFalseAutomatic("Dacia Duster TCe 150 EDC, TOP, DPH", "AUTOMATIC")).isFalse();
+        assertThat(looksLikelyFalseAutomatic("Dacia Sandero Stepway 1.0i 67KW LPG Keyless Vyhrev Kamera", "AUTOMATIC")).isTrue();
+        assertThat(looksLikelyFalseAutomatic("Dacia Jogger 1.0 LPG+benzin xtreme", "AUTOMATIC")).isTrue();
+        assertThat(looksLikelyFalseAutomatic("Dacia Dokker 1.6 SCe 75kW, 2019", "AUTOMATIC")).isTrue();
         assertThat(looksLikelyFalseAutomatic("Citroen Berlingo 1.6 HDI 84KW", "AUTOMATIC")).isTrue();
         assertThat(correctLikelyNoisyFuel("Toyota Sienna AWD 2017 7 mist 8AT tazne", "DIESEL")).isEqualTo("PETROL");
         assertThat(correctLikelyNoisyFuel("Dacia Sandero Stepway", "DIESEL")).isNull();
@@ -460,6 +473,10 @@ class BazosParserTest {
         assertThat(looksBrokenOrForPartsListing(
                 "BMW 520d xDrive 2012 135kw",
                 "nepojizdny v doporucenem inzeratu"))
+                .isFalse();
+        assertThat(looksBrokenOrForPartsListing(
+                "Fiat 500, 1.2i, CR, PO SERVISU",
+                "vadny dil v doporucenem inzeratu"))
                 .isFalse();
     }
 
