@@ -123,6 +123,8 @@ class BazosParserTest {
         assertThat(extractFuelType("Volvo XC70 D5 Summum AWD Aut 136 kW")).isEqualTo("DIESEL");
         assertThat(extractFuelType("XC90 T8")).isEqualTo("PLUGIN_HYBRID");
         assertThat(extractFuelType("S90, 2,0T,T8,408koni,1.maj.odpocet DPH")).isEqualTo("PLUGIN_HYBRID");
+        assertThat(extractFuelType("Alfa Romeo GIULIA 2016 2.2,132kW Quadrifoglio body kit")).isEqualTo("DIESEL");
+        assertThat(extractFuelType("BMW M340D DPH")).isEqualTo("DIESEL");
         assertThat(preferExplicitTitleFuelType("VW T6.1 CALIFORNIA BEACH/110KW/DSG/2020/VIRTUAL/Kuchyn/tazne",
                 "PLUGIN_HYBRID")).isNull();
         assertThat(extractFuelType("Prodam Fiat Multipla 1.6/16V CNG/2007/6mist")).isEqualTo("CNG");
@@ -181,7 +183,10 @@ class BazosParserTest {
         assertThat(extractCarType("BMW F10 523i, 185tis, 3.0, 150kW, automat", "", "")).isEqualTo("SEDAN");
         assertThat(extractCarType("BMW 530D XDRIVE 210kW FACELIFT 2021 AUTOMAT / HEADup VIRTUAL", "", "")).isEqualTo("SEDAN");
         assertThat(extractCarType("BMW 530d UVEDENA CENA BEZ DPH", "", "")).isEqualTo("SEDAN");
+        assertThat(extractCarType("BMW 750 XDRIVE 400 PS LASER LIGHT M-PACK", "", "")).isEqualTo("SEDAN");
+        assertThat(extractCarType("BMW M340D DPH", "", "")).isEqualTo("SEDAN");
         assertThat(extractCarType("Audi A6 2.0 TDI AVANT Ultra S-tronic 2015", "", "")).isEqualTo("WAGON");
+        assertThat(extractCarType("A6C7 avant", "", "")).isEqualTo("WAGON");
         assertThat(extractCarType("Audi a4b6 2.5tdi V6 120kw", "", "")).isEqualTo("SEDAN");
         assertThat(extractCarType("S4 Quattro BSR 402PS 1.majitel koupeno v CR full servis -DPH", "", ""))
                 .isEqualTo("SEDAN");
@@ -321,10 +326,12 @@ class BazosParserTest {
         assertThat(looksAutomaticHybridTitle("Ford Kuga 2,5 140kW 4x4 AWD ST-LINE", "HYBRID")).isTrue();
         assertThat(looksAutomaticHybridTitle("CR-V r. 2022 2.0 hybrid 4/4", "HYBRID")).isTrue();
         assertThat(looksAutomaticHybridTitle("BMW X5 xDrive 45e 290kW 2020", "HYBRID")).isTrue();
+        assertThat(looksLikelyFalseManual("BMW X5 xDrive 45e 290kW 2020", "MANUAL")).isTrue();
         assertThat(extractTransmission("Ford Kuga ST Line 1,5 110 kW benzin 6-ti st.mech.")).isEqualTo("MANUAL");
         assertThat(extractTransmission("Citroen Berlingo 1.5 BlueHDi 130S&S MAN 6 SHINE")).isEqualTo("MANUAL");
         assertThat(extractTransmission("Citroen Berlingo 1.6 BlueHDI XTR 100 MAN")).isEqualTo("MANUAL");
         assertThat(extractTransmission("Hyundai i30 Kombi 1.6 CRDi 85kW DCT (2018)")).isEqualTo("AUTOMATIC");
+        assertThat(extractTransmission("BMW 750 XDRIVE 400 PS LASER LIGHT M-PACK")).isEqualTo("AUTOMATIC");
         assertThat(extractTransmission("Skoda Octavia 4 combi RS 2.0TDi,147kW,DSG,4x4")).isEqualTo("AUTOMATIC");
         assertThat(extractTransmission("Ĺ koda Octavia 4 RS combi 2.0TSi,180kW,DSG,Canton,22TKM"))
                 .isEqualTo("AUTOMATIC");
@@ -699,6 +706,12 @@ class BazosParserTest {
 
     private boolean looksLikelyFalseAutomatic(String title, String transmission) throws Exception {
         Method method = BazosParser.class.getDeclaredMethod("looksLikelyFalseAutomatic", String.class, String.class);
+        method.setAccessible(true);
+        return (boolean) method.invoke(parser, title, transmission);
+    }
+
+    private boolean looksLikelyFalseManual(String title, String transmission) throws Exception {
+        Method method = BazosParser.class.getDeclaredMethod("looksLikelyFalseManual", String.class, String.class);
         method.setAccessible(true);
         return (boolean) method.invoke(parser, title, transmission);
     }

@@ -378,6 +378,9 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             if (looksLikelyFalseManual(title, transmission)) {
                 transmission = null;
             }
+            if (transmission == null && looksAutomaticHybridTitle(title, fuelType)) {
+                transmission = "AUTOMATIC";
+            }
             if ("ELECTRIC".equals(fuelType)) {
                 transmission = "AUTOMATIC";
             }
@@ -1156,6 +1159,15 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             return "PETROL";
         }
 
+        if (containsAny(source, " alfa romeo giulia ", " giulia ")
+                && Pattern.compile("(?i)\\b2[\\.,]2\\b").matcher(source).find()) {
+            return "DIESEL";
+        }
+
+        if (containsAny(source, " bmw m340d ", " m340d ", " m340 d ")) {
+            return "DIESEL";
+        }
+
         if (source.contains(" panda ")
                 && Pattern.compile("(?i)\\b1[\\.,][12]\\s*i?\\b").matcher(source).find()) {
             return "PETROL";
@@ -1577,8 +1589,16 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         }
 
         String source = " " + normalizeText(title).toLowerCase(Locale.ROOT) + " ";
+        String compact = source.replaceAll("[^a-z0-9]", "");
+        boolean hasExplicitManual = containsAny(source, " manual ", " manuĂˇl ", " manualni ", " man. ", " mt ", " 5mt ", " 6mt ", " 6 rychl ", " 6ti rychl ");
+        if (!hasExplicitManual
+                && containsAny(source, " bmw ")
+                && Pattern.compile("(?:225|230|320|330|530|545|745|750|30|40|45|50)e(?:xdrive)?").matcher(compact).find()) {
+            return true;
+        }
+
         return containsAny(source, " silverado ")
-                && !containsAny(source, " manual ", " manuĂˇl ", " manualni ", " man. ", " mt ", " 5mt ", " 6mt ", " 6 rychl ", " 6ti rychl ");
+                && !hasExplicitManual;
     }
 
     private String extractTransmission(String text) {
@@ -1629,6 +1649,12 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         if (containsAny(tokens,
                 " dsg ", " dct ", " cvt ", " ecvt ", " eat8 ", " edcs ", " i shift ", " ishift ",
                 " stronic ", " tiptronic ", " powershift ", " multitronic ", " steptronic ", " xtronic ")) {
+            return "AUTOMATIC";
+        }
+
+        if (containsAny(source, " bmw ")
+                && Pattern.compile("(?i)\\b(?:740|745|750|760)\\s*(?:d|i)?\\b").matcher(source).find()
+                && !containsAny(source, " manual ", " manuĂˇl ", " manualni ", " man. ", " mt ", " 6mt ")) {
             return "AUTOMATIC";
         }
 
@@ -2179,7 +2205,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             return "SUV";
         }
 
-        if (containsAny(titleSource, " a6 avant ", " a6 allroad ", " a6 combi ", " a6 kombi ")) {
+        if (containsAny(titleSource, " a6 avant ", " a6c7 avant ", " a6 allroad ", " a6 combi ", " a6 kombi ")) {
             return "WAGON";
         }
 
@@ -2207,7 +2233,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             return "HATCHBACK";
         }
 
-        if (containsAny(titleSource, " s 350 ", " s350 ", " s 500 ", " s500 ", " w220 ", " 730d ", " 730ld ", " 730i ", " 740d ", " 740i ", " 750d ", " 750xd ", " 750i ", " 7 series ", " rada 7 ", " 7er ")) {
+        if (containsAny(titleSource, " s 350 ", " s350 ", " s 500 ", " s500 ", " w220 ", " 730d ", " 730ld ", " 730i ", " 740d ", " 740i ", " 750 ", " 750d ", " 750xd ", " 750i ", " m340d ", " m340 d ", " 7 series ", " rada 7 ", " 7er ")) {
             return "SEDAN";
         }
 
