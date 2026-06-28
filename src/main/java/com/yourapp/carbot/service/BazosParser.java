@@ -1145,6 +1145,16 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             return "HYBRID";
         }
 
+        if ((containsAny(source, " volvo ", " xc40 ", " xc60 ", " xc70 ", " xc90 ",
+                " v40 ", " v50 ", " v60 ", " v70 ", " v90 ", " s40 ", " s60 ", " s80 ", " s90 ", " c70 ")
+                || compact.matches(".*(?:volvo|xc40|xc60|xc70|xc90|v40|v50|v60|v70|v90|s40|s60|s80|s90|c70).*"))
+                && (Pattern.compile("(?i)\\bd\\s*[2345]\\b|\\b[2345]\\s*d\\b|\\b[12][\\.,]\\d\\s*d[2345]?\\b")
+                .matcher(source).find()
+                || Pattern.compile("(?i).*(?:20d|24d|20d3|20d4|24d5|d2|d3|d4|d5).*")
+                .matcher(compact).matches())) {
+            return "DIESEL";
+        }
+
         if (containsAny(source, " jts ", " twinspark ", " twin spark ", " tbi ", " turbo ", " ts ", " sce ",
                 " bmw m3 ", " m3 ", " civic type-r ", " civic type r ", " type-r ", " type r ", " typer ", " fn2 ", " ep2 ")
                 || compact.contains("typer")
@@ -1197,12 +1207,6 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         }
 
         // DIESEL
-        if (containsAny(source, " volvo ", " xc40 ", " xc60 ", " xc70 ", " xc90 ",
-                " v40 ", " v50 ", " v60 ", " v70 ", " v90 ", " s40 ", " s60 ", " s80 ", " s90 ", " c70 ")
-                && Pattern.compile("(?i)\\bd\\s*[2345]\\b|\\b[2345]\\s*d\\b").matcher(source).find()) {
-            return "DIESEL";
-        }
-
         if (containsAny(source,
                 " diesel ", " nafta ",
                 " tdi ", " tdci ", " cdi ", " crdi ", " hdi ", " dci ",
@@ -1587,7 +1591,8 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " i20 ", " i30 ", " ix20 ", " tucson ", " aveo ",
                 " peugeot 308 ", " 308 ",
                 " octavia ", " oktavia ",
-                " duster ", " sandero ", " stepway ", " logan ", " jogger ", " dokker ", " berlingo ");
+                " duster ", " sandero ", " stepway ", " logan ", " jogger ", " dokker ", " panda ", " berlingo ",
+                " avensis ", " auris ", " auris, ", " aoris ", " aoris, ", " golf ");
     }
 
     private boolean looksLikelyFalseManual(String title, String transmission) {
@@ -1737,7 +1742,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " stelvio ", " giulia ", " giulietta ", " mito ", " alfetta ")) return "ALFA_ROMEO";
         if (containsAny(titleSource, " abarth ")) return "ABARTH";
         if (containsAny(titleSource, " škoda ", " skoda ")) return "SKODA";
-        if (containsAny(titleSource, " volkswagen ", " vw ")) return "VOLKSWAGEN";
+        if (containsAny(titleSource, " volkswagen ", " vw ", " scirocco ")) return "VOLKSWAGEN";
         if (containsAny(titleSource, " id.3 ", " id3 ", " id.4 ", " id4 ", " id.5 ", " id5 ")) return "VOLKSWAGEN";
         if (containsAny(titleSource, " audi ", " s4 quattro ")) return "AUDI";
         if (containsAny(titleSource, " bmw ")) return "BMW";
@@ -1795,7 +1800,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " stelvio ", " giulia ", " giulietta ", " mito ", " alfetta ")) return "ALFA_ROMEO";
         if (containsAny(source, " abarth ")) return "ABARTH";
         if (containsAny(source, " škoda ", " skoda ")) return "SKODA";
-        if (containsAny(source, " volkswagen ", " vw ")) return "VOLKSWAGEN";
+        if (containsAny(source, " volkswagen ", " vw ", " scirocco ")) return "VOLKSWAGEN";
         if (containsAny(source, " audi ", " s4 quattro ")) return "AUDI";
         if (containsAny(source, " bmw ")) return "BMW";
         if (containsAny(source, " mercedes ", " mercedes-benz ")) return "MERCEDES";
@@ -1844,6 +1849,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         if (source.contains(" tarraco ")) return "SEAT";
 
         if (source.contains(" golf ")) return "VOLKSWAGEN";
+        if (source.contains(" scirocco ")) return "VOLKSWAGEN";
         if (source.contains(" passat ")) return "VOLKSWAGEN";
         if (source.contains(" tiguan ")) return "VOLKSWAGEN";
         if (source.contains(" touareg ")) return "VOLKSWAGEN";
@@ -2112,7 +2118,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             return "HATCHBACK";
         }
 
-        if (containsAny(titleSource, " cr-z ", " cr z ")) {
+        if (containsAny(titleSource, " cr-z ", " cr z ", " scirocco ")) {
             return "COUPE";
         }
 
@@ -2237,7 +2243,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             return "WAGON";
         }
 
-        if (containsAny(titleSource, " s60 ", " s 60 ", " s80 ", " s 80 ", " audi s6 ", " s6 ", " s 6 ")) {
+        if (containsAny(titleSource, " s60 ", " s 60 ", " s80 ", " s 80 ", " s90 ", " s 90 ", " audi s6 ", " s6 ", " s 6 ")) {
             return "SEDAN";
         }
 
@@ -2742,6 +2748,10 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
 
         String urlBrand = extractBrandFromUrl(urlLower);
         if (urlBrand != null && !titleBrand.equals(urlBrand)) {
+            if (("ABARTH".equals(titleBrand) && "FIAT".equals(urlBrand))
+                    || ("FIAT".equals(titleBrand) && "ABARTH".equals(urlBrand))) {
+                return false;
+            }
             return true;
         }
 
@@ -3586,7 +3596,8 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         if (containsAny(titleSource, " mustang ", " civic type r ", " cr-v ", " cr v ", " crv ", " duster ", " stelvio ", " chevrolet ssr ", " spark ", " stonic ",
                 " ioniq ", " ix55 ", " volvo s90 ", " s90 ",
                 " bmw 520d ", " 520d ",
-                " passat ", " golf ", " tiguan ", " touareg ", " t-roc ", " troc ", " touran ")
+                " passat ", " golf ", " tiguan ", " touareg ", " t-roc ", " troc ", " touran ",
+                " fiat 500 ", " fiat500 ", " 500 lounge ", " 500c ", " panda ")
                 && !containsAny(titleSource, " na dily ", " na nd ", " nahradni dily ", " nepojizdny ", " nepojizdne ", " vadny ", " vadne ",
                 " k oprave ", " na opravu ")) {
             return false;
@@ -4141,6 +4152,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " fabia ",
                 " scala ",
                 " golf ",
+                " scirocco ",
                 " octavia ",
                 " superb ",
                 " passat ",

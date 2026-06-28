@@ -125,6 +125,9 @@ class BazosParserTest {
         assertThat(extractFuelType("Volvo XC60 R-DESIGN D4 140 kW AWD")).isEqualTo("DIESEL");
         assertThat(extractFuelType("Volvo V40 D2 2.0 88kW 2016 Ocean Race")).isEqualTo("DIESEL");
         assertThat(extractFuelType("Volvo XC70 D5 Summum AWD Aut 136 kW")).isEqualTo("DIESEL");
+        assertThat(extractFuelType("Volvo XC90 2.4D5 136KW 4x4 AUT SERVISKA")).isEqualTo("DIESEL");
+        assertThat(extractFuelType("Volvo XC60 2.0D AUT 5VALEC FACELIFT VYHREV TAZNE")).isEqualTo("DIESEL");
+        assertThat(extractFuelType("Volvo V40 2.0D3 5VALEC MANUAL SERVISKA")).isEqualTo("DIESEL");
         assertThat(extractFuelType("XC90 T8")).isEqualTo("PLUGIN_HYBRID");
         assertThat(extractFuelType("S90, 2,0T,T8,408koni,1.maj.odpocet DPH")).isEqualTo("PLUGIN_HYBRID");
         assertThat(extractFuelType("Alfa Romeo GIULIA 2016 2.2,132kW Quadrifoglio body kit")).isEqualTo("DIESEL");
@@ -277,8 +280,10 @@ class BazosParserTest {
         assertThat(extractCarType("VW GOLF PLUS 1,4 TSi 90 KW TOP STAV", "", "")).isEqualTo("MINIVAN");
         assertThat(extractCarType("VW T6.1 CALIFORNIA BEACH/110KW/DSG/2020/VIRTUAL/Kuchyn/tazne", "", ""))
                 .isEqualTo("MINIVAN");
+        assertThat(extractCarType("Scirocco 2.0 TSI DSG 155kw r 2012", "", "")).isEqualTo("COUPE");
         assertThat(extractCarType("Volkswagen UP 1.0MPI KLIMA", "", "")).isEqualTo("HATCHBACK");
         assertThat(extractCarType("Volvo S80 2.4D5 120 kW Klima Tempomat CR", "", "")).isEqualTo("SEDAN");
+        assertThat(extractCarType("Volvo S90 B5 AWD 173 kW 6/2023 Inscription CR 1. majitel", "", "")).isEqualTo("SEDAN");
         assertThat(extractCarType("Volvo C70 2.0d 5valec automat 130kW", "", "")).isEqualTo("CABRIO");
         assertThat(extractCarType("Volvo v 90", "", "")).isEqualTo("WAGON");
         assertThat(extractCarType("Audi A2 1.4 TDI STK 2028", "", "")).isEqualTo("HATCHBACK");
@@ -354,6 +359,11 @@ class BazosParserTest {
         assertThat(looksLikelyFalseAutomatic("Dacia Sandero Stepway 1.0i 67KW LPG Keyless Vyhrev Kamera", "AUTOMATIC")).isTrue();
         assertThat(looksLikelyFalseAutomatic("Dacia Jogger 1.0 LPG+benzin xtreme", "AUTOMATIC")).isTrue();
         assertThat(looksLikelyFalseAutomatic("Dacia Dokker 1.6 SCe 75kW, 2019", "AUTOMATIC")).isTrue();
+        assertThat(looksLikelyFalseAutomatic("Fiat Panda 1,1i,puvod CZ,1.majitel,86tkm", "AUTOMATIC")).isTrue();
+        assertThat(looksLikelyFalseAutomatic("Toyota Avensis T25 2.0/93kw/D4D", "AUTOMATIC")).isTrue();
+        assertThat(looksLikelyFalseAutomatic("Toyota Auris, 1.6i / EXECUTIVE CR", "AUTOMATIC")).isTrue();
+        assertThat(looksLikelyFalseAutomatic("Volkswagen Golf 7 Variant 1.4 TSI 90 kW", "AUTOMATIC")).isTrue();
+        assertThat(looksLikelyFalseAutomatic("VW Golf 8 Variant 2.0 TDI 110kW DSG", "AUTOMATIC")).isFalse();
         assertThat(looksLikelyFalseAutomatic("Citroen Berlingo 1.6 HDI 84KW", "AUTOMATIC")).isTrue();
         assertThat(correctLikelyNoisyFuel("Toyota Sienna AWD 2017 7 mist 8AT tazne", "DIESEL")).isEqualTo("PETROL");
         assertThat(correctLikelyNoisyFuel("Dacia Sandero Stepway", "DIESEL")).isNull();
@@ -389,6 +399,12 @@ class BazosParserTest {
                 "S4 Quattro BSR 402PS 1.majitel koupeno v CR full servis -DPH",
                 "",
                 "https://auto.bazos.cz/inzerat/219539804/s4-quattro-1majitel-koupeno-v-cr-full-servis-odpocet-dph.php",
+                ""))
+                .isFalse();
+        assertThat(looksNonCarListing(
+                "Scirocco 2.0 TSI DSG 155kw r 2012",
+                "",
+                "https://auto.bazos.cz/inzerat/220075516/scirocco-20-tsi-dsg-155kw-r-2012.php",
                 ""))
                 .isFalse();
     }
@@ -440,6 +456,10 @@ class BazosParserTest {
                 "Lancer 2.0did sedan (vw tdi) 103kw, 1. majitel",
                 "https://auto.bazos.cz/inzerat/219696461/lancer-20did-sedan-vw-tdi-103kw-1-majitel.php"))
                 .isFalse();
+        assertThat(looksBrandMismatch(
+                "Fiat 500 ABARTH UVEDENA CENA BEZ DPH MOZNE SPLATKY",
+                "https://auto.bazos.cz/inzerat/220047180/fiat-500-abarth.php"))
+                .isFalse();
         assertThat(looksModelUrlMismatch(
                 "RENAULT TWINGO 1,2 16v CTYRVAL",
                 "https://auto.bazos.cz/inzerat/219681639/renault-clio-12-16v-ctyrval.php"))
@@ -476,6 +496,10 @@ class BazosParserTest {
                 .isFalse();
         assertThat(looksBrokenOrForPartsListing(
                 "Fiat 500, 1.2i, CR, PO SERVISU",
+                "vadny dil v doporucenem inzeratu"))
+                .isFalse();
+        assertThat(looksBrokenOrForPartsListing(
+                "Fiat 500, 1.2i, ÄŚR, PO SERVISU",
                 "vadny dil v doporucenem inzeratu"))
                 .isFalse();
     }
