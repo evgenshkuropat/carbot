@@ -168,6 +168,16 @@ class TipCarsParserTest {
                 "",
                 "https://www.tipcars.com/volkswagen-tiguan-allspace/kombi/benzin/volkswagen-tiguan-allspace.html"))
                 .isEqualTo("SUV");
+        assertThat(extractCarType(
+                "Hyundai ix20 1.4 VVTi, klimatizace, tazne",
+                "",
+                "https://www.tipcars.com/hyundai-ix20/hatchback/benzin/hyundai-ix20-1-4-vvti-klimatizace-tazne.html"))
+                .isEqualTo("MINIVAN");
+        assertThat(extractCarType(
+                "Peugeot Rifter 1,5 BlueHDI 96kW CZ 1.Maj GT",
+                "",
+                "https://www.tipcars.com/peugeot-rifter/van/nafta/peugeot-rifter-1-5-bluehdi-96kw-cz-1-maj-gt.html"))
+                .isEqualTo("MINIVAN");
     }
 
     @Test
@@ -226,6 +236,8 @@ class TipCarsParserTest {
         assertThat(extractFuelType("Citroen C3 Aircross Feel 1.2 PureTech, Serv.kniha"))
                 .isEqualTo("PETROL");
         assertThat(extractFuelType("Peugeot 3008 Hybrid 145 PureTech"))
+                .isEqualTo("HYBRID");
+        assertThat(extractFuelType("Hyundai Tucson 1.6 T-GDI HEV"))
                 .isEqualTo("HYBRID");
     }
 

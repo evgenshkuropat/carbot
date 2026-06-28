@@ -614,6 +614,7 @@ public class TipCarsParser implements CarSourceParser {
                 " plug-in ",
                 " plugin ",
                 " phev ",
+                " hev ",
                 " mhev ",
                 " m-hev ",
                 " e-tec ",
@@ -834,6 +835,7 @@ public class TipCarsParser implements CarSourceParser {
 
         if (containsAny(titleSource,
                 " c-max ", " c max ", " galaxy ", " berlingo ", " caddy ", " roomster ", " sportsvan ", " scudo ",
+                " ix20 ", " ix 20 ", " rifter ",
                 " tridy v ", " třídy v ", " tĹ™Ă­dy v ", " vito ", " viano ",
                 " scenic ", " zafira ", " meriva ", " touran ", " sharan ", " s-max ", " s max ",
                 " c4 picasso ", " picasso ")) {
