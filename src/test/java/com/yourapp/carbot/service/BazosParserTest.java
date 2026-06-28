@@ -265,6 +265,8 @@ class BazosParserTest {
         assertThat(extractCarType("Toyota CH-R 1.8 hybrid", "", "")).isEqualTo("SUV");
         assertThat(extractCarType("Toyota Aoris", "", "")).isEqualTo("HATCHBACK");
         assertThat(extractCarType("Toyota Avensis T25 2.0/93kw/D4D", "", "")).isEqualTo("SEDAN");
+        assertThat(extractCarType("Toyota Avensis 1.8i WG Sol", "", "")).isEqualTo("WAGON");
+        assertThat(extractCarType("Toyota and Cruiser HDJ 80 Expedicni", "", "")).isEqualTo("SUV");
         assertThat(extractCarType("Toyota Camry Executive HYBRID", "", "")).isEqualTo("SEDAN");
         assertThat(extractCarType("Toyota Yaris Cross, 1.5HEV, Adventure, 4x4", "", "")).isEqualTo("SUV");
         assertThat(extractCarType("Toyota 4runner - SPECIAL z mise OSN", "", "")).isEqualTo("SUV");
@@ -424,8 +426,13 @@ class BazosParserTest {
         assertThat(looksSuspiciousListing("SKODA FABIA 3 1,0MPi 44kW Koup.CR,1.majitel,Serv. kniha,2019", "rezervace")).isFalse();
         assertThat(looksSuspiciousListing("SKODA SCALA 1,0TSi 70kW Koup.CR,1.majitel,LED,2022,119tkm", "rezervace")).isFalse();
         assertThat(looksSuspiciousListing("SKODA KAMIQ 1,0TSi 81kW Koup.CR,1.majitel,TAZNE,2022,DPH", "rezervace")).isFalse();
+        assertThat(looksSuspiciousListing("SKODA KODIAQ 1,5TSI 110kW SPORTLINE TAZNE Koup.CR,1.majitel", "rezervace")).isFalse();
         assertThat(looksSuspiciousListing("VW ARTEON 2,0TDi 110kW DSG ELEGANCE CR 2022 NYNI PO SERVISE", "rezervace")).isFalse();
         assertThat(looksSuspiciousListing("VW ARTEON 2,0TDi 110kW DSG ELEGANCE ÄŚR 2022 NYNĂŤ PO SERVISE", "rezervace")).isFalse();
+        assertThat(looksSuspiciousListing("VW PASSAT 2,0TDi 110kW BUSINESS DSG Koup.CR,1.majitel,2023", "rezervace")).isFalse();
+        assertThat(looksSuspiciousListing("VW T-ROC 1,5TSi 110kW MARATON Koup.CR,TAZNE,Vyhr.volant,2022", "rezervace")).isFalse();
+        assertThat(looksSuspiciousListing("VW T-ROC 1,5TSi 110kW MARATON Koup.CR,TAZNE,Vyhr.volant,2022", "na splatky bez registru")).isFalse();
+        assertThat(looksSuspiciousListing("VW T-ROC 1,5TSi 110kW na splatky", "")).isTrue();
         assertThat(looksSuspiciousListing("SKODA OCTAVIA IV 1,5TSi G-TEC 96kW Koup.CR,50.000km2022", "rezervace")).isFalse();
         assertThat(looksSuspiciousListing("OPEL e-CORSA 100kW ELEGANCE electro Koup.CR,1.majitel,2023", "rezervace")).isFalse();
         assertThat(looksSuspiciousListing("OPEL MOKKA 1,4T 112kW 4x4 Automat,TAZNE,Koup.CR,90.0000km", "rezervace")).isFalse();

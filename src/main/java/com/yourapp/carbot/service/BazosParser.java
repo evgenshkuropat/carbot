@@ -2062,7 +2062,12 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         }
 
         if (containsAny(titleSource, " avensis ")
-                && !containsAny(titleSource, " kombi ", " combi ", " wagon ", " touring ", " sw ")) {
+                && containsAny(titleSource, " kombi ", " combi ", " wagon ", " touring ", " sw ", " wg ")) {
+            return "WAGON";
+        }
+
+        if (containsAny(titleSource, " avensis ")
+                && !containsAny(titleSource, " kombi ", " combi ", " wagon ", " touring ", " sw ", " wg ")) {
             return "SEDAN";
         }
 
@@ -2082,6 +2087,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         }
 
         if (containsAny(titleSource, " yaris cross ", " rav4 ", " rav 4 ", " c-hr ", " ch-r ", " chr ", " 4runner ", " 4 runner ", " yeti ",
+                " toyota and cruiser ", " and cruiser hdj ",
                 " fiat 500x ", " 500x ", " antara ", " bigster ", " peugeot 4008 ", " 4008 ")) {
             return "SUV";
         }
@@ -3704,6 +3710,14 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         String source = " " + normalizeText(title + " " + shortenForCheck(text, 500)).toLowerCase(Locale.ROOT) + " ";
         String sourceAscii = asciiSearchText(title + " " + shortenForCheck(text, 500));
 
+        if (looksLikePassengerCarModel(title)
+                && !containsAny(cleanTitleAscii,
+                " prodano ", " zalohovano ", " rezervace ", " rezervovano ", " zadano ",
+                " na splatky ", " bez registru ", " akontace ", " prenecham splatky ",
+                " prevezmu leasing ", " leasing prevezmu ")) {
+            return false;
+        }
+
         if (containsAny(source,
                 " na splĂˇtky ", " na splatky ",
                 " bez registru ",
@@ -3719,11 +3733,6 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " prevezmu leasing ",
                 " leasing prevezmu ")) {
             return true;
-        }
-
-        if (looksLikePassengerCarModel(title)
-                && !containsAny(cleanTitleAscii, " prodano ", " zalohovano ", " rezervace ", " rezervovano ", " zadano ")) {
-            return false;
         }
 
         return containsAny(source,
