@@ -93,6 +93,7 @@ class BazosParserTest {
         assertThat(extractFuelType("Toyota Yaris Cross, 1.5HEV, Adventure, 4x4")).isEqualTo("HYBRID");
         assertThat(extractFuelType("Peugeot 308 SW 1.2 PT 96 kW 130 Allure CZ DPH")).isEqualTo("PETROL");
         assertThat(extractFuelType("PEUGEOT 301 1.2 60kW rok 2016")).isEqualTo("PETROL");
+        assertThat(extractFuelType("Prodám Peugeot 301,R.v.2013, 1,6 Nafta.")).isEqualTo("DIESEL");
         assertThat(extractFuelType("Citroen C5 combi,2,2 diesel,125 kW, Webasto")).isEqualTo("DIESEL");
         assertThat(extractFuelType("Fiat Freemont 2.0 MJT AT 4x4 125kW")).isEqualTo("DIESEL");
         assertThat(extractFuelType("Fiat Doblo Maxi 2020 1.6 MJT2 dlouha verze")).isEqualTo("DIESEL");
@@ -147,6 +148,7 @@ class BazosParserTest {
         assertThat(extractFuelType("Peugeot 108 1.0benzin servisni hostorie")).isEqualTo("PETROL");
         assertThat(extractFuelType("Opel Corsa 1.4, rok 2018, najeto 156tkm")).isEqualTo("PETROL");
         assertThat(extractFuelType("Opel Mokka 1,2, Ultimate r.v.2022 naj.30000.-km")).isEqualTo("PETROL");
+        assertThat(extractFuelType("Prodám Opel Astra H 1.6 85 kW R. V. 2009")).isEqualTo("PETROL");
         assertThat(extractFuelType("Dacia Duster 1.6 SCe 84Kw 1.majitel 109000km uplny servis")).isEqualTo("PETROL");
         assertThat(extractFuelType("Dacia Dokker 1.3 75kw 1.Maj CR DPH")).isEqualTo("PETROL");
         assertThat(extractFuelType("https://auto.bazos.cz/inzerat/219335979/duster-4x4-12-hybrid.php")).isEqualTo("HYBRID");
@@ -241,6 +243,7 @@ class BazosParserTest {
         assertThat(extractCarType("Chevrolet Express Limited SE 2500 6.0", "", "")).isEqualTo("MINIVAN");
         assertThat(extractCarType("Chevrolet Trailblazer 4.2i,201kw,/LPG", "", "")).isEqualTo("SUV");
         assertThat(extractCarType("Opel Astra J Sports Tourer 1.4i Turbo103Kw r.v.10/2015", "", "")).isEqualTo("WAGON");
+        assertThat(extractCarType("Opel Astra J combi 1,7 CDTi 92kW", "", "")).isEqualTo("WAGON");
         assertThat(extractCarType("Opel Astra K 1,6 CDTI 81kw sport Tourer, Innovation", "", "")).isEqualTo("WAGON");
         assertThat(extractCarType("Opel Astra K 1,6 CDTI 81kw 2016 ST, Innovation", "", "")).isEqualTo("WAGON");
         assertThat(extractCarType("Opel Insignia Sport Taurer", "", "")).isEqualTo("WAGON");
@@ -256,6 +259,7 @@ class BazosParserTest {
         assertThat(extractCarType("Peugeot 108 1.0benzin servisni hostorie", "", "")).isEqualTo("HATCHBACK");
         assertThat(extractCarType("PEUGEOT 301 1.2 60kW rok 2016", "", "")).isEqualTo("SEDAN");
         assertThat(extractCarType("Peugeot 405 SRI 2,0", "", "")).isEqualTo("SEDAN");
+        assertThat(extractCarType("Peugeot 4008 1.8HDI 4x4 MANUAL", "", "")).isEqualTo("SUV");
         assertThat(extractCarType("Toyota Corolla ST 1.8 HEV 103kW e-CVT,2024,35tkm", "", "")).isEqualTo("WAGON");
         assertThat(extractCarType("Toyota Rav 4 2.0D 85Kw Nova STK, 4x4", "", "")).isEqualTo("SUV");
         assertThat(extractCarType("Toyota CH-R 1.8 hybrid", "", "")).isEqualTo("SUV");
@@ -291,6 +295,7 @@ class BazosParserTest {
         assertThat(extractCarType("Renault Alaskan", "", "")).isEqualTo("PICKUP");
         assertThat(extractCarType("Renault Laguna 2", "", "")).isEqualTo("HATCHBACK");
         assertThat(extractCarType("RENAULT TWINGO 1.0i 51kW 2018 POUZE 15 603KM", "", "")).isEqualTo("HATCHBACK");
+        assertThat(extractCarType("Renault Tvingo 1.0i editovana kolekce", "", "")).isEqualTo("HATCHBACK");
         assertThat(extractCarType("Cupra Tavascan Endurance Electric 210kW", "", "")).isEqualTo("SUV");
         assertThat(extractCarType("Kia Magentis 2.0crdi 103kw Top Stav Nova STK", "", "")).isEqualTo("SEDAN");
         assertThat(extractCarType("Kia Stinger GT 3.3 T-GDI 4WD 1. majitel", "", "")).isEqualTo("SEDAN");
@@ -364,6 +369,9 @@ class BazosParserTest {
         assertThat(looksLikelyFalseAutomatic("Toyota Auris, 1.6i / EXECUTIVE CR", "AUTOMATIC")).isTrue();
         assertThat(looksLikelyFalseAutomatic("Volkswagen Golf 7 Variant 1.4 TSI 90 kW", "AUTOMATIC")).isTrue();
         assertThat(looksLikelyFalseAutomatic("VW Golf 8 Variant 2.0 TDI 110kW DSG", "AUTOMATIC")).isFalse();
+        assertThat(looksLikelyFalseAutomatic("Opel Zafira B", "AUTOMATIC")).isTrue();
+        assertThat(looksLikelyFalseAutomatic("Peugeot Partner Tepee 1,6 Hdi 8v 68kw", "AUTOMATIC")).isTrue();
+        assertThat(looksLikelyFalseAutomatic("Renault Clio IV 2013, 1.2 16V", "AUTOMATIC")).isTrue();
         assertThat(looksLikelyFalseAutomatic("Citroen Berlingo 1.6 HDI 84KW", "AUTOMATIC")).isTrue();
         assertThat(correctLikelyNoisyFuel("Toyota Sienna AWD 2017 7 mist 8AT tazne", "DIESEL")).isEqualTo("PETROL");
         assertThat(correctLikelyNoisyFuel("Dacia Sandero Stepway", "DIESEL")).isNull();

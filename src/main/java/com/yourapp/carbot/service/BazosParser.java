@@ -1207,6 +1207,10 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         }
 
         // DIESEL
+        if (Pattern.compile("(?i)\\bnafta\\b").matcher(source).find()) {
+            return "DIESEL";
+        }
+
         if (containsAny(source,
                 " diesel ", " nafta ",
                 " tdi ", " tdci ", " cdi ", " crdi ", " hdi ", " dci ",
@@ -1359,6 +1363,12 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
 
         if (source.contains(" peugeot 301 ")
                 && Pattern.compile("\\b1[.,]2\\b").matcher(source).find()) {
+            return "PETROL";
+        }
+
+        if (containsAny(source, " opel astra ", " astra h ", " astra j ", " astra k ")
+                && Pattern.compile("\\b1[.,]6\\b").matcher(source).find()
+                && !containsAny(source, " diesel ", " nafta ", " cdti ", " dti ", " tdi ")) {
             return "PETROL";
         }
 
@@ -1588,8 +1598,11 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " alfa romeo 159 ", " alfa 159 ", " alfa romeo 147 ", " alfa 147 ", " giulietta ", " giuletta ", " alfa romeo sportwagon ",
                 " accord ", " civic ", " crx ", " delsol ", " cr-v ", " cr v ", " crv ",
                 " peugeot 107 ", " peugeot 206 ", " peugeot 207 ", " peugeot 208 ", " peugeot 301 ",
+                " peugeot 2008 ", " peugeot 407 ", " partner tepee ",
                 " i20 ", " i30 ", " ix20 ", " tucson ", " aveo ",
                 " peugeot 308 ", " 308 ",
+                " opel zafira ", " opel astra ", " opel insignia ", " crossland ",
+                " renault clio ", " renault megane ", " renault kangoo ",
                 " octavia ", " oktavia ",
                 " duster ", " sandero ", " stepway ", " logan ", " jogger ", " dokker ", " panda ", " berlingo ",
                 " avensis ", " auris ", " auris, ", " aoris ", " aoris, ", " golf ");
@@ -2069,7 +2082,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         }
 
         if (containsAny(titleSource, " yaris cross ", " rav4 ", " rav 4 ", " c-hr ", " ch-r ", " chr ", " 4runner ", " 4 runner ", " yeti ",
-                " fiat 500x ", " 500x ", " antara ", " bigster ")) {
+                " fiat 500x ", " 500x ", " antara ", " bigster ", " peugeot 4008 ", " 4008 ")) {
             return "SUV";
         }
 
@@ -2110,7 +2123,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             return "SEDAN";
         }
 
-        if (containsAny(titleSource, " ibiza ", " alto ", " twingo ")) {
+        if (containsAny(titleSource, " ibiza ", " alto ", " twingo ", " tvingo ")) {
             return "HATCHBACK";
         }
 
@@ -2184,7 +2197,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " civic tourer ", " focus tunier ", " focus turnier ",
                 " insignia st ", " insignia sports tourer ", " insignia sport tourer ", " insignia sport taurer ",
                 " astra sports tourer ", " astra sport tourer ", " astra sports touer ", " astra sport touer ", " astra j sports tourer ", " astra k sports tourer ",
-                " astra j sport tourer ", " astra k sport tourer ", " astra sw ", " astra combi ", " astra kombi ", " 308 sw ", " peugeot 308 sw ")) {
+                " astra j sport tourer ", " astra k sport tourer ", " astra j combi ", " astra k combi ", " astra sw ", " astra combi ", " astra kombi ", " 308 sw ", " peugeot 308 sw ")) {
             return "WAGON";
         }
 
