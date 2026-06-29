@@ -1768,6 +1768,11 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         String titleSource = " " + normalizeText(title).toLowerCase(Locale.ROOT) + " ";
         String compactTitleSource = compactSearchText(title);
         String source = titleSource + " " + shortenForCheck(normalizeText(text).toLowerCase(Locale.ROOT), 300);
+        int seatTitleIndex = firstIndexOfAny(titleSource, " seat ", " tarraco ");
+        int skodaTitleIndex = firstIndexOfAny(titleSource, " skoda ", " Ĺˇkoda ", " kodiaq ");
+        if (seatTitleIndex >= 0 && (skodaTitleIndex < 0 || seatTitleIndex < skodaTitleIndex)) {
+            return "SEAT";
+        }
 
         if (containsAny(titleSource,
                 " alfa romeo ", " alfa ", " alfu ", " romeo ",
@@ -3929,6 +3934,27 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         }
 
         return false;
+    }
+
+    private int firstIndexOfAny(String source, String... values) {
+        if (source == null || source.isBlank()) {
+            return -1;
+        }
+
+        String lowerSource = source.toLowerCase(Locale.ROOT);
+        int first = -1;
+        for (String value : values) {
+            if (value == null || value.isBlank()) {
+                continue;
+            }
+
+            int index = lowerSource.indexOf(value.toLowerCase(Locale.ROOT));
+            if (index >= 0 && (first < 0 || index < first)) {
+                first = index;
+            }
+        }
+
+        return first;
     }
 
     private boolean startsWithAny(String source, String... values) {

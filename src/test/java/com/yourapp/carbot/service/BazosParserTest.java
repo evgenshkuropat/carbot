@@ -14,6 +14,10 @@ class BazosParserTest {
     void resolvesBrandsFromBazosTitlesBeforeNoisyPageText() throws Exception {
         assertThat(extractBrand("2021 TARRACO XCELLENCE 4x4 FACELIFT-mozna vymena,splatky", "tiguan kodiaq skoda"))
                 .isEqualTo("SEAT");
+        assertThat(extractBrand("Seat Tarraco / Skoda Kodiaq 2.0 TDi DSG bez investic", ""))
+                .isEqualTo("SEAT");
+        assertThat(extractBrand("Skoda Kodiaq / Seat Tarraco 2.0 TDi DSG bez investic", ""))
+                .isEqualTo("SKODA");
         assertThat(extractBrand("SEAT ALHAMBRA 2.0TDI 103KW 7MIST TAZNE Z.", "volkswagen sharan"))
                 .isEqualTo("SEAT");
         assertThat(extractBrand("PRODAM MAZDU 6 GH VE VYBORNEM STAVU", ""))
