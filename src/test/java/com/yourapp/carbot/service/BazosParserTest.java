@@ -365,8 +365,11 @@ class BazosParserTest {
         assertThat(looksLikelyFalseAutomatic("PEUGEOT 207 1.4 i BENZIN 70 kW NOVE ROZVODY", "AUTOMATIC")).isTrue();
         assertThat(looksLikelyFalseAutomatic("Peugeot 308 1.6HDI 88KW 9/2015 LED NAVIGACE P. SERVIS", "AUTOMATIC")).isTrue();
         assertThat(looksLikelyFalseAutomatic("Octavia III 2,0TDi 110KW Edition + NAVI tempomat ALU STK", "AUTOMATIC")).isTrue();
+        assertThat(looksLikelyFalseAutomatic("naftova Skoda Octavia 3 SCOUT 2.0 Tdi 135kW 136000km 4x4", "AUTOMATIC")).isTrue();
         assertThat(looksLikelyFalseAutomatic("Skoda Octavia IV 2.0TDI 110KW DSG•2021•STYLE", "AUTOMATIC")).isFalse();
         assertThat(looksLikelyFalseAutomatic("Fabia, 1.2 TSI Style Combi TAZNE, Aut. klima, Vyhr. sedadla", "AUTOMATIC")).isTrue();
+        assertThat(looksLikelyFalseAutomatic("Skoda Rapid, 1.2 TSI SPACEBACK Sport Aut. klima, Vyhr. sedadla", "AUTOMATIC")).isTrue();
+        assertThat(looksLikelyFalseAutomatic("SKODA YETI 2.0 Tdi 81 kW 4x4 ALU KOLA, TAZNE, KLIMA", "AUTOMATIC")).isTrue();
         assertThat(looksLikelyFalseAutomatic("Dacia Duster 1.6 16V - BENZIN - 4X4", "AUTOMATIC")).isTrue();
         assertThat(looksLikelyFalseAutomatic("Dacia Duster TCe 150 EDC, TOP, DPH", "AUTOMATIC")).isFalse();
         assertThat(looksLikelyFalseAutomatic("Dacia Sandero Stepway 1.0i 67KW LPG Keyless Vyhrev Kamera", "AUTOMATIC")).isTrue();

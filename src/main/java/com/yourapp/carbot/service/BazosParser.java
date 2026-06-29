@@ -1623,7 +1623,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " peugeot 308 ", " 308 ",
                 " opel zafira ", " opel astra ", " opel insignia ", " crossland ",
                 " renault clio ", " renault megane ", " renault kangoo ",
-                " octavia iii ", " oktavia ", " fabia ", " fabia, ",
+                " octavia iii ", " octavia 3 ", " oktavia ", " fabia ", " fabia, ", " rapid ", " rapid, ", " yeti ",
                 " duster ", " sandero ", " stepway ", " logan ", " jogger ", " dokker ", " panda ", " berlingo ",
                 " avensis ", " auris ", " auris, ", " aoris ", " aoris, ", " golf ");
     }
