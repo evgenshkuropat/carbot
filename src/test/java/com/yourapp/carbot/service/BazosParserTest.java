@@ -116,6 +116,8 @@ class BazosParserTest {
         assertThat(extractFuelType("Prodam Toyota Mirai Executive")).isEqualTo("ELECTRIC");
         assertThat(extractFuelType("VW Passat B8 Variant GTE 1.4TSI 160kW DSG - zaruka Autodraft")).isEqualTo("PLUGIN_HYBRID");
         assertThat(extractFuelType("VW Golf 8 GTE 1.4 TSI Hybrid 150kW DSG - zaruka Autodraft")).isEqualTo("PLUGIN_HYBRID");
+        assertThat(extractFuelType("Skoda Octavia IV 2.0TDI 110KW DSG 2021 STYLE")).isEqualTo("DIESEL");
+        assertThat(extractFuelType("Skoda Superb IV 2.0TDI L&K 110kW CZ 2025")).isEqualTo("DIESEL");
         assertThat(extractFuelType("Dacia Lodgy MPV r.2022 1,3benz 96kw 1.majitel")).isEqualTo("PETROL");
         assertThat(extractFuelType("Pekna Dacia Logan MCV 1.2...16V")).isEqualTo("PETROL");
         assertThat(extractFuelType("Citroen C3 1.2 60 kw r.v 2016 115000 km")).isEqualTo("PETROL");
@@ -178,6 +180,7 @@ class BazosParserTest {
         assertThat(extractCarType("Prodam Suzuki S X4 1.6", "", "")).isEqualTo("SUV");
         assertThat(extractCarType("Suzuki Virara 1.6 Ddis", "", "")).isEqualTo("SUV");
         assertThat(extractCarType("Suzuki Alto,1.0i,50kw", "", "")).isEqualTo("HATCHBACK");
+        assertThat(extractCarType("Suzuki Kizashi 4X4", "", "")).isEqualTo("SEDAN");
         assertThat(extractCarType("Audi S3", "", "")).isEqualTo("HATCHBACK");
         assertThat(extractCarType("Alfa Romeo 75 2.0 Twinspark", "", "")).isEqualTo("SEDAN");
         assertThat(extractCarType("AR 159 1.75TBi", "", "")).isEqualTo("SEDAN");
@@ -354,6 +357,7 @@ class BazosParserTest {
         assertThat(extractTransmission("BMW 750 XDRIVE 400 PS LASER LIGHT M-PACK")).isEqualTo("AUTOMATIC");
         assertThat(extractTransmission("Dacia Duster TCe 150 EDC, TOP, DPH")).isEqualTo("AUTOMATIC");
         assertThat(extractTransmission("Skoda Octavia 4 combi RS 2.0TDi,147kW,DSG,4x4")).isEqualTo("AUTOMATIC");
+        assertThat(extractTransmission("Skoda Octavia IV 2.0TDI 110KW DSG•2021•STYLE")).isEqualTo("AUTOMATIC");
         assertThat(extractTransmission("Ĺ koda Octavia 4 RS combi 2.0TSi,180kW,DSG,Canton,22TKM"))
                 .isEqualTo("AUTOMATIC");
         assertThat(extractTransmission("Ĺ koda Octavia 4 combi RS 2.0TDi,147kW,DSG,TaĹľnĂ©,Panorama,DPH"))
@@ -361,6 +365,8 @@ class BazosParserTest {
         assertThat(looksLikelyFalseAutomatic("PEUGEOT 207 1.4 i BENZIN 70 kW NOVE ROZVODY", "AUTOMATIC")).isTrue();
         assertThat(looksLikelyFalseAutomatic("Peugeot 308 1.6HDI 88KW 9/2015 LED NAVIGACE P. SERVIS", "AUTOMATIC")).isTrue();
         assertThat(looksLikelyFalseAutomatic("Octavia III 2,0TDi 110KW Edition + NAVI tempomat ALU STK", "AUTOMATIC")).isTrue();
+        assertThat(looksLikelyFalseAutomatic("Skoda Octavia IV 2.0TDI 110KW DSG•2021•STYLE", "AUTOMATIC")).isFalse();
+        assertThat(looksLikelyFalseAutomatic("Fabia, 1.2 TSI Style Combi TAZNE, Aut. klima, Vyhr. sedadla", "AUTOMATIC")).isTrue();
         assertThat(looksLikelyFalseAutomatic("Dacia Duster 1.6 16V - BENZIN - 4X4", "AUTOMATIC")).isTrue();
         assertThat(looksLikelyFalseAutomatic("Dacia Duster TCe 150 EDC, TOP, DPH", "AUTOMATIC")).isFalse();
         assertThat(looksLikelyFalseAutomatic("Dacia Sandero Stepway 1.0i 67KW LPG Keyless Vyhrev Kamera", "AUTOMATIC")).isTrue();
@@ -415,6 +421,12 @@ class BazosParserTest {
                 "Scirocco 2.0 TSI DSG 155kw r 2012",
                 "",
                 "https://auto.bazos.cz/inzerat/220075516/scirocco-20-tsi-dsg-155kw-r-2012.php",
+                ""))
+                .isFalse();
+        assertThat(looksNonCarListing(
+                "Suzuki Kizashi 4X4",
+                "",
+                "https://auto.bazos.cz/inzerat/220579760/suzuki-kizashi-4x4.php",
                 ""))
                 .isFalse();
     }

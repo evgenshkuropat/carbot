@@ -1050,6 +1050,17 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             return "PLUGIN_HYBRID";
         }
 
+        if (containsAny(source,
+                " diesel ", " nafta ",
+                " tdi ", " tdci ", " cdi ", " crdi ", " hdi ", " dci ",
+                " jtd ", " jtdm ", " mjt ", " mjt2 ", " multijet ", " multi jet ", " bluehdi ", " bluetec ", " cdti ",
+                " dtec ", " d-tec ", " tddi ", " ddis ",
+                " d4d ", " d-4d ", " did ", " di-d ", " di d ", " td4 ", " ecoblue ", " crd ")
+                || Pattern.compile(".*(?:\\dtdi|tdi\\d|tdci|crdi|\\dhdi|hdi\\d|\\ddci|dci\\d|jtd|jtdm|mjt|mjt2|multijet|bluehdi|cdti|dtec|\\dddis|ddis\\d|tddi|d4d|ecoblue).*")
+                .matcher(compact).matches()) {
+            return "DIESEL";
+        }
+
         if ((containsAny(source, " volvo ", " xc60 ", " xc90 ", " v60 ", " v90 ", " s60 ", " s90 ")
                 || compact.matches(".*(?:volvo|xc60|xc90|v60|v90|s60|s90).*"))
                 && (containsAny(source, " t8 ", " t 8 ") || compact.contains("t8"))) {
@@ -1588,9 +1599,18 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         }
 
         String source = " " + normalizeText(title).toLowerCase(Locale.ROOT) + " ";
-        boolean hasExplicitAutomatic = containsAny(source, " selespeed ", " automat ", " automaticka ", " automatický ",
-                " automatic ", " aut. ", " a/t ", " at6 ", " at8 ", " at/8 ", " dsg ", " dct ", " cvt ", " edc ");
-        if (hasExplicitAutomatic || Pattern.compile("(?i)\\bedc\\b").matcher(source).find()) {
+        String tokens = " " + normalizeText(title).toLowerCase(Locale.ROOT)
+                .replaceAll("[^a-z0-9]+", " ")
+                .replaceAll("\\s+", " ")
+                .trim() + " ";
+        if (containsAny(tokens, " dsg ", " dct ", " cvt ", " edc ")) {
+            return false;
+        }
+
+        boolean hasExplicitAutomatic = containsAny(source,
+                " selespeed ", " automat ", " automaticka ", " automatic ",
+                " a/t ", " at6 ", " at8 ", " at/8 ");
+        if (hasExplicitAutomatic) {
             return false;
         }
 
@@ -1603,11 +1623,10 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " peugeot 308 ", " 308 ",
                 " opel zafira ", " opel astra ", " opel insignia ", " crossland ",
                 " renault clio ", " renault megane ", " renault kangoo ",
-                " octavia ", " oktavia ",
+                " octavia iii ", " oktavia ", " fabia ", " fabia, ",
                 " duster ", " sandero ", " stepway ", " logan ", " jogger ", " dokker ", " panda ", " berlingo ",
                 " avensis ", " auris ", " auris, ", " aoris ", " aoris, ", " golf ");
     }
-
     private boolean looksLikelyFalseManual(String title, String transmission) {
         if (!"MANUAL".equals(transmission)) {
             return false;
@@ -2057,7 +2076,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             return "MINIVAN";
         }
 
-        if (containsAny(titleSource, " corolla sedan ", " corolla sd ", " camry ")) {
+        if (containsAny(titleSource, " corolla sedan ", " corolla sd ", " camry ", " kizashi ")) {
             return "SEDAN";
         }
 
@@ -4147,6 +4166,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " evoque ",
                 " cherokee ",
                 " grand cherokee ",
+                " kizashi ",
                 " forester ",
                 " outback ",
                 " xv ",
