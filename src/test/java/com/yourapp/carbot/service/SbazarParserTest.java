@@ -62,6 +62,7 @@ class SbazarParserTest {
         assertThat(resolveFuelType("ford fiesta st atmosfera 150ps", "")).isEqualTo("PETROL");
         assertThat(resolveFuelType("renault clio 1,2 54kw limited navigace", "")).isEqualTo("PETROL");
         assertThat(resolveFuelType("audi a6 c4 1.8 5v 160000km top stav", "")).isEqualTo("PETROL");
+        assertThat(resolveFuelType("audi a8 d3 long 4.2 mpi 246kw", "")).isEqualTo("PETROL");
         assertThat(resolveFuelType("ford focus st 2.0 184kw", "")).isEqualTo("PETROL");
         assertThat(resolveFuelType("opel meriva 1.4 88 kw klima servis", "")).isEqualTo("PETROL");
         assertThat(resolveFuelType("peugeot 2008 e-2008 100kw 136hp", "")).isEqualTo("ELECTRIC");
@@ -160,6 +161,7 @@ class SbazarParserTest {
         assertThat(resolveCarType("suzuki splash 1.0i 48kw r.5/2011", "")).isEqualTo("HATCHBACK");
         assertThat(resolveCarType("mitsubishi eclipse cross 1,5 t-gdi 120kw cr", "")).isEqualTo("SUV");
         assertThat(resolveCarType("toyota proace city 1.5 d-4d 100 active swb cr", "")).isEqualTo("MINIVAN");
+        assertThat(resolveCarType("toyota verso 1,8i comfort benzin 108kw", "")).isEqualTo("MINIVAN");
         assertThat(resolveCarType("ostatni ktm x-bow gt-xr 2024 nove", "")).isEqualTo("COUPE");
         assertThat(resolveCarType("saab 9-3 1,9 tid 110kw automat 2xkola", "")).isEqualTo("SEDAN");
         assertThat(resolveCarType("vw id 3 pro performance rv.2024", "")).isEqualTo("HATCHBACK");
