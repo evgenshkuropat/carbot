@@ -138,6 +138,7 @@ class BazosParserTest {
         assertThat(extractFuelType("XC90 T8")).isEqualTo("PLUGIN_HYBRID");
         assertThat(extractFuelType("S90, 2,0T,T8,408koni,1.maj.odpocet DPH")).isEqualTo("PLUGIN_HYBRID");
         assertThat(extractFuelType("Alfa Romeo GIULIA 2016 2.2,132kW Quadrifoglio body kit")).isEqualTo("DIESEL");
+        assertThat(extractFuelType("Alfa Romeo Stelvio - VELOCE TI,2.2 154KW DPH")).isEqualTo("DIESEL");
         assertThat(extractFuelType("BMW M340D DPH")).isEqualTo("DIESEL");
         assertThat(preferExplicitTitleFuelType("VW T6.1 CALIFORNIA BEACH/110KW/DSG/2020/VIRTUAL/Kuchyn/tazne",
                 "PLUGIN_HYBRID")).isNull();
@@ -188,7 +189,9 @@ class BazosParserTest {
         assertThat(extractCarType("Audi S3", "", "")).isEqualTo("HATCHBACK");
         assertThat(extractCarType("Alfa Romeo 75 2.0 Twinspark", "", "")).isEqualTo("SEDAN");
         assertThat(extractCarType("AR 159 1.75TBi", "", "")).isEqualTo("SEDAN");
+        assertThat(extractCarType("Alfa 159Ti 2.4 JTDm 154kw", "", "")).isEqualTo("SEDAN");
         assertThat(extractCarType("Alfa Romeo 156 SW 2.4 JTD 20v TI", "", "")).isEqualTo("WAGON");
+        assertThat(extractCarType("Alfa Romeo Guilietta", "", "")).isEqualTo("HATCHBACK");
         assertThat(extractCarType("Volvo C30 T5- Vyjimecna motorizace 227HP", "", "")).isEqualTo("HATCHBACK");
         assertThat(extractCarType("Honda Accord VIII Tourer 2.2 i-DTEC 110 kW", "", "")).isEqualTo("WAGON");
         assertThat(extractCarType("Hyundai i30N Performance", "", "")).isEqualTo("HATCHBACK");
@@ -370,6 +373,10 @@ class BazosParserTest {
         assertThat(looksLikelyFalseAutomatic("Peugeot 308 1.6HDI 88KW 9/2015 LED NAVIGACE P. SERVIS", "AUTOMATIC")).isTrue();
         assertThat(looksLikelyFalseAutomatic("Octavia III 2,0TDi 110KW Edition + NAVI tempomat ALU STK", "AUTOMATIC")).isTrue();
         assertThat(looksLikelyFalseAutomatic("naftova Skoda Octavia 3 SCOUT 2.0 Tdi 135kW 136000km 4x4", "AUTOMATIC")).isTrue();
+        assertThat(looksLikelyFalseAutomatic("Alfa Romeo GTV 2.0 V6 Turbo - vyjimecny stav", "AUTOMATIC")).isTrue();
+        assertThat(looksLikelyFalseAutomatic("Alfa Romeo Brera 2.4jtd 147kw", "AUTOMATIC")).isTrue();
+        assertThat(looksLikelyFalseAutomatic("Alfa Romeo GT Coupe 1.8 103kw,Rok 2007,176tkm,Klima,Nova STK", "AUTOMATIC")).isTrue();
+        assertThat(looksLikelyFalseAutomatic("Alfa Romeo Giulia 2.2 jTDm Super Business plus Aut 8st.", "AUTOMATIC")).isFalse();
         assertThat(looksLikelyFalseAutomatic("Skoda Octavia IV 2.0TDI 110KW DSG•2021•STYLE", "AUTOMATIC")).isFalse();
         assertThat(looksLikelyFalseAutomatic("Fabia, 1.2 TSI Style Combi TAZNE, Aut. klima, Vyhr. sedadla", "AUTOMATIC")).isTrue();
         assertThat(looksLikelyFalseAutomatic("Skoda Rapid, 1.2 TSI SPACEBACK Sport Aut. klima, Vyhr. sedadla", "AUTOMATIC")).isTrue();

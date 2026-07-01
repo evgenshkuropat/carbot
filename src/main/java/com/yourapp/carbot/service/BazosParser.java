@@ -1185,6 +1185,11 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             return "DIESEL";
         }
 
+        if (containsAny(source, " alfa romeo stelvio ", " stelvio ")
+                && Pattern.compile("(?i)\\b2[\\.,]2\\b").matcher(source).find()) {
+            return "DIESEL";
+        }
+
         if (containsAny(source, " bmw m340d ", " m340d ", " m340 d ")) {
             return "DIESEL";
         }
@@ -1615,7 +1620,8 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         }
 
         return containsAny(source, " twin spark ", " twinspark ", " 6ti rychl ", " 6ti rychlost ", " 6 rychl ", " 6 rychlost ",
-                " alfa romeo 159 ", " alfa 159 ", " alfa romeo 147 ", " alfa 147 ", " giulietta ", " giuletta ", " alfa romeo sportwagon ",
+                " alfa romeo 159 ", " alfa 159 ", " alfa romeo 147 ", " alfa 147 ", " giulietta ", " giuletta ", " guilietta ",
+                " gtv ", " brera ", " alfa romeo gt ", " gt coupe ", " alfa romeo sportwagon ",
                 " accord ", " civic ", " crx ", " delsol ", " cr-v ", " cr v ", " crv ",
                 " peugeot 107 ", " peugeot 206 ", " peugeot 207 ", " peugeot 208 ", " peugeot 301 ",
                 " peugeot 2008 ", " peugeot 407 ", " partner tepee ",
@@ -2362,8 +2368,8 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             return "WAGON";
         }
 
-        if (containsAny(titleSource, " giulia ", " alfa 75 ", " romeo 75 ", " alfa 156 ", " romeo 156 ", " alfa 159 ", " romeo 159 ",
-                " ar 159 ", " alfa 166 ", " romeo 166 ")) {
+        if (containsAny(titleSource, " giulia ", " alfa 75 ", " romeo 75 ", " alfa 156 ", " romeo 156 ", " alfa 159 ", " alfa 159ti ", " romeo 159 ",
+                " ar 159 ", " 159ti ", " alfa 166 ", " romeo 166 ")) {
             return "SEDAN";
         }
 
@@ -2375,7 +2381,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             return "COUPE";
         }
 
-        if (containsAny(titleSource, " giulietta ", " giuletta ", " mito ", " alfa 145 ", " romeo 145 ", " alfa 146 ", " romeo 146 ")) {
+        if (containsAny(titleSource, " giulietta ", " giuletta ", " guilietta ", " mito ", " alfa 145 ", " romeo 145 ", " alfa 146 ", " romeo 146 ")) {
             return "HATCHBACK";
         }
 
