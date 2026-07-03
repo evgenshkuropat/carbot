@@ -1050,6 +1050,14 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             return "PLUGIN_HYBRID";
         }
 
+        if ((containsAny(source, " octavia ", " superb ", " skoda ")
+                || compact.contains("skoda"))
+                && containsAny(source, " iv ")
+                && !containsAny(source, " tdi ", " diesel ", " nafta ")
+                && !compact.contains("tdi")) {
+            return "PLUGIN_HYBRID";
+        }
+
         if (containsAny(source,
                 " diesel ", " nafta ",
                 " tdi ", " tdci ", " cdi ", " crdi ", " hdi ", " dci ",
@@ -1629,9 +1637,10 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " peugeot 308 ", " 308 ",
                 " opel zafira ", " opel astra ", " opel insignia ", " crossland ",
                 " renault clio ", " renault megane ", " renault kangoo ",
+                " seat leon ", " leon st ", " alhambra ",
                 " octavia iii ", " octavia 3 ", " oktavia ", " fabia ", " fabia, ", " rapid ", " rapid, ", " yeti ",
                 " duster ", " sandero ", " stepway ", " logan ", " jogger ", " dokker ", " panda ", " berlingo ",
-                " avensis ", " auris ", " auris, ", " aoris ", " aoris, ", " golf ");
+                " avensis ", " auris ", " auris, ", " aoris ", " aoris, ", " golf ", " samurai ");
     }
     private boolean looksLikelyFalseManual(String title, String transmission) {
         if (!"MANUAL".equals(transmission)) {
@@ -2159,7 +2168,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             return "SEDAN";
         }
 
-        if (containsAny(titleSource, " ibiza ", " alto ", " twingo ", " tvingo ")) {
+        if (containsAny(titleSource, " ibiza ", " alto ", " splash ", " twingo ", " tvingo ")) {
             return "HATCHBACK";
         }
 
@@ -2797,6 +2806,9 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
 
         String urlBrand = extractBrandFromUrl(urlLower);
         if (urlBrand != null && !titleBrand.equals(urlBrand)) {
+            if (urlContainsBrand(urlLower, titleBrand)) {
+                return false;
+            }
             if (("ABARTH".equals(titleBrand) && "FIAT".equals(urlBrand))
                     || ("FIAT".equals(titleBrand) && "ABARTH".equals(urlBrand))) {
                 return false;
@@ -2805,17 +2817,42 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         }
 
         return switch (titleBrand) {
-            case "SKODA" -> containsAny(urlLower, "audi-", "bmw-", "mercedes-", "dacia-", "ford-", "toyota-");
-            case "DACIA" -> containsAny(urlLower, "skoda-", "audi-", "bmw-", "mercedes-", "volkswagen-", "seat-");
-            case "BMW" -> containsAny(urlLower, "skoda-", "dacia-", "seat-", "renault-", "volkswagen-", "vw-");
-            case "AUDI" -> containsAny(urlLower, "skoda-", "dacia-", "seat-", "renault-", "volkswagen-", "vw-", "bmw-");
-            case "MERCEDES" -> containsAny(urlLower, "skoda-", "seat-", "dacia-", "ford-");
-            case "SEAT" -> containsAny(urlLower, "dacia-", "mercedes-", "bmw-", "audi-", "skoda-", "opel-");
-            case "VOLKSWAGEN" -> containsAny(urlLower, "skoda-", "audi-", "bmw-", "mercedes-", "dacia-", "seat-", "cupra-");
-            case "VOLVO" -> containsAny(urlLower, "mercedes-", "mb-", "bmw-", "audi-", "volkswagen-", "vw-", "skoda-");
-            case "ALFA_ROMEO" -> containsAny(urlLower, "peugeot-", "boxer-", "citroen-", "fiat-", "ford-", "renault-", "skoda-", "volkswagen-");
-            case "TOYOTA" -> containsAny(urlLower, "volkswagen-", "vw-", "sharan-", "passat-", "golf-", "skoda-", "audi-", "bmw-");
-            case "PEUGEOT" -> containsAny(urlLower, "alfa-romeo-", "audi-", "bmw-", "skoda-", "volkswagen-");
+            case "SKODA" -> !urlContainsBrand(urlLower, titleBrand) && containsAny(urlLower, "audi-", "bmw-", "mercedes-", "dacia-", "ford-", "toyota-");
+            case "DACIA" -> !urlContainsBrand(urlLower, titleBrand) && containsAny(urlLower, "skoda-", "audi-", "bmw-", "mercedes-", "volkswagen-", "seat-");
+            case "BMW" -> !urlContainsBrand(urlLower, titleBrand) && containsAny(urlLower, "skoda-", "dacia-", "seat-", "renault-", "volkswagen-", "vw-");
+            case "AUDI" -> !urlContainsBrand(urlLower, titleBrand) && containsAny(urlLower, "skoda-", "dacia-", "seat-", "renault-", "volkswagen-", "vw-", "bmw-");
+            case "MERCEDES" -> !urlContainsBrand(urlLower, titleBrand) && containsAny(urlLower, "skoda-", "seat-", "dacia-", "ford-");
+            case "SEAT" -> !urlContainsBrand(urlLower, titleBrand) && containsAny(urlLower, "dacia-", "mercedes-", "bmw-", "audi-", "skoda-", "opel-");
+            case "VOLKSWAGEN" -> !urlContainsBrand(urlLower, titleBrand) && containsAny(urlLower, "skoda-", "audi-", "bmw-", "mercedes-", "dacia-", "seat-", "cupra-");
+            case "VOLVO" -> !urlContainsBrand(urlLower, titleBrand) && containsAny(urlLower, "mercedes-", "mb-", "bmw-", "audi-", "volkswagen-", "vw-", "skoda-");
+            case "ALFA_ROMEO" -> !urlContainsBrand(urlLower, titleBrand) && containsAny(urlLower, "peugeot-", "boxer-", "citroen-", "fiat-", "ford-", "renault-", "skoda-", "volkswagen-");
+            case "TOYOTA" -> !urlContainsBrand(urlLower, titleBrand) && containsAny(urlLower, "volkswagen-", "vw-", "sharan-", "passat-", "golf-", "skoda-", "audi-", "bmw-");
+            case "PEUGEOT" -> !urlContainsBrand(urlLower, titleBrand) && containsAny(urlLower, "alfa-romeo-", "audi-", "bmw-", "skoda-", "volkswagen-");
+            default -> false;
+        };
+    }
+
+    private boolean urlContainsBrand(String rawUrl, String brand) {
+        String url = "-" + normalizeText(rawUrl).toLowerCase(Locale.ROOT)
+                .replace('_', '-')
+                .replaceAll("[^a-z0-9]+", "-") + "-";
+
+        return switch (brand) {
+            case "SKODA" -> url.contains("-skoda-");
+            case "VOLKSWAGEN" -> url.contains("-volkswagen-") || url.contains("-vw-");
+            case "AUDI" -> url.contains("-audi-");
+            case "BMW" -> url.contains("-bmw-");
+            case "MERCEDES" -> url.contains("-mercedes-") || url.contains("-mercedes-benz-") || url.contains("-mb-");
+            case "VOLVO" -> url.contains("-volvo-");
+            case "TOYOTA" -> url.contains("-toyota-");
+            case "FORD" -> url.contains("-ford-");
+            case "SEAT" -> url.contains("-seat-");
+            case "PEUGEOT" -> url.contains("-peugeot-");
+            case "OPEL" -> url.contains("-opel-");
+            case "DACIA" -> url.contains("-dacia-");
+            case "FIAT" -> url.contains("-fiat-");
+            case "ABARTH" -> url.contains("-abarth-");
+            case "ALFA_ROMEO" -> url.contains("-alfa-romeo-");
             default -> false;
         };
     }

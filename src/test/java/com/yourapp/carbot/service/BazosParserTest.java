@@ -122,6 +122,7 @@ class BazosParserTest {
         assertThat(extractFuelType("VW Golf 8 GTE 1.4 TSI Hybrid 150kW DSG - zaruka Autodraft")).isEqualTo("PLUGIN_HYBRID");
         assertThat(extractFuelType("Skoda Octavia IV 2.0TDI 110KW DSG 2021 STYLE")).isEqualTo("DIESEL");
         assertThat(extractFuelType("Skoda Superb IV 2.0TDI L&K 110kW CZ 2025")).isEqualTo("DIESEL");
+        assertThat(extractFuelType("Skoda Octavia 4 1.4TSI iV 150kW DSG Sport")).isEqualTo("PLUGIN_HYBRID");
         assertThat(extractFuelType("Dacia Lodgy MPV r.2022 1,3benz 96kw 1.majitel")).isEqualTo("PETROL");
         assertThat(extractFuelType("Pekna Dacia Logan MCV 1.2...16V")).isEqualTo("PETROL");
         assertThat(extractFuelType("Citroen C3 1.2 60 kw r.v 2016 115000 km")).isEqualTo("PETROL");
@@ -181,6 +182,7 @@ class BazosParserTest {
         assertThat(extractCarType("suzuki jimny 4x4", "", "")).isEqualTo("SUV");
         assertThat(extractCarType("Suzuki Samurai 1.3", "", "")).isEqualTo("SUV");
         assertThat(extractCarType("Suzuki Ignis 1.2 Spajacie z. za karavan, Bluetooth", "", "")).isEqualTo("SUV");
+        assertThat(extractCarType("SUZUKI SPLASH 1,2 AUTOMAT NOVA STK", "", "")).isEqualTo("HATCHBACK");
         assertThat(extractCarType("Prodam Suzuki sx4,1.6", "", "")).isEqualTo("SUV");
         assertThat(extractCarType("Prodam Suzuki S X4 1.6", "", "")).isEqualTo("SUV");
         assertThat(extractCarType("Suzuki Virara 1.6 Ddis", "", "")).isEqualTo("SUV");
@@ -395,6 +397,12 @@ class BazosParserTest {
         assertThat(looksLikelyFalseAutomatic("Peugeot Partner Tepee 1,6 Hdi 8v 68kw", "AUTOMATIC")).isTrue();
         assertThat(looksLikelyFalseAutomatic("Renault Clio IV 2013, 1.2 16V", "AUTOMATIC")).isTrue();
         assertThat(looksLikelyFalseAutomatic("Citroen Berlingo 1.6 HDI 84KW", "AUTOMATIC")).isTrue();
+        assertThat(looksLikelyFalseAutomatic("Seat Leon ST 1.4 TSI 92 kW FR", "AUTOMATIC")).isTrue();
+        assertThat(looksLikelyFalseAutomatic("Seat Leon 1.4 TSI 92 kW", "AUTOMATIC")).isTrue();
+        assertThat(looksLikelyFalseAutomatic("SEAT LEON FR 2.0 TDI 110KW DSG", "AUTOMATIC")).isFalse();
+        assertThat(looksLikelyFalseAutomatic("Seat Alhambra 2.0tdi 103kw Style 2012", "AUTOMATIC")).isTrue();
+        assertThat(looksLikelyFalseAutomatic("Seat Alhambra 2.0tdi 103kw DSG", "AUTOMATIC")).isFalse();
+        assertThat(looksLikelyFalseAutomatic("Suzuki Samurai 1.9d. SLEVA", "AUTOMATIC")).isTrue();
         assertThat(correctLikelyNoisyFuel("Toyota Sienna AWD 2017 7 mist 8AT tazne", "DIESEL")).isEqualTo("PETROL");
         assertThat(correctLikelyNoisyFuel("Dacia Sandero Stepway", "DIESEL")).isNull();
         assertThat(correctLikelyNoisyFuel("Navara D22 Kingcab 98kw", "PETROL")).isNull();
@@ -500,6 +508,10 @@ class BazosParserTest {
         assertThat(looksBrandMismatch(
                 "Fiat 500 ABARTH UVEDENA CENA BEZ DPH MOZNE SPLATKY",
                 "https://auto.bazos.cz/inzerat/220047180/fiat-500-abarth.php"))
+                .isFalse();
+        assertThat(looksBrandMismatch(
+                "Seat Tarraco / Skoda Kodiaq 2.0 TDi DSG bez investic",
+                "https://auto.bazos.cz/inzerat/220352139/seat-tarraco-skoda-kodiaq-20-tdi-dsg-bez-investic.php"))
                 .isFalse();
         assertThat(looksModelUrlMismatch(
                 "RENAULT TWINGO 1,2 16v CTYRVAL",
