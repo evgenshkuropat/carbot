@@ -188,6 +188,18 @@ class SautoParserTest {
                 .isEqualTo("Plze\u0148");
     }
 
+    @Test
+    void repairsSautoMojibakeAfterWhitespaceNormalizationFromLogs() throws Exception {
+        assertThat(repairMojibake("\u0139 koda Felicia 1.3, \u00C4\u015AR,1.maj, Ta\u0139\u013En\u0102\u00A9"))
+                .isEqualTo("\u0160koda Felicia 1.3, \u010CR,1.maj, Ta\u017En\u00E9");
+        assertThat(repairMojibake("Opel Meriva Opel Meriva, 1.6 i, Nov\u0102\u02C7 STK"))
+                .isEqualTo("Opel Meriva Opel Meriva, 1.6 i, Nov\u00E1 STK");
+        assertThat(repairMojibake("Peugeot 807 2.0 HDI,AC,v\u0102\u00BDh\u0139\u2122ev sed."))
+                .isEqualTo("Peugeot 807 2.0 HDI,AC,v\u00FDh\u0159ev sed.");
+        assertThat(repairMojibake("Plze\u0139\u0088"))
+                .isEqualTo("Plze\u0148");
+    }
+
     private String extractCarType(String title, String text, String url) throws Exception {
         Method method = SautoParser.class.getDeclaredMethod("extractCarType", String.class, String.class, String.class);
         method.setAccessible(true);
