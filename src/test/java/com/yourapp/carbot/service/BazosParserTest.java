@@ -26,6 +26,8 @@ class BazosParserTest {
                 .isEqualTo("VOLKSWAGEN");
         assertThat(extractBrand("Toyata Yaris 1.5 16V, Edice Y20, 41 tis km", ""))
                 .isEqualTo("TOYOTA");
+        assertThat(extractBrand("C-Hr 1.8 hybrid", ""))
+                .isEqualTo("TOYOTA");
         assertThat(extractBrand("C3, 1,4i, 54 kw", "")).isEqualTo("CITROEN");
         assertThat(extractBrand("Abarth 500 Turbo Cabrio 107 kW 2018 CZ puvod", "")).isEqualTo("ABARTH");
         assertThat(extractBrand("Prodam Fiat Multipla 1.6/16V CNG/2007/6mist", "")).isEqualTo("FIAT");
@@ -164,6 +166,7 @@ class BazosParserTest {
         assertThat(extractFuelType("Lexus RX 400h")).isEqualTo("HYBRID");
         assertThat(looksAutomaticHybridTitle("Lexus RX 400h", "HYBRID")).isTrue();
         assertThat(extractFuelType("Toyota Aygo")).isEqualTo("PETROL");
+        assertThat(looksAutomaticHybridTitle("Toyota Auris 1,8HSD 73kW", "HYBRID")).isTrue();
         assertThat(extractFuelType("Volvo C30 T5- Vyjimecna motorizace 227HP")).isEqualTo("PETROL");
         assertThat(extractFuelType("Civic 1.8l 103kw GT")).isEqualTo("PETROL");
     }
@@ -287,6 +290,7 @@ class BazosParserTest {
         assertThat(extractCarType("Toyota Sienna AWD 2017 7 mist 8AT tazne", "", "")).isEqualTo("MINIVAN");
         assertThat(extractCarType("Lexus IS 220d", "", "")).isEqualTo("SEDAN");
         assertThat(extractCarType("Toyota Starlet", "", "")).isEqualTo("HATCHBACK");
+        assertThat(extractCarType("Toyota bZ4X 2023 - 19.000km / odpocet DPH", "", "")).isEqualTo("SUV");
         assertThat(extractCarType("Hyundai SantaFe 4 x 4", "", "")).isEqualTo("SUV");
         assertThat(extractCarType("Hyundai IX 20", "", "")).isEqualTo("MINIVAN");
         assertThat(extractCarType("Hyundai Staria 2,2 CRD 149 Kw", "", "")).isEqualTo("MINIVAN");
@@ -408,6 +412,7 @@ class BazosParserTest {
         assertThat(looksLikelyFalseAutomatic("Suzuki Samurai 1.9d. SLEVA", "AUTOMATIC")).isTrue();
         assertThat(looksLikelyFalseAutomatic("Vitara 1.6VVT 88kw 4x4 AllGrip Kamera, Tazne, 2016 nove v CR", "AUTOMATIC")).isTrue();
         assertThat(looksLikelyFalseAutomatic("Suzuki Vitara 1.4 4x4 AUTOMAT ALLGRIP SPORT-KAMERA-LED", "AUTOMATIC")).isFalse();
+        assertThat(looksLikelyFalseAutomatic("SUZUKI VITARA 1.6 VVT 4X4 ALLGRIP AUTOMAT-KAMERA-TAZNE 17", "AUTOMATIC")).isFalse();
         assertThat(looksLikelyFalseAutomatic("Suzuki SX4 1.9 DDiS 88kW 4x4 klima Nova STK", "AUTOMATIC")).isTrue();
         assertThat(correctLikelyNoisyFuel("Toyota Sienna AWD 2017 7 mist 8AT tazne", "DIESEL")).isEqualTo("PETROL");
         assertThat(correctLikelyNoisyFuel("Dacia Sandero Stepway", "DIESEL")).isNull();
@@ -455,6 +460,12 @@ class BazosParserTest {
                 "Suzuki Kizashi 4X4",
                 "",
                 "https://auto.bazos.cz/inzerat/220579760/suzuki-kizashi-4x4.php",
+                ""))
+                .isFalse();
+        assertThat(looksNonCarListing(
+                "C-Hr 1.8 hybrid",
+                "",
+                "https://auto.bazos.cz/inzerat/220804547/c-hr-18-hybrid.php",
                 ""))
                 .isFalse();
     }
