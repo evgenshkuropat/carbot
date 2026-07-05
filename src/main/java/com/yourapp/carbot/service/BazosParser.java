@@ -2150,7 +2150,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             return "SUV";
         }
 
-        if (containsAny(titleSource, " s4 quattro ", " audi s4 ")) {
+        if (containsAny(titleSource, " s4 quattro ", " audi s4 ", " toledo ")) {
             return "SEDAN";
         }
 
@@ -3868,7 +3868,19 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 || cleanTitleAscii.equals("vw")
                 || cleanTitleAscii.equals("toyota")
                 || cleanTitleAscii.equals("skoda")
+                || cleanTitleAscii.equals("seat")
+                || cleanTitleAscii.equals("cupra")
+                || cleanTitleAscii.equals("suzuki")
                 || cleanTitleAscii.equals("opel")
+                || cleanTitleAscii.equals("peugeot")
+                || cleanTitleAscii.equals("volvo")
+                || cleanTitleAscii.equals("fiat")
+                || cleanTitleAscii.equals("dacia")
+                || cleanTitleAscii.equals("mini")
+                || cleanTitleAscii.equals("tesla")
+                || cleanTitleAscii.equals("jeep")
+                || cleanTitleAscii.equals("subaru")
+                || cleanTitleAscii.equals("mitsubishi")
                 || cleanTitleAscii.equals("nissan")
                 || cleanTitleAscii.equals("citroen")
                 || cleanTitleAscii.equals("renault")

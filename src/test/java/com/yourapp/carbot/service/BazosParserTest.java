@@ -180,6 +180,7 @@ class BazosParserTest {
         assertThat(extractCarType("Seat Leon ST 1.2 TSI, 81kW, r2017", "", "")).isEqualTo("WAGON");
         assertThat(extractCarType("Seat Altea XL 1.6 TDI 77 kW Automat", "", "")).isEqualTo("MINIVAN");
         assertThat(extractCarType("Seat ibiza", "", "")).isEqualTo("HATCHBACK");
+        assertThat(extractCarType("Seat Toledo 1.2 TSI 66 kW, 2016, 111 tis. km", "", "")).isEqualTo("SEDAN");
         assertThat(extractCarType("SEAT IBIZA 1.0 MPi 55kW KOMBI 2016", "", "")).isEqualTo("WAGON");
         assertThat(extractCarType("Seat IBIZA combi, 1.2 TSI, 77kW, NOVA STK, TOP STAV", "", "")).isEqualTo("WAGON");
         assertThat(extractCarType("Suzuki Jimny 1.3 i 2015", "", "")).isEqualTo("SUV");
@@ -473,6 +474,7 @@ class BazosParserTest {
     @Test
     void rejectsBareBrandTitlesButKeepsRealModels() throws Exception {
         assertThat(looksSuspiciousListing("Alfa romeo", "")).isTrue();
+        assertThat(looksSuspiciousListing("Seat", "")).isTrue();
         assertThat(looksSuspiciousListing("Alfa Romeo 159", "")).isFalse();
         assertThat(looksSuspiciousListing("SKODA FABIA 3 1,0MPi 44kW Koup.CR,1.majitel,Serv. kniha,2019", "rezervace")).isFalse();
         assertThat(looksSuspiciousListing("SKODA SCALA 1,0TSi 70kW Koup.CR,1.majitel,LED,2022,119tkm", "rezervace")).isFalse();
