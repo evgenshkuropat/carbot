@@ -55,6 +55,7 @@ class BazosParserTest {
         assertThat(extractFuelType("Suzuki Virara 1.6 Ddis")).isEqualTo("DIESEL");
         assertThat(extractFuelType("Suzuki Alto,1.0i,50kw")).isEqualTo("PETROL");
         assertThat(extractFuelType("Prodam Suzuki sx4,1.6")).isEqualTo("PETROL");
+        assertThat(extractFuelType("Suzuki Ignis 1.2 PREMIUM 66kW 1.maj.CR")).isEqualTo("PETROL");
     }
 
     @Test
@@ -356,9 +357,11 @@ class BazosParserTest {
         assertThat(looksAutomaticHybridTitle("Ford Kuga 2,5PHEV 165KW TitaniumX", "PLUGIN_HYBRID")).isTrue();
         assertThat(looksAutomaticHybridTitle("Ford Kuga 2,5 140kW 4x4 AWD ST-LINE", "HYBRID")).isTrue();
         assertThat(looksAutomaticHybridTitle("CR-V r. 2022 2.0 hybrid 4/4", "HYBRID")).isTrue();
+        assertThat(looksAutomaticHybridTitle("TOYOTA C-HR 1.8 Hybrid EXECUTIVE-LED-KAMERA-ACC-CR", "HYBRID")).isTrue();
         assertThat(looksAutomaticHybridTitle("BMW X5 xDrive 45e 290kW 2020", "HYBRID")).isTrue();
         assertThat(looksAutomaticHybridTitle("Dacia Bigster journey hybrid 155", "HYBRID")).isTrue();
         assertThat(looksLikelyFalseManual("BMW X5 xDrive 45e 290kW 2020", "MANUAL")).isTrue();
+        assertThat(looksLikelyFalseManual("TOYOTA C-HR 1.8 Hybrid EXECUTIVE-LED-KAMERA-ACC-CR", "MANUAL")).isTrue();
         assertThat(extractTransmission("Ford Kuga ST Line 1,5 110 kW benzin 6-ti st.mech.")).isEqualTo("MANUAL");
         assertThat(extractTransmission("Citroen Berlingo 1.5 BlueHDi 130S&S MAN 6 SHINE")).isEqualTo("MANUAL");
         assertThat(extractTransmission("Citroen Berlingo 1.6 BlueHDI XTR 100 MAN")).isEqualTo("MANUAL");
@@ -403,6 +406,9 @@ class BazosParserTest {
         assertThat(looksLikelyFalseAutomatic("Seat Alhambra 2.0tdi 103kw Style 2012", "AUTOMATIC")).isTrue();
         assertThat(looksLikelyFalseAutomatic("Seat Alhambra 2.0tdi 103kw DSG", "AUTOMATIC")).isFalse();
         assertThat(looksLikelyFalseAutomatic("Suzuki Samurai 1.9d. SLEVA", "AUTOMATIC")).isTrue();
+        assertThat(looksLikelyFalseAutomatic("Vitara 1.6VVT 88kw 4x4 AllGrip Kamera, Tazne, 2016 nove v CR", "AUTOMATIC")).isTrue();
+        assertThat(looksLikelyFalseAutomatic("Suzuki Vitara 1.4 4x4 AUTOMAT ALLGRIP SPORT-KAMERA-LED", "AUTOMATIC")).isFalse();
+        assertThat(looksLikelyFalseAutomatic("Suzuki SX4 1.9 DDiS 88kW 4x4 klima Nova STK", "AUTOMATIC")).isTrue();
         assertThat(correctLikelyNoisyFuel("Toyota Sienna AWD 2017 7 mist 8AT tazne", "DIESEL")).isEqualTo("PETROL");
         assertThat(correctLikelyNoisyFuel("Dacia Sandero Stepway", "DIESEL")).isNull();
         assertThat(correctLikelyNoisyFuel("Navara D22 Kingcab 98kw", "PETROL")).isNull();

@@ -1207,6 +1207,11 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             return "PETROL";
         }
 
+        if (containsAny(source, " ignis ")
+                && Pattern.compile("(?i)\\b1[\\.,]2\\b").matcher(source).find()) {
+            return "PETROL";
+        }
+
         if (containsAny(source, " dacia dokker ", " dokker ")
                 && Pattern.compile("(?i)\\b1[\\.,]3\\b").matcher(source).find()
                 && !containsAny(source, " diesel ", " nafta ", " dci ", " hdi ", " jtd ", " jtdm ", " tdi ")) {
@@ -1588,7 +1593,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 || (containsAny(source, " bigster ") && containsAny(source, " hybrid ", " hev "))
                 || containsAny(source, " kuga ")
                 || containsAny(source, " prius ")
-                || (containsAny(source, " toyota ", " lexus ", " auris ", " yaris ", " corolla ", " rav4 ", " rx ")
+                || (containsAny(source, " toyota ", " lexus ", " auris ", " yaris ", " corolla ", " rav4 ", " c-hr ", " ch-r ", " chr ", " rx ")
                 && containsAny(source, " hybrid ", " hev ", " 400h "))
                 || (containsAny(source, " cr-v ", " cr v ", " crv ", " hr-v ", " hr v ", " hrv ")
                 && containsAny(source, " hybrid ", " hev "));
@@ -1640,7 +1645,8 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " seat leon ", " leon st ", " alhambra ",
                 " octavia iii ", " octavia 3 ", " oktavia ", " fabia ", " fabia, ", " rapid ", " rapid, ", " yeti ",
                 " duster ", " sandero ", " stepway ", " logan ", " jogger ", " dokker ", " panda ", " berlingo ",
-                " avensis ", " auris ", " auris, ", " aoris ", " aoris, ", " golf ", " samurai ");
+                " avensis ", " auris ", " auris, ", " aoris ", " aoris, ", " golf ",
+                " vitara ", " sx4 ", " s-cross ", " s cross ", " samurai ");
     }
     private boolean looksLikelyFalseManual(String title, String transmission) {
         if (!"MANUAL".equals(transmission)) {
@@ -1653,6 +1659,12 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         if (!hasExplicitManual
                 && containsAny(source, " bmw ")
                 && Pattern.compile("(?:225|230|320|330|530|545|745|750|30|40|45|50)e(?:xdrive)?").matcher(compact).find()) {
+            return true;
+        }
+
+        if (!hasExplicitManual
+                && containsAny(source, " hybrid ", " hev ")
+                && containsAny(source, " toyota ", " lexus ", " auris ", " yaris ", " corolla ", " rav4 ", " c-hr ", " ch-r ", " chr ", " rx ")) {
             return true;
         }
 
