@@ -1124,6 +1124,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " id.3 ", " id.4 ", " id.5 ",
                 " tesla ", " leaf ", " enyaq ",
                 " cupra born ", " kona electric ", " ioniq 5 ", " ioniq 6 ",
+                " twingo z.e. ", " twingo z e ", " twingo ze ",
                 " bz4x ", " bz 4x ", " bolt ev ", " mirai ")) {
             return "ELECTRIC";
         }

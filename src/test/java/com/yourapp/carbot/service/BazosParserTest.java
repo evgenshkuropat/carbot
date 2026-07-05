@@ -121,6 +121,7 @@ class BazosParserTest {
         assertThat(extractFuelType("BMW e46 330ci, M Packet, 170KW, 231 hp")).isEqualTo("PETROL");
         assertThat(extractFuelType("Mini Cooper")).isEqualTo("PETROL");
         assertThat(extractFuelType("Prodam Toyota Mirai Executive")).isEqualTo("ELECTRIC");
+        assertThat(extractFuelType("Renault Twingo Z.E. 60KW rok 12/2023 Urban Night")).isEqualTo("ELECTRIC");
         assertThat(extractFuelType("VW Passat B8 Variant GTE 1.4TSI 160kW DSG - zaruka Autodraft")).isEqualTo("PLUGIN_HYBRID");
         assertThat(extractFuelType("VW Golf 8 GTE 1.4 TSI Hybrid 150kW DSG - zaruka Autodraft")).isEqualTo("PLUGIN_HYBRID");
         assertThat(extractFuelType("Skoda Octavia IV 2.0TDI 110KW DSG 2021 STYLE")).isEqualTo("DIESEL");
