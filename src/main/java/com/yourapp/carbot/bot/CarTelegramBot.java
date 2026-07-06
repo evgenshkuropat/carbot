@@ -189,7 +189,7 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
         }
 
         if (isSellMenuText(normalized) || text.equals("/sell")) {
-            startSellFlow(chatId);
+            startSellFlowSafely(chatId);
             return true;
         }
 
@@ -212,7 +212,7 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
             case "/latest", "/services" -> showServices(chatId);
             case "/find" -> handleFind(chatId);
             case "/favorites" -> handleFavorites(chatId);
-            case "/sell" -> startSellFlow(chatId);
+            case "/sell" -> startSellFlowSafely(chatId);
             case "/mycars" -> handleMyCars(chatId);
             case "/cancel" -> {
                 if (isSellStep(userStateService.getStep(chatId))) {
@@ -436,7 +436,7 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
         }
 
         if (isSellStartCallback(data)) {
-            startSellFlow(chatId);
+            startSellFlowSafely(chatId);
             return;
         }
 
@@ -1397,6 +1397,20 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
         userStateService.setStep(chatId, BotStep.SELL_BRAND);
 
         sendMessage(chatId, sellPrompt(chatId, "brand"), keyboardFactory.mainMenuKeyboard(lang(chatId)));
+    }
+
+    private void startSellFlowSafely(Long chatId) {
+        try {
+            startSellFlow(chatId);
+        } catch (Exception e) {
+            log.error("SELL FLOW start failed chatId={}", chatId, e);
+            sendMessage(chatId, switch (lang(chatId)) {
+                case "ru" -> "Не удалось запустить добавление авто. Попробуйте команду /sell.";
+                case "uk" -> "Не вдалося запустити додавання авто. Спробуйте команду /sell.";
+                case "cs" -> "Nepodařilo se spustit přidání auta. Zkuste příkaz /sell.";
+                default -> "Could not start car listing. Try /sell.";
+            });
+        }
     }
 
     private void handleSellText(Long chatId, String username, String text) {
