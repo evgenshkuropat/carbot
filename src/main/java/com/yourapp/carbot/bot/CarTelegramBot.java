@@ -24,6 +24,7 @@ import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageReplyMarkup;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.InputFile;
+import org.telegram.telegrambots.meta.api.objects.PhotoSize;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboard;
@@ -107,6 +108,18 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
             if (update.hasCallbackQuery()) {
                 handleCallback(update);
                 return;
+            }
+
+            if (update.hasMessage() && update.getMessage().hasPhoto()) {
+                Long chatId = update.getMessage().getChatId();
+                String username = update.getMessage().getFrom() != null
+                        ? update.getMessage().getFrom().getUserName()
+                        : null;
+
+                if (userStateService.getStep(chatId) == BotStep.SELL_PHOTO) {
+                    handleSellPhoto(chatId, username, update.getMessage().getPhoto());
+                    return;
+                }
             }
 
             if (!update.hasMessage() || !update.getMessage().hasText()) {
@@ -1638,6 +1651,7 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
         );
 
         for (Long adminChatId : adminChatIds) {
+            log.info("USER LISTING notifying adminChatId={} carId={}", adminChatId, car.getId());
             sendMessage(adminChatId, text, keyboardFactory.sellAdminReviewKeyboard(car.getId()));
         }
     }
@@ -2952,6 +2966,23 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
         );
 
         sendMessage(chatId, text);
+        sendPendingUserListings(chatId);
+    }
+
+    private void sendPendingUserListings(Long adminChatId) {
+        List<CarEntity> pendingCars = carRepository.findTop10ByListingStatusOrderByCreatedAtDesc("PENDING");
+        if (pendingCars.isEmpty()) {
+            return;
+        }
+
+        sendMessage(adminChatId, "Pending user listings:");
+        for (CarEntity car : pendingCars) {
+            sendMessage(
+                    adminChatId,
+                    formatUserListing("en", car),
+                    keyboardFactory.sellAdminReviewKeyboard(car.getId())
+            );
+        }
     }
 
     private String formatSourceStats(List<CarRepository.SourceCount> stats) {
@@ -2981,7 +3012,7 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
             return result;
         }
 
-        for (String part : raw.split(",")) {
+        for (String part : raw.split("[,;\\s]+")) {
             try {
                 result.add(Long.parseLong(part.trim()));
             } catch (Exception ignored) {
