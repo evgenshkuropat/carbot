@@ -434,6 +434,16 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
             return;
         }
 
+        if ("sell_start".equals(data)) {
+            startSellFlow(chatId);
+            return;
+        }
+
+        if ("sell_mycars".equals(data)) {
+            handleMyCars(chatId);
+            return;
+        }
+
         if (data.startsWith("fav_add:")) {
             handleAddFavorite(chatId, data.substring("fav_add:".length()));
             return;

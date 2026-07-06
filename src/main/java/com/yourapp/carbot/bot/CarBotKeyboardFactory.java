@@ -52,6 +52,13 @@ public class CarBotKeyboardFactory {
     public InlineKeyboardMarkup servicesKeyboard(String lang) {
         List<InlineKeyboardRow> rows = new ArrayList<>();
 
+        rows.add(twoButtonsRow(
+                sellMenuText(lang),
+                "sell_start",
+                myCarsMenuText(lang),
+                "sell_mycars"
+        ));
+
         rows.add(singleUrlButtonRow(
                 "🏠 " + messages.get(lang, "services.housingBot"),
                 "https://t.me/zhytloCZ_bot"
