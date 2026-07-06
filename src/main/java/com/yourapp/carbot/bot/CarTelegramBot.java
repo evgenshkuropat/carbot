@@ -346,6 +346,7 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
 
     private void handleCallback(Update update) throws Exception {
         String data = update.getCallbackQuery().getData();
+        data = data == null ? "" : data.trim();
         Long chatId = update.getCallbackQuery().getMessage().getChatId();
         log.info("BOT CALLBACK chatId={} data={}", chatId, data);
         String callbackId = update.getCallbackQuery().getId();
@@ -434,12 +435,12 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
             return;
         }
 
-        if ("sell_start".equals(data)) {
+        if (isSellStartCallback(data)) {
             startSellFlow(chatId);
             return;
         }
 
-        if ("sell_mycars".equals(data)) {
+        if (isMyCarsCallback(data)) {
             handleMyCars(chatId);
             return;
         }
@@ -1653,6 +1654,18 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
                 || containsIgnoreCase(text, "мої авто")
                 || containsIgnoreCase(text, "moje auta")
                 || containsIgnoreCase(text, "my cars");
+    }
+
+    private boolean isSellStartCallback(String data) {
+        return "sell_start".equals(data)
+                || "sell".equals(data)
+                || "/sell".equals(data);
+    }
+
+    private boolean isMyCarsCallback(String data) {
+        return "sell_mycars".equals(data)
+                || "mycars".equals(data)
+                || "/mycars".equals(data);
     }
 
     private boolean containsIgnoreCase(String source, String value) {
