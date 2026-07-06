@@ -24,8 +24,8 @@ import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageReplyMarkup;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.InputFile;
-import org.telegram.telegrambots.meta.api.objects.PhotoSize;
 import org.telegram.telegrambots.meta.api.objects.Update;
+import org.telegram.telegrambots.meta.api.objects.photo.PhotoSize;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboard;
 import org.telegram.telegrambots.meta.generics.TelegramClient;
@@ -37,6 +37,7 @@ import java.net.URLConnection;
 import java.nio.file.Files;
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -227,6 +228,17 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
             case "/favorites" -> handleFavorites(chatId);
             case "/sell" -> startSellFlowSafely(chatId);
             case "/mycars" -> handleMyCars(chatId);
+            case "/skip" -> {
+                if (userStateService.getStep(chatId) == BotStep.SELL_PHOTO) {
+                    handleSellText(chatId, username, text);
+                } else {
+                    sendMessage(
+                            chatId,
+                            messages.get(lang(chatId), "command.unknown"),
+                            keyboardFactory.mainMenuKeyboard(lang(chatId))
+                    );
+                }
+            }
             case "/cancel" -> {
                 if (isSellStep(userStateService.getStep(chatId))) {
                     cancelSellFlow(chatId);
@@ -1517,15 +1529,48 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
             }
             case SELL_CONTACT -> {
                 draft.sellerContact = limitText(text, 180);
+                userStateService.setStep(chatId, BotStep.SELL_PHOTO);
+                sendMessage(chatId, sellPrompt(chatId, "photo"));
+            }
+            case SELL_PHOTO -> {
+                if ("/skip".equalsIgnoreCase(text) || "skip".equalsIgnoreCase(text)) {
+                    userStateService.setStep(chatId, BotStep.SELL_CONFIRM);
+                    sendMessage(chatId, buildSellPreview(chatId, draft), keyboardFactory.sellConfirmKeyboard(lang(chatId)));
+                    return;
+                }
+                sendMessage(chatId, sellInvalid(chatId, "photo"));
+            }
+            case SELL_CONFIRM -> {
                 userStateService.setStep(chatId, BotStep.SELL_CONFIRM);
                 sendMessage(chatId, buildSellPreview(chatId, draft), keyboardFactory.sellConfirmKeyboard(lang(chatId)));
             }
-            case SELL_CONFIRM -> sendMessage(chatId, buildSellPreview(chatId, draft), keyboardFactory.sellConfirmKeyboard(lang(chatId)));
             default -> {
                 userStateService.reset(chatId);
                 sellDrafts.remove(chatId);
             }
         }
+    }
+
+    private void handleSellPhoto(Long chatId, String username, List<PhotoSize> photos) {
+        SellDraft draft = sellDrafts.computeIfAbsent(chatId, key -> {
+            SellDraft created = new SellDraft();
+            created.ownerChatId = chatId;
+            return created;
+        });
+        draft.sellerUsername = username;
+
+        PhotoSize bestPhoto = photos == null ? null : photos.stream()
+                .max(Comparator.comparing(PhotoSize::getFileSize, Comparator.nullsFirst(Integer::compareTo)))
+                .orElse(null);
+
+        if (bestPhoto == null || bestPhoto.getFileId() == null || bestPhoto.getFileId().isBlank()) {
+            sendMessage(chatId, sellInvalid(chatId, "photo"));
+            return;
+        }
+
+        draft.imageUrl = bestPhoto.getFileId();
+        userStateService.setStep(chatId, BotStep.SELL_CONFIRM);
+        sendMessage(chatId, buildSellPreview(chatId, draft), keyboardFactory.sellConfirmKeyboard(lang(chatId)));
     }
 
     private void submitSellDraft(Long chatId) {
@@ -1551,6 +1596,7 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
         car.setOwnerChatId(chatId);
         car.setSellerUsername(draft.sellerUsername);
         car.setSellerContact(draft.sellerContact);
+        car.setImageUrl(draft.imageUrl);
         car.setListingStatus("PENDING");
         car.setDescription(draft.description);
         car.setCreatedAt(LocalDateTime.now());
@@ -1577,7 +1623,12 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
         }
 
         for (CarEntity car : cars) {
-            sendMessage(chatId, formatUserListing(chatId, car), keyboardFactory.userListingKeyboard(lang(chatId), car.getId(), car.getListingStatus()));
+            sendCarMessage(
+                    chatId,
+                    car,
+                    formatUserListing(chatId, car),
+                    keyboardFactory.userListingKeyboard(lang(chatId), car.getId(), car.getListingStatus())
+            );
         }
     }
 
@@ -1652,7 +1703,7 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
 
         for (Long adminChatId : adminChatIds) {
             log.info("USER LISTING notifying adminChatId={} carId={}", adminChatId, car.getId());
-            sendMessage(adminChatId, text, keyboardFactory.sellAdminReviewKeyboard(car.getId()));
+            sendCarMessage(adminChatId, car, text, keyboardFactory.sellAdminReviewKeyboard(car.getId()));
         }
     }
 
@@ -1667,6 +1718,7 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
                 || step == BotStep.SELL_TRANSMISSION
                 || step == BotStep.SELL_CAR_TYPE
                 || step == BotStep.SELL_CONTACT
+                || step == BotStep.SELL_PHOTO
                 || step == BotStep.SELL_CONFIRM;
     }
 
@@ -1763,6 +1815,12 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
                 case "cs" -> "Zadejte kontakt pro kupujícího: telefon nebo @username";
                 default -> "Enter buyer contact: phone or @username";
             };
+            case "photo" -> switch (lang) {
+                case "ru" -> "Пришлите одно фото авто или напишите /skip, чтобы пропустить.";
+                case "uk" -> "Надішліть одне фото авто або напишіть /skip, щоб пропустити.";
+                case "cs" -> "Pošlete jednu fotku auta nebo napište /skip pro přeskočení.";
+                default -> "Send one car photo or type /skip to skip.";
+            };
             default -> "/cancel";
         } + "\n\n/cancel";
     }
@@ -1853,6 +1911,7 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
                 ⚙️ %s
                 🚙 %s
                 ☎️ %s
+                📷 %s
                 """.formatted(
                 buildUserListingTitle(draft),
                 formatCzk(draft.priceValue),
@@ -1862,7 +1921,8 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
                 formatFuelTypeValue(lang, draft.fuelType),
                 formatTransmissionValue(lang, draft.transmission),
                 formatCarType(lang, draft.carType),
-                safe(draft.sellerContact)
+                safe(draft.sellerContact),
+                draft.imageUrl == null || draft.imageUrl.isBlank() ? "-" : "OK"
         ).trim();
     }
 
@@ -2977,8 +3037,9 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
 
         sendMessage(adminChatId, "Pending user listings:");
         for (CarEntity car : pendingCars) {
-            sendMessage(
+            sendCarMessage(
                     adminChatId,
+                    car,
                     formatUserListing("en", car),
                     keyboardFactory.sellAdminReviewKeyboard(car.getId())
             );
@@ -3049,6 +3110,7 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
         private String transmission;
         private String carType;
         private String sellerContact;
+        private String imageUrl;
         private String description;
 
         private boolean isComplete() {

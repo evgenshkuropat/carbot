@@ -28,6 +28,7 @@ public enum BotStep {
     SELL_TRANSMISSION,
     SELL_CAR_TYPE,
     SELL_CONTACT,
+    SELL_PHOTO,
     SELL_CONFIRM,
     COMPLETED
 }
