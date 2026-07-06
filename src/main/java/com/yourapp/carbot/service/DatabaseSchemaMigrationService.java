@@ -20,6 +20,7 @@ public class DatabaseSchemaMigrationService {
     @PostConstruct
     public void migrate() {
         migrateTelegramSubscribers();
+        migrateUserStateSteps();
         migrateCarsUserListings();
     }
 
@@ -52,6 +53,41 @@ public class DatabaseSchemaMigrationService {
                 """);
 
         log.info("Database schema migration checked telegram_subscribers notification columns");
+    }
+
+    private void migrateUserStateSteps() {
+        jdbcTemplate.execute("""
+                ALTER TABLE IF EXISTS user_states
+                    ALTER COLUMN step TYPE varchar(100)
+                """);
+
+        jdbcTemplate.execute("""
+                DO $$
+                DECLARE
+                    constraint_record record;
+                BEGIN
+                    FOR constraint_record IN
+                        SELECT namespace.nspname AS schema_name,
+                               relation.relname AS table_name,
+                               constraint_info.conname AS constraint_name
+                        FROM pg_constraint constraint_info
+                        JOIN pg_class relation ON relation.oid = constraint_info.conrelid
+                        JOIN pg_namespace namespace ON namespace.oid = relation.relnamespace
+                        WHERE relation.relname = 'user_states'
+                          AND constraint_info.contype = 'c'
+                          AND pg_get_constraintdef(constraint_info.oid) ILIKE '%step%'
+                    LOOP
+                        EXECUTE format(
+                            'ALTER TABLE %I.%I DROP CONSTRAINT IF EXISTS %I',
+                            constraint_record.schema_name,
+                            constraint_record.table_name,
+                            constraint_record.constraint_name
+                        );
+                    END LOOP;
+                END $$;
+                """);
+
+        log.info("Database schema migration checked user_states step column");
     }
 
     private void migrateCarsUserListings() {
