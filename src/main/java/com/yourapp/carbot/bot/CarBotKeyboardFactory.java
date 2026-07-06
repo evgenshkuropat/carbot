@@ -38,8 +38,12 @@ public class CarBotKeyboardFactory {
         row3.add(new KeyboardButton("⭐ " + messages.get(lang, "menu.favorites")));
         row3.add(new KeyboardButton("🌐 " + messages.get(lang, "menu.language")));
 
+        KeyboardRow row4 = new KeyboardRow();
+        row4.add(new KeyboardButton(sellMenuText(lang)));
+        row4.add(new KeyboardButton(myCarsMenuText(lang)));
+
         return ReplyKeyboardMarkup.builder()
-                .keyboard(List.of(row1, row2, row3))
+                .keyboard(List.of(row1, row2, row3, row4))
                 .resizeKeyboard(true)
                 .selective(true)
                 .build();
@@ -618,7 +622,7 @@ public class CarBotKeyboardFactory {
     public InlineKeyboardMarkup carCardKeyboard(String lang, Long carId, String url, boolean favoriteAlreadyAdded) {
         List<InlineKeyboardRow> rows = new ArrayList<>();
 
-        if (url != null && !url.isBlank()) {
+        if (isExternalUrl(url)) {
             rows.add(singleUrlButtonRow(
                     "🚀 " + messages.get(lang, "button.open"),
                     url
@@ -671,7 +675,7 @@ public class CarBotKeyboardFactory {
 
         InlineKeyboardRow actionRow = new InlineKeyboardRow();
 
-        if (url != null && !url.isBlank()) {
+        if (isExternalUrl(url)) {
             actionRow.add(InlineKeyboardButton.builder()
                     .text("🚀 " + messages.get(lang, "button.open"))
                     .url(url)
@@ -697,6 +701,40 @@ public class CarBotKeyboardFactory {
                 .build();
     }
 
+    public InlineKeyboardMarkup sellConfirmKeyboard(String lang) {
+        return InlineKeyboardMarkup.builder()
+                .keyboard(List.of(twoButtonsRow(
+                        confirmSellText(lang),
+                        "sell_confirm",
+                        cancelText(lang),
+                        "sell_cancel"
+                )))
+                .build();
+    }
+
+    public InlineKeyboardMarkup sellAdminReviewKeyboard(Long carId) {
+        return InlineKeyboardMarkup.builder()
+                .keyboard(List.of(twoButtonsRow(
+                        "Approve",
+                        "sell_admin_approve:" + carId,
+                        "Reject",
+                        "sell_admin_reject:" + carId
+                )))
+                .build();
+    }
+
+    public InlineKeyboardMarkup userListingKeyboard(String lang, Long carId, String status) {
+        List<InlineKeyboardRow> rows = new ArrayList<>();
+
+        if ("ACTIVE".equalsIgnoreCase(status) || "PENDING".equalsIgnoreCase(status)) {
+            rows.add(singleButtonRow(removeListingText(lang), "sell_remove:" + carId));
+        }
+
+        return InlineKeyboardMarkup.builder()
+                .keyboard(rows)
+                .build();
+    }
+
     private InlineKeyboardRow singleButtonRow(String text, String callbackData) {
         InlineKeyboardRow row = new InlineKeyboardRow();
         row.add(InlineKeyboardButton.builder()
@@ -715,11 +753,51 @@ public class CarBotKeyboardFactory {
         return row;
     }
 
+    private boolean isExternalUrl(String url) {
+        return url != null && (url.startsWith("http://") || url.startsWith("https://"));
+    }
+
     private InlineKeyboardRow twoButtonsRow(String text1, String callback1, String text2, String callback2) {
         InlineKeyboardRow row = new InlineKeyboardRow();
         row.add(InlineKeyboardButton.builder().text(text1).callbackData(callback1).build());
         row.add(InlineKeyboardButton.builder().text(text2).callbackData(callback2).build());
         return row;
+    }
+
+    private String sellMenuText(String lang) {
+        return switch (lang) {
+            case "ru" -> "🚗 Продать авто";
+            case "uk" -> "🚗 Продати авто";
+            case "cs" -> "🚗 Prodat auto";
+            default -> "🚗 Sell car";
+        };
+    }
+
+    private String myCarsMenuText(String lang) {
+        return switch (lang) {
+            case "ru" -> "📦 Мои авто";
+            case "uk" -> "📦 Мої авто";
+            case "cs" -> "📦 Moje auta";
+            default -> "📦 My cars";
+        };
+    }
+
+    private String confirmSellText(String lang) {
+        return switch (lang) {
+            case "ru" -> "✅ Отправить на проверку";
+            case "uk" -> "✅ Надіслати на перевірку";
+            case "cs" -> "✅ Odeslat ke kontrole";
+            default -> "✅ Submit for review";
+        };
+    }
+
+    private String removeListingText(String lang) {
+        return switch (lang) {
+            case "ru" -> "🗑 Снять с продажи";
+            case "uk" -> "🗑 Зняти з продажу";
+            case "cs" -> "🗑 Stáhnout z prodeje";
+            default -> "🗑 Remove listing";
+        };
     }
 
     private String buildSelectableText(boolean selected, String label) {

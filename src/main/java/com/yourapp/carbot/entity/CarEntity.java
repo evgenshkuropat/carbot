@@ -11,7 +11,9 @@ import java.time.LocalDateTime;
                 @Index(name = "idx_car_url", columnList = "url"),
                 @Index(name = "idx_car_price", columnList = "priceValue"),
                 @Index(name = "idx_car_created", columnList = "createdAt"),
-                @Index(name = "idx_car_source", columnList = "source")
+                @Index(name = "idx_car_source", columnList = "source"),
+                @Index(name = "idx_car_listing_status", columnList = "listingStatus"),
+                @Index(name = "idx_car_owner_chat", columnList = "ownerChatId")
         }
 )
 public class CarEntity {
@@ -59,6 +61,20 @@ public class CarEntity {
     @Column(length = 50)
     private String carType;
 
+    private Long ownerChatId;
+
+    @Column(length = 100)
+    private String sellerUsername;
+
+    @Column(length = 255)
+    private String sellerContact;
+
+    @Column(length = 50)
+    private String listingStatus;
+
+    @Column(length = 1000)
+    private String description;
+
     public CarEntity() {
     }
 
@@ -97,6 +113,9 @@ public class CarEntity {
     public void prePersist() {
         if (createdAt == null) {
             createdAt = LocalDateTime.now();
+        }
+        if (listingStatus == null || listingStatus.isBlank()) {
+            listingStatus = "ACTIVE";
         }
     }
 
@@ -214,5 +233,45 @@ public class CarEntity {
 
     public void setCarType(String carType) {
         this.carType = carType;
+    }
+
+    public Long getOwnerChatId() {
+        return ownerChatId;
+    }
+
+    public void setOwnerChatId(Long ownerChatId) {
+        this.ownerChatId = ownerChatId;
+    }
+
+    public String getSellerUsername() {
+        return sellerUsername;
+    }
+
+    public void setSellerUsername(String sellerUsername) {
+        this.sellerUsername = sellerUsername;
+    }
+
+    public String getSellerContact() {
+        return sellerContact;
+    }
+
+    public void setSellerContact(String sellerContact) {
+        this.sellerContact = sellerContact;
+    }
+
+    public String getListingStatus() {
+        return listingStatus;
+    }
+
+    public void setListingStatus(String listingStatus) {
+        this.listingStatus = listingStatus;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 }

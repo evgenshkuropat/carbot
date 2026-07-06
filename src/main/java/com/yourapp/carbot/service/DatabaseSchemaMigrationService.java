@@ -20,6 +20,7 @@ public class DatabaseSchemaMigrationService {
     @PostConstruct
     public void migrate() {
         migrateTelegramSubscribers();
+        migrateCarsUserListings();
     }
 
     private void migrateTelegramSubscribers() {
@@ -51,5 +52,24 @@ public class DatabaseSchemaMigrationService {
                 """);
 
         log.info("Database schema migration checked telegram_subscribers notification columns");
+    }
+
+    private void migrateCarsUserListings() {
+        jdbcTemplate.execute("""
+                ALTER TABLE IF EXISTS cars
+                    ADD COLUMN IF NOT EXISTS owner_chat_id bigint,
+                    ADD COLUMN IF NOT EXISTS seller_username varchar(100),
+                    ADD COLUMN IF NOT EXISTS seller_contact varchar(255),
+                    ADD COLUMN IF NOT EXISTS listing_status varchar(50),
+                    ADD COLUMN IF NOT EXISTS description varchar(1000)
+                """);
+
+        jdbcTemplate.execute("""
+                UPDATE cars
+                SET listing_status = 'ACTIVE'
+                WHERE listing_status IS NULL OR listing_status = ''
+                """);
+
+        log.info("Database schema migration checked cars user listing columns");
     }
 }

@@ -390,8 +390,9 @@ public class CarNotificationService {
         for (CarEntity car : cars) {
             sb.append(index++).append(". ").append(formatDigestCar(car)).append("\n");
 
-            if (car.getUrl() != null && !car.getUrl().isBlank()) {
-                sb.append(car.getUrl().trim()).append("\n");
+            String url = normalizeUrl(car.getUrl());
+            if (url != null) {
+                sb.append(url).append("\n");
             }
 
             sb.append("\n");
@@ -711,6 +712,10 @@ public class CarNotificationService {
             sb.append("🌐 ").append(messages.get(lang, "label.source")).append(": ").append(source).append("\n");
         }
 
+        if ("USER".equalsIgnoreCase(car.getSource()) && car.getSellerContact() != null && !car.getSellerContact().isBlank()) {
+            sb.append("☎️ ").append(car.getSellerContact().trim()).append("\n");
+        }
+
         if (freshness != null) {
             sb.append("🕒 ").append(freshness).append("\n");
         }
@@ -767,6 +772,7 @@ public class CarNotificationService {
 
         return switch (source.trim().toUpperCase(Locale.ROOT)) {
             case "SAUTO" -> "Sauto.cz";
+            case "USER" -> "AutoCZ users";
             case "BAZOS" -> "Bazoš.cz";
             default -> source.trim();
         };

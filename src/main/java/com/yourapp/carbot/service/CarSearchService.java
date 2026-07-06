@@ -31,7 +31,7 @@ public class CarSearchService {
             return List.of();
         }
 
-        List<CarEntity> allCars = carRepository.findAllByOrderByCreatedAtDesc();
+        List<CarEntity> allCars = carRepository.findAllByListingStatusOrderByCreatedAtDesc("ACTIVE");
 
         long carTypePassed = 0;
         long brandPassed = 0;

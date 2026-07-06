@@ -39,6 +39,7 @@ import java.time.LocalDateTime;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -61,6 +62,7 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
     private final MessageService messages;
 
     private final Map<Long, SearchSession> searchSessions = new ConcurrentHashMap<>();
+    private final Map<Long, SellDraft> sellDrafts = new ConcurrentHashMap<>();
     private final Set<Long> editingFilterSessions = ConcurrentHashMap.newKeySet();
     private final Set<Long> adminChatIds;
 
@@ -127,6 +129,11 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
                 return;
             }
 
+            if (isSellStep(userStateService.getStep(chatId))) {
+                handleSellText(chatId, username, text);
+                return;
+            }
+
             if (handleMenuButton(chatId, text)) {
                 return;
             }
@@ -181,6 +188,16 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
             return true;
         }
 
+        if (isSellMenuText(normalized) || text.equals("/sell")) {
+            startSellFlow(chatId);
+            return true;
+        }
+
+        if (isMyCarsMenuText(normalized) || text.equals("/mycars")) {
+            handleMyCars(chatId);
+            return true;
+        }
+
         if (normalized.equals(messages.get(lang, "menu.language")) || text.equals("/language")) {
             handleLanguage(chatId);
             return true;
@@ -195,6 +212,19 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
             case "/latest", "/services" -> showServices(chatId);
             case "/find" -> handleFind(chatId);
             case "/favorites" -> handleFavorites(chatId);
+            case "/sell" -> startSellFlow(chatId);
+            case "/mycars" -> handleMyCars(chatId);
+            case "/cancel" -> {
+                if (isSellStep(userStateService.getStep(chatId))) {
+                    cancelSellFlow(chatId);
+                } else {
+                    sendMessage(
+                            chatId,
+                            messages.get(lang(chatId), "command.unknown"),
+                            keyboardFactory.mainMenuKeyboard(lang(chatId))
+                    );
+                }
+            }
             case "/help" -> handleHelp(chatId);
             case "/filter" -> startNewFilterSetup(chatId);
             case "/myfilter" -> showCurrentFilter(chatId);
@@ -411,6 +441,31 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
 
         if (data.startsWith("fav_remove:")) {
             handleRemoveFavorite(chatId, data.substring("fav_remove:".length()));
+            return;
+        }
+
+        if ("sell_confirm".equals(data)) {
+            submitSellDraft(chatId);
+            return;
+        }
+
+        if ("sell_cancel".equals(data)) {
+            cancelSellFlow(chatId);
+            return;
+        }
+
+        if (data.startsWith("sell_remove:")) {
+            handleRemoveUserListing(chatId, data.substring("sell_remove:".length()));
+            return;
+        }
+
+        if (data.startsWith("sell_admin_approve:")) {
+            handleAdminReview(chatId, data.substring("sell_admin_approve:".length()), true);
+            return;
+        }
+
+        if (data.startsWith("sell_admin_reject:")) {
+            handleAdminReview(chatId, data.substring("sell_admin_reject:".length()), false);
             return;
         }
 
@@ -1324,6 +1379,561 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
         );
     }
 
+    private void startSellFlow(Long chatId) {
+        SellDraft draft = new SellDraft();
+        draft.ownerChatId = chatId;
+        sellDrafts.put(chatId, draft);
+        userStateService.setStep(chatId, BotStep.SELL_BRAND);
+
+        sendMessage(chatId, sellPrompt(chatId, "brand"), keyboardFactory.mainMenuKeyboard(lang(chatId)));
+    }
+
+    private void handleSellText(Long chatId, String username, String text) {
+        if ("/cancel".equalsIgnoreCase(text)) {
+            cancelSellFlow(chatId);
+            return;
+        }
+
+        SellDraft draft = sellDrafts.computeIfAbsent(chatId, key -> {
+            SellDraft created = new SellDraft();
+            created.ownerChatId = chatId;
+            return created;
+        });
+        draft.sellerUsername = username;
+
+        BotStep step = userStateService.getStep(chatId);
+
+        switch (step) {
+            case SELL_BRAND -> {
+                draft.brand = normalizeSellBrand(text);
+                userStateService.setStep(chatId, BotStep.SELL_TITLE);
+                sendMessage(chatId, sellPrompt(chatId, "title"));
+            }
+            case SELL_TITLE -> {
+                draft.title = limitText(text, 180);
+                userStateService.setStep(chatId, BotStep.SELL_PRICE);
+                sendMessage(chatId, sellPrompt(chatId, "price"));
+            }
+            case SELL_PRICE -> {
+                Integer price = parsePositiveInt(text);
+                if (price == null || price < 1000 || price > 20_000_000) {
+                    sendMessage(chatId, sellInvalid(chatId, "price"));
+                    return;
+                }
+                draft.priceValue = price;
+                userStateService.setStep(chatId, BotStep.SELL_YEAR);
+                sendMessage(chatId, sellPrompt(chatId, "year"));
+            }
+            case SELL_YEAR -> {
+                Integer year = parsePositiveInt(text);
+                int currentYear = LocalDateTime.now().getYear() + 1;
+                if (year == null || year < 1980 || year > currentYear) {
+                    sendMessage(chatId, sellInvalid(chatId, "year"));
+                    return;
+                }
+                draft.year = year;
+                userStateService.setStep(chatId, BotStep.SELL_MILEAGE);
+                sendMessage(chatId, sellPrompt(chatId, "mileage"));
+            }
+            case SELL_MILEAGE -> {
+                Integer mileage = parsePositiveInt(text);
+                if (mileage == null || mileage < 0 || mileage > 1_000_000) {
+                    sendMessage(chatId, sellInvalid(chatId, "mileage"));
+                    return;
+                }
+                draft.mileage = mileage;
+                userStateService.setStep(chatId, BotStep.SELL_LOCATION);
+                sendMessage(chatId, sellPrompt(chatId, "location"));
+            }
+            case SELL_LOCATION -> {
+                draft.location = limitText(text, 120);
+                userStateService.setStep(chatId, BotStep.SELL_FUEL_TYPE);
+                sendMessage(chatId, sellPrompt(chatId, "fuel"));
+            }
+            case SELL_FUEL_TYPE -> {
+                draft.fuelType = normalizeSellFuel(text);
+                if (draft.fuelType == null) {
+                    sendMessage(chatId, sellInvalid(chatId, "fuel"));
+                    return;
+                }
+                userStateService.setStep(chatId, BotStep.SELL_TRANSMISSION);
+                sendMessage(chatId, sellPrompt(chatId, "transmission"));
+            }
+            case SELL_TRANSMISSION -> {
+                draft.transmission = normalizeSellTransmission(text);
+                if (draft.transmission == null) {
+                    sendMessage(chatId, sellInvalid(chatId, "transmission"));
+                    return;
+                }
+                userStateService.setStep(chatId, BotStep.SELL_CAR_TYPE);
+                sendMessage(chatId, sellPrompt(chatId, "carType"));
+            }
+            case SELL_CAR_TYPE -> {
+                draft.carType = normalizeSellCarType(text);
+                if (draft.carType == null) {
+                    sendMessage(chatId, sellInvalid(chatId, "carType"));
+                    return;
+                }
+                userStateService.setStep(chatId, BotStep.SELL_CONTACT);
+                sendMessage(chatId, sellPrompt(chatId, "contact"));
+            }
+            case SELL_CONTACT -> {
+                draft.sellerContact = limitText(text, 180);
+                userStateService.setStep(chatId, BotStep.SELL_CONFIRM);
+                sendMessage(chatId, buildSellPreview(chatId, draft), keyboardFactory.sellConfirmKeyboard(lang(chatId)));
+            }
+            case SELL_CONFIRM -> sendMessage(chatId, buildSellPreview(chatId, draft), keyboardFactory.sellConfirmKeyboard(lang(chatId)));
+            default -> {
+                userStateService.reset(chatId);
+                sellDrafts.remove(chatId);
+            }
+        }
+    }
+
+    private void submitSellDraft(Long chatId) {
+        SellDraft draft = sellDrafts.get(chatId);
+        if (draft == null || !draft.isComplete()) {
+            startSellFlow(chatId);
+            return;
+        }
+
+        CarEntity car = new CarEntity();
+        car.setSource("USER");
+        car.setTitle(buildUserListingTitle(draft));
+        car.setPrice(formatCzk(draft.priceValue));
+        car.setPriceValue(draft.priceValue);
+        car.setLocation(draft.location);
+        car.setUrl("user://" + chatId + "/" + UUID.randomUUID());
+        car.setBrand(draft.brand);
+        car.setYear(draft.year);
+        car.setMileage(draft.mileage);
+        car.setFuelType(draft.fuelType);
+        car.setTransmission(draft.transmission);
+        car.setCarType(draft.carType);
+        car.setOwnerChatId(chatId);
+        car.setSellerUsername(draft.sellerUsername);
+        car.setSellerContact(draft.sellerContact);
+        car.setListingStatus("PENDING");
+        car.setDescription(draft.description);
+        car.setCreatedAt(LocalDateTime.now());
+
+        CarEntity saved = carRepository.save(car);
+        sellDrafts.remove(chatId);
+        userStateService.reset(chatId);
+
+        sendMessage(chatId, sellSubmittedText(chatId), keyboardFactory.mainMenuKeyboard(lang(chatId)));
+        notifyAdminsAboutUserListing(saved);
+    }
+
+    private void cancelSellFlow(Long chatId) {
+        sellDrafts.remove(chatId);
+        userStateService.reset(chatId);
+        sendMessage(chatId, sellCancelledText(chatId), keyboardFactory.mainMenuKeyboard(lang(chatId)));
+    }
+
+    private void handleMyCars(Long chatId) {
+        List<CarEntity> cars = carRepository.findTop50ByOwnerChatIdOrderByCreatedAtDesc(chatId);
+        if (cars.isEmpty()) {
+            sendMessage(chatId, myCarsEmptyText(chatId), keyboardFactory.mainMenuKeyboard(lang(chatId)));
+            return;
+        }
+
+        for (CarEntity car : cars) {
+            sendMessage(chatId, formatUserListing(chatId, car), keyboardFactory.userListingKeyboard(lang(chatId), car.getId(), car.getListingStatus()));
+        }
+    }
+
+    private void handleRemoveUserListing(Long chatId, String carIdValue) {
+        Long carId = parseLong(carIdValue);
+        if (carId == null) {
+            return;
+        }
+
+        carRepository.findById(carId).ifPresent(car -> {
+            if (!Objects.equals(car.getOwnerChatId(), chatId)) {
+                sendMessage(chatId, "This listing belongs to another user.");
+                return;
+            }
+
+            car.setListingStatus("INACTIVE");
+            carRepository.save(car);
+            sendMessage(chatId, listingRemovedText(chatId), keyboardFactory.mainMenuKeyboard(lang(chatId)));
+        });
+    }
+
+    private void handleAdminReview(Long adminChatId, String carIdValue, boolean approve) {
+        if (!isAdmin(adminChatId)) {
+            sendMessage(adminChatId, "Admin access denied.");
+            return;
+        }
+
+        Long carId = parseLong(carIdValue);
+        if (carId == null) {
+            return;
+        }
+
+        carRepository.findById(carId).ifPresent(car -> {
+            if (!"PENDING".equalsIgnoreCase(car.getListingStatus())) {
+                sendMessage(adminChatId, "Listing already reviewed: " + safe(car.getListingStatus()));
+                return;
+            }
+
+            car.setListingStatus(approve ? "ACTIVE" : "REJECTED");
+            if (approve) {
+                car.setCreatedAt(LocalDateTime.now());
+            }
+            carRepository.save(car);
+
+            sendMessage(adminChatId, approve ? "Approved." : "Rejected.");
+            if (car.getOwnerChatId() != null) {
+                sendMessage(car.getOwnerChatId(), approve ? listingApprovedText(car.getOwnerChatId()) : listingRejectedText(car.getOwnerChatId()));
+            }
+        });
+    }
+
+    private void notifyAdminsAboutUserListing(CarEntity car) {
+        if (adminChatIds.isEmpty()) {
+            log.warn("USER LISTING pending but no admins configured. carId={}", car.getId());
+            return;
+        }
+
+        String text = """
+                New user car listing
+
+                ID: %s
+                Owner chat: %s
+                Contact: %s
+
+                %s
+                """.formatted(
+                car.getId(),
+                car.getOwnerChatId(),
+                safe(car.getSellerContact()),
+                formatUserListing("en", car)
+        );
+
+        for (Long adminChatId : adminChatIds) {
+            sendMessage(adminChatId, text, keyboardFactory.sellAdminReviewKeyboard(car.getId()));
+        }
+    }
+
+    private boolean isSellStep(BotStep step) {
+        return step == BotStep.SELL_BRAND
+                || step == BotStep.SELL_TITLE
+                || step == BotStep.SELL_PRICE
+                || step == BotStep.SELL_YEAR
+                || step == BotStep.SELL_MILEAGE
+                || step == BotStep.SELL_LOCATION
+                || step == BotStep.SELL_FUEL_TYPE
+                || step == BotStep.SELL_TRANSMISSION
+                || step == BotStep.SELL_CAR_TYPE
+                || step == BotStep.SELL_CONTACT
+                || step == BotStep.SELL_CONFIRM;
+    }
+
+    private boolean isSellMenuText(String text) {
+        return containsIgnoreCase(text, "продать")
+                || containsIgnoreCase(text, "продати")
+                || containsIgnoreCase(text, "prodat")
+                || containsIgnoreCase(text, "sell car");
+    }
+
+    private boolean isMyCarsMenuText(String text) {
+        return containsIgnoreCase(text, "мои авто")
+                || containsIgnoreCase(text, "мої авто")
+                || containsIgnoreCase(text, "moje auta")
+                || containsIgnoreCase(text, "my cars");
+    }
+
+    private boolean containsIgnoreCase(String source, String value) {
+        return source != null && value != null && source.toLowerCase().contains(value.toLowerCase());
+    }
+
+    private String sellPrompt(Long chatId, String field) {
+        String lang = lang(chatId);
+        return switch (field) {
+            case "brand" -> switch (lang) {
+                case "ru" -> "🚗 Продажа авто\n\nВведите марку, например: Skoda";
+                case "uk" -> "🚗 Продаж авто\n\nВведіть марку, наприклад: Skoda";
+                case "cs" -> "🚗 Prodej auta\n\nZadejte značku, např.: Skoda";
+                default -> "🚗 Sell car\n\nEnter brand, for example: Skoda";
+            };
+            case "title" -> switch (lang) {
+                case "ru" -> "Введите модель и короткое описание, например: Octavia 1.6 TDI Ambition";
+                case "uk" -> "Введіть модель і короткий опис, наприклад: Octavia 1.6 TDI Ambition";
+                case "cs" -> "Zadejte model a krátký popis, např.: Octavia 1.6 TDI Ambition";
+                default -> "Enter model and short description, for example: Octavia 1.6 TDI Ambition";
+            };
+            case "price" -> switch (lang) {
+                case "ru" -> "Введите цену в Kč, только число. Например: 250000";
+                case "uk" -> "Введіть ціну в Kč, тільки число. Наприклад: 250000";
+                case "cs" -> "Zadejte cenu v Kč, pouze číslo. Např.: 250000";
+                default -> "Enter price in Kč, number only. Example: 250000";
+            };
+            case "year" -> switch (lang) {
+                case "ru" -> "Введите год выпуска. Например: 2018";
+                case "uk" -> "Введіть рік випуску. Наприклад: 2018";
+                case "cs" -> "Zadejte rok výroby. Např.: 2018";
+                default -> "Enter production year. Example: 2018";
+            };
+            case "mileage" -> switch (lang) {
+                case "ru" -> "Введите пробег в км, только число. Например: 145000";
+                case "uk" -> "Введіть пробіг у км, тільки число. Наприклад: 145000";
+                case "cs" -> "Zadejte nájezd v km, pouze číslo. Např.: 145000";
+                default -> "Enter mileage in km, number only. Example: 145000";
+            };
+            case "location" -> switch (lang) {
+                case "ru" -> "Введите город или регион. Например: Praha";
+                case "uk" -> "Введіть місто або регіон. Наприклад: Praha";
+                case "cs" -> "Zadejte město nebo kraj. Např.: Praha";
+                default -> "Enter city or region. Example: Praha";
+            };
+            case "fuel" -> switch (lang) {
+                case "ru" -> "Введите топливо: petrol, diesel, hybrid, plugin, electric, lpg, cng";
+                case "uk" -> "Введіть пальне: petrol, diesel, hybrid, plugin, electric, lpg, cng";
+                case "cs" -> "Zadejte palivo: petrol, diesel, hybrid, plugin, electric, lpg, cng";
+                default -> "Enter fuel: petrol, diesel, hybrid, plugin, electric, lpg, cng";
+            };
+            case "transmission" -> switch (lang) {
+                case "ru" -> "Введите коробку: manual или automatic";
+                case "uk" -> "Введіть коробку: manual або automatic";
+                case "cs" -> "Zadejte převodovku: manual nebo automatic";
+                default -> "Enter transmission: manual or automatic";
+            };
+            case "carType" -> switch (lang) {
+                case "ru" -> "Введите кузов: hatchback, sedan, wagon, suv, minivan, coupe, cabrio, pickup";
+                case "uk" -> "Введіть кузов: hatchback, sedan, wagon, suv, minivan, coupe, cabrio, pickup";
+                case "cs" -> "Zadejte karoserii: hatchback, sedan, wagon, suv, minivan, coupe, cabrio, pickup";
+                default -> "Enter body type: hatchback, sedan, wagon, suv, minivan, coupe, cabrio, pickup";
+            };
+            case "contact" -> switch (lang) {
+                case "ru" -> "Введите контакт для покупателя: телефон или @username";
+                case "uk" -> "Введіть контакт для покупця: телефон або @username";
+                case "cs" -> "Zadejte kontakt pro kupujícího: telefon nebo @username";
+                default -> "Enter buyer contact: phone or @username";
+            };
+            default -> "/cancel";
+        } + "\n\n/cancel";
+    }
+
+    private String sellInvalid(Long chatId, String field) {
+        String lang = lang(chatId);
+        return switch (lang) {
+            case "ru" -> "Не похоже на корректное значение. Попробуйте ещё раз.\n\n" + sellPrompt(chatId, field);
+            case "uk" -> "Не схоже на коректне значення. Спробуйте ще раз.\n\n" + sellPrompt(chatId, field);
+            case "cs" -> "To nevypadá jako správná hodnota. Zkuste to znovu.\n\n" + sellPrompt(chatId, field);
+            default -> "This does not look valid. Try again.\n\n" + sellPrompt(chatId, field);
+        };
+    }
+
+    private String sellSubmittedText(Long chatId) {
+        return switch (lang(chatId)) {
+            case "ru" -> "✅ Объявление отправлено на проверку. После одобрения оно появится в поиске.";
+            case "uk" -> "✅ Оголошення надіслано на перевірку. Після схвалення воно зʼявиться в пошуку.";
+            case "cs" -> "✅ Inzerát byl odeslán ke kontrole. Po schválení se objeví ve vyhledávání.";
+            default -> "✅ Listing submitted for review. After approval it will appear in search.";
+        };
+    }
+
+    private String sellCancelledText(Long chatId) {
+        return switch (lang(chatId)) {
+            case "ru" -> "Продажа отменена.";
+            case "uk" -> "Продаж скасовано.";
+            case "cs" -> "Prodej zrušen.";
+            default -> "Sell flow cancelled.";
+        };
+    }
+
+    private String myCarsEmptyText(Long chatId) {
+        return switch (lang(chatId)) {
+            case "ru" -> "У вас пока нет объявлений. Используйте /sell.";
+            case "uk" -> "У вас поки немає оголошень. Використайте /sell.";
+            case "cs" -> "Zatím nemáte žádné inzeráty. Použijte /sell.";
+            default -> "You do not have listings yet. Use /sell.";
+        };
+    }
+
+    private String listingRemovedText(Long chatId) {
+        return switch (lang(chatId)) {
+            case "ru" -> "Объявление снято с продажи.";
+            case "uk" -> "Оголошення знято з продажу.";
+            case "cs" -> "Inzerát byl stažen z prodeje.";
+            default -> "Listing removed.";
+        };
+    }
+
+    private String listingApprovedText(Long chatId) {
+        return switch (lang(chatId)) {
+            case "ru" -> "✅ Ваше объявление одобрено и появилось в поиске.";
+            case "uk" -> "✅ Ваше оголошення схвалено і воно зʼявилося в пошуку.";
+            case "cs" -> "✅ Váš inzerát byl schválen a je ve vyhledávání.";
+            default -> "✅ Your listing was approved and is now searchable.";
+        };
+    }
+
+    private String listingRejectedText(Long chatId) {
+        return switch (lang(chatId)) {
+            case "ru" -> "К сожалению, объявление отклонено модератором.";
+            case "uk" -> "На жаль, оголошення відхилено модератором.";
+            case "cs" -> "Inzerát byl bohužel zamítnut moderátorem.";
+            default -> "The listing was rejected by moderator.";
+        };
+    }
+
+    private String buildSellPreview(Long chatId, SellDraft draft) {
+        return switch (lang(chatId)) {
+            case "ru" -> "Проверьте объявление:\n\n" + formatSellDraft(chatId, draft);
+            case "uk" -> "Перевірте оголошення:\n\n" + formatSellDraft(chatId, draft);
+            case "cs" -> "Zkontrolujte inzerát:\n\n" + formatSellDraft(chatId, draft);
+            default -> "Review listing:\n\n" + formatSellDraft(chatId, draft);
+        };
+    }
+
+    private String formatSellDraft(Long chatId, SellDraft draft) {
+        String lang = lang(chatId);
+        return """
+                🚗 %s
+
+                💰 %s
+                📍 %s
+                📅 %s
+                🛣 %s
+                ⛽ %s
+                ⚙️ %s
+                🚙 %s
+                ☎️ %s
+                """.formatted(
+                buildUserListingTitle(draft),
+                formatCzk(draft.priceValue),
+                safe(draft.location),
+                draft.year,
+                safeMileage(draft.mileage),
+                formatFuelTypeValue(lang, draft.fuelType),
+                formatTransmissionValue(lang, draft.transmission),
+                formatCarType(lang, draft.carType),
+                safe(draft.sellerContact)
+        ).trim();
+    }
+
+    private String formatUserListing(Long chatId, CarEntity car) {
+        return formatUserListing(lang(chatId), car);
+    }
+
+    private String formatUserListing(String lang, CarEntity car) {
+        String status = car.getListingStatus() == null ? "ACTIVE" : car.getListingStatus();
+        return """
+                🚗 %s
+
+                Status: %s
+                💰 %s
+                📍 %s
+                📅 %s
+                🛣 %s
+                ⛽ %s
+                ⚙️ %s
+                🚙 %s
+                ☎️ %s
+                """.formatted(
+                safe(car.getTitle()),
+                status,
+                formatPrice(car),
+                safe(car.getLocation()),
+                car.getYear() == null ? "-" : car.getYear(),
+                safeMileage(car.getMileage()),
+                formatFuelTypeValue(lang, car.getFuelType()),
+                formatTransmissionValue(lang, car.getTransmission()),
+                formatCarType(lang, car.getCarType()),
+                safe(car.getSellerContact())
+        ).trim();
+    }
+
+    private String buildUserListingTitle(SellDraft draft) {
+        String brand = draft.brand == null ? "" : draft.brand.trim();
+        String title = draft.title == null ? "" : draft.title.trim();
+        if (title.toLowerCase().startsWith(brand.toLowerCase())) {
+            return limitText(title, 240);
+        }
+        return limitText((brand + " " + title).trim(), 240);
+    }
+
+    private String normalizeSellBrand(String value) {
+        String normalized = limitText(value, 60).trim().toUpperCase().replaceAll("[^A-Z0-9 ]", "");
+        return normalized.isBlank() ? "OTHER" : normalized.replace(' ', '_');
+    }
+
+    private String normalizeSellFuel(String value) {
+        String v = value == null ? "" : value.trim().toLowerCase();
+        if (v.contains("diesel") || v.contains("nafta") || v.contains("диз") || v.contains("дизель")) return "DIESEL";
+        if (v.contains("plugin") || v.contains("plug") || v.contains("phev")) return "PLUGIN_HYBRID";
+        if (v.contains("hybrid") || v.contains("гібр") || v.contains("гибр")) return "HYBRID";
+        if (v.contains("electric") || v.contains("ev") || v.contains("елект") || v.contains("элект")) return "ELECTRIC";
+        if (v.contains("lpg")) return "LPG";
+        if (v.contains("cng")) return "CNG";
+        if (v.contains("petrol") || v.contains("benzin") || v.contains("benz") || v.contains("бенз")) return "PETROL";
+        return null;
+    }
+
+    private String normalizeSellTransmission(String value) {
+        String v = value == null ? "" : value.trim().toLowerCase();
+        if (v.contains("auto") || v.contains("dsg") || v.contains("авто")) return "AUTOMATIC";
+        if (v.contains("manual") || v.contains("man") || v.contains("мех") || v.contains("мех")) return "MANUAL";
+        return null;
+    }
+
+    private String normalizeSellCarType(String value) {
+        String v = value == null ? "" : value.trim().toLowerCase();
+        if (v.contains("suv") || v.contains("crossover") || v.contains("крос")) return "SUV";
+        if (v.contains("wagon") || v.contains("kombi") || v.contains("combi") || v.contains("универс") || v.contains("універс")) return "WAGON";
+        if (v.contains("sedan") || v.contains("седан")) return "SEDAN";
+        if (v.contains("minivan") || v.contains("mpv") || v.contains("мінівен") || v.contains("минивен")) return "MINIVAN";
+        if (v.contains("coupe") || v.contains("купе")) return "COUPE";
+        if (v.contains("cabrio") || v.contains("кабр")) return "CABRIO";
+        if (v.contains("pickup") || v.contains("pick-up") || v.contains("пикап") || v.contains("пікап")) return "PICKUP";
+        if (v.contains("hatch") || v.contains("хетч")) return "HATCHBACK";
+        return null;
+    }
+
+    private Integer parsePositiveInt(String value) {
+        if (value == null) {
+            return null;
+        }
+        String digits = value.replaceAll("[^0-9]", "");
+        if (digits.isBlank()) {
+            return null;
+        }
+        try {
+            return Integer.parseInt(digits);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    private Long parseLong(String value) {
+        if (value == null || value.isBlank()) {
+            return null;
+        }
+        try {
+            return Long.parseLong(value.trim());
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    private String limitText(String value, int maxLen) {
+        if (value == null) {
+            return "";
+        }
+        String normalized = value.replaceAll("\\s+", " ").trim();
+        return normalized.length() <= maxLen ? normalized : normalized.substring(0, maxLen).trim();
+    }
+
+    private String formatCzk(Integer value) {
+        if (value == null) {
+            return "-";
+        }
+        return String.format("%,d Kč", value).replace(",", " ");
+    }
+
     private void showCurrentFilter(Long chatId) {
         editingFilterSessions.remove(chatId);
         UserFilterEntity filter = userFilterService.findByChatId(chatId).orElse(null);
@@ -1974,6 +2584,10 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
             sb.append("🌐 ").append(source).append("\n");
         }
 
+        if ("USER".equalsIgnoreCase(car.getSource()) && car.getSellerContact() != null && !car.getSellerContact().isBlank()) {
+            sb.append("☎️ ").append(car.getSellerContact().trim()).append("\n");
+        }
+
         if (freshness != null) {
             sb.append("🕒 ").append(freshness).append("\n");
         }
@@ -2052,6 +2666,10 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
 
         if (normalized.contains("TOYOTA_PROVERENE")) {
             return "Toyota prověřené vozy";
+        }
+
+        if (normalized.contains("USER")) {
+            return "AutoCZ users";
         }
 
         return source.trim();
@@ -2238,6 +2856,7 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
 
         long totalCars = carRepository.count();
         long newLast24h = carRepository.countByCreatedAtAfter(last24h);
+        long pendingUserListings = carRepository.countByListingStatus("PENDING");
 
         String sourcesTotal = formatSourceStats(carRepository.countCarsBySource());
         String sourcesLast24h = formatSourceStats(carRepository.countCarsBySourceAfter(last24h));
@@ -2273,6 +2892,7 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
 
         🚗 Cars in DB: %d
         🆕 New last 24h: %d
+        🧾 User listings pending: %d
 
         📦 Sources total:
         %s
@@ -2288,6 +2908,7 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
                 favoritesTotal,
                 totalCars,
                 newLast24h,
+                pendingUserListings,
                 sourcesTotal,
                 sourcesLast24h,
                 latest.toString().trim()
@@ -2345,5 +2966,35 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
         }
 
         return cleaned.substring(0, 42).trim() + "...";
+    }
+
+    private static class SellDraft {
+        private Long ownerChatId;
+        private String sellerUsername;
+        private String brand;
+        private String title;
+        private Integer priceValue;
+        private Integer year;
+        private Integer mileage;
+        private String location;
+        private String fuelType;
+        private String transmission;
+        private String carType;
+        private String sellerContact;
+        private String description;
+
+        private boolean isComplete() {
+            return ownerChatId != null
+                    && brand != null && !brand.isBlank()
+                    && title != null && !title.isBlank()
+                    && priceValue != null
+                    && year != null
+                    && mileage != null
+                    && location != null && !location.isBlank()
+                    && fuelType != null && !fuelType.isBlank()
+                    && transmission != null && !transmission.isBlank()
+                    && carType != null && !carType.isBlank()
+                    && sellerContact != null && !sellerContact.isBlank();
+        }
     }
 }

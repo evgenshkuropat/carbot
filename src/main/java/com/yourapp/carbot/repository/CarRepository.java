@@ -20,9 +20,13 @@ public interface CarRepository extends JpaRepository<CarEntity, Long> {
 
     List<CarEntity> findAllByOrderByCreatedAtDesc();
 
+    List<CarEntity> findAllByListingStatusOrderByCreatedAtDesc(String listingStatus);
+
     List<CarEntity> findTop5ByOrderByCreatedAtDesc();
 
     List<CarEntity> findTop50ByOrderByCreatedAtDesc();
+
+    List<CarEntity> findTop50ByOwnerChatIdOrderByCreatedAtDesc(Long ownerChatId);
 
     List<CarEntity> findTop50BySourceOrderByCreatedAtDesc(String source);
 
@@ -39,6 +43,8 @@ public interface CarRepository extends JpaRepository<CarEntity, Long> {
     List<CarEntity> findTop200ByOrderByCreatedAtDesc();
 
     long countBySource(String source);
+
+    long countByListingStatus(String listingStatus);
 
     long countByCreatedAtAfter(LocalDateTime dateTime);
 
