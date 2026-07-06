@@ -280,6 +280,24 @@ class TipCarsParserTest {
                 .isEqualTo("Peugeot 208 1.5 HDI 75 KW,1.MAJ,\u010CR,DPH...");
     }
 
+    @Test
+    void repairsTipCarsMojibakeAfterWhitespaceNormalizationFromLogs() throws Exception {
+        assertThat(repairMojibake("\u0139 koda Superb 1,5TSI 110KW STYLE odp.DPH"))
+                .isEqualTo("\u0160koda Superb 1,5TSI 110KW STYLE odp.DPH");
+        assertThat(repairMojibake("BMW \u0139\u0098ada 3 BMW E90 320d"))
+                .isEqualTo("BMW \u0158ada 3 BMW E90 320d");
+        assertThat(repairMojibake("Hyundai i30 1.0 T-GDI Comfort automat"))
+                .isEqualTo("Hyundai i30 1.0 T-GDI Comfort automat");
+        assertThat(repairMojibake("Kol\u0102\u00ADn"))
+                .isEqualTo("Kol\u00EDn");
+        assertThat(repairMojibake("Ford Galaxy 2.0TDCi MANU\u0102\u0081L 7M\u0102\u0164ST TA\u0139\u00BDN\u0102\u2030"))
+                .isEqualTo("Ford Galaxy 2.0TDCi MANU\u00C1L 7M\u00CDST TA\u017DN\u00C9");
+        assertThat(repairMojibake("Mazda 3 2.0i AUTOMAT LED KAMERA V\u0102\u0165H\u0139\u0098EV"))
+                .isEqualTo("Mazda 3 2.0i AUTOMAT LED KAMERA V\u00DDH\u0158EV");
+        assertThat(repairMojibake("Ford Mustang GT 5.0 Premium /AT/k\u0139\u017B\u0139\u013Ee/440 PS"))
+                .isEqualTo("Ford Mustang GT 5.0 Premium /AT/k\u016F\u017Ee/440 PS");
+    }
+
     void repairsTipCarsMojibakeBeforeOutputLegacy() throws Exception {
         assertThat(repairMojibake("Ĺ koda Superb 2,0 TDi Ambition"))
                 .isEqualTo("Škoda Superb 2,0 TDi Ambition");
