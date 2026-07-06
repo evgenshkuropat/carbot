@@ -38,12 +38,8 @@ public class CarBotKeyboardFactory {
         row3.add(new KeyboardButton("⭐ " + messages.get(lang, "menu.favorites")));
         row3.add(new KeyboardButton("🌐 " + messages.get(lang, "menu.language")));
 
-        KeyboardRow row4 = new KeyboardRow();
-        row4.add(new KeyboardButton(sellMenuText(lang)));
-        row4.add(new KeyboardButton(myCarsMenuText(lang)));
-
         return ReplyKeyboardMarkup.builder()
-                .keyboard(List.of(row1, row2, row3, row4))
+                .keyboard(List.of(row1, row2, row3))
                 .resizeKeyboard(true)
                 .selective(true)
                 .build();
