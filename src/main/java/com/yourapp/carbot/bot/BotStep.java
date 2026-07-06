@@ -30,5 +30,6 @@ public enum BotStep {
     SELL_CONTACT,
     SELL_PHOTO,
     SELL_CONFIRM,
+    SELL_EDIT_VALUE,
     COMPLETED
 }

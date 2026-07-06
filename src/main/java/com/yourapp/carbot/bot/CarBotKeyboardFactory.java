@@ -729,9 +729,31 @@ public class CarBotKeyboardFactory {
     public InlineKeyboardMarkup userListingKeyboard(String lang, Long carId, String status) {
         List<InlineKeyboardRow> rows = new ArrayList<>();
 
+        rows.add(twoButtonsRow(
+                editListingText(lang),
+                "sell_edit_menu:" + carId,
+                deleteListingText(lang),
+                "sell_delete:" + carId
+        ));
+
         if ("ACTIVE".equalsIgnoreCase(status) || "PENDING".equalsIgnoreCase(status)) {
             rows.add(singleButtonRow(removeListingText(lang), "sell_remove:" + carId));
         }
+
+        return InlineKeyboardMarkup.builder()
+                .keyboard(rows)
+                .build();
+    }
+
+    public InlineKeyboardMarkup userListingEditKeyboard(String lang, Long carId) {
+        List<InlineKeyboardRow> rows = new ArrayList<>();
+
+        rows.add(twoButtonsRow("Title", "sell_edit:" + carId + ":title", "Price", "sell_edit:" + carId + ":price"));
+        rows.add(twoButtonsRow("Year", "sell_edit:" + carId + ":year", "Mileage", "sell_edit:" + carId + ":mileage"));
+        rows.add(twoButtonsRow("Location", "sell_edit:" + carId + ":location", "Contact", "sell_edit:" + carId + ":contact"));
+        rows.add(twoButtonsRow("Fuel", "sell_edit:" + carId + ":fuel", "Transmission", "sell_edit:" + carId + ":transmission"));
+        rows.add(twoButtonsRow("Car type", "sell_edit:" + carId + ":carType", "Photo", "sell_edit:" + carId + ":photo"));
+        rows.add(singleButtonRow("Back", "sell_mycars"));
 
         return InlineKeyboardMarkup.builder()
                 .keyboard(rows)
@@ -800,6 +822,24 @@ public class CarBotKeyboardFactory {
             case "uk" -> "🗑 Зняти з продажу";
             case "cs" -> "🗑 Stáhnout z prodeje";
             default -> "🗑 Remove listing";
+        };
+    }
+
+    private String editListingText(String lang) {
+        return switch (lang) {
+            case "ru" -> "✏️ Редактировать";
+            case "uk" -> "✏️ Редагувати";
+            case "cs" -> "✏️ Upravit";
+            default -> "✏️ Edit";
+        };
+    }
+
+    private String deleteListingText(String lang) {
+        return switch (lang) {
+            case "ru" -> "🗑 Удалить";
+            case "uk" -> "🗑 Видалити";
+            case "cs" -> "🗑 Smazat";
+            default -> "🗑 Delete";
         };
     }
 
