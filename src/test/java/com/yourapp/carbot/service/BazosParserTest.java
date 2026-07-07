@@ -824,6 +824,24 @@ class BazosParserTest {
                 .isEqualTo("Jind\u0159ich\u016Fv Hradec");
         assertThat(repairMojibake("BENZ\u0102\u0164N,TA\u0139\u02DDN\u0102\u2030,V\u0102\u0165ROBY"))
                 .isEqualTo("BENZ\u00CDN,TA\u017DN\u00C9,V\u00DDROBY");
+        assertThat(repairMojibake("Alfa Romeo Mito 1.4 benz\u0102\u00ADn 166tkm"))
+                .isEqualTo("Alfa Romeo Mito 1.4 benz\u00EDn 166tkm");
+        assertThat(repairMojibake("Vset\u0102\u00ADn"))
+                .isEqualTo("Vset\u00EDn");
+        assertThat(repairMojibake("Audi A4 Avant 2.0 TSI 110kW S-tronic 41tkm - z\u0102\u02C7ruka 2 roky"))
+                .isEqualTo("Audi A4 Avant 2.0 TSI 110kW S-tronic 41tkm - z\u00E1ruka 2 roky");
+        assertThat(repairMojibake("Audi A5 SPORTBACK FL.2023 2.0TDI 150KW 40TDI\u00E2\u20AC\u02D8S-TRONIC\u00E2\u20AC\u02D8Kamera"))
+                .isEqualTo("Audi A5 SPORTBACK FL.2023 2.0TDI 150KW 40TDI\u2022S-TRONIC\u2022Kamera");
+        assertThat(repairMojibake("BMW \u0139\u0098ada 3 GT 318D MANU\u0102\u0081L KAMERA V\u0102\u0165H\u0139\u0098EV"))
+                .isEqualTo("BMW \u0158ada 3 GT 318D MANU\u00C1L KAMERA V\u00DDH\u0158EV");
+        assertThat(repairMojibake("BMW 530D XDRIVE M SPORT 210KW M2021 K\u0139\u00AE\u0139\u02DDE TA\u0139\u02DDN\u0102\u2030 Z\u0102\u0081RUKA CZ DPH"))
+                .isEqualTo("BMW 530D XDRIVE M SPORT 210KW M2021 K\u016E\u017DE TA\u017DN\u00C9 Z\u00C1RUKA CZ DPH");
+        assertThat(repairMojibake("BMW 3 GT 320D 135kW xDrive LUXURY / VELMI P\u00C4\u0161KN\u0102\u0165 STAV VOZU/"))
+                .isEqualTo("BMW 3 GT 320D 135kW xDrive LUXURY / VELMI P\u011AKN\u00DD STAV VOZU/");
+        assertThat(repairMojibake("\u00C4\u015Aesk\u0102\u02C7 L\u0102\u00ADpa"))
+                .isEqualTo("\u010Cesk\u00E1 L\u00EDpa");
+        assertThat(repairMojibake("Praha - v\u0102\u00BDchod"))
+                .isEqualTo("Praha - v\u00FDchod");
     }
 
     private String extractFuelType(String text) throws Exception {

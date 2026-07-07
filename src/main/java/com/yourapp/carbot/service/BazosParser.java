@@ -4123,6 +4123,12 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 continue;
             }
 
+            if (codePoint == 0x02D8) {
+                out.write(0xA2);
+                offset += Character.charCount(codePoint);
+                continue;
+            }
+
             if (codePoint <= 0xFF) {
                 out.write(codePoint);
             } else {
