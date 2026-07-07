@@ -200,6 +200,24 @@ class SautoParserTest {
                 .isEqualTo("Plze\u0148");
     }
 
+    @Test
+    void repairsCurrentSautoMojibakeFromLogs() throws Exception {
+        assertThat(repairMojibake("\u0139\u00A0koda Fabia 1.4 TDi,AC,park.asist"))
+                .isEqualTo("\u0160koda Fabia 1.4 TDi,AC,park.asist");
+        assertThat(repairMojibake("Citro\u0102\u00ABn C4 1.4 benzin"))
+                .isEqualTo("Citro\u00EBn C4 1.4 benzin");
+        assertThat(repairMojibake("Renault Clio 1.5 dCi , Klima, pln\u00C4\u203A poj\u0102\u00ADzdn\u0102\u00BD"))
+                .isEqualTo("Renault Clio 1.5 dCi , Klima, pln\u011B poj\u00EDzdn\u00FD");
+        assertThat(repairMojibake("Opel Zafira 1.8, po STK, za skv\u00C4\u203Alou cenu"))
+                .isEqualTo("Opel Zafira 1.8, po STK, za skv\u011Blou cenu");
+        assertThat(repairMojibake("Kia Cee\u00C2\u00B4d 1.6 CVVT, \u00C4\u015AR,1.maj, po STK"))
+                .isEqualTo("Kia Cee\u00B4d 1.6 CVVT, \u010CR,1.maj, po STK");
+        assertThat(repairMojibake("Karvin\u0102\u02C7"))
+                .isEqualTo("Karvin\u00E1");
+        assertThat(repairMojibake("Mercedes-Benz T\u0139\u2122\u0102\u00ADdy C 200 Kompressor 120 kW"))
+                .isEqualTo("Mercedes-Benz T\u0159\u00EDdy C 200 Kompressor 120 kW");
+    }
+
     private String extractCarType(String title, String text, String url) throws Exception {
         Method method = SautoParser.class.getDeclaredMethod("extractCarType", String.class, String.class, String.class);
         method.setAccessible(true);
