@@ -842,6 +842,18 @@ class BazosParserTest {
                 .isEqualTo("\u010Cesk\u00E1 L\u00EDpa");
         assertThat(repairMojibake("Praha - v\u0102\u00BDchod"))
                 .isEqualTo("Praha - v\u00FDchod");
+        assertThat(repairMojibake("Opel Astra 1.5D Sports Tourer Elegance 2024 - odpo\u00C4\u0164et DPH"))
+                .isEqualTo("Opel Astra 1.5D Sports Tourer Elegance 2024 - odpo\u010Det DPH");
+        assertThat(repairMojibake("Opel Vivaro 2.0 CDTI 84 kW (Long, 9 m\u0102\u00ADst) \u00E2\u20AC\u201C L2H1"))
+                .isEqualTo("Opel Vivaro 2.0 CDTI 84 kW (Long, 9 m\u00EDst) \u2013 L2H1");
+        assertThat(repairMojibake("\u00E2\u015B\u2026Peugeot 308 SW 1.2 81kw PureTech |2021| 69tkm |SERVIS|\u00C4\u015AR"))
+                .isEqualTo("\u2705Peugeot 308 SW 1.2 81kw PureTech |2021| 69tkm |SERVIS|\u010CR");
+        assertThat(repairMojibake("PEUGEOT 3008 2.0HDi 110KW GT-LINE 1.MAJITEL-PERF.STAV LED\u00E2\u00AD\u0090 -"))
+                .isEqualTo("PEUGEOT 3008 2.0HDi 110KW GT-LINE 1.MAJITEL-PERF.STAV LED\u2B50 -");
+        assertThat(repairMojibake("Renault Clio Grandtour, 2018, vyh\u0139\u2122.sed, navi ,DPH, Z\u0102\u0081RUKA"))
+                .isEqualTo("Renault Clio Grandtour, 2018, vyh\u0159.sed, navi ,DPH, Z\u00C1RUKA");
+        assertThat(repairMojibake("P\u0139\u2122edn\u0102\u00AD n\u0102\u02C7razn\u0102\u00ADk"))
+                .isEqualTo("P\u0159edn\u00ED n\u00E1razn\u00EDk");
     }
 
     private String extractFuelType(String text) throws Exception {
