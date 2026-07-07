@@ -784,6 +784,8 @@ class BazosParserTest {
     void repairsCurrentBazosMojibakeFromLogs() throws Exception {
         assertThat(repairMojibake("Ĺ koda Superb III combi 2.0 TDi,147kW,DSG,4x4,Sportline,Webas"))
                 .isEqualTo("Škoda Superb III combi 2.0 TDi,147kW,DSG,4x4,Sportline,Webas");
+        assertThat(repairMojibake("Ĺ koda Superb III combi 2.0 TDi,147kW,DSG,4x4,Sportline,Webas"))
+                .isEqualTo("Škoda Superb III combi 2.0 TDi,147kW,DSG,4x4,Sportline,Webas");
         assertThat(repairMojibake("Ĺ koda Enyaq 80iV 82kWH,150kW,LED,TaĹľnĂ©,1.maj,NezĂˇvislĂˇ klima"))
                 .isEqualTo("Škoda Enyaq 80iV 82kWH,150kW,LED,Tažné,1.maj,Nezávislá klima");
         assertThat(repairMojibake("Rychnov nad KnÄ›Ĺľnou"))
@@ -792,6 +794,12 @@ class BazosParserTest {
                 .isEqualTo("Toyota Proace Verso 2.0 D-4D, 9 MÍST, LONG");
         assertThat(repairMojibake("ÄŚeskĂ© BudÄ›jovice"))
                 .isEqualTo("České Budějovice");
+        assertThat(repairMojibake("JiÄŤĂ­n"))
+                .isEqualTo("Jičín");
+        assertThat(repairMojibake("UherskĂ© HradiĹˇtÄ›"))
+                .isEqualTo("Uherské Hradiště");
+        assertThat(repairMojibake("ProstÄ›jov"))
+                .isEqualTo("Prostějov");
     }
 
     private String extractFuelType(String text) throws Exception {
