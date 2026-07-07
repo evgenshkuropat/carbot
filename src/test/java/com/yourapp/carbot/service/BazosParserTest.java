@@ -802,6 +802,30 @@ class BazosParserTest {
                 .isEqualTo("Prostějov");
     }
 
+    @Test
+    void repairsJulyBazosMojibakeFromLogs() throws Exception {
+        assertThat(repairMojibake("Citro\u0102\u00ABn C4 II 1.6 VTi (88 kW) \u00E2\u20AC\u201C 2011, 134 000km"))
+                .isEqualTo("Citro\u00EBn C4 II 1.6 VTi (88 kW) \u2013 2011, 134 000km");
+        assertThat(repairMojibake("Citroen C4 Picasso 1.6 HDi - po servise za 15.500,- K\u00C4\u0164"))
+                .isEqualTo("Citroen C4 Picasso 1.6 HDi - po servise za 15.500,- K\u010D");
+        assertThat(repairMojibake("CITRO\u0102\u2039N SPACETOURER,2.0 HDI,130 KW,EAT8,8 M\u0102\u0164ST"))
+                .isEqualTo("CITRO\u00CBN SPACETOURER,2.0 HDI,130 KW,EAT8,8 M\u00CDST");
+        assertThat(repairMojibake("Berlingo 1,5hdi,84tis.km,1.maj.\u00C4\u015Ar,TOP stav, DPH"))
+                .isEqualTo("Berlingo 1,5hdi,84tis.km,1.maj.\u010Cr,TOP stav, DPH");
+        assertThat(repairMojibake("B\u0139\u2122eclav"))
+                .isEqualTo("B\u0159eclav");
+        assertThat(repairMojibake("Hradec Kr\u0102\u02C7lov\u0102\u00A9"))
+                .isEqualTo("Hradec Kr\u00E1lov\u00E9");
+        assertThat(repairMojibake("Fr\u0102\u00BDdek - M\u0102\u00ADstek"))
+                .isEqualTo("Fr\u00FDdek - M\u00EDstek");
+        assertThat(repairMojibake("D\u00C4\u203A\u00C4\u0164\u0102\u00ADn"))
+                .isEqualTo("D\u011B\u010D\u00EDn");
+        assertThat(repairMojibake("Jind\u0139\u2122ich\u0139\u017Bv Hradec"))
+                .isEqualTo("Jind\u0159ich\u016Fv Hradec");
+        assertThat(repairMojibake("BENZ\u0102\u0164N,TA\u0139\u02DDN\u0102\u2030,V\u0102\u0165ROBY"))
+                .isEqualTo("BENZ\u00CDN,TA\u017DN\u00C9,V\u00DDROBY");
+    }
+
     private String extractFuelType(String text) throws Exception {
         Method method = BazosParser.class.getDeclaredMethod("extractFuelType", String.class);
         method.setAccessible(true);
