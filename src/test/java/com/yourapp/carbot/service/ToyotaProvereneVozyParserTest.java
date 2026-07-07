@@ -145,6 +145,14 @@ class ToyotaProvereneVozyParserTest {
                 .isEqualTo("Citro\u00EBn C4 1.2 Puretech");
         assertThat(repairMojibake("\u0139\u00A0koda Octavia 1.6 TDI Combi"))
                 .isEqualTo("\u0160koda Octavia 1.6 TDI Combi");
+        assertThat(repairMojibake("Dol\u0102\u02C7k P\u0139\u2122\u0102\u00ADbram"))
+                .isEqualTo("Dol\u00E1k P\u0159\u00EDbram");
+        assertThat(repairMojibake("Tsusho Praha Pr\u0139\u017Bhonice"))
+                .isEqualTo("Tsusho Praha Pr\u016Fhonice");
+        assertThat(repairMojibake("Hradec Kr\u0102\u02C7lov\u0102\u00A9"))
+                .isEqualTo("Hradec Kr\u00E1lov\u00E9");
+        assertThat(repairMojibake("LOUWMAN \u0102\u0161ST\u0102\u0164 - Nov\u0102\u00A9 a p\u0139\u2122edv\u0102\u02C7d\u00C4\u203Ac\u0102\u00AD vozy"))
+                .isEqualTo("LOUWMAN \u00DAST\u00CD - Nov\u00E9 a p\u0159edv\u00E1d\u011Bc\u00ED vozy");
     }
 
     private String extractCarType(String title, String text) throws Exception {
@@ -171,3 +179,4 @@ class ToyotaProvereneVozyParserTest {
         return (String) method.invoke(parser, value);
     }
 }
+

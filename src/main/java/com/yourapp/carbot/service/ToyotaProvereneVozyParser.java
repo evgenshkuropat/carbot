@@ -991,6 +991,13 @@ public class ToyotaProvereneVozyParser implements CarSourceParser {
             int codePoint = value.codePointAt(offset);
             String ch = new String(Character.toChars(codePoint));
 
+            if (codePoint == 0x0139 && looksLikeNormalizedMojibakeNbsp(value, offset)) {
+                out.write(0xC5);
+                out.write(0xA0);
+                offset += Character.charCount(codePoint) + 1;
+                continue;
+            }
+
             if (codePoint <= 0xFF) {
                 out.write(codePoint);
             } else {
@@ -1012,6 +1019,16 @@ public class ToyotaProvereneVozyParser implements CarSourceParser {
         }
 
         return out.toByteArray();
+    }
+
+    private boolean looksLikeNormalizedMojibakeNbsp(String value, int offset) {
+        int afterCurrent = offset + 1;
+        if (afterCurrent >= value.length() || value.charAt(afterCurrent) != ' ') {
+            return false;
+        }
+
+        int afterSpace = afterCurrent + 1;
+        return afterSpace < value.length() && Character.isLetter(value.charAt(afterSpace));
     }
 
     private boolean looksLikeMojibake(String value) {
