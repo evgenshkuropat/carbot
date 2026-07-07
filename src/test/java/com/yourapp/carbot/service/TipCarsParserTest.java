@@ -298,6 +298,27 @@ class TipCarsParserTest {
                 .isEqualTo("Ford Mustang GT 5.0 Premium /AT/k\u016F\u017Ee/440 PS");
     }
 
+    @Test
+    void repairsCurrentTipCarsMojibakeFromLogs() throws Exception {
+        assertThat(repairMojibake("Suzuki Swift 1.2i KOUPENO \u00C4\u015AR,1.MAJITEL"))
+                .isEqualTo("Suzuki Swift 1.2i KOUPENO \u010CR,1.MAJITEL");
+        assertThat(repairMojibake("\u0139\u00A0koda Rapid 1.2 Tsi, Monte Carlo"))
+                .isEqualTo("\u0160koda Rapid 1.2 Tsi, Monte Carlo");
+        assertThat(repairMojibake("Toyota Yaris 1.5i, \u00C4\u015AR-1m, ComTech, z\u0102\u02C7ruka"))
+                .isEqualTo("Toyota Yaris 1.5i, \u010CR-1m, ComTech, z\u00E1ruka");
+        assertThat(repairMojibake("Ford Tourneo Connect 1.5TDCi MAXi 7m\u0102\u00ADst, TITANIUM"))
+                .isEqualTo("Ford Tourneo Connect 1.5TDCi MAXi 7m\u00EDst, TITANIUM");
+        assertThat(repairMojibake("Mercedes-Benz T\u0139\u2122\u0102\u00ADdy E 220d 4MATIC, KEYLESS,DISTRONIC"))
+                .isEqualTo("Mercedes-Benz T\u0159\u00EDdy E 220d 4MATIC, KEYLESS,DISTRONIC");
+        assertThat(repairMojibake("Volkswagen Tayron 2.0TDI DSG 4MOTION LIFE 7 M\u0102\u0164ST"))
+                .isEqualTo("Volkswagen Tayron 2.0TDI DSG 4MOTION LIFE 7 M\u00CDST");
+        assertThat(repairMojibake("Peugeot 5008 2.0HDI 110KW man\u00E2\u20AC\u201C 2x PNEU"))
+                .isEqualTo("Peugeot 5008 2.0HDI 110KW man\u2013 2x PNEU");
+        assertThat(repairMojibake("Citro\u0102\u00ABn Berlingo SHINE XL 1.5BHDi 96kW CZ DPH"))
+                .isEqualTo("Citro\u00EBn Berlingo SHINE XL 1.5BHDi 96kW CZ DPH");
+    }
+
+    @Test
     void repairsTipCarsMojibakeBeforeOutputLegacy() throws Exception {
         assertThat(repairMojibake("Ĺ koda Superb 2,0 TDi Ambition"))
                 .isEqualTo("Škoda Superb 2,0 TDi Ambition");
