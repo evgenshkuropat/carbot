@@ -5,8 +5,10 @@ import com.yourapp.carbot.entity.TelegramSubscriberEntity;
 import com.yourapp.carbot.entity.UserFilterEntity;
 import com.yourapp.carbot.i18n.MessageService;
 import com.yourapp.carbot.repository.CarRepository;
+import com.yourapp.carbot.service.CarFilterMatcher;
 import com.yourapp.carbot.service.CarSearchService;
 import com.yourapp.carbot.service.FavoriteCarService;
+import com.yourapp.carbot.service.ParserRunStatsService;
 import com.yourapp.carbot.service.TelegramSubscriberService;
 import com.yourapp.carbot.service.UserFilterService;
 import com.yourapp.carbot.service.UserStateService;
@@ -59,7 +61,9 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
     private final UserFilterService userFilterService;
     private final CarRepository carRepository;
     private final CarSearchService carSearchService;
+    private final CarFilterMatcher carFilterMatcher;
     private final FavoriteCarService favoriteCarService;
+    private final ParserRunStatsService parserRunStatsService;
     private final CarBotKeyboardFactory keyboardFactory;
     private final MessageService messages;
 
@@ -76,7 +80,9 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
             UserFilterService userFilterService,
             CarRepository carRepository,
             CarSearchService carSearchService,
+            CarFilterMatcher carFilterMatcher,
             FavoriteCarService favoriteCarService,
+            ParserRunStatsService parserRunStatsService,
             CarBotKeyboardFactory keyboardFactory,
             MessageService messages,
             @Value("${telegram.bot.admin-chat-ids:}") String adminChatIdsRaw
@@ -88,7 +94,9 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
         this.userFilterService = userFilterService;
         this.carRepository = carRepository;
         this.carSearchService = carSearchService;
+        this.carFilterMatcher = carFilterMatcher;
         this.favoriteCarService = favoriteCarService;
+        this.parserRunStatsService = parserRunStatsService;
         this.keyboardFactory = keyboardFactory;
         this.messages = messages;
         this.adminChatIds = parseAdminChatIds(adminChatIdsRaw);
@@ -3254,6 +3262,8 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
 
         String sourcesTotal = formatSourceStats(carRepository.countCarsBySource());
         String sourcesLast24h = formatSourceStats(carRepository.countCarsBySourceAfter(last24h));
+        String parserDiagnostics = buildParserDiagnostics();
+        String filterDiagnostics = buildAdminFilterDiagnostics(chatId, last24h);
 
         long usersTotal = subscriberService.countAllSubscribers();
         long usersActive = subscriberService.countActiveSubscribers();
@@ -3308,8 +3318,82 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
                 latest.toString().trim()
         );
 
+        text = text
+                + "\n\nScheduler last run:\n"
+                + parserDiagnostics
+                + "\n\nYour filter diagnostics:\n"
+                + filterDiagnostics;
+
         sendMessage(chatId, text);
         sendPendingUserListings(chatId);
+    }
+
+    private String buildParserDiagnostics() {
+        LocalDateTime lastRunAt = parserRunStatsService.getLastRunAt();
+
+        if (lastRunAt == null) {
+            return "- no parser run recorded since app start";
+        }
+
+        StringBuilder builder = new StringBuilder();
+        builder.append("- last run: ").append(lastRunAt.withNano(0)).append("\n");
+        builder.append("- parsed unique: ").append(parserRunStatsService.getTotalParsedUnique()).append("\n");
+        builder.append("- newly saved: ").append(parserRunStatsService.getTotalSaved()).append("\n");
+
+        Map<String, ParserRunStatsService.ParserStats> stats = parserRunStatsService.getParserStats();
+        if (stats == null || stats.isEmpty()) {
+            return builder.toString().trim();
+        }
+
+        for (Map.Entry<String, ParserRunStatsService.ParserStats> entry : stats.entrySet()) {
+            ParserRunStatsService.ParserStats stat = entry.getValue();
+            builder.append("- ")
+                    .append(formatSource(entry.getKey()))
+                    .append(": returned=")
+                    .append(stat.returned())
+                    .append(", added=")
+                    .append(stat.added())
+                    .append(", duplicates=")
+                    .append(stat.duplicatesSkipped())
+                    .append(", invalid=")
+                    .append(stat.invalidSkipped());
+
+            if (stat.failed()) {
+                builder.append(", FAILED");
+            }
+
+            builder.append("\n");
+        }
+
+        return builder.toString().trim();
+    }
+
+    private String buildAdminFilterDiagnostics(Long chatId, LocalDateTime since) {
+        UserFilterEntity filter = userFilterService.findByChatId(chatId).orElse(null);
+        if (!isFilterConfigured(filter)) {
+            return "- no active filter configured";
+        }
+
+        List<CarEntity> recentCars = carRepository.findAllByListingStatusAndCreatedAtAfterOrderByCreatedAtDesc("ACTIVE", since);
+        long matched = recentCars.stream()
+                .filter(car -> carFilterMatcher.matches(car, filter))
+                .count();
+
+        StringBuilder builder = new StringBuilder();
+        builder.append("- active filter: ")
+                .append("brand=").append(safe(filter.getBrand()))
+                .append(", type=").append(safe(filter.getCarType()))
+                .append(", maxPrice=").append(filter.getMaxPrice() == null ? "-" : filter.getMaxPrice())
+                .append(", location=").append(safe(filter.getLocation()))
+                .append(", maxMileage=").append(filter.getMaxMileage() == null ? "-" : filter.getMaxMileage())
+                .append(", fuel=").append(safe(filter.getFuelType()))
+                .append(", transmission=").append(safe(filter.getTransmission()))
+                .append(", yearFrom=").append(filter.getYearFrom() == null ? "-" : filter.getYearFrom())
+                .append("\n");
+        builder.append("- new ACTIVE cars last 24h: ").append(recentCars.size()).append("\n");
+        builder.append("- matched your filter last 24h: ").append(matched);
+
+        return builder.toString();
     }
 
     private void sendPendingUserListings(Long adminChatId) {

@@ -22,6 +22,8 @@ public interface CarRepository extends JpaRepository<CarEntity, Long> {
 
     List<CarEntity> findAllByListingStatusOrderByCreatedAtDesc(String listingStatus);
 
+    List<CarEntity> findAllByListingStatusAndCreatedAtAfterOrderByCreatedAtDesc(String listingStatus, LocalDateTime dateTime);
+
     List<CarEntity> findTop5ByOrderByCreatedAtDesc();
 
     List<CarEntity> findTop10ByListingStatusOrderByCreatedAtDesc(String listingStatus);
