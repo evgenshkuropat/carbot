@@ -3336,7 +3336,16 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
         }
 
         StringBuilder builder = new StringBuilder();
-        builder.append("- last run: ").append(lastRunAt.withNano(0)).append("\n");
+        boolean running = parserRunStatsService.isRunning();
+        LocalDateTime finishedAt = parserRunStatsService.getLastFinishedAt();
+
+        builder.append("- status: ")
+                .append(running ? "running (numbers are partial)" : "finished")
+                .append("\n");
+        builder.append("- last started: ").append(lastRunAt.withNano(0)).append("\n");
+        if (finishedAt != null) {
+            builder.append("- last finished: ").append(finishedAt.withNano(0)).append("\n");
+        }
         builder.append("- parsed unique: ").append(parserRunStatsService.getTotalParsedUnique()).append("\n");
         builder.append("- newly saved: ").append(parserRunStatsService.getTotalSaved()).append("\n");
 

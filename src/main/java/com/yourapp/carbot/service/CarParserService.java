@@ -104,20 +104,24 @@ public class CarParserService {
     }
 
     public List<CarEntity> fetchAndStoreCars() {
-        List<CarDto> cars = findCars();
+        try {
+            List<CarDto> cars = findCars();
 
-        if (cars.isEmpty()) {
-            log.info("No cars parsed, nothing to store");
-            parserRunStatsService.setTotalSaved(0);
-            return List.of();
+            if (cars.isEmpty()) {
+                log.info("No cars parsed, nothing to store");
+                parserRunStatsService.setTotalSaved(0);
+                return List.of();
+            }
+
+            List<CarEntity> savedCars = carStorageService.saveNewCars(cars);
+
+            parserRunStatsService.setTotalSaved(savedCars.size());
+
+            log.info("Stored new cars={}", savedCars.size());
+
+            return savedCars;
+        } finally {
+            parserRunStatsService.finish();
         }
-
-        List<CarEntity> savedCars = carStorageService.saveNewCars(cars);
-
-        parserRunStatsService.setTotalSaved(savedCars.size());
-
-        log.info("Stored new cars={}", savedCars.size());
-
-        return savedCars;
     }
 }

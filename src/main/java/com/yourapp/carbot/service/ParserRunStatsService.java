@@ -10,24 +10,33 @@ import java.util.Map;
 public class ParserRunStatsService {
 
     private LocalDateTime lastRunAt;
+    private LocalDateTime lastFinishedAt;
+    private boolean running;
 
     private int totalParsedUnique;
     private int totalSaved;
 
     private final Map<String, ParserStats> parserStats = new LinkedHashMap<>();
 
-    public void reset() {
+    public synchronized void reset() {
         lastRunAt = LocalDateTime.now();
+        lastFinishedAt = null;
+        running = true;
         totalParsedUnique = 0;
         totalSaved = 0;
         parserStats.clear();
     }
 
-    public void recordParserResult(String source,
-                                   int returned,
-                                   int added,
-                                   int duplicatesSkipped,
-                                   int invalidSkipped) {
+    public synchronized void finish() {
+        lastFinishedAt = LocalDateTime.now();
+        running = false;
+    }
+
+    public synchronized void recordParserResult(String source,
+                                                int returned,
+                                                int added,
+                                                int duplicatesSkipped,
+                                                int invalidSkipped) {
 
         parserStats.put(source,
                 new ParserStats(
@@ -40,7 +49,7 @@ public class ParserRunStatsService {
         );
     }
 
-    public void recordParserFailed(String source) {
+    public synchronized void recordParserFailed(String source) {
 
         parserStats.put(source,
                 new ParserStats(
@@ -53,28 +62,36 @@ public class ParserRunStatsService {
         );
     }
 
-    public void setTotalParsedUnique(int totalParsedUnique) {
+    public synchronized void setTotalParsedUnique(int totalParsedUnique) {
         this.totalParsedUnique = totalParsedUnique;
     }
 
-    public void setTotalSaved(int totalSaved) {
+    public synchronized void setTotalSaved(int totalSaved) {
         this.totalSaved = totalSaved;
     }
 
-    public LocalDateTime getLastRunAt() {
+    public synchronized LocalDateTime getLastRunAt() {
         return lastRunAt;
     }
 
-    public int getTotalParsedUnique() {
+    public synchronized LocalDateTime getLastFinishedAt() {
+        return lastFinishedAt;
+    }
+
+    public synchronized boolean isRunning() {
+        return running;
+    }
+
+    public synchronized int getTotalParsedUnique() {
         return totalParsedUnique;
     }
 
-    public int getTotalSaved() {
+    public synchronized int getTotalSaved() {
         return totalSaved;
     }
 
-    public Map<String, ParserStats> getParserStats() {
-        return parserStats;
+    public synchronized Map<String, ParserStats> getParserStats() {
+        return new LinkedHashMap<>(parserStats);
     }
 
     public record ParserStats(
