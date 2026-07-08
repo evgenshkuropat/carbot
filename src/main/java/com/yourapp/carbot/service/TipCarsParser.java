@@ -130,6 +130,11 @@ public class TipCarsParser implements CarSourceParser {
                 return new ParseResult(null, "broken_listing");
             }
 
+            if (looksTitleUrlBrandMismatch(title, url)) {
+                log.warn("TIPCARS SKIP url={} reason=title_url_brand_mismatch title={}", safe(url), safe(title));
+                return new ParseResult(null, "broken_listing");
+            }
+
             if (looksCommercialOrCamperListing(title, url, pageText)) {
                 log.info("TIPCARS SKIP url={} reason=commercial_vehicle title={}", safe(url), safe(title));
                 return new ParseResult(null, "commercial_vehicle");
@@ -544,6 +549,30 @@ public class TipCarsParser implements CarSourceParser {
                 " ferrari ", " california ")) return "FERRARI";
 
         return normalizeBrand(words[0]);
+    }
+
+    private boolean looksTitleUrlBrandMismatch(String title, String url) {
+        String titleBrand = extractBrand(title, null);
+        String urlBrand = extractBrandFromUrl(url);
+
+        return titleBrand != null
+                && urlBrand != null
+                && !titleBrand.equals(urlBrand);
+    }
+
+    private String extractBrandFromUrl(String url) {
+        if (url == null || url.isBlank()) {
+            return null;
+        }
+
+        String normalizedUrl = url.toLowerCase(Locale.ROOT);
+        Matcher matcher = Pattern.compile("tipcars\\.com/([^/]+)/").matcher(normalizedUrl);
+        if (!matcher.find()) {
+            return null;
+        }
+
+        String slug = matcher.group(1).replace('-', ' ');
+        return normalizeBrand(slug);
     }
 
     private String extractFuelType(String text) {

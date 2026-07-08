@@ -242,6 +242,22 @@ class TipCarsParserTest {
     }
 
     @Test
+    void rejectsTipCarsDetailsWhenTitleBrandConflictsWithUrlBrand() throws Exception {
+        assertThat(looksTitleUrlBrandMismatch(
+                "Toyota Aygo 1.0 VVT-i, Serv.kniha",
+                "https://www.tipcars.com/citroen-c4/hatchback/benzin/citroen-c4-feel-1-2-puretech-cr-1-maj-54001459.html"))
+                .isTrue();
+        assertThat(looksTitleUrlBrandMismatch(
+                "Citroen C4 Feel 1.2 PureTech CR 1.maj",
+                "https://www.tipcars.com/citroen-c4/hatchback/benzin/citroen-c4-feel-1-2-puretech-cr-1-maj-54001459.html"))
+                .isFalse();
+        assertThat(looksTitleUrlBrandMismatch(
+                "Mercedes-Benz Tridy E E 300 de 4MATIC",
+                "https://www.tipcars.com/mercedes-benz-tridy-e/sedan/hybridni-benzin/mercedes-benz-tridy-e.html"))
+                .isFalse();
+    }
+
+    @Test
     void rejectsFreshCommercialTipCarsStorageCandidates() throws Exception {
         assertThat(looksCommercialOrCamperListing(
                 "Opel Movano Van L2 (L) 2.2 CDTi 6 MT",
@@ -346,6 +362,12 @@ class TipCarsParserTest {
         Method method = TipCarsParser.class.getDeclaredMethod("looksCommercialOrCamperListing", String.class, String.class, String.class);
         method.setAccessible(true);
         return (boolean) method.invoke(parser, title, url, text);
+    }
+
+    private boolean looksTitleUrlBrandMismatch(String title, String url) throws Exception {
+        Method method = TipCarsParser.class.getDeclaredMethod("looksTitleUrlBrandMismatch", String.class, String.class);
+        method.setAccessible(true);
+        return (boolean) method.invoke(parser, title, url);
     }
 
     private String buildPageUrl(int page) throws Exception {
