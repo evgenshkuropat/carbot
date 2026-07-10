@@ -533,6 +533,10 @@ class BazosParserTest {
                 "Seat Tarraco / Skoda Kodiaq 2.0 TDi DSG bez investic",
                 "https://auto.bazos.cz/inzerat/220352139/seat-tarraco-skoda-kodiaq-20-tdi-dsg-bez-investic.php"))
                 .isFalse();
+        assertThat(looksBrandMismatch(
+                "Corolla 2,0 GR hybrid,lineassist,1.maj.cr,DPH",
+                "https://auto.bazos.cz/inzerat/220995255/transit-20tdci111tiskmwebasto7mistdilnadph1majcr.php"))
+                .isTrue();
         assertThat(looksModelUrlMismatch(
                 "RENAULT TWINGO 1,2 16v CTYRVAL",
                 "https://auto.bazos.cz/inzerat/219681639/renault-clio-12-16v-ctyrval.php"))

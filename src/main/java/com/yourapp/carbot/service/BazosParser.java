@@ -2907,7 +2907,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         if (url.contains("-volvo-")) return "VOLVO";
         if (url.contains("-toyota-")) return "TOYOTA";
         if (url.contains("-lexus-")) return "LEXUS";
-        if (url.contains("-ford-")) return "FORD";
+        if (url.contains("-ford-") || url.contains("-transit-") || url.contains("-tourneo-")) return "FORD";
         if (url.contains("-renault-")) return "RENAULT";
         if (url.contains("-seat-")) return "SEAT";
         if (url.contains("-peugeot-")) return "PEUGEOT";
