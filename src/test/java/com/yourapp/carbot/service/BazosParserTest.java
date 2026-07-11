@@ -518,6 +518,9 @@ class BazosParserTest {
         assertThat(looksSuspiciousListing("Peugeot 5008,automat, head up, 7mist", "rezervace")).isFalse();
         assertThat(looksSuspiciousListing("Seat Leon ST FR 1.5 TSI 110kW,2024,39tkm,ZARUKA,CR,1maj,DPH", "")).isFalse();
         assertThat(looksSuspiciousListing("Suzuki Wagon R 1.3i 56 kW, 2002, tazny", "")).isFalse();
+        assertThat(looksSuspiciousListing("Seat Leon ST FR 1.5 TSI 110kW,2024,39tkm,ZĂRUKA,ÄŚR,1maj,DPH", "")).isFalse();
+        assertThat(looksSuspiciousListing("Suzuki Wagon R 1.3i 56 kW, 2002, taĹľnĂ˝", "")).isFalse();
+        assertThat(looksSuspiciousListing("suzuki vitara", "")).isFalse();
     }
 
     @Test
