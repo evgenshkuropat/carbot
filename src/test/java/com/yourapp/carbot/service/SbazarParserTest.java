@@ -134,6 +134,8 @@ class SbazarParserTest {
         assertThat(detectBrand("subaru xv 2.0i 4x4 aut")).isEqualTo("SUBARU");
         assertThat(detectBrand("saab 9-3 1,9 tid 110kw automat 2xkola")).isEqualTo("SAAB");
         assertThat(detectBrand("ostatni ktm x-bow gt-xr 2024 nove")).isEqualTo("KTM");
+        assertThat(detectBrand("opel tigra roadster 1.4 16v benzin")).isEqualTo("OPEL");
+        assertThat(detectBrand("hyudai i10 1.0 49 kw hatchback")).isEqualTo("HYUNDAI");
     }
 
     @Test
@@ -302,6 +304,7 @@ class SbazarParserTest {
         assertThat(resolveCarType("peugeot 301 1.2 puretech 2017", "")).isEqualTo("SEDAN");
         assertThat(resolveCarType("peugeot 508gt plug in hybrid 165kw e-eat8", "")).isEqualTo("SEDAN");
         assertThat(resolveCarType("mercedes-benz cle 200 amg line", "")).isEqualTo("COUPE");
+        assertThat(resolveCarType("citroen c2 1.1 i", "")).isEqualTo("HATCHBACK");
     }
 
     @Test
@@ -317,7 +320,10 @@ class SbazarParserTest {
         assertThat(looksNonCarListing("triumph america lt cr 2015")).isTrue();
         assertThat(looksNonCarListing("bmw i3 125 kw 120 ah tep.cerpadlo")).isFalse();
         assertThat(looksNonCarListing("posilovac krouticiho momentu")).isTrue();
+        assertThat(looksNonCarListing("toyota yaris 1.3benzin klima 5l/100km z+l pneu")).isFalse();
+        assertThat(looksNonCarListing("jeep grand cherokee wj packy blinkr a paska")).isTrue();
         assertThat(looksCommercialVehicle("opel vivaro r.v. 2010 https www sbazar cz inzerat 231253178 opel vivaro rv 2010")).isTrue();
+        assertThat(looksCommercialVehicle("peugeot expert 2.0 hdi")).isTrue();
     }
 
     @Test

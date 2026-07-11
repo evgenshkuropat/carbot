@@ -552,8 +552,8 @@ public class SbazarParser implements CarSourceParser {
                 {"DONGFENG", "dongfeng", "u-tour", "u tour", "t5 evo"},
                 {"MINI", "mini", "cooper"},
                 {"MITSUBISHI", "mitsubishi", "outlander", "eclipse cross", "l200"},
-                {"HYUNDAI", "hyundai", "i20", "i30", "ix20", "ix35", "ioniq", "tucson", "santa fe", "bayon", "inster"},
-                {"SMART", "smart", "fortwo", "forfour", "roadster"},
+                {"HYUNDAI", "hyundai", "hyudai", "i20", "i30", "ix20", "ix35", "ioniq", "tucson", "santa fe", "bayon", "inster"},
+                {"SMART", "smart", "fortwo", "forfour"},
                 {"PEUGEOT", "peugeot", "rifter", "partner"},
                 {"CITROEN", "citroen", "berlingo", "picasso"},
                 {"RENAULT", "renault", "clio", "megane", "scenic"},
@@ -932,7 +932,7 @@ public class SbazarParser implements CarSourceParser {
                 && !containsAny(searchable, "avant", "combi", "kombi", "variant", "wagon", "shooting brake")) {
             return "SEDAN";
         }
-        if (containsAny(searchable, "agila", "citigo", "rapid", "favorit", "sandero", " rio ", "swift", "starlet", "auris", "mazda 3", "v40", "tridy a", "a 160", "a160", "a 45", "a45", "c3", "citroen c4", "citroen c 4", "fiesta", "i10", "splash", "prius", "insight", "a1", "a3", "panda", "bravo", "matiz", "fortwo", "fourtwo", "forfour", "cupra born", "jazz", "kia k4", " k4 ", " hb ",
+        if (containsAny(searchable, "agila", "citigo", "rapid", "favorit", "sandero", " rio ", "swift", "starlet", "auris", "mazda 3", "v40", "tridy a", "a 160", "a160", "a 45", "a45", "citroen c2", " c2 ", "c3", "citroen c4", "citroen c 4", "fiesta", "i10", "splash", "prius", "insight", "a1", "a3", "panda", "bravo", "matiz", "fortwo", "fourtwo", "forfour", "cupra born", "jazz", "kia k4", " k4 ", " hb ",
                 "id.3", " id 3 ", " id3 ",
                 "peugeot 206", " 206 ", "fabia", "fabie", "bmw 116i", " 116i ", "bmw f20", " f20 ", "escort", "colt")) {
             return "HATCHBACK";
@@ -1006,6 +1006,12 @@ public class SbazarParser implements CarSourceParser {
             return true;
         }
 
+        if (containsAny(searchable, "pneu", "pneumatik")
+                && !containsAny(searchable, "alu kola", "sada kol", "disky", "elektrony")
+                && hasSpecificCarOfferSignal(searchable)) {
+            return false;
+        }
+
         return containsAny(searchable,
                 "nahradni dily", "nahradni dil", "dily na", "rozprodavam", "bouracka na dily",
                 "nabourany", "nabourane", "havarovany", "havarovane", "palubni deska", "airbag",
@@ -1015,14 +1021,24 @@ public class SbazarParser implements CarSourceParser {
                 "autoradio", "auto radio", "navigace tomtom", "stresni nosic", "stresni nosnik", "zamky centralni",
                 "centralni zamky", "zamykani zpatecky", "sterac", "sterace", "pc pocitac", "pocitac",
                 "parkovaci senzor", "sklo zrcatka", "zadni sklo",
+                "packy blinkr", "packa blinkru", "paka blinkru", "paska airbag", "paska volantu", "paska pod volantem",
                 "posilovac krouticiho momentu",
                 " padlo ", "rucni pumpicka", "pumpicka", "cmx", "rebel", "triumph america");
+    }
+
+    private boolean hasSpecificCarOfferSignal(String searchable) {
+        return !"-".equals(detectBrand(searchable))
+                && (!"-".equals(detectFuelType(searchable))
+                || extractYear(searchable) != null
+                || extractMileage(searchable) != null
+                || containsAny(searchable, " klima", " stk", " serviska", " automat", " manual", " kw", "rv.", "r.v."));
     }
 
     private boolean looksCommercialVehicle(String searchable) {
         return containsAny(searchable,
                 "transit", "vivaro", "jumper", "boxer", "ducato", "sprinter", "crafter", "valnik", "sklapec",
-                "dodavka", "nakladni", "furgon", "l2h2", "l3h2", "dvojmontaz", "celni mech", "fuso", "transporter", "master", "sanitni vuz");
+                "dodavka", "nakladni", "furgon", "l2h2", "l3h2", "dvojmontaz", "celni mech", "fuso", "transporter", "master", "sanitni vuz",
+                "peugeot expert", " expert ");
     }
 
     private boolean containsAny(String text, String... needles) {
