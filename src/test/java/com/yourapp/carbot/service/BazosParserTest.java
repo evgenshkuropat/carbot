@@ -47,6 +47,12 @@ class BazosParserTest {
                 .isEqualTo("DACIA");
         assertThat(extractBrand("Doblo 1,3 jtd,37tis.km,1.maj.CR,odpocet dph", "skoda octavia"))
                 .isEqualTo("FIAT");
+        assertThat(extractBrand("Orlando 7 mist 1.8 benzin 104kw", ""))
+                .isEqualTo("CHEVROLET");
+        assertThat(extractBrand("Camaro ZL1", ""))
+                .isEqualTo("CHEVROLET");
+        assertThat(extractBrand("Kia Seed 1.6 crdi 94kw", ""))
+                .isEqualTo("KIA");
     }
 
     @Test
@@ -155,6 +161,8 @@ class BazosParserTest {
         assertThat(extractFuelType("Chevrolet Spark 1,0")).isEqualTo("PETROL");
         assertThat(extractFuelType("Chevrolet aveo 1.4")).isEqualTo("PETROL");
         assertThat(extractFuelType("Chevrolet Orlando 2,0 96kw")).isEqualTo("DIESEL");
+        assertThat(extractFuelType("Orlando 7 mist 1.8 benzin 104kw")).isEqualTo("PETROL");
+        assertThat(extractFuelType("2022 CHEVROLET COLORADO 3.6V6 Z71 Offroad 4WD")).isEqualTo("PETROL");
         assertThat(extractFuelType("Toyota Sienna AWD 2017 7 mist 8AT tazne")).isEqualTo("PETROL");
         assertThat(extractFuelType("Nissan Pixo 1.0 50 kW Pure Drive klima servis")).isEqualTo("PETROL");
         assertThat(extractFuelType("Peugeot 108 1.0benzin servisni hostorie")).isEqualTo("PETROL");
@@ -260,6 +268,11 @@ class BazosParserTest {
         assertThat(extractCarType("Honda F-RV 1,8 V-Tec 108kW 6-mist", "", "")).isEqualTo("MINIVAN");
         assertThat(extractCarType("Chevrolet Express Limited SE 2500 6.0", "", "")).isEqualTo("MINIVAN");
         assertThat(extractCarType("Chevrolet Trailblazer 4.2i,201kw,/LPG", "", "")).isEqualTo("SUV");
+        assertThat(extractCarType("Orlando 7 mist 1.8 benzin 104kw", "", "")).isEqualTo("MINIVAN");
+        assertThat(extractCarType("Kia Sportage 1.6 CRDi MHEV A7 2024 zaruka KIA 7r 30tis.km", "", "")).isEqualTo("SUV");
+        assertThat(extractCarType("Kia Seed 1.6 crdi 94kw", "", "")).isEqualTo("HATCHBACK");
+        assertThat(extractCarType("2022 CHEVROLET COLORADO 3.6V6 Z71 Offroad 4WD", "", "")).isEqualTo("PICKUP");
+        assertThat(extractCarType("Chevrolet Impala 2.6 V6 VVT", "", "")).isEqualTo("SEDAN");
         assertThat(extractCarType("Opel Astra J Sports Tourer 1.4i Turbo103Kw r.v.10/2015", "", "")).isEqualTo("WAGON");
         assertThat(extractCarType("Opel Astra J combi 1,7 CDTi 92kW", "", "")).isEqualTo("WAGON");
         assertThat(extractCarType("Opel Astra K 1,6 CDTI 81kw sport Tourer, Innovation", "", "")).isEqualTo("WAGON");
@@ -470,6 +483,12 @@ class BazosParserTest {
                 "https://auto.bazos.cz/inzerat/220804547/c-hr-18-hybrid.php",
                 ""))
                 .isFalse();
+        assertThat(looksNonCarListing(
+                "Orlando 7 mist 1.8 benzin 104kw",
+                "",
+                "https://auto.bazos.cz/inzerat/220755116/orlando-7-mist-18-benzin-104kw.php",
+                ""))
+                .isFalse();
     }
 
     @Test
@@ -582,6 +601,22 @@ class BazosParserTest {
     }
 
     @Test
+    void keepsFreshChevroletModelsDespiteNoisyPageText() throws Exception {
+        assertThat(looksBrokenOrForPartsListing(
+                "Chevrolet Malibu 2.4 LPG",
+                "vadny dil v doporucenem inzeratu"))
+                .isFalse();
+        assertThat(looksBrokenOrForPartsListing(
+                "Chevrolet Camaro 3.6 V6 RS",
+                "nepojizdny v doporucenem inzeratu"))
+                .isFalse();
+        assertThat(looksBrokenOrForPartsListing(
+                "Chevrolet cruze 1.6 2009",
+                "vadny dil v doporucenem inzeratu"))
+                .isFalse();
+    }
+
+    @Test
     void correctsFreshRenaultAndGenericListingSignals() throws Exception {
         assertThat(correctLikelyNoisyFuel("1.Majitel Renault Kangoo 1.2...2017", "DIESEL"))
                 .isEqualTo("PETROL");
@@ -674,6 +709,12 @@ class BazosParserTest {
                 "BMW 545i V8 MANUAL Mpaket + LPG, sport. podvozek BILSTEIN",
                 "",
                 "https://auto.bazos.cz/inzerat/220390449/bmw-545i-v8-manual-mpaket-lpg.php"))
+                .isFalse();
+
+        assertThat(looksCommercialVehicle(
+                "Camaro ZL1",
+                "",
+                "https://auto.bazos.cz/inzerat/220871593/camaro-zl1.php"))
                 .isFalse();
     }
 

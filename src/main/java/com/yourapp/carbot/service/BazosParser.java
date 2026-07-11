@@ -1329,6 +1329,11 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             return "PETROL";
         }
 
+        if (Pattern.compile("(?i)\\b[2-7][\\.,]\\d\\s*v[68]\\b").matcher(source).find()
+                || Pattern.compile("(?i).*[2-7]\\d[v][68].*").matcher(compact).find()) {
+            return "PETROL";
+        }
+
         if (containsAny(ascii, " benzin ", " benzinovy ")) {
             return "PETROL";
         }
@@ -1981,7 +1986,12 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
 
         if (source.contains(" sportage ")) return "KIA";
         if (source.contains(" ceed ")) return "KIA";
+        if (source.contains(" seed ")) return "KIA";
         if (source.contains(" carens ")) return "KIA";
+        if (containsAny(source,
+                " camaro ", " corvette ", " cruze ", " orlando ", " aveo ", " captiva ",
+                " malibu ", " suburban ", " tahoe ", " silverado ", " colorado ", " impala ",
+                " spark ", " kalos ")) return "CHEVROLET";
 
         if (source.contains(" rav4 ") || source.contains(" rav 4 ")) return "TOYOTA";
         if (source.contains(" land cruiser ")) return "TOYOTA";
@@ -2275,6 +2285,10 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             return "HATCHBACK";
         }
 
+        if (containsAny(titleSource, " sportage ", " sorento ", " stonic ")) {
+            return "SUV";
+        }
+
         if (containsAny(titleSource, " a3 ", " a5 ", " a7 ") && titleSource.contains(" sportback ")) {
             return "HATCHBACK";
         }
@@ -2421,8 +2435,12 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             return "SUV";
         }
 
-        if (containsAny(titleSource, " silverado ")) {
+        if (containsAny(titleSource, " silverado ", " colorado ")) {
             return "PICKUP";
+        }
+
+        if (containsAny(titleSource, " impala ", " malibu ")) {
+            return "SEDAN";
         }
 
         if (containsAny(titleSource, " aveo sedan ")) {
@@ -2478,7 +2496,10 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         }
 
         String compactTitle = compactSearchText(title);
-        boolean isCeed = compactTitle.contains("ceed") || compactTitle.contains("cee d");
+        boolean isCeed = compactTitle.contains("ceed")
+                || compactTitle.contains("cee d")
+                || compactTitle.contains("kiaseed")
+                || containsAny(titleSource, " seed ");
         if (isCeed
                 && !compactTitle.contains("proceed")
                 && !compactTitle.contains("pro ceed")
@@ -3695,7 +3716,8 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         String titleSource = " " + normalizeText(title).toLowerCase(Locale.ROOT) + " ";
         String source = " " + normalizeText(title + " " + shortenForCheck(text, 500)).toLowerCase(Locale.ROOT) + " ";
 
-        if (containsAny(titleSource, " mustang ", " civic type r ", " cr-v ", " cr v ", " crv ", " duster ", " stelvio ", " chevrolet ssr ", " spark ", " stonic ",
+        if (containsAny(titleSource, " mustang ", " civic type r ", " cr-v ", " cr v ", " crv ", " duster ", " stelvio ",
+                " chevrolet ssr ", " spark ", " stonic ", " camaro ", " cruze ", " malibu ",
                 " ioniq ", " ix55 ", " volvo s90 ", " s90 ",
                 " bmw 520d ", " 520d ",
                 " passat ", " golf ", " tiguan ", " touareg ", " t-roc ", " troc ", " touran ",
