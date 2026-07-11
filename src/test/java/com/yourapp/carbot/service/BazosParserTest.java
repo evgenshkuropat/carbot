@@ -53,6 +53,10 @@ class BazosParserTest {
                 .isEqualTo("CHEVROLET");
         assertThat(extractBrand("Kia Seed 1.6 crdi 94kw", ""))
                 .isEqualTo("KIA");
+        assertThat(extractBrand("Samurai 1.9TD Long", "peugeot 2008"))
+                .isEqualTo("SUZUKI");
+        assertThat(extractBrand("Suzuki Wagon R 1.3i 56 kW, 2002, tazny", ""))
+                .isEqualTo("SUZUKI");
     }
 
     @Test
@@ -187,6 +191,7 @@ class BazosParserTest {
         assertThat(extractCarType("Seat Leon Cupra 300 ST ACC DCC", "", "")).isEqualTo("WAGON");
         assertThat(extractCarType("Seat Leon1.5 TSi 96kW 1majitel CR Xcellence", "", "")).isEqualTo("HATCHBACK");
         assertThat(extractCarType("Seat Leon ST 1.2 TSI, 81kW, r2017", "", "")).isEqualTo("WAGON");
+        assertThat(extractCarType("Leon 1,4TSi 92KW ST FR 111tkm NAVI KUZE TEMPOMAT STK", "", "")).isEqualTo("WAGON");
         assertThat(extractCarType("Seat Altea XL 1.6 TDI 77 kW Automat", "", "")).isEqualTo("MINIVAN");
         assertThat(extractCarType("Seat ibiza", "", "")).isEqualTo("HATCHBACK");
         assertThat(extractCarType("Seat Toledo 1.2 TSI 66 kW, 2016, 111 tis. km", "", "")).isEqualTo("SEDAN");
@@ -201,6 +206,7 @@ class BazosParserTest {
         assertThat(extractCarType("Prodam Suzuki S X4 1.6", "", "")).isEqualTo("SUV");
         assertThat(extractCarType("Suzuki Virara 1.6 Ddis", "", "")).isEqualTo("SUV");
         assertThat(extractCarType("Suzuki Alto,1.0i,50kw", "", "")).isEqualTo("HATCHBACK");
+        assertThat(extractCarType("Suzuki Wagon R 1.3i 56 kW, 2002, tazny", "", "")).isEqualTo("HATCHBACK");
         assertThat(extractCarType("Suzuki Kizashi 4X4", "", "")).isEqualTo("SEDAN");
         assertThat(extractCarType("Audi S3", "", "")).isEqualTo("HATCHBACK");
         assertThat(extractCarType("Alfa Romeo 75 2.0 Twinspark", "", "")).isEqualTo("SEDAN");
@@ -510,6 +516,8 @@ class BazosParserTest {
         assertThat(looksSuspiciousListing("OPEL e-CORSA 100kW ELEGANCE electro Koup.CR,1.majitel,2023", "rezervace")).isFalse();
         assertThat(looksSuspiciousListing("OPEL MOKKA 1,4T 112kW 4x4 Automat,TAZNE,Koup.CR,90.0000km", "rezervace")).isFalse();
         assertThat(looksSuspiciousListing("Peugeot 5008,automat, head up, 7mist", "rezervace")).isFalse();
+        assertThat(looksSuspiciousListing("Seat Leon ST FR 1.5 TSI 110kW,2024,39tkm,ZARUKA,CR,1maj,DPH", "")).isFalse();
+        assertThat(looksSuspiciousListing("Suzuki Wagon R 1.3i 56 kW, 2002, tazny", "")).isFalse();
     }
 
     @Test
@@ -613,6 +621,10 @@ class BazosParserTest {
         assertThat(looksBrokenOrForPartsListing(
                 "Chevrolet cruze 1.6 2009",
                 "vadny dil v doporucenem inzeratu"))
+                .isFalse();
+        assertThat(looksBrokenOrForPartsListing(
+                "Suzuki Splash 1.2, automat, 2010, 156 000 km",
+                "nepojizdny v doporucenem inzeratu"))
                 .isFalse();
     }
 

@@ -1838,6 +1838,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         if (containsAny(titleSource, " qashqai ", " juke ", " x-trail ", " x trail ", " navara ", " micra ", " leaf ", " primera ", " terrano ", " pixo ", " pulsar ")) return "NISSAN";
         if (containsAny(titleSource, " honda ", " hondu ", " acura ", " insight ")) return "HONDA";
         if (containsAny(titleSource, " suzuki ")) return "SUZUKI";
+        if (containsAny(titleSource, " samurai ", " wagon r ", " wagon r+ ")) return "SUZUKI";
         if (containsAny(titleSource, " dacia ", " dacie ", " duster ", " sandero ", " logan ", " dokker ", " lodgy ", " jogger ", " bigster ")) return "DACIA";
         if (containsAny(titleSource, " cupra ")) return "CUPRA";
         if (containsAny(titleSource, " jeep ")) return "JEEP";
@@ -2161,6 +2162,10 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             return "SUV";
         }
 
+        if (containsAny(titleSource, " wagon r ", " wagon r+ ")) {
+            return "HATCHBACK";
+        }
+
         if (containsAny(titleSource, " s4 quattro ", " audi s4 ", " toledo ")) {
             return "SEDAN";
         }
@@ -2180,6 +2185,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
 
         if (containsAny(titleSource, " leon st ", " seat leon st ", " ibiza combi ", " ibiza kombi ",
                 " ibiza st ", " ibiza sportstourer ", " ibiza sport tourer ")
+                || (containsAny(titleSource, " leon ") && Pattern.compile("\\bst\\b").matcher(titleSource).find())
                 || (titleSource.contains(" seat leon ") && Pattern.compile("\\bst\\b").matcher(titleSource).find())
                 || (containsAny(titleSource, " ibiza ") && containsAny(titleSource, " combi ", " kombi "))) {
             return "WAGON";
@@ -3718,6 +3724,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
 
         if (containsAny(titleSource, " mustang ", " civic type r ", " cr-v ", " cr v ", " crv ", " duster ", " stelvio ",
                 " chevrolet ssr ", " spark ", " stonic ", " camaro ", " cruze ", " malibu ",
+                " splash ", " wagon r ", " wagon r+ ",
                 " ioniq ", " ix55 ", " volvo s90 ", " s90 ",
                 " bmw 520d ", " 520d ",
                 " passat ", " golf ", " tiguan ", " touareg ", " t-roc ", " troc ", " touran ",
