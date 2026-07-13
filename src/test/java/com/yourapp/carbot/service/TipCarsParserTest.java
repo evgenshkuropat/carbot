@@ -255,6 +255,18 @@ class TipCarsParserTest {
                 "Mercedes-Benz Tridy E E 300 de 4MATIC",
                 "https://www.tipcars.com/mercedes-benz-tridy-e/sedan/hybridni-benzin/mercedes-benz-tridy-e.html"))
                 .isFalse();
+        assertThat(looksTitleUrlBrandMismatch(
+                "Chery Tiggo 8 UNIQUE FWD",
+                "https://www.tipcars.com/chery-tiggo-8/suv/benzin/chery-tiggo-8-unique-fwd-22537404.html"))
+                .isFalse();
+        assertThat(looksTitleUrlBrandMismatch(
+                "Chery Tiggo 7 HEV",
+                "https://www.tipcars.com/chery-tiggo-7/suv/hybridni-benzin/chery-tiggo-7-hev-22537403.html"))
+                .isFalse();
+        assertThat(looksTitleUrlBrandMismatch(
+                "SsangYong Korando Clever 1.5 T-GDI",
+                "https://www.tipcars.com/ssangyong-korando/suv/benzin/ssangyong-korando-clever-1-5-t-gdi-54000280.html"))
+                .isFalse();
     }
 
     @Test

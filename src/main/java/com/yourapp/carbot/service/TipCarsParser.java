@@ -1180,6 +1180,9 @@ public class TipCarsParser implements CarSourceParser {
         if (value.startsWith("FERRARI")) return "FERRARI";
         if (value.startsWith("MINI")) return "MINI";
         if (value.startsWith("JAECOO")) return "JAECOO";
+        if (value.startsWith("CHERY")) return "CHERY";
+        if (value.startsWith("SSANGYONG")) return "SSANGYONG";
+        if (value.startsWith("SSANG YONG")) return "SSANGYONG";
 
         return value;
     }
