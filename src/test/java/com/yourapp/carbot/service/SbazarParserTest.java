@@ -213,6 +213,8 @@ class SbazarParserTest {
         assertThat(resolveCarType("prodam dacia logan mcv 1.2 55 kw 2014", "")).isEqualTo("WAGON");
         assertThat(resolveCarType("kia proceed gt 1.6 t-gdi 150 kw r.v. 2023", "")).isEqualTo("WAGON");
         assertThat(resolveCarType("mercedes-benz cls 1 majitel amg full led 4 matic", "")).isEqualTo("SEDAN");
+        assertThat(resolveCarType("mazda 6 wagon 2.2d skyactiv awd pouze 66 tiskm cr", "")).isEqualTo("WAGON");
+        assertThat(resolveCarType("skoda octavia 2.0tdi 110kw 1 majitel cr vyhr", "")).isEqualTo("SEDAN");
         assertThat(resolveCarType("hyundai bayon bayon fl 1,0 t-gdi wave", "combi wagon")).isEqualTo("SUV");
         assertThat(resolveCarType("skoda roomster 1.2tsi 63kw nove v cr klima", "")).isEqualTo("MINIVAN");
         assertThat(resolveCarType("seat leon, 1,4 tsi e-hybrid fr line led", "")).isEqualTo("HATCHBACK");

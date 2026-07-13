@@ -863,6 +863,10 @@ public class SbazarParser implements CarSourceParser {
         if (containsAny(searchable, "volkswagen cc", "vw cc", "passat cc")) {
             return "SEDAN";
         }
+        if (containsAny(searchable, "mazda 6", "mazda6")
+                && containsAny(searchable, " sw ", "kombi", "combi", "wagon", "estate")) {
+            return "WAGON";
+        }
         if (containsAny(searchable, "mazda 6", "mazda6")) {
             return "SEDAN";
         }
