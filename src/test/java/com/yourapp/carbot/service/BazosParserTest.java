@@ -51,6 +51,8 @@ class BazosParserTest {
                 .isEqualTo("CHEVROLET");
         assertThat(extractBrand("Camaro ZL1", ""))
                 .isEqualTo("CHEVROLET");
+        assertThat(extractBrand("Prodam Captivu 2007", ""))
+                .isEqualTo("CHEVROLET");
         assertThat(extractBrand("Kia Seed 1.6 crdi 94kw", ""))
                 .isEqualTo("KIA");
         assertThat(extractBrand("Samurai 1.9TD Long", "peugeot 2008"))
@@ -274,8 +276,12 @@ class BazosParserTest {
         assertThat(extractCarType("Honda F-RV 1,8 V-Tec 108kW 6-mist", "", "")).isEqualTo("MINIVAN");
         assertThat(extractCarType("Chevrolet Express Limited SE 2500 6.0", "", "")).isEqualTo("MINIVAN");
         assertThat(extractCarType("Chevrolet Trailblazer 4.2i,201kw,/LPG", "", "")).isEqualTo("SUV");
+        assertThat(extractCarType("Prodam Captivu 2007", "", "")).isEqualTo("SUV");
         assertThat(extractCarType("Orlando 7 mist 1.8 benzin 104kw", "", "")).isEqualTo("MINIVAN");
         assertThat(extractCarType("Kia Sportage 1.6 CRDi MHEV A7 2024 zaruka KIA 7r 30tis.km", "", "")).isEqualTo("SUV");
+        assertThat(extractCarType("Kia XCee'd, Plug-in-Hybrid, 1.6 GDI, 104 kW, DPH", "", "")).isEqualTo("SUV");
+        assertThat(extractCarType("2024 KIA EV6 / SoH 100% / top vybava / zaruka / DPH", "", "")).isEqualTo("SUV");
+        assertThat(extractCarType("KIA OPTIMA IV combi (JF), 1.7 CRDi", "", "")).isEqualTo("WAGON");
         assertThat(extractCarType("Kia Seed 1.6 crdi 94kw", "", "")).isEqualTo("HATCHBACK");
         assertThat(extractCarType("2022 CHEVROLET COLORADO 3.6V6 Z71 Offroad 4WD", "", "")).isEqualTo("PICKUP");
         assertThat(extractCarType("Chevrolet Impala 2.6 V6 VVT", "", "")).isEqualTo("SEDAN");
@@ -564,6 +570,10 @@ class BazosParserTest {
                 "https://auto.bazos.cz/inzerat/220352139/seat-tarraco-skoda-kodiaq-20-tdi-dsg-bez-investic.php"))
                 .isFalse();
         assertThat(looksBrandMismatch(
+                "Chevrolet Corvette Targa C5 5,7 V8 AUT naj:100tis.",
+                "https://auto.bazos.cz/inzerat/221028492/chevrolet-corvette-targa-c557-v8-autnaj100tis.php"))
+                .isFalse();
+        assertThat(looksBrandMismatch(
                 "Corolla 2,0 GR hybrid,lineassist,1.maj.cr,DPH",
                 "https://auto.bazos.cz/inzerat/220995255/transit-20tdci111tiskmwebasto7mistdilnadph1majcr.php"))
                 .isTrue();
@@ -608,6 +618,10 @@ class BazosParserTest {
         assertThat(looksBrokenOrForPartsListing(
                 "Fiat 500, 1.2i, ÄŚR, PO SERVISU",
                 "vadny dil v doporucenem inzeratu"))
+                .isFalse();
+        assertThat(looksBrokenOrForPartsListing(
+                "Kia Ceed 1.6CRDi,100kW,Exclusive,CR",
+                "nahradni dily v doporucenem inzeratu"))
                 .isFalse();
     }
 
