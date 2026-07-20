@@ -830,7 +830,7 @@ public class TipCarsParser implements CarSourceParser {
         String titleSource = " " + normalizeText(safe(title)).toLowerCase(Locale.ROOT) + " ";
 
         if (containsAny(titleSource,
-                " enyaq ", " tiguan allspace ", " c3 aircross ", " peugeot 5008 ", " xceed ")) {
+                " enyaq ", " tiguan allspace ", " c3 aircross ", " peugeot 5008 ", " taigo ", " xceed ")) {
             return "SUV";
         }
 
@@ -1181,6 +1181,7 @@ public class TipCarsParser implements CarSourceParser {
         if (value.startsWith("MINI")) return "MINI";
         if (value.startsWith("JAECOO")) return "JAECOO";
         if (value.startsWith("CHERY")) return "CHERY";
+        if (value.startsWith("XPENG")) return "XPENG";
         if (value.startsWith("SSANGYONG")) return "SSANGYONG";
         if (value.startsWith("SSANG YONG")) return "SSANGYONG";
 

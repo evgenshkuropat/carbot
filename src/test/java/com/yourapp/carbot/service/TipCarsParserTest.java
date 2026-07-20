@@ -169,6 +169,11 @@ class TipCarsParserTest {
                 "https://www.tipcars.com/volkswagen-tiguan-allspace/kombi/benzin/volkswagen-tiguan-allspace.html"))
                 .isEqualTo("SUV");
         assertThat(extractCarType(
+                "Volkswagen Taigo 1.0 TSI 7DSG People",
+                "",
+                "https://www.tipcars.com/volkswagen-taigo/kombi/benzin/volkswagen-taigo-1-0-tsi-7dsg-people-9340197.html"))
+                .isEqualTo("SUV");
+        assertThat(extractCarType(
                 "Hyundai ix20 1.4 VVTi, klimatizace, tazne",
                 "",
                 "https://www.tipcars.com/hyundai-ix20/hatchback/benzin/hyundai-ix20-1-4-vvti-klimatizace-tazne.html"))
@@ -266,6 +271,10 @@ class TipCarsParserTest {
         assertThat(looksTitleUrlBrandMismatch(
                 "SsangYong Korando Clever 1.5 T-GDI",
                 "https://www.tipcars.com/ssangyong-korando/suv/benzin/ssangyong-korando-clever-1-5-t-gdi-54000280.html"))
+                .isFalse();
+        assertThat(looksTitleUrlBrandMismatch(
+                "Xpeng G9 AWD Performance - 575 HP !!!",
+                "https://www.tipcars.com/xpeng-g9/suv/elektro/xpeng-g9-awd-performance-575-hp-56710015.html"))
                 .isFalse();
     }
 
