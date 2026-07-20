@@ -1185,7 +1185,27 @@ public class SautoParser implements CarSourceParser {
             return false;
         }
 
+        if (year == 1996 && looksLikeSautoNoise1996Title(normalizedTitle)) {
+            return false;
+        }
+
         return true;
+    }
+
+    private boolean looksLikeSautoNoise1996Title(String normalizedTitle) {
+        String source = " " + normalizeText(normalizedTitle).toLowerCase(Locale.ROOT) + " ";
+        return containsAny(source,
+                " b5 ",
+                " ex30 ",
+                " formentor ",
+                " ecoboost ",
+                " lineartronic ",
+                " t-gdi ",
+                " tgdi ",
+                " puretech ",
+                " bluehdi ",
+                " etron ",
+                " e-tron ");
     }
 
     private boolean looksModernZafiraVariant(String normalizedTitle) {
@@ -1490,6 +1510,20 @@ public class SautoParser implements CarSourceParser {
         String normalized = " " + normalizeText(text).toLowerCase(Locale.ROOT) + " ";
         String compact = normalized.replaceAll("[^a-z0-9]+", "");
 
+        if (containsAny(normalized, " lpg ") || compact.contains("lpg")) {
+            return "LPG";
+        }
+        if (containsAny(normalized, " cng ") || compact.contains("cng")) {
+            return "CNG";
+        }
+        if (containsAny(normalized, " ex30 ")) {
+            return "ELECTRIC";
+        }
+        if ((containsAny(normalized, " volvo ", " xc40 ", " xc60 ", " xc90 ", " v60 ", " v90 ", " s60 ", " s90 ")
+                && containsAny(normalized, " b3 ", " b4 ", " b5 ", " b6 "))) {
+            return "HYBRID";
+        }
+
         if (containsAny(normalized,
                 " plug-in-hybrid ", " plug in hybrid ", " plug-in hybrid ", " plugin hybrid ", " phev ")
                 || compact.contains("pluginhybrid")
@@ -1509,19 +1543,15 @@ public class SautoParser implements CarSourceParser {
                 && Pattern.compile("\\b1[,.]4\\s*i\\b|\\b1[,.]4i\\b").matcher(normalized).find()) {
             return "PETROL";
         }
+        if (Pattern.compile("\\b[0-9][,.][0-9]\\s*i\\b|\\b[0-9][,.][0-9]i\\b").matcher(normalized).find()) {
+            return "PETROL";
+        }
         if (containsAny(normalized, " nafta ", " diesel ", " tdi ", " tdci ", " hdi ", " dci ", " cdi ", " crdi ", " jtd ")) {
             return "DIESEL";
         }
         if (containsAny(normalized, " benzín ", " benzin ", " tsi ", " tfsi ", " gdi ", " t-gdi ", " tgdi ", " mpi ", " vvt-i ", " fsi ", " i-vtec ", " tce ", " ecoboost ")) {
             return "PETROL";
         }
-        if (containsAny(normalized, " lpg ")) {
-            return "LPG";
-        }
-        if (containsAny(normalized, " cng ")) {
-            return "CNG";
-        }
-
         return null;
     }
 
@@ -1621,6 +1651,8 @@ public class SautoParser implements CarSourceParser {
                 " automaticka ",
                 " automatická převodovka ",
                 " automaticka prevodovka ",
+                " aut. ",
+                " aut ",
                 " tiptronic ",
                 " cvt ",
                 " s tronic ",
@@ -1660,7 +1692,7 @@ public class SautoParser implements CarSourceParser {
         }
 
         if (containsAny(titleSource,
-                " kombi ", " combi ", " wagon ", " estate ", " touring ", " avant ", " variant ",
+                " komb ", " kombi ", " combi ", " wagon ", " estate ", " touring ", " avant ", " variant ",
                 " caravan ", " sw ", " shooting brake ", " sport tourer ", " sports tourer ",
                 " grandtour ", " grand tour "," allroad ", " a6 allroad ")) {
             return "WAGON";
@@ -1674,7 +1706,7 @@ public class SautoParser implements CarSourceParser {
             return "SEDAN";
         }
 
-        if (containsAny(titleSource, " suv ", " crossover ", " off-road ", " offroad ")) {
+        if (containsAny(titleSource, " suv ", " crossover ", " off-road ", " offroad ", " explorer ")) {
             return "SUV";
         }
 
@@ -1698,6 +1730,7 @@ public class SautoParser implements CarSourceParser {
         if (containsAny(titleSource,
                 " cabrio ", " roadster ", " spider ", " spyder ",
                 " convertible ", " cabriolet ", " targa ",
+                " eos ",
                 " 206cc ", " 206 cc ", " 207cc ", " 207 cc ",
                 " 307cc ", " 307 cc ", " 308cc ", " 308 cc ")) {
             return "CABRIO";
@@ -1711,7 +1744,7 @@ public class SautoParser implements CarSourceParser {
             return "MINIVAN";
         }
 
-        if (containsAny(titleSource, " ford fusion ", " peugeot 807 ", " c3 picasso ", " c4 picasso ", " picasso ")) {
+        if (containsAny(titleSource, " ford fusion ", " peugeot 807 ", " citroen c8 ", " citroën c8 ", " c3 picasso ", " c4 picasso ", " picasso ")) {
             return "MINIVAN";
         }
 
@@ -2104,10 +2137,18 @@ public class SautoParser implements CarSourceParser {
                 }
             }
 
-            return current;
+            return fixResidualMojibakeCase(current);
         } catch (Exception e) {
-            return current;
+            return fixResidualMojibakeCase(current);
         }
+    }
+
+    private String fixResidualMojibakeCase(String value) {
+        if (value == null || value.isBlank()) {
+            return value;
+        }
+
+        return value.replace("VýBAVA", "VÝBAVA");
     }
 
     private byte[] encodeMojibakeBytes(String value) throws Exception {

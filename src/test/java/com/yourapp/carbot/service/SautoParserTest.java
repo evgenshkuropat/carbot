@@ -74,6 +74,14 @@ class SautoParserTest {
                 .isEqualTo("HATCHBACK");
         assertThat(extractCarType("Citroen C3 Picasso 1.6 HDI 68kw 2011 r.", "", "https://www.sauto.cz/osobni/detail/citroen/c3-picasso/210520973"))
                 .isEqualTo("MINIVAN");
+        assertThat(extractCarType("Skoda Octavia SKODA octavia 1.9tdi 66KW Komb", "", "https://www.sauto.cz/osobni/detail/skoda/octavia/210793799"))
+                .isEqualTo("WAGON");
+        assertThat(extractCarType("Citroen C8 Citroen C8 2.0 HDI 16V", "", "https://www.sauto.cz/osobni/detail/citroen/c8/209864712"))
+                .isEqualTo("MINIVAN");
+        assertThat(extractCarType("Ford Explorer 4.i tel.731112961", "", "https://www.sauto.cz/osobni/detail/ford/explorer/209749290"))
+                .isEqualTo("SUV");
+        assertThat(extractCarType("Volkswagen Eos 2.0 TDI", "", "https://www.sauto.cz/osobni/detail/volkswagen/eos/209390520"))
+                .isEqualTo("CABRIO");
     }
 
     @Test
@@ -86,6 +94,34 @@ class SautoParserTest {
                 .isEqualTo("PLUGIN_HYBRID");
         assertThat(extractFuelType("Opel Combo 1.4 i 66 kw"))
                 .isEqualTo("PETROL");
+        assertThat(extractFuelType("Volvo XC60 B5 PLUS BLACK + 4SERVIS/ZARUKA"))
+                .isEqualTo("HYBRID");
+        assertThat(extractFuelType("Volvo XC90 B5 AWD AUT BRIGHT ULTRA 7-mist"))
+                .isEqualTo("HYBRID");
+        assertThat(extractFuelType("Volvo EX30 SINGLE RWD CORE NEW - DOTACE"))
+                .isEqualTo("ELECTRIC");
+        assertThat(extractFuelType("Peugeot 207 1.6i,AC"))
+                .isEqualTo("PETROL");
+        assertThat(extractFuelType("Dodge Ram +HEMI+LPG+OFFROAD PAKET+"))
+                .isEqualTo("LPG");
+    }
+
+    @Test
+    void resolvesTransmissionFromFreshSautoLogs() throws Exception {
+        assertThat(extractTransmission("Volkswagen Golf 1.9 TDI AUT. KLIMA"))
+                .isEqualTo("AUTOMATIC");
+    }
+
+    @Test
+    void rejectsSautoPageNoiseYearsForModernTitles() throws Exception {
+        assertThat(extractYearSafely("Volvo XC60 B5 PLUS BLACK + 4SERVIS/ZARUKA", "", "1996"))
+                .isNull();
+        assertThat(extractYearSafely("Ford Tourneo Courier 1.0 EcoBoost 92 kW Active L1", "", "rok 1996"))
+                .isNull();
+        assertThat(extractYearSafely("Cupra Formentor 1.5 TSI 110 kW DSG", "", "1996"))
+                .isNull();
+        assertThat(extractYearSafely("Subaru Impreza 2.0i-S Executive Lineartronic", "", "1996"))
+                .isNull();
     }
 
     @Test
@@ -216,6 +252,10 @@ class SautoParserTest {
                 .isEqualTo("Karvin\u00E1");
         assertThat(repairMojibake("Mercedes-Benz T\u0139\u2122\u0102\u00ADdy C 200 Kompressor 120 kW"))
                 .isEqualTo("Mercedes-Benz T\u0159\u00EDdy C 200 Kompressor 120 kW");
+        assertThat(repairMojibake("Volvo XC60 B5 PLUS BLACK + 4SERVIS/Z\u0102\u0081RUKA"))
+                .isEqualTo("Volvo XC60 B5 PLUS BLACK + 4SERVIS/Z\u00C1RUKA");
+        assertThat(repairMojibake("Ford S-MAX 2,5 i PLN\u0102\u0081 V\u0102\u00BDBAVA"))
+                .isEqualTo("Ford S-MAX 2,5 i PLN\u00C1 V\u00DDBAVA");
     }
 
     private String extractCarType(String title, String text, String url) throws Exception {
@@ -228,6 +268,18 @@ class SautoParserTest {
         Method method = SautoParser.class.getDeclaredMethod("extractFuelType", String.class);
         method.setAccessible(true);
         return (String) method.invoke(parser, text);
+    }
+
+    private String extractTransmission(String text) throws Exception {
+        Method method = SautoParser.class.getDeclaredMethod("extractTransmission", String.class);
+        method.setAccessible(true);
+        return (String) method.invoke(parser, text);
+    }
+
+    private Integer extractYearSafely(String title, String description, String analysisText) throws Exception {
+        Method method = SautoParser.class.getDeclaredMethod("extractYearSafely", String.class, String.class, String.class);
+        method.setAccessible(true);
+        return (Integer) method.invoke(parser, title, description, analysisText);
     }
 
     private String correctLikelyFalseElectricFuel(String title, String fuelType) throws Exception {
