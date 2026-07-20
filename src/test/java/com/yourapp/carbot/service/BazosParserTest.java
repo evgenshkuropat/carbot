@@ -66,10 +66,12 @@ class BazosParserTest {
         assertThat(extractFuelType("Suzuki Vitara 1.6 DDiS AllGrip 4x4")).isEqualTo("DIESEL");
         assertThat(extractFuelType("Suzuki Grand Vitara 2.4 VVT")).isEqualTo("PETROL");
         assertThat(extractFuelType("Suzuki Vitara 1.4 BoosterJet AllGrip Mild-Hybrid r2020")).isEqualTo("HYBRID");
+        assertThat(extractFuelType("Suzuki Vitara, 1.4 S 103Kw 4X4,TAZNE/NAVI//60tkm TOP STAV")).isEqualTo("PETROL");
         assertThat(extractFuelType("Suzuki Virara 1.6 Ddis")).isEqualTo("DIESEL");
         assertThat(extractFuelType("Suzuki Alto,1.0i,50kw")).isEqualTo("PETROL");
         assertThat(extractFuelType("Prodam Suzuki sx4,1.6")).isEqualTo("PETROL");
         assertThat(extractFuelType("Suzuki Ignis 1.2 PREMIUM 66kW 1.maj.CR")).isEqualTo("PETROL");
+        assertThat(extractFuelType("Suzuki Swift 1.3 67kw 2006")).isEqualTo("PETROL");
     }
 
     @Test
@@ -893,6 +895,24 @@ class BazosParserTest {
 
     @Test
     void repairsJulyBazosMojibakeFromLogs() throws Exception {
+        assertThat(repairMojibake("MÄ›lnĂ­k"))
+                .isEqualTo("Mělník");
+        assertThat(repairMojibake("Renault MĂ©gane CABRIO."))
+                .isEqualTo("Renault Mégane CABRIO.");
+        assertThat(repairMojibake("JindĹ™ichĹŻv Hradec"))
+                .isEqualTo("Jindřichův Hradec");
+        assertThat(repairMojibake("Rychnov nad KnÄ›Ĺľnou"))
+                .isEqualTo("Rychnov nad Kněžnou");
+        assertThat(repairMojibake("NovĂ˝ JiÄŤĂ­n"))
+                .isEqualTo("Nový Jičín");
+        assertThat(repairMojibake("FrĂ˝dek - MĂ­stek"))
+                .isEqualTo("Frýdek - Místek");
+        assertThat(repairMojibake("PelhĹ™imov"))
+                .isEqualTo("Pelhřimov");
+        assertThat(repairMojibake("TĹ™ebĂ­ÄŤ"))
+                .isEqualTo("Třebíč");
+        assertThat(repairMojibake("Seat Tarraco Style 2.0TDI 110kW DSG TaĹľnĂ© - zĂˇruka Autodraft"))
+                .isEqualTo("Seat Tarraco Style 2.0TDI 110kW DSG Tažné - záruka Autodraft");
         assertThat(repairMojibake("Citro\u0102\u00ABn C4 II 1.6 VTi (88 kW) \u00E2\u20AC\u201C 2011, 134 000km"))
                 .isEqualTo("Citro\u00EBn C4 II 1.6 VTi (88 kW) \u2013 2011, 134 000km");
         assertThat(repairMojibake("Citroen C4 Picasso 1.6 HDi - po servise za 15.500,- K\u00C4\u0164"))
