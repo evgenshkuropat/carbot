@@ -193,6 +193,11 @@ class SbazarParserTest {
         assertThat(resolveCarType("hyundai ix35 2,0 crdi serviska", "")).isEqualTo("SUV");
         assertThat(resolveCarType("ford edge 2,0 ecoblue 175kw st-line", "")).isEqualTo("SUV");
         assertThat(resolveCarType("volkswagen id.4", "")).isEqualTo("SUV");
+        assertThat(resolveCarType("volkswagen id.4 150kw dcc max 1st plus pro pf", "")).isEqualTo("SUV");
+        assertThat(resolveCarType("tesla model y rwd lfp", "")).isEqualTo("SUV");
+        assertThat(resolveCarType("jeep renegade 1.4 multiair 103kw limited", "")).isEqualTo("SUV");
+        assertThat(resolveCarType("audi tt 2.0 tfsi s-line top", "")).isEqualTo("COUPE");
+        assertThat(resolveCarType("bmw e46 325ti compact automat", "")).isEqualTo("HATCHBACK");
         assertThat(resolveCarType("mercedes-benz eqe 300 hyperscreen tazne soh98,8", "")).isEqualTo("SEDAN");
         assertThat(resolveCarType("mercedes 211", "")).isEqualTo("SEDAN");
         assertThat(resolveCarType("suzuki jimny 1.3 60kw 4x4 tazne", "")).isEqualTo("SUV");
@@ -319,6 +324,7 @@ class SbazarParserTest {
         assertThat(looksNonCarListing("nissan qashqai parkovaci senzor")).isTrue();
         assertThat(looksNonCarListing("nissan qashqai sklo zrcatka")).isTrue();
         assertThat(looksNonCarListing("suzuki vitara zadni sklo")).isTrue();
+        assertThat(looksNonCarListing("5g0827469a zadni kamera")).isTrue();
         assertThat(looksNonCarListing("triumph america lt cr 2015")).isTrue();
         assertThat(looksNonCarListing("bmw i3 125 kw 120 ah tep.cerpadlo")).isFalse();
         assertThat(looksNonCarListing("posilovac krouticiho momentu")).isTrue();

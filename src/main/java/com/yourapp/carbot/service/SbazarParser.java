@@ -863,6 +863,15 @@ public class SbazarParser implements CarSourceParser {
         if (containsAny(searchable, "volkswagen cc", "vw cc", "passat cc")) {
             return "SEDAN";
         }
+        if (containsAny(searchable, "model y", "renegade", "id.4", " id 4 ", " id4 ")) {
+            return "SUV";
+        }
+        if (containsAny(searchable, "audi tt", " tt ")) {
+            return "COUPE";
+        }
+        if (containsAny(searchable, "bmw compact", "325ti compact", "325 ti compact")) {
+            return "HATCHBACK";
+        }
         if (containsAny(searchable, "mazda 6", "mazda6")
                 && containsAny(searchable, " sw ", "kombi", "combi", "wagon", "estate")) {
             return "WAGON";
@@ -1025,6 +1034,7 @@ public class SbazarParser implements CarSourceParser {
                 "autoradio", "auto radio", "navigace tomtom", "stresni nosic", "stresni nosnik", "zamky centralni",
                 "centralni zamky", "zamykani zpatecky", "sterac", "sterace", "pc pocitac", "pocitac",
                 "parkovaci senzor", "sklo zrcatka", "zadni sklo",
+                "zadni kamera", "couvaci kamera",
                 "packy blinkr", "packa blinkru", "paka blinkru", "paska airbag", "paska volantu", "paska pod volantem",
                 "posilovac krouticiho momentu",
                 " padlo ", "rucni pumpicka", "pumpicka", "cmx", "rebel", "triumph america");
