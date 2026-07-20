@@ -1118,7 +1118,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
 
         // ELECTRIC - only strong EV signals
         if (containsAny(source,
-                " elektro ", " elektromobil ", " elektroauto ",
+                " elektro ", " electro ", " elektromobil ", " elektroauto ",
                 " electric ", " bev ",
                 " e-tron ", " etron ",
                 " id.3 ", " id.4 ", " id.5 ",
@@ -1286,6 +1286,11 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         if (source.matches(".*\\b[0-9][.,][0-9]\\s*(?:d|td)\\b.*")
                 || source.matches(".*\\b[0-9]{3}\\s*d\\b.*")
                 || source.matches(".*\\b[0-9]{2,3}x?d\\b.*")) {
+            return "DIESEL";
+        }
+
+        if (containsAny(source, " renault scenic ", " renault grand scenic ", " grand scenic ", " scenic ")
+                && Pattern.compile("(?i)\\b1[\\.,]6\\s*d\\s*c\\b").matcher(source).find()) {
             return "DIESEL";
         }
 
@@ -2273,14 +2278,19 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " accord tourer ", " accord kombi ", " accord combi ", " accord wagon ",
                 " civic tourer ", " focus tunier ", " focus turnier ",
                 " insignia st ", " insignia sports tourer ", " insignia sport tourer ", " insignia sport taurer ",
-                " astra sports tourer ", " astra sport tourer ", " astra sports touer ", " astra sport touer ", " astra j sports tourer ", " astra k sports tourer ",
+                " astra sports tourer ", " astra sport tourer ", " astra sportstourer ", " astra sports touer ", " astra sport touer ", " astra j sports tourer ", " astra k sports tourer ",
                 " astra j sport tourer ", " astra k sport tourer ", " astra j combi ", " astra k combi ", " astra sw ", " astra combi ", " astra kombi ", " 308 sw ", " peugeot 308 sw ")) {
             return "WAGON";
         }
 
         if (Pattern.compile("(?i)\\bastra\\s+(?:j|k)?\\b.*\\bsports?\\s+tourer\\b").matcher(titleSource).find()
+                || Pattern.compile("(?i)\\bastra\\s+(?:j|k)?\\b.*\\bsportstourer\\b").matcher(titleSource).find()
                 || Pattern.compile("(?i)\\bastra\\s+k\\b.*\\bst\\b").matcher(titleSource).find()) {
             return "WAGON";
+        }
+
+        if (containsAny(titleSource, " astra sedan ", " opel astra sedan ")) {
+            return "SEDAN";
         }
 
         if (containsAny(titleSource, " insignia ", " insignie ", " vectra ")) {
@@ -2305,7 +2315,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         }
 
         if (containsAny(titleSource, " multivan ", " california ", " nv 200 ", " nv200 ", " almera tino ", " grandis ", " elgrand ", " prius plus ",
-                " traveller ", " travaller ", " jumpy multispace ", " multispace ")) {
+                " traveller ", " traveler ", " travaller ", " jumpy multispace ", " multispace ")) {
             return "MINIVAN";
         }
 
@@ -3143,7 +3153,8 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             return true;
         }
 
-        if (containsAny(titleSource, " expert ", " jumpy ", " scudo ", " proace ")
+        if ((containsAny(titleSource, " expert ", " e-expert ", " e expert ", " eexpert ", " jumpy ", " scudo ", " proace ")
+                || containsAny(wordSource, " peugeot eexpert ", " eexpert "))
                 && !containsAny(titleSource, " proace verso ", " proace city verso ", " spacetourer ", " multispace ")) {
             return true;
         }
@@ -3180,8 +3191,9 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " trafic ", " traffic ",
                 " master ", " movano ", " peugeot boxer ", " jumper ", " ducato ",
                 " fiorino ",
-                " expert ", " jumpy ", " scudo ",
+                " expert ", " e-expert ", " e expert ", " eexpert ", " jumpy ", " scudo ",
                 " proace ")
+                || containsAny(wordSource, " peugeot eexpert ", " eexpert ")
                 || containsAny(wordSource,
                 " transporter ", " caravelle ", " carawelle ")) {
             if (containsAny(titleSource, " proace verso ", " proace city verso ", " spacetourer ", " multispace ")
@@ -3207,7 +3219,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " transporter ", " caravelle ", " carawelle ", " multivan ",
                 " trafic ", " traffic ", " vivaro ", " primastar ",
                 " partner l1 ", " partner l2 ",
-                " expert ", " scudo ", " proace ",
+                " expert ", " e-expert ", " e expert ", " eexpert ", " scudo ", " proace ",
                 " tourneo custom ", " transit custom ",
                 " iveco ", " daily ", " peugeot boxer ", " ducato ", " jumper ",
                 " master ", " movano ", " crafter ", " transit ",
@@ -3240,7 +3252,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         ) || containsAny(wordSource,
                 " transporter ", " caravelle ", " carawelle ", " multivan ",
                 " sprinter ", " crafter ", " transit ", " ducato ", " jumpy ",
-                " jumper ", " peugeot boxer ", " movano ", " master ");
+                " jumper ", " peugeot boxer ", " peugeot eexpert ", " eexpert ", " movano ", " master ");
     }
 
     private boolean looksClearlyCommercialBody(String source) {
@@ -3740,12 +3752,12 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " chevrolet ssr ", " spark ", " stonic ", " camaro ", " cruze ", " malibu ",
                 " ceed ", " seed ", " xceed ",
                 " splash ", " wagon r ", " wagon r+ ",
-                " ioniq ", " ix55 ", " volvo s90 ", " s90 ",
+                " ioniq ", " ix55 ", " volvo s90 ", " s90 ", " opel astra ", " astra ",
                 " bmw 520d ", " 520d ",
                 " passat ", " golf ", " tiguan ", " touareg ", " t-roc ", " troc ", " touran ",
                 " fiat 500 ", " fiat500 ", " 500 lounge ", " 500c ", " panda ")
                 && !containsAny(titleSource, " na dily ", " na nd ", " nahradni dily ", " nepojizdny ", " nepojizdne ", " vadny ", " vadne ",
-                " k oprave ", " na opravu ")) {
+                " k oprave ", " na opravu ", " motor k.o ", " motor k.o. ", " motor ko ", " vada motoru ", " zavada motoru ")) {
             return false;
         }
 

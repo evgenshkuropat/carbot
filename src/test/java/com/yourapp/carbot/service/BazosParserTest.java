@@ -134,6 +134,8 @@ class BazosParserTest {
         assertThat(extractFuelType("Mini Cooper")).isEqualTo("PETROL");
         assertThat(extractFuelType("Prodam Toyota Mirai Executive")).isEqualTo("ELECTRIC");
         assertThat(extractFuelType("Renault Twingo Z.E. 60KW rok 12/2023 Urban Night")).isEqualTo("ELECTRIC");
+        assertThat(extractFuelType("Opel Corsa, ELECTRO 100kW")).isEqualTo("ELECTRIC");
+        assertThat(extractFuelType("Renault Grand Scenic 1.6dC MANUAL LED VYHREV KAMERA SERVISKA")).isEqualTo("DIESEL");
         assertThat(extractFuelType("VW Passat B8 Variant GTE 1.4TSI 160kW DSG - zaruka Autodraft")).isEqualTo("PLUGIN_HYBRID");
         assertThat(extractFuelType("VW Golf 8 GTE 1.4 TSI Hybrid 150kW DSG - zaruka Autodraft")).isEqualTo("PLUGIN_HYBRID");
         assertThat(extractFuelType("Skoda Octavia IV 2.0TDI 110KW DSG 2021 STYLE")).isEqualTo("DIESEL");
@@ -286,6 +288,8 @@ class BazosParserTest {
         assertThat(extractCarType("2022 CHEVROLET COLORADO 3.6V6 Z71 Offroad 4WD", "", "")).isEqualTo("PICKUP");
         assertThat(extractCarType("Chevrolet Impala 2.6 V6 VVT", "", "")).isEqualTo("SEDAN");
         assertThat(extractCarType("Opel Astra J Sports Tourer 1.4i Turbo103Kw r.v.10/2015", "", "")).isEqualTo("WAGON");
+        assertThat(extractCarType("OPEL ASTRA SPORTSTOURER 1.6 CDTi, BEZ KOROZE", "", "")).isEqualTo("WAGON");
+        assertThat(extractCarType("Opel Astra Sedan 1.7 CDTi 100 kW, manual, 2014, Diesel", "", "")).isEqualTo("SEDAN");
         assertThat(extractCarType("Opel Astra J combi 1,7 CDTi 92kW", "", "")).isEqualTo("WAGON");
         assertThat(extractCarType("Opel Astra K 1,6 CDTI 81kw sport Tourer, Innovation", "", "")).isEqualTo("WAGON");
         assertThat(extractCarType("Opel Astra K 1,6 CDTI 81kw 2016 ST, Innovation", "", "")).isEqualTo("WAGON");
@@ -298,6 +302,7 @@ class BazosParserTest {
         assertThat(extractCarType("Opel Crossland X 1.2i 81kw Inovation", "", "")).isEqualTo("SUV");
         assertThat(extractCarType("OPEL VECTRA C 2.2i 16V EDICE", "", "")).isEqualTo("SEDAN");
         assertThat(extractCarType("Prodame Peugeot Travaller", "", "")).isEqualTo("MINIVAN");
+        assertThat(extractCarType("Peugeot Traveler DPH", "", "")).isEqualTo("MINIVAN");
         assertThat(extractCarType("Peugeot Traveller 2.0 Blue-HDi Allure L2", "", "")).isEqualTo("MINIVAN");
         assertThat(extractCarType("Peugeot 108 1.0benzin servisni hostorie", "", "")).isEqualTo("HATCHBACK");
         assertThat(extractCarType("PEUGEOT 301 1.2 60kW rok 2016", "", "")).isEqualTo("SEDAN");
@@ -596,6 +601,10 @@ class BazosParserTest {
         assertThat(looksBrokenOrForPartsListing("Opel Astra SW 1.5CDTI DPH CR Motor k.o", ""))
                 .isTrue();
         assertThat(looksBrokenOrForPartsListing(
+                "Opel Astra 2.0CDTi 121kW 2013 Bose / PDC",
+                "vadny dil v doporucenem inzeratu"))
+                .isFalse();
+        assertThat(looksBrokenOrForPartsListing(
                 "Hyundai Ioniq 5, STYLE 77,4 kWh SOH 96,3%; 800V; cerpadlo",
                 "vadny dil v doporucenem inzeratu"))
                 .isFalse();
@@ -672,6 +681,12 @@ class BazosParserTest {
                 "PEUGEOT EXPERT 1.6 hdi 2008",
                 "",
                 "https://auto.bazos.cz/inzerat/219457769/peugeot-expert-16-hdi-2008.php"))
+                .isTrue();
+
+        assertThat(looksCommercialVehicle(
+                "Elektromobil",
+                "",
+                "https://auto.bazos.cz/inzerat/221223610/peugeot-eexpert.php"))
                 .isTrue();
 
         assertThat(looksCommercialVehicle(
