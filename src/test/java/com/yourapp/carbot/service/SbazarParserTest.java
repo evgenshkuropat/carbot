@@ -104,6 +104,17 @@ class SbazarParserTest {
         assertThat(resolveFuelType("toyota yaris 1.0 vvt-i 51kw cr", "")).isEqualTo("PETROL");
         assertThat(resolveFuelType("prodam toyota yaris 1.33 vvt-i 73kw automat", "")).isEqualTo("PETROL");
         assertThat(resolveFuelType("volkswagen e-up 60 kw serviska top stav", "")).isEqualTo("ELECTRIC");
+        assertThat(resolveFuelType("bmw i4 edrive 40 120 000 km tazne keyless soh 94", "")).isEqualTo("ELECTRIC");
+        assertThat(resolveTransmission("bmw i4 edrive 40 120 000 km tazne keyless soh 94", "", "ELECTRIC")).isEqualTo("AUTOMATIC");
+        assertThat(resolveFuelType("bmw ix1 xdrive30 m zaruka tazne cr", "")).isEqualTo("ELECTRIC");
+        assertThat(resolveTransmission("bmw ix1 xdrive30 m zaruka tazne cr", "", "ELECTRIC")).isEqualTo("AUTOMATIC");
+        assertThat(resolveFuelType("toyota corolla 1,8 hsd 122ps ts gr sport a/t", "")).isEqualTo("HYBRID");
+        assertThat(resolveFuelType("ford focus 2,0 eb 184kw st navi", "")).isEqualTo("PETROL");
+        assertThat(resolveFuelType("mazda mx-5 1.5 96 kw softtop", "")).isEqualTo("PETROL");
+        assertThat(resolveFuelType("toyota rav4 2,0 158ps life a/t 4x4", "")).isEqualTo("PETROL");
+        assertThat(resolveFuelType("mitsubishi outlander 2,0 150ps intense a/t 4x4", "")).isEqualTo("PETROL");
+        assertThat(resolveFuelType("mitsubishi asx 2,0 150ps inform", "")).isEqualTo("PETROL");
+        assertThat(resolveFuelType("seat mii 1.0 44kw 5dveri", "")).isEqualTo("PETROL");
         assertThat(resolveFuelType("porsche cayman gt4 wrap od koenigsegg znama historie", "")).isEqualTo("PETROL");
         assertThat(resolveFuelType("skoda octavia iv 2.0 tdi dsg 4x4 150 ps", "")).isEqualTo("DIESEL");
         assertThat(resolveTransmission("honda crv 2020 hybrid benzin 72tis.km", "", "HYBRID")).isEqualTo("AUTOMATIC");
@@ -312,6 +323,12 @@ class SbazarParserTest {
         assertThat(resolveCarType("peugeot 508gt plug in hybrid 165kw e-eat8", "")).isEqualTo("SEDAN");
         assertThat(resolveCarType("mercedes-benz cle 200 amg line", "")).isEqualTo("COUPE");
         assertThat(resolveCarType("citroen c2 1.1 i", "")).isEqualTo("HATCHBACK");
+        assertThat(resolveCarType("bmw ix1 xdrive30 m zaruka tazne cr", "")).isEqualTo("SUV");
+        assertThat(resolveCarType("mercedes-benz gle 300d 4m cr 1 maj dph acc 360", "")).isEqualTo("SUV");
+        assertThat(resolveCarType("mazda mx-5 1.5 96 kw softtop 48k km", "")).isEqualTo("CABRIO");
+        assertThat(resolveCarType("alfa romeo 159 2,4 jtdm 154 kw zachovaly stav", "")).isEqualTo("SEDAN");
+        assertThat(resolveCarType("toyota corolla ts 1,2 turbo 115ps comfort", "")).isEqualTo("WAGON");
+        assertThat(resolveCarType("toyota corolla 1,8 hsd 122ps ts gr sport a/t", "")).isEqualTo("WAGON");
     }
 
     @Test
@@ -321,6 +338,8 @@ class SbazarParserTest {
         assertThat(looksNonCarListing("osobni vuz https www sbazar cz inzerat 231248942 osobni vuz")).isTrue();
         assertThat(looksNonCarListing("osobni vuz opel corsa e 1.4 xel automat")).isFalse();
         assertThat(looksNonCarListing("auto https www sbazar cz inzerat 231274019 auto")).isTrue();
+        assertThat(looksNonCarListing("prodam https www sbazar cz inzerat 232430412 prodam")).isTrue();
+        assertThat(looksNonCarListing("prodam bmw i4 edrive 40")).isFalse();
         assertThat(looksNonCarListing("nissan qashqai parkovaci senzor")).isTrue();
         assertThat(looksNonCarListing("nissan qashqai sklo zrcatka")).isTrue();
         assertThat(looksNonCarListing("suzuki vitara zadni sklo")).isTrue();

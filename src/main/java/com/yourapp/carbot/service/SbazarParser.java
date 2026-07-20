@@ -625,7 +625,7 @@ public class SbazarParser implements CarSourceParser {
         }
 
         if (containsAny(searchable,
-                "plug-in", "plugin", "phev", "hybrid", " hev ", " mhev ", " etsi ", " gte ",
+                "plug-in", "plugin", "phev", "hybrid", " hsd ", " hev ", " mhev ", " etsi ", " gte ",
                 "tfsi e", " shs ", "e-power", "epower", "225xe", "iperformance",
                 " t8 ", "recharge",
                 "330e", " 330 e ", "530e", " 530 e ", " b5 ")) {
@@ -712,6 +712,24 @@ public class SbazarParser implements CarSourceParser {
             return "PETROL";
         }
 
+        if ((containsAny(searchable, "bmw i4", " i4 edrive", "bmw ix1", " ix1 "))
+                && !containsAny(searchable, "benzin", "diesel", "nafta", "tdi", "dci", "hdi", "cdi")) {
+            return "ELECTRIC";
+        }
+
+        if ((containsAny(searchable, "mazda mx-5", "mazda mx5", "mx-5", "mx5")
+                && searchable.matches(".*\\b1[.,]5\\b.*"))
+                || (containsAny(searchable, "ford focus")
+                && containsAny(searchable, " eb ", "ecoboost"))
+                || (containsAny(searchable, "toyota rav4", "rav4")
+                && searchable.matches(".*\\b2[.,]0\\b.*\\b158\\s*ps\\b.*"))
+                || (containsAny(searchable, "mitsubishi outlander", "mitsubishi asx")
+                && searchable.matches(".*\\b2[.,]0\\b.*\\b150\\s*ps\\b.*"))
+                || (containsAny(searchable, "seat mii")
+                && searchable.matches(".*\\b1[.,]0\\b.*"))) {
+            return "PETROL";
+        }
+
         if ((containsAny(searchable, "octavia")
                 && searchable.matches(".*\\b1[.,]8\\s*t\\b.*"))
                 || (containsAny(searchable, "peugeot 3008", "fiat 500x", "b-max", "b max")
@@ -739,7 +757,7 @@ public class SbazarParser implements CarSourceParser {
     private boolean hasElectricSignal(String searchable) {
         return containsAny(searchable,
                 "tesla", "model 3", "model y", "model s", "model x",
-                "bmw i3", " i3 ", "bmw i5", " inster ", " id 3 ", "id.3", " id3 ",
+                "bmw i3", " i3 ", "bmw i4", " i4 edrive", "bmw i5", "bmw ix1", " ix1 ", " inster ", " id 3 ", "id.3", " id3 ",
                 " e-2008 ", " e 2008 ", "e-up", " e up ", " id 4 ", "id.4", " id4 ", " id 5 ", "id.5", " id5 ",
                 "eq comfort", " smart eq", "b-class 250 edrive", "b 250 edrive", "ioniq 5", "elektro", "electric", "bev",
                 "enyaq", "cupra born", "e-tron", "etron")
@@ -779,7 +797,7 @@ public class SbazarParser implements CarSourceParser {
                     || identityText.matches(".*\\bd\\s*[0-9]\\b.*");
             case "HYBRID", "PLUGIN_HYBRID" -> containsAny(identityText, "plug-in", "plugin", "phev", "hybrid", " hev ", " mhev ",
                     " gte ", "tfsi e", " shs ", "e-power", "epower", "225xe", "iperformance",
-                    " t8 ", "recharge", "superb iv", "kodiaq iv", " b5 ", "e-performance", "e performance",
+                    " hsd ", " t8 ", "recharge", "superb iv", "kodiaq iv", " b5 ", "e-performance", "e performance",
                     "300e", " 300 e ", "330e", " 330 e ", "530e", " 530 e ");
             case "LPG" -> containsAny(identityText, "lpg");
             case "CNG" -> containsAny(identityText, "cng", "g-tec", "g tec", "gtec");
@@ -877,6 +895,20 @@ public class SbazarParser implements CarSourceParser {
             return "WAGON";
         }
         if (containsAny(searchable, "mazda 6", "mazda6")) {
+            return "SEDAN";
+        }
+        if (containsAny(searchable, "bmw ix1", " ix1 ", "mercedes-benz gle", "mercedes benz gle", " mercedes gle ", " gle ")) {
+            return "SUV";
+        }
+        if (containsAny(searchable, "toyota corolla ts", "corolla ts ", "corolla touring sports", "corolla sports touring")
+                || (containsAny(searchable, "toyota corolla", "corolla") && containsAny(searchable, " ts ", " ts,", " ts."))) {
+            return "WAGON";
+        }
+        if (containsAny(searchable, "mazda mx-5", "mazda mx5", "mx-5", "mx5")
+                && containsAny(searchable, "softtop", "roadster", "cabrio", "kabrio", "convertible")) {
+            return "CABRIO";
+        }
+        if (containsAny(searchable, "alfa romeo 159", "alfa 159", " ar 159 ")) {
             return "SEDAN";
         }
         if (containsAny(searchable, "citroen c5", "citroen c 5", " c5 ")
@@ -1012,6 +1044,11 @@ public class SbazarParser implements CarSourceParser {
         if ("osobni vuz".equals(searchable)
                 || "osobni auto".equals(searchable)
                 || "auto".equals(searchable)
+                || (("prodam".equals(searchable)
+                || (searchable.startsWith("prodam ") && searchable.endsWith(" prodam")))
+                && "-".equals(detectBrand(searchable))
+                && "-".equals(detectFuelType(searchable))
+                && "-".equals(detectCarType(searchable)))
                 || ((searchable.startsWith("osobni vuz ") || searchable.startsWith("osobni auto ") || searchable.startsWith("auto "))
                 && "-".equals(detectBrand(searchable))
                 && "-".equals(detectFuelType(searchable))
