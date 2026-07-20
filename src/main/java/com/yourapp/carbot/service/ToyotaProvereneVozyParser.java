@@ -682,6 +682,9 @@ public class ToyotaProvereneVozyParser implements CarSourceParser {
         if (containsAny(source, " mercedes-benz gle ", " mercedes benz gle ", " skoda yeti ", " ford edge ")) {
             return "SUV";
         }
+        if (containsAny(source, " jumpy combi ", " citroen jumpy ")) {
+            return "MINIVAN";
+        }
         if (containsAny(source, " subaru outback ", " outback ")) {
             return "WAGON";
         }
@@ -725,7 +728,7 @@ public class ToyotaProvereneVozyParser implements CarSourceParser {
         if (containsAny(source, " cyberster ", " roadster ", " cabrio ", " kabrio ", " convertible ")) {
             return "CABRIO";
         }
-        if (containsAny(source, " lexus lc ", " lc 500 ", " coupe ", " sportovni ", " supra ", " gt86 ")) {
+        if (containsAny(source, " lexus rc ", " rc 300 ", " rc 350 ", " rc 500 ", " lexus lc ", " lc 500 ", " coupe ", " sportovni ", " supra ", " gt86 ")) {
             return "COUPE";
         }
         if (containsAny(source, " corolla sd ", " sedan ", " liftback ", " toledo ", " insignia ", " stinger ", " octavia ", " avensis ")) {
@@ -752,7 +755,7 @@ public class ToyotaProvereneVozyParser implements CarSourceParser {
         if (containsAny(source, " proace ", " boxer ", " uzitkove ")) {
             return "VAN";
         }
-        if (containsAny(source, " coupe ", " sportovni ", " supra ", " gt86 ", " lexus lc ", " lc 500 ")) {
+        if (containsAny(source, " coupe ", " sportovni ", " supra ", " gt86 ", " lexus rc ", " rc 300 ", " rc 350 ", " rc 500 ", " lexus lc ", " lc 500 ")) {
             return "COUPE";
         }
 

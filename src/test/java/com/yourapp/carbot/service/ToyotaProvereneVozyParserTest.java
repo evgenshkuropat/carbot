@@ -18,6 +18,8 @@ class ToyotaProvereneVozyParserTest {
                 .isEqualTo("WAGON");
         assertThat(extractCarType("Lexus LC LC 500 Sport+", ""))
                 .isEqualTo("COUPE");
+        assertThat(extractCarType("Lexus RC 5,0 Track Edition", ""))
+                .isEqualTo("COUPE");
         assertThat(extractCarType("Kia Stinger 2.2 CRDi 147kW 8AT GT-Line", ""))
                 .isEqualTo("SEDAN");
         assertThat(extractCarType("Skoda Octavia 1.2 TSI / 77 kW", ""))
@@ -46,6 +48,8 @@ class ToyotaProvereneVozyParserTest {
                 .isEqualTo("MINIVAN");
         assertThat(extractCarType("Citroen Jumper 2.2HDi, L1H1, CR-1, tazne, DPH", ""))
                 .isEqualTo("VAN");
+        assertThat(extractCarType("Citroen Jumpy Combi 2,0", ""))
+                .isEqualTo("MINIVAN");
         assertThat(extractCarType("Ford Transit Courier 1,0 ECB Trend", ""))
                 .isEqualTo("VAN");
         assertThat(extractCarType("Lexus LBX 1,5 HEV Original Edition 4x4", ""))
