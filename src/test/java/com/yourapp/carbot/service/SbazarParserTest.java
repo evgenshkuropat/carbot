@@ -59,6 +59,7 @@ class SbazarParserTest {
         assertThat(resolveFuelType("top motor 4x4 1.8 t 110 kw skoda octavia super", "")).isEqualTo("PETROL");
         assertThat(resolveFuelType("nova stk bez koroze chevrolet cruze 1.6 91kw", "")).isEqualTo("PETROL");
         assertThat(resolveFuelType("ford focus combi 1.6 85 kw", "")).isEqualTo("PETROL");
+        assertThat(resolveFuelType("ford focus 1.6 combi", "")).isEqualTo("PETROL");
         assertThat(resolveFuelType("ford fiesta st atmosfera 150ps", "")).isEqualTo("PETROL");
         assertThat(resolveFuelType("renault clio 1,2 54kw limited navigace", "")).isEqualTo("PETROL");
         assertThat(resolveFuelType("audi a6 c4 1.8 5v 160000km top stav", "")).isEqualTo("PETROL");
@@ -329,6 +330,8 @@ class SbazarParserTest {
         assertThat(resolveCarType("alfa romeo 159 2,4 jtdm 154 kw zachovaly stav", "")).isEqualTo("SEDAN");
         assertThat(resolveCarType("toyota corolla ts 1,2 turbo 115ps comfort", "")).isEqualTo("WAGON");
         assertThat(resolveCarType("toyota corolla 1,8 hsd 122ps ts gr sport a/t", "")).isEqualTo("WAGON");
+        assertThat(resolveCarType("toyota avensis 2.2 d-4d 110 kw plny servis", "")).isEqualTo("SEDAN");
+        assertThat(resolveCarType("mercedes benz ml 400cdi w163 facelift automat kuze", "")).isEqualTo("SUV");
     }
 
     @Test
@@ -422,6 +425,14 @@ class SbazarParserTest {
                 .isEqualTo("Ta\u017En\u00E9 Mas\u00E1");
         assertThat(repairMojibake("v Krom\u00C4\u203A\u0139\u2122\u0102\u00AD\u0139\u013E"))
                 .isEqualTo("v Krom\u011B\u0159\u00ED\u017E");
+        assertThat(repairMojibake("v Hodon\u0102\u00ADn"))
+                .isEqualTo("v Hodon\u00EDn");
+        assertThat(repairMojibake("v Old\u0139\u2122i\u0139\u02C7"))
+                .isEqualTo("v Old\u0159i\u0161");
+        assertThat(repairMojibake("v \u00C4\u015Ael\u0102\u02C7kovice"))
+                .isEqualTo("v \u010Cel\u00E1kovice");
+        assertThat(repairMojibake("v P\u0102\u00ADsek"))
+                .isEqualTo("v P\u00EDsek");
 
         assertThat(resolveCarType("fiat ulysse ulysse2.2 mtj 180k 8at l2", ""))
                 .isEqualTo("MINIVAN");
