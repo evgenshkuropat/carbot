@@ -59,6 +59,8 @@ class BazosParserTest {
                 .isEqualTo("SUZUKI");
         assertThat(extractBrand("Suzuki Wagon R 1.3i 56 kW, 2002, tazny", ""))
                 .isEqualTo("SUZUKI");
+        assertThat(extractBrand("Mercedes-AMG GT 43 4MATIC+ Brilliant Blue", ""))
+                .isEqualTo("MERCEDES");
     }
 
     @Test
@@ -374,8 +376,14 @@ class BazosParserTest {
         assertThat(extractCarType("MERCEDES E 220D 4MATIC COMBI PUVOD CR", "", "")).isEqualTo("WAGON");
         assertThat(extractCarType("Mercedes-Benz C 220 d T AMG Night Paket, 162 kW, 2023", "", "")).isEqualTo("WAGON");
         assertThat(extractCarType("Mercedes-Benz 126.500 SEC AMG Paket", "", "")).isEqualTo("COUPE");
+        assertThat(extractCarType("Mercedes Benz 200d w124/rv.1989/manual/POUZE 88.000km", "", "")).isEqualTo("SEDAN");
+        assertThat(extractCarType("Mercedes E350CDI, 4-matic, spickovy stav, NOVA CENA", "", "")).isEqualTo("SEDAN");
+        assertThat(extractCarType("Mercedes Benz GL 350 Bluetec AMG paket", "", "")).isEqualTo("SUV");
+        assertThat(extractCarType("Mercedes Viano Marco Polo 3,0 CDi 150kw Limited Edition", "", "")).isEqualTo("MINIVAN");
+        assertThat(extractCarType("MERCEDES C AMG 220D 1.MAJ TOP 2023 WEBASTO", "", "")).isEqualTo("SEDAN");
         assertThat(extractCarType("PRODAM MAZDU 6 GH VE VYBORNEM STAVU", "", "")).isEqualTo("SEDAN");
         assertThat(extractCarType("Mazda Tribute 3.0 4x4 nova STK", "", "")).isEqualTo("SUV");
+        assertThat(extractCarType("Mitsubishi Galant 2.4GDI r.v. 2003 STK do 11/27", "", "")).isEqualTo("SEDAN");
         assertThat(extractCarType("AUDI A1 1.2 TFSI 2012", "", "")).isEqualTo("HATCHBACK");
         assertThat(extractCarType("C5 2.2HDI 16V BREAK D. rv.11.2006", "", "")).isEqualTo("WAGON");
     }
