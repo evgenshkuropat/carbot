@@ -2484,7 +2484,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             return "MINIVAN";
         }
 
-        if (containsAny(titleSource, " i10 ", " aygo ", " jazz ", " insight ", " rio ", " ds3 ", " punto ", " panda ", " grande punto ", " kalos ", " calos ",
+        if (containsAny(titleSource, " i10 ", " aygo ", " jazz ", " insight ", " rio ", " ds3 ", " ds5 ", " punto ", " panda ", " grande punto ", " fiat grande ", " abarth 595 ", " 595 competizione ", " kalos ", " calos ",
                 " fiat 500e ", " fiat e500 ", " 500e ", " e500 ")) {
             return "HATCHBACK";
         }
@@ -2576,7 +2576,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " range rover ", " evoque ", " velar ",
                 " discovery ", " discovery sport ", " defender ",
                 " compass ", " cherokee ", " grand cherokee ",
-                " grand vitara ", " vitara ", " samurai ", " yeti ",
+                " grand vitara ", " vitara ", " samurai ", " sedici ", " yeti ",
                 " captiva ", " captivu ", " tahoe ", " suburban ", " trailblazer ", " bolt ev ",
                 " model y ",
                 " xv ", " forester ",

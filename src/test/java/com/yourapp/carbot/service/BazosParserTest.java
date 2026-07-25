@@ -261,11 +261,15 @@ class BazosParserTest {
         assertThat(extractCarType("Fiat500", "", "")).isEqualTo("HATCHBACK");
         assertThat(extractCarType("Fiat 500c 1.2 Lounge 2015", "", "")).isEqualTo("CABRIO");
         assertThat(extractCarType("Fiat 500X - 1.0 FireFly - edice MIRROR", "", "")).isEqualTo("SUV");
+        assertThat(extractCarType("Fiat Grande 1,2 i 48 Kw 5 dv 104 tis / km rok 2007", "", "")).isEqualTo("HATCHBACK");
+        assertThat(extractCarType("Abarth 595 Competizione 180k 48tkm, 1. Majitel", "", "")).isEqualTo("HATCHBACK");
+        assertThat(extractCarType("Prodej Fiat Sedici 1.6", "", "")).isEqualTo("SUV");
         assertThat(extractCarType("Prodam Fiat Multipla 1.6/16V CNG/2007/6mist", "", "")).isEqualTo("MINIVAN");
         assertThat(extractCarType("Fiat FIORINO QUBO 1.4 - DPH - pouze 154000 km", "", "")).isEqualTo("MINIVAN");
         assertThat(extractCarType("Fiat Bravo 1,6 JTD, 2008", "", "")).isEqualTo("HATCHBACK");
         assertThat(extractCarType("Citroen DS4 Exclusive", "", "")).isEqualTo("HATCHBACK");
         assertThat(extractCarType("Citroen eC4 zaruka elektro", "", "https://auto.bazos.cz/inzerat/219841903/citroen-ec4-zaruka.php")).isEqualTo("HATCHBACK");
+        assertThat(extractCarType("Citroen DS5 2016 FACELIFT/2.0 HDi AT6 133kW/183tkm/", "", "")).isEqualTo("HATCHBACK");
         assertThat(extractCarType("DACIA STEPWAY 1,0 i 66 KW TOP STAV 2017", "", "")).isEqualTo("HATCHBACK");
         assertThat(extractCarType("Dacia Bigster journey hybrid 155", "", "")).isEqualTo("SUV");
         assertThat(extractCarType("HONDA ACCORD TOURER VII EXECUTIVE 2.0 i-VTEC", "", "")).isEqualTo("WAGON");
