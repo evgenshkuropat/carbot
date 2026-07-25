@@ -167,6 +167,7 @@ class BazosParserTest {
                 "PLUGIN_HYBRID")).isNull();
         assertThat(extractFuelType("Prodam Fiat Multipla 1.6/16V CNG/2007/6mist")).isEqualTo("CNG");
         assertThat(extractFuelType("Ford Focus 1.6-16V")).isEqualTo("PETROL");
+        assertThat(extractFuelType("FORD fiesta 1 .3i 51kw R.V 2008 5 dveri Klima")).isEqualTo("PETROL");
         assertThat(extractFuelType("FIAT 500, 1,2, 51kW, r.v:2015")).isEqualTo("PETROL");
         assertThat(extractFuelType("Fiat Panda 1.1 nova stk")).isEqualTo("PETROL");
         assertThat(extractFuelType("Fiat Panda 1.2 51kW,servisni knizka, klimatizace, kola")).isEqualTo("PETROL");
