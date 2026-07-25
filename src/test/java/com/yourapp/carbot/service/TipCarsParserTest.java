@@ -183,6 +183,21 @@ class TipCarsParserTest {
                 "",
                 "https://www.tipcars.com/peugeot-rifter/van/nafta/peugeot-rifter-1-5-bluehdi-96kw-cz-1-maj-gt.html"))
                 .isEqualTo("MINIVAN");
+        assertThat(extractCarType(
+                "Skoda Karoq 2.0 TDI 110 kW DSG 4x4 Top Sel",
+                "",
+                "https://www.tipcars.com/skoda-karoq/kombi/nafta/skoda-karoq-2-0-tdi-110-kw-dsg-4x4-top-sel-9521099.html"))
+                .isEqualTo("SUV");
+        assertThat(extractCarType(
+                "Dacia Duster Journey hybrid 155",
+                "",
+                "https://www.tipcars.com/dacia-duster/hatchback/hybridni-benzin/dacia-duster-journey-hybrid-155-59181955.html"))
+                .isEqualTo("SUV");
+        assertThat(extractCarType(
+                "Toyota ProAce Verso 2.0 D-4D 130kW L1 Family Tazne",
+                "",
+                "https://www.tipcars.com/toyota-proace-verso/kombi/nafta/toyota-proace-verso-2-0-d-4d-130kw-l1-family-tazne-52775826.html"))
+                .isEqualTo("MINIVAN");
     }
 
     @Test
@@ -244,6 +259,12 @@ class TipCarsParserTest {
                 .isEqualTo("HYBRID");
         assertThat(extractFuelType("Hyundai Tucson 1.6 T-GDI HEV"))
                 .isEqualTo("HYBRID");
+        assertThat(extractFuelType("Toyota Corolla 1,8 HEV, Comfort Tech"))
+                .isEqualTo("HYBRID");
+        assertThat(extractFuelType("Toyota Yaris Cross 1.5 HEV CVT (2x4) Style"))
+                .isEqualTo("HYBRID");
+        assertThat(extractFuelType("Skoda Superb iV 1.5 TSI 150 kW DSG Sportlin"))
+                .isEqualTo("PLUGIN_HYBRID");
     }
 
     @Test
@@ -275,6 +296,14 @@ class TipCarsParserTest {
         assertThat(looksTitleUrlBrandMismatch(
                 "Xpeng G9 AWD Performance - 575 HP !!!",
                 "https://www.tipcars.com/xpeng-g9/suv/elektro/xpeng-g9-awd-performance-575-hp-56710015.html"))
+                .isFalse();
+        assertThat(looksTitleUrlBrandMismatch(
+                "MG ZS EXCITE",
+                "https://www.tipcars.com/mg-zs/suv/benzin/mg-zs-excite-59181956.html"))
+                .isFalse();
+        assertThat(looksTitleUrlBrandMismatch(
+                "DS Automobiles DS7 Crossback PERF. LINE + E-TENSE 360K 4x4",
+                "https://www.tipcars.com/ds-automobiles-ds7-crossback/suv/hybridni-benzin/ds-automobiles-ds7-crossback-perf-line-e-tense-360k-4x4-50919028.html"))
                 .isFalse();
     }
 

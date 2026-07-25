@@ -578,6 +578,7 @@ public class TipCarsParser implements CarSourceParser {
     private String extractFuelType(String text) {
         String source = " " + normalizeText(safe(text)).toLowerCase(Locale.ROOT) + " ";
         String compact = source.replaceAll("[^a-z0-9]", "");
+        String tokens = " " + source.replaceAll("[^a-z0-9]+", " ").replaceAll("\\s+", " ").trim() + " ";
 
         if (containsAny(source, "/lpg/", " lpg ") || compact.contains("lpg")) {
             return "LPG";
@@ -606,6 +607,7 @@ public class TipCarsParser implements CarSourceParser {
                 || compact.contains("plugin")
                 || compact.contains("pluginhybrid")
                 || compact.contains("phev")
+                || (containsAny(tokens, " iv ") && containsAny(source, " superb "))
                 || compact.contains("225xe")
                 || compact.contains("xdrive30e")
                 || compact.contains("sdrive30e")
@@ -657,6 +659,7 @@ public class TipCarsParser implements CarSourceParser {
                 " ecvt ")
                 || compact.contains("hybrid")
                 || compact.contains("mhev")
+                || containsAny(tokens, " hev ")
                 || (compact.contains("etec") && !compact.contains("puretech"))
                 || source.matches(".*\\bvolvo\\b.*\\bb[3-6]\\b.*")
                 || compact.contains("ehev")) {
@@ -830,11 +833,11 @@ public class TipCarsParser implements CarSourceParser {
         String titleSource = " " + normalizeText(safe(title)).toLowerCase(Locale.ROOT) + " ";
 
         if (containsAny(titleSource,
-                " enyaq ", " tiguan allspace ", " c3 aircross ", " peugeot 5008 ", " taigo ", " xceed ")) {
+                " enyaq ", " karoq ", " duster ", " tiguan allspace ", " c3 aircross ", " peugeot 5008 ", " taigo ", " xceed ")) {
             return "SUV";
         }
 
-        if (containsAny(titleSource, " multivan ", " marco polo ")) {
+        if (containsAny(titleSource, " multivan ", " marco polo ", " proace verso ", " proace city verso ")) {
             return "MINIVAN";
         }
 
@@ -1179,6 +1182,8 @@ public class TipCarsParser implements CarSourceParser {
         if (value.startsWith("LAMBORGHINI")) return "LAMBORGHINI";
         if (value.startsWith("FERRARI")) return "FERRARI";
         if (value.startsWith("MINI")) return "MINI";
+        if (value.startsWith("MG")) return "MG";
+        if (value.startsWith("DS")) return "DS";
         if (value.startsWith("JAECOO")) return "JAECOO";
         if (value.startsWith("CHERY")) return "CHERY";
         if (value.startsWith("XPENG")) return "XPENG";
