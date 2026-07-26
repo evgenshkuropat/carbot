@@ -347,6 +347,7 @@ class SbazarParserTest {
         assertThat(looksNonCarListing("nissan qashqai sklo zrcatka")).isTrue();
         assertThat(looksNonCarListing("suzuki vitara zadni sklo")).isTrue();
         assertThat(looksNonCarListing("5g0827469a zadni kamera")).isTrue();
+        assertThat(looksNonCarListing("leva mlhovka octavia 3 lift 1z0941699c")).isTrue();
         assertThat(looksNonCarListing("triumph america lt cr 2015")).isTrue();
         assertThat(looksNonCarListing("bmw i3 125 kw 120 ah tep.cerpadlo")).isFalse();
         assertThat(looksNonCarListing("posilovac krouticiho momentu")).isTrue();

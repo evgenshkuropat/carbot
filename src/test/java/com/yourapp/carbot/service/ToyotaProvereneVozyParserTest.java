@@ -66,6 +66,16 @@ class ToyotaProvereneVozyParserTest {
                 .isEqualTo("SUV");
         assertThat(extractCarType("Ford EDGE Vignale 2.0 TDCi AWD", ""))
                 .isEqualTo("SUV");
+        assertThat(extractCarType("Jeep Wrangler SAHARA 2.0T 4x4 Unlimited Sport Auto", ""))
+                .isEqualTo("SUV");
+        assertThat(extractCarType("Hyundai ix20 1.4 CVVT Trikolor, 1.maj., CZ", ""))
+                .isEqualTo("MINIVAN");
+        assertThat(extractCarType("Peugeot Partner 1,6i 72kW M/T 5mist", ""))
+                .isEqualTo("MINIVAN");
+        assertThat(extractCarType("Toyota PROACE VERSO 2.2 D, 150 K, L2 Combi", ""))
+                .isEqualTo("MINIVAN");
+        assertThat(extractCarType("Ford C-MAX 1,6i 74kW M/T LPG-nova revize", ""))
+                .isEqualTo("MINIVAN");
         assertThat(extractCarType("Toyota Corolla 1.8 Hybrid GR-Sport Dynamic", ""))
                 .isEqualTo("HATCHBACK");
     }

@@ -679,10 +679,11 @@ public class ToyotaProvereneVozyParser implements CarSourceParser {
     private String extractCarType(String title, String text) {
         String source = " " + normalizeAscii(safe(title) + " " + safe(text)).toLowerCase(Locale.ROOT) + " ";
 
-        if (containsAny(source, " mercedes-benz gle ", " mercedes benz gle ", " skoda yeti ", " ford edge ")) {
+        if (containsAny(source, " mercedes-benz gle ", " mercedes benz gle ", " skoda yeti ", " ford edge ", " jeep wrangler ", " wrangler ")) {
             return "SUV";
         }
-        if (containsAny(source, " jumpy combi ", " citroen jumpy ")) {
+        if (containsAny(source, " proace verso ", " proace city verso ", " jumpy combi ", " citroen jumpy ",
+                " peugeot partner ", " partner ", " ix20 ", " ix 20 ", " c-max ", " c max ", " grand c-max ", " grand c max ")) {
             return "MINIVAN";
         }
         if (containsAny(source, " subaru outback ", " outback ")) {
@@ -712,7 +713,7 @@ public class ToyotaProvereneVozyParser implements CarSourceParser {
                 " sportage ", " touareg ", " vitara ", " ignis ", " cr-v ", " crv ", " ecosport ", " 2008 ", " 3008 ")) {
             return "SUV";
         }
-        if (containsAny(source, " proace verso ", " proace city verso ", " touran ", " roomster ",
+        if (containsAny(source, " touran ", " roomster ",
                 " berlingo ", " c3 picasso ", " c4 picasso ", " verso ", " b-max ", " b max ", " venga ")) {
             return "MINIVAN";
         }
@@ -746,7 +747,7 @@ public class ToyotaProvereneVozyParser implements CarSourceParser {
         if (containsAny(source, " sedan ", " liftback ", " corolla sd ")) {
             return "SEDAN";
         }
-        if (containsAny(source, " hatchback ", " yaris ", " aygo ", " ix20 ")) {
+        if (containsAny(source, " hatchback ", " yaris ", " aygo ")) {
             return "HATCHBACK";
         }
         if (containsAny(source, " mpv ", " verso ", " proace city verso ")) {

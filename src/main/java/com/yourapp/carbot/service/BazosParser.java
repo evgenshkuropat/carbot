@@ -1029,6 +1029,8 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
     private String extractFuelType(String text) {
         String source = " " + normalizeText(text).toLowerCase(Locale.ROOT) + " ";
         String ascii = asciiSearchText(text);
+        String repairedAscii = asciiSearchText(repairMojibake(text));
+        source = source + " " + ascii + " " + repairedAscii;
         String compact = source.replaceAll("[^a-z0-9]", "");
 
         // LPG / CNG first
@@ -1290,7 +1292,8 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         }
 
         if (containsAny(source, " renault scenic ", " renault grand scenic ", " grand scenic ", " scenic ")
-                && Pattern.compile("(?i)\\b1[\\.,]6\\s*d\\s*c\\b").matcher(source).find()) {
+                && (Pattern.compile("(?i)\\b1[\\.,]6\\s*d\\s*c\\b").matcher(source).find()
+                || compact.contains("16dc"))) {
             return "DIESEL";
         }
 
@@ -2213,7 +2216,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             return "HATCHBACK";
         }
 
-        if (containsAny(titleSource, " cr-z ", " cr z ", " scirocco ")) {
+        if (containsAny(titleSource, " cr-z ", " cr z ", " scirocco ", " rcz ", " peugeot rcz ")) {
             return "COUPE";
         }
 
@@ -2279,12 +2282,14 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " civic tourer ", " focus tunier ", " focus turnier ",
                 " insignia st ", " insignia sports tourer ", " insignia sport tourer ", " insignia sport taurer ",
                 " astra sports tourer ", " astra sport tourer ", " astra sportstourer ", " astra sports touer ", " astra sport touer ", " astra j sports tourer ", " astra k sports tourer ",
-                " astra j sport tourer ", " astra k sport tourer ", " astra j combi ", " astra k combi ", " astra sw ", " astra combi ", " astra kombi ", " 308 sw ", " peugeot 308 sw ")) {
+                " astra j sport tourer ", " astra k sport tourer ", " astra st ", " opel astra st ", " astra j combi ", " astra k combi ", " astra sw ", " astra combi ", " astra kombi ", " 308 sw ", " peugeot 308 sw ")) {
             return "WAGON";
         }
 
         if (Pattern.compile("(?i)\\bastra\\s+(?:j|k)?\\b.*\\bsports?\\s+tourer\\b").matcher(titleSource).find()
                 || Pattern.compile("(?i)\\bastra\\s+(?:j|k)?\\b.*\\bsportstourer\\b").matcher(titleSource).find()
+                || Pattern.compile("(?i)\\bastra\\b.*\\bst\\b").matcher(titleSource).find()
+                || Pattern.compile("(?i)\\binsignia\\b.*\\bsports?\\s+tourer\\b").matcher(titleSource).find()
                 || Pattern.compile("(?i)\\bastra\\s+k\\b.*\\bst\\b").matcher(titleSource).find()) {
             return "WAGON";
         }
@@ -2593,7 +2598,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
 
         if (containsAny(titleSource,
                 " mpv ", " minivan ",
-                " scenic ", " espace ", " c8 ", " spacetourer ",
+                " scenic ", " espace ", " c8 ", " spacetourer ", " modus ",
                 " gran tourer ",
                 " galaxy ", " s-max ", " s max ", " smax ",
                 " sharan ", " alhambra ", " touran ",
@@ -2663,7 +2668,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " f40 ", " řada 1 ", " rada 1 ",
                 " a2 ", " audi a2 ", " a180 ", " a 180 ", " a180d ", " a 180d ", " a200 ", " a 200 ", " a200d ", " a 200d ", " a35 ",
                 " 116i ", " 118i ", " 120i ", " 116d ", " 118d ", " 120d ",
-                " agila ", " karl ", " astra ", " corsa ", " fusion ", " starlet ", " 1007 ", " 107 ", " 147 ", " 206 ", " 207 ", " 208 ", " 308 ",
+                " agila ", " karl ", " astra ", " corsa ", " fusion ", " starlet ", " 1007 ", " 106 ", " 107 ", " 147 ", " 206 ", " 207 ", " 208 ", " 308 ",
                 " sandero ", " stepway ", " logan ", " scala ", " citigo ", " laguna ",
                 " fiat 500 ", " fiat500 ", " tipo ", " fiat tipo ", " bravo ", " stilo ",
                 " auris ", " aoris ", " prius ", " corolla ", " corsa ", " mazda 3 ", " rapid ", " yaris ", " getz ", " soul ")) {
@@ -2865,6 +2870,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         if (u.contains("fabia") && containsAny(t, " vito ", " sprinter ")) return true;
         if (u.contains("passat") && containsAny(t, " vito ", " sprinter ")) return true;
         if (u.contains("kangoo") && containsAny(t, " doblo ", " fiat doblo ")) return true;
+        if (u.contains("yeti") && containsAny(t, " clio ", " renault clio ")) return true;
 
         return false;
     }

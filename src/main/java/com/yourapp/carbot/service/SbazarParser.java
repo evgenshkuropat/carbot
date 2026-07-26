@@ -1067,7 +1067,7 @@ public class SbazarParser implements CarSourceParser {
                 "nabourany", "nabourane", "havarovany", "havarovane", "palubni deska", "airbag",
                 "interierove plasty", "plasty smart", "chladic klimatizace", "prerusovac", "smerovych svetel",
                 "pneu", "pneumatik", "elektrony", "alu kola", "sada kol", "disky", "naraznik",
-                "motor na", "prevodovka", "svetlo", "svetel", "sedacky", "volant", "katalyzator", "servisni knizka",
+                "motor na", "prevodovka", "svetlo", "svetel", "mlhovka", "mlhove svetlo", "sedacky", "volant", "katalyzator", "servisni knizka",
                 "autoradio", "auto radio", "navigace tomtom", "stresni nosic", "stresni nosnik", "zamky centralni",
                 "centralni zamky", "zamykani zpatecky", "sterac", "sterace", "pc pocitac", "pocitac",
                 "parkovaci senzor", "sklo zrcatka", "zadni sklo",

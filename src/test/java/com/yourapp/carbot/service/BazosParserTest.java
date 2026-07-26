@@ -132,6 +132,7 @@ class BazosParserTest {
         assertThat(extractFuelType("Nissan 200SX 2,0 16V S14 Racing Edition SR20DET")).isEqualTo("PETROL");
         assertThat(extractFuelType("Seat Leon Cupra 300 ST ACC DCC")).isEqualTo("PETROL");
         assertThat(extractFuelType("Opel Crossland 1.2T 81kW LED LIMITED CARPLAY")).isEqualTo("PETROL");
+        assertThat(extractFuelType("Opel Grandland 1.2 Turbo, GS line, CR")).isEqualTo("PETROL");
         assertThat(extractFuelType("Toyota GR86 executive manualni prev. odpocet DPH")).isEqualTo("PETROL");
         assertThat(extractFuelType("Toyota GR Yaris s upravami za skoro 700.000,-")).isEqualTo("PETROL");
         assertThat(extractFuelType("BMW e46 330ci, M Packet, 170KW, 231 hp")).isEqualTo("PETROL");
@@ -140,6 +141,7 @@ class BazosParserTest {
         assertThat(extractFuelType("Renault Twingo Z.E. 60KW rok 12/2023 Urban Night")).isEqualTo("ELECTRIC");
         assertThat(extractFuelType("Opel Corsa, ELECTRO 100kW")).isEqualTo("ELECTRIC");
         assertThat(extractFuelType("Renault Grand Scenic 1.6dC MANUAL LED VYHREV KAMERA SERVISKA")).isEqualTo("DIESEL");
+        assertThat(extractFuelType("Renault Grand ScĂ©nic 1.6dC MANUĂL LED VĂťHĹEV KAMERA SERVISKA")).isEqualTo("DIESEL");
         assertThat(extractFuelType("VW Passat B8 Variant GTE 1.4TSI 160kW DSG - zaruka Autodraft")).isEqualTo("PLUGIN_HYBRID");
         assertThat(extractFuelType("VW Golf 8 GTE 1.4 TSI Hybrid 150kW DSG - zaruka Autodraft")).isEqualTo("PLUGIN_HYBRID");
         assertThat(extractFuelType("Skoda Octavia IV 2.0TDI 110KW DSG 2021 STYLE")).isEqualTo("DIESEL");
@@ -302,6 +304,8 @@ class BazosParserTest {
         assertThat(extractCarType("Opel Astra J combi 1,7 CDTi 92kW", "", "")).isEqualTo("WAGON");
         assertThat(extractCarType("Opel Astra K 1,6 CDTI 81kw sport Tourer, Innovation", "", "")).isEqualTo("WAGON");
         assertThat(extractCarType("Opel Astra K 1,6 CDTI 81kw 2016 ST, Innovation", "", "")).isEqualTo("WAGON");
+        assertThat(extractCarType("Prodam Opel Astra ST 1.6 CDTI - rok 2017 - servisovana", "", "")).isEqualTo("WAGON");
+        assertThat(extractCarType("Opel Insignia 2,0d Sports Tourer 125kw rok 2020, odp. DPH", "", "")).isEqualTo("WAGON");
         assertThat(extractCarType("Opel Insignia Sport Taurer", "", "")).isEqualTo("WAGON");
         assertThat(extractCarType("OPEL ASTRA SPORTS TOUER 1.6CDTI 81KW EDITION", "", "")).isEqualTo("WAGON");
         assertThat(extractCarType("Nissan Primera P12 2.2D", "", "")).isEqualTo("SEDAN");
@@ -314,6 +318,7 @@ class BazosParserTest {
         assertThat(extractCarType("Peugeot Traveler DPH", "", "")).isEqualTo("MINIVAN");
         assertThat(extractCarType("Peugeot Traveller 2.0 Blue-HDi Allure L2", "", "")).isEqualTo("MINIVAN");
         assertThat(extractCarType("Peugeot 108 1.0benzin servisni hostorie", "", "")).isEqualTo("HATCHBACK");
+        assertThat(extractCarType("Peugeot 106, 1993, najeto 67 000", "", "")).isEqualTo("HATCHBACK");
         assertThat(extractCarType("PEUGEOT 301 1.2 60kW rok 2016", "", "")).isEqualTo("SEDAN");
         assertThat(extractCarType("Peugeot 405 SRI 2,0", "", "")).isEqualTo("SEDAN");
         assertThat(extractCarType("Peugeot 4008 1.8HDI 4x4 MANUAL", "", "")).isEqualTo("SUV");
@@ -345,6 +350,7 @@ class BazosParserTest {
         assertThat(extractCarType("VW T6.1 CALIFORNIA BEACH/110KW/DSG/2020/VIRTUAL/Kuchyn/tazne", "", ""))
                 .isEqualTo("MINIVAN");
         assertThat(extractCarType("Scirocco 2.0 TSI DSG 155kw r 2012", "", "")).isEqualTo("COUPE");
+        assertThat(extractCarType("peugeot rcz", "", "")).isEqualTo("COUPE");
         assertThat(extractCarType("Volkswagen UP 1.0MPI KLIMA", "", "")).isEqualTo("HATCHBACK");
         assertThat(extractCarType("Volvo S80 2.4D5 120 kW Klima Tempomat CR", "", "")).isEqualTo("SEDAN");
         assertThat(extractCarType("Volvo S90 B5 AWD 173 kW 6/2023 Inscription CR 1. majitel", "", "")).isEqualTo("SEDAN");
@@ -355,6 +361,7 @@ class BazosParserTest {
         assertThat(extractCarType("Renault Alaskan", "", "")).isEqualTo("PICKUP");
         assertThat(extractCarType("Renault Laguna 2", "", "")).isEqualTo("HATCHBACK");
         assertThat(extractCarType("RENAULT TWINGO 1.0i 51kW 2018 POUZE 15 603KM", "", "")).isEqualTo("HATCHBACK");
+        assertThat(extractCarType("Renault Modus 1,2i, 55 kW, r.v. 2007", "", "")).isEqualTo("MINIVAN");
         assertThat(extractCarType("Renault Tvingo 1.0i editovana kolekce", "", "")).isEqualTo("HATCHBACK");
         assertThat(extractCarType("Cupra Tavascan Endurance Electric 210kW", "", "")).isEqualTo("SUV");
         assertThat(extractCarType("Kia Magentis 2.0crdi 103kw Top Stav Nova STK", "", "")).isEqualTo("SEDAN");
@@ -573,6 +580,10 @@ class BazosParserTest {
                 "Citroen C4 zaruka elektro",
                 "https://auto.bazos.cz/inzerat/219841903/citroen-ec4-zaruka.php"))
                 .isFalse();
+        assertThat(looksTitleUrlMismatch(
+                "Clio kombi 1,2 benzin, plyn 54 kw, 2018, klima, tempomat CR",
+                "https://auto.bazos.cz/inzerat/221267972/yeti-14-tsi-90-kw-r-2011-vyhr-sedacky-tazne-zarizeni.php"))
+                .isTrue();
         assertThat(looksBrandMismatch(
                 "Fiat Tipo 2017 Lounge 1.6 E-Torq EVO 81 kW - automat 6st.",
                 "https://auto.bazos.cz/inzerat/220183066/alfa-romeo-giulietta-2015-14-turbo-turismo-125kw.php"))
