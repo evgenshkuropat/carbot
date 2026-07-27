@@ -2,6 +2,7 @@ package com.yourapp.carbot.service;
 
 import com.yourapp.carbot.service.dto.CarDto;
 import org.jsoup.Connection;
+import org.jsoup.HttpStatusException;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -33,6 +34,7 @@ public class TipCarsParser implements CarSourceParser {
     private static final String BASE_URL = "https://www.tipcars.com/";
     private static final int MAX_LIST_PAGES = 5;
     private static final int REQUEST_TIMEOUT_MS = 15_000;
+    private static final int MAX_CONSECUTIVE_FORBIDDEN = 5;
 
     private static final int CURRENT_YEAR = Year.now().getValue();
     private static final int MIN_YEAR = 1990;
@@ -54,6 +56,8 @@ public class TipCarsParser implements CarSourceParser {
         int brokenCount = 0;
         int commercialVehicleCount = 0;
         int parseExceptionCount = 0;
+        int forbiddenCount = 0;
+        int consecutiveForbiddenCount = 0;
 
         try {
             for (int page = 1; page <= MAX_LIST_PAGES; page++) {
@@ -90,6 +94,7 @@ public class TipCarsParser implements CarSourceParser {
 
                 if (result.car() != null) {
                     cars.add(result.car());
+                    consecutiveForbiddenCount = 0;
                 } else {
                     switch (result.reason()) {
                         case "missing_price" -> missingPriceCount++;
@@ -97,11 +102,24 @@ public class TipCarsParser implements CarSourceParser {
                         case "broken_listing" -> brokenCount++;
                         case "commercial_vehicle" -> commercialVehicleCount++;
                         case "parse_exception" -> parseExceptionCount++;
+                        case "forbidden" -> {
+                            forbiddenCount++;
+                            consecutiveForbiddenCount++;
+                        }
                         default -> brokenCount++;
+                    }
+                    if (!"forbidden".equals(result.reason())) {
+                        consecutiveForbiddenCount = 0;
                     }
                 }
 
-                sleepQuietly(150);
+                if (consecutiveForbiddenCount >= MAX_CONSECUTIVE_FORBIDDEN) {
+                    log.warn("TIPCARS detail parsing stopped reason=too_many_forbidden consecutive_forbidden={} parsed_so_far={}",
+                            consecutiveForbiddenCount, cars.size());
+                    break;
+                }
+
+                sleepQuietly("forbidden".equals(result.reason()) ? 1_500 : 250);
             }
 
         } catch (Exception e) {
@@ -109,8 +127,8 @@ public class TipCarsParser implements CarSourceParser {
         }
 
         log.info("TIPCARS parsed {} cars", cars.size());
-        log.info("TIPCARS SUMMARY parsed={} broken_listing={} commercial_vehicle={} missing_price={} invalid_price={} parse_exception={}",
-                cars.size(), brokenCount, commercialVehicleCount, missingPriceCount, invalidPriceCount, parseExceptionCount);
+        log.info("TIPCARS SUMMARY parsed={} broken_listing={} commercial_vehicle={} missing_price={} invalid_price={} parse_exception={} forbidden={}",
+                cars.size(), brokenCount, commercialVehicleCount, missingPriceCount, invalidPriceCount, parseExceptionCount, forbiddenCount);
 
         return cars;
     }
@@ -203,6 +221,14 @@ public class TipCarsParser implements CarSourceParser {
 
             return new ParseResult(car, "ok");
 
+        } catch (HttpStatusException e) {
+            if (e.getStatusCode() == 403) {
+                log.warn("TIPCARS SKIP url={} reason=forbidden status=403", safe(url));
+                return new ParseResult(null, "forbidden");
+            }
+            log.warn("TIPCARS SKIP url={} reason=parse_exception status={} error={}",
+                    safe(url), e.getStatusCode(), safe(e.getMessage()));
+            return new ParseResult(null, "parse_exception");
         } catch (Exception e) {
             log.warn("TIPCARS SKIP url={} reason=parse_exception error={}", safe(url), safe(e.getMessage()));
             return new ParseResult(null, "parse_exception");
@@ -215,6 +241,12 @@ public class TipCarsParser implements CarSourceParser {
                 .referrer(BASE_URL)
                 .header("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8")
                 .header("Accept-Language", "cs-CZ,cs;q=0.9,en;q=0.8")
+                .header("Cache-Control", "no-cache")
+                .header("Pragma", "no-cache")
+                .header("Sec-Fetch-Dest", "document")
+                .header("Sec-Fetch-Mode", "navigate")
+                .header("Sec-Fetch-Site", "same-origin")
+                .header("Upgrade-Insecure-Requests", "1")
                 .timeout(REQUEST_TIMEOUT_MS)
                 .followRedirects(true);
     }
