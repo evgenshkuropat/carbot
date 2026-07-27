@@ -115,6 +115,7 @@ class BazosParserTest {
         assertThat(extractFuelType("Fiat 500 / 0.9 TwinAir / SPORT / 77kW / NAVI")).isEqualTo("PETROL");
         assertThat(extractFuelType("Toyota Yaris Cross, 1.5HEV, Adventure, 4x4")).isEqualTo("HYBRID");
         assertThat(extractFuelType("Peugeot 308 SW 1.2 PT 96 kW 130 Allure CZ DPH")).isEqualTo("PETROL");
+        assertThat(extractFuelType("Peugeot 508 PSE GT / Odpocet DPH")).isEqualTo("PLUGIN_HYBRID");
         assertThat(extractFuelType("PEUGEOT 301 1.2 60kW rok 2016")).isEqualTo("PETROL");
         assertThat(extractFuelType("Prodám Peugeot 301,R.v.2013, 1,6 Nafta.")).isEqualTo("DIESEL");
         assertThat(extractFuelType("Citroen C5 combi,2,2 diesel,125 kW, Webasto")).isEqualTo("DIESEL");
@@ -351,6 +352,7 @@ class BazosParserTest {
                 .isEqualTo("MINIVAN");
         assertThat(extractCarType("Scirocco 2.0 TSI DSG 155kw r 2012", "", "")).isEqualTo("COUPE");
         assertThat(extractCarType("peugeot rcz", "", "")).isEqualTo("COUPE");
+        assertThat(extractCarType("Peugeot 5008 1.6i,digiklima,7 mist,Panorama,1.majit,serviska", "", "")).isEqualTo("MINIVAN");
         assertThat(extractCarType("Volkswagen UP 1.0MPI KLIMA", "", "")).isEqualTo("HATCHBACK");
         assertThat(extractCarType("Volvo S80 2.4D5 120 kW Klima Tempomat CR", "", "")).isEqualTo("SEDAN");
         assertThat(extractCarType("Volvo S90 B5 AWD 173 kW 6/2023 Inscription CR 1. majitel", "", "")).isEqualTo("SEDAN");

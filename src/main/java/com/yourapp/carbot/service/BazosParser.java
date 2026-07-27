@@ -1052,6 +1052,11 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             return "PLUGIN_HYBRID";
         }
 
+        if ((containsAny(source, " peugeot 508 ", " 508 ") || compact.contains("peugeot508"))
+                && containsAny(source, " pse ")) {
+            return "PLUGIN_HYBRID";
+        }
+
         if ((containsAny(source, " octavia ", " superb ", " skoda ")
                 || compact.contains("skoda"))
                 && containsAny(source, " iv ")
@@ -2548,6 +2553,14 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 && !compactTitle.contains("xcee")
                 && !containsAny(titleSource, " sw ", " wagon ", " kombi ", " combi ")) {
             return "HATCHBACK";
+        }
+
+        if (containsAny(titleSource, " peugeot 5008 ", " 5008 ")) {
+            Integer year = extractYear(title, text);
+            if (containsAny(titleSource, " 7mist ", " 7 mist ", " 7-mist ", " 7 míst ")
+                    || (year != null && year <= 2016)) {
+                return "MINIVAN";
+            }
         }
 
         if (containsAny(titleSource,
