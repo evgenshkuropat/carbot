@@ -28,6 +28,8 @@ class BazosParserTest {
                 .isEqualTo("TOYOTA");
         assertThat(extractBrand("C-Hr 1.8 hybrid", ""))
                 .isEqualTo("TOYOTA");
+        assertThat(extractBrand("Hilux,4x4,tazne,1.maj.cr,DPH", ""))
+                .isEqualTo("TOYOTA");
         assertThat(extractBrand("C3, 1,4i, 54 kw", "")).isEqualTo("CITROEN");
         assertThat(extractBrand("Abarth 500 Turbo Cabrio 107 kW 2018 CZ puvod", "")).isEqualTo("ABARTH");
         assertThat(extractBrand("Prodam Fiat Multipla 1.6/16V CNG/2007/6mist", "")).isEqualTo("FIAT");
@@ -56,6 +58,8 @@ class BazosParserTest {
         assertThat(extractBrand("Kia Seed 1.6 crdi 94kw", ""))
                 .isEqualTo("KIA");
         assertThat(extractBrand("Samurai 1.9TD Long", "peugeot 2008"))
+                .isEqualTo("SUZUKI");
+        assertThat(extractBrand("Suzuki samuraj 1.3", ""))
                 .isEqualTo("SUZUKI");
         assertThat(extractBrand("Suzuki Wagon R 1.3i 56 kW, 2002, tazny", ""))
                 .isEqualTo("SUZUKI");
@@ -148,6 +152,7 @@ class BazosParserTest {
         assertThat(extractFuelType("Skoda Octavia IV 2.0TDI 110KW DSG 2021 STYLE")).isEqualTo("DIESEL");
         assertThat(extractFuelType("Skoda Superb IV 2.0TDI L&K 110kW CZ 2025")).isEqualTo("DIESEL");
         assertThat(extractFuelType("Skoda Octavia 4 1.4TSI iV 150kW DSG Sport")).isEqualTo("PLUGIN_HYBRID");
+        assertThat(extractFuelType("Skoda Enyaq iV 80 150 kW 45tkm SOH 96,4%")).isEqualTo("ELECTRIC");
         assertThat(extractFuelType("Dacia Lodgy MPV r.2022 1,3benz 96kw 1.majitel")).isEqualTo("PETROL");
         assertThat(extractFuelType("Pekna Dacia Logan MCV 1.2...16V")).isEqualTo("PETROL");
         assertThat(extractFuelType("Citroen C3 1.2 60 kw r.v 2016 115000 km")).isEqualTo("PETROL");
@@ -212,6 +217,7 @@ class BazosParserTest {
         assertThat(extractCarType("Suzuki Jimny 1.3 i 2015", "", "")).isEqualTo("SUV");
         assertThat(extractCarType("suzuki jimny 4x4", "", "")).isEqualTo("SUV");
         assertThat(extractCarType("Suzuki Samurai 1.3", "", "")).isEqualTo("SUV");
+        assertThat(extractCarType("Suzuki samuraj 1.3", "", "")).isEqualTo("SUV");
         assertThat(extractCarType("Suzuki Ignis 1.2 Spajacie z. za karavan, Bluetooth", "", "")).isEqualTo("SUV");
         assertThat(extractCarType("SUZUKI SPLASH 1,2 AUTOMAT NOVA STK", "", "")).isEqualTo("HATCHBACK");
         assertThat(extractCarType("Prodam Suzuki sx4,1.6", "", "")).isEqualTo("SUV");
@@ -326,6 +332,7 @@ class BazosParserTest {
         assertThat(extractCarType("Toyota Corolla ST 1.8 HEV 103kW e-CVT,2024,35tkm", "", "")).isEqualTo("WAGON");
         assertThat(extractCarType("Toyota Rav 4 2.0D 85Kw Nova STK, 4x4", "", "")).isEqualTo("SUV");
         assertThat(extractCarType("Toyota CH-R 1.8 hybrid", "", "")).isEqualTo("SUV");
+        assertThat(extractCarType("Toyota C-HR, 1.2 Turbo Dynamic CR", "", "")).isEqualTo("SUV");
         assertThat(extractCarType("Toyota Aoris", "", "")).isEqualTo("HATCHBACK");
         assertThat(extractCarType("Toyota Avensis T25 2.0/93kw/D4D", "", "")).isEqualTo("SEDAN");
         assertThat(extractCarType("Toyota Avensis 1.8i WG Sol", "", "")).isEqualTo("WAGON");
@@ -334,6 +341,7 @@ class BazosParserTest {
         assertThat(extractCarType("Toyota Yaris Cross, 1.5HEV, Adventure, 4x4", "", "")).isEqualTo("SUV");
         assertThat(extractCarType("Toyota 4runner - SPECIAL z mise OSN", "", "")).isEqualTo("SUV");
         assertThat(extractCarType("Toyota Prius Plus 7mist+LPG 2013", "", "")).isEqualTo("MINIVAN");
+        assertThat(extractCarType("Toyota Prius+, 7 mist, TOP vybava, hybrid", "", "")).isEqualTo("MINIVAN");
         assertThat(extractCarType("Toyota Sienna AWD 2017 7 mist 8AT tazne", "", "")).isEqualTo("MINIVAN");
         assertThat(extractCarType("Lexus IS 220d", "", "")).isEqualTo("SEDAN");
         assertThat(extractCarType("Toyota Starlet", "", "")).isEqualTo("HATCHBACK");
@@ -347,6 +355,7 @@ class BazosParserTest {
         assertThat(extractCarType("VW ID.3 Pro 150kW IQ.Lights SOH 95,7%", "", "")).isEqualTo("HATCHBACK");
         assertThat(extractCarType("VW Passat B8 Varian TDI 110kW DSG", "", "")).isEqualTo("WAGON");
         assertThat(extractCarType("VW Arteon SB 2.0 TDI 110kW DSG R-Line", "", "")).isEqualTo("WAGON");
+        assertThat(extractCarType("Volkswagen Amarok 3.0TDi,165kW,TT,4x4,Aventura,Webasto,DPH", "", "")).isEqualTo("PICKUP");
         assertThat(extractCarType("VW GOLF PLUS 1,4 TSi 90 KW TOP STAV", "", "")).isEqualTo("MINIVAN");
         assertThat(extractCarType("VW T6.1 CALIFORNIA BEACH/110KW/DSG/2020/VIRTUAL/Kuchyn/tazne", "", ""))
                 .isEqualTo("MINIVAN");
@@ -721,6 +730,12 @@ class BazosParserTest {
                 "Toyota Proace Verso XL, zakoupena nova v CR",
                 "",
                 "https://auto.bazos.cz/inzerat/219323068/jsjd.php"))
+                .isFalse();
+
+        assertThat(looksCommercialVehicle(
+                "Toyota Proace Verso, VIP L1, Webasto, tazne, panorama",
+                "",
+                "https://auto.bazos.cz/inzerat/221313987/toyota-proace-verso-vip-l1-webasto-tazne-panorama.php"))
                 .isFalse();
 
         assertThat(looksCommercialVehicle(
