@@ -76,6 +76,10 @@ class ToyotaProvereneVozyParserTest {
                 .isEqualTo("MINIVAN");
         assertThat(extractCarType("Ford C-MAX 1,6i 74kW M/T LPG-nova revize", ""))
                 .isEqualTo("MINIVAN");
+        assertThat(extractCarType("Renault Clio 1.2,54KW,16V,CZ,Navigace", "Toyota Corolla kombi"))
+                .isEqualTo("HATCHBACK");
+        assertThat(extractCarType("Renault Clio Grandtour 1.2", ""))
+                .isEqualTo("WAGON");
         assertThat(extractCarType("Toyota Corolla 1.8 Hybrid GR-Sport Dynamic", ""))
                 .isEqualTo("HATCHBACK");
     }
