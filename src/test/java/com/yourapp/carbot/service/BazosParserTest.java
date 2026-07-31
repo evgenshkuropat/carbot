@@ -87,6 +87,9 @@ class BazosParserTest {
         assertThat(extractFuelType("BMW. 118d")).isEqualTo("DIESEL");
         assertThat(extractFuelType("BMW 320xd 135kw automat xdrive")).isEqualTo("DIESEL");
         assertThat(extractFuelType("BMW 530xd E61 LCI M-paket")).isEqualTo("DIESEL");
+        assertThat(extractFuelType("BMW X5 e70 xDrive40d M Sport, Individual, 3.5t")).isEqualTo("DIESEL");
+        assertThat(extractFuelType("X5 M50D, 2018 1majitel")).isEqualTo("DIESEL");
+        assertThat(extractFuelType("BMW X6 M50d")).isEqualTo("DIESEL");
         assertThat(extractFuelType("BMW 335i E92 M3 LOOK")).isEqualTo("PETROL");
         assertThat(extractFuelType("BMW M3 MANUAL KOMPRESOR")).isEqualTo("PETROL");
         assertThat(extractFuelType("BMW Z4 3.0 si MANUAL Coupe")).isEqualTo("PETROL");
@@ -228,6 +231,7 @@ class BazosParserTest {
         assertThat(extractCarType("Suzuki Wagon R 1.3i 56 kW, 2002, tazny", "", "")).isEqualTo("HATCHBACK");
         assertThat(extractCarType("Suzuki Kizashi 4X4", "", "")).isEqualTo("SEDAN");
         assertThat(extractCarType("Audi S3", "", "")).isEqualTo("HATCHBACK");
+        assertThat(extractCarType("Jedna z mala AUDI S1 2,0 TFSI 170kW QUATTRO 2018", "", "")).isEqualTo("HATCHBACK");
         assertThat(extractCarType("Alfa Romeo 75 2.0 Twinspark", "", "")).isEqualTo("SEDAN");
         assertThat(extractCarType("AR 159 1.75TBi", "", "")).isEqualTo("SEDAN");
         assertThat(extractCarType("Alfa 159Ti 2.4 JTDm 154kw", "", "")).isEqualTo("SEDAN");
@@ -247,6 +251,8 @@ class BazosParserTest {
         assertThat(extractCarType("BMW 530d UVEDENA CENA BEZ DPH", "", "")).isEqualTo("SEDAN");
         assertThat(extractCarType("BMW 750 XDRIVE 400 PS LASER LIGHT M-PACK", "", "")).isEqualTo("SEDAN");
         assertThat(extractCarType("BMW M340D DPH", "", "")).isEqualTo("SEDAN");
+        assertThat(extractCarType("X5 M50D, 2018 1majitel", "", "")).isEqualTo("SUV");
+        assertThat(extractCarType("BMW i3 REx Hybrid 75 kW, 2016", "", "")).isEqualTo("HATCHBACK");
         assertThat(extractCarType("Audi A6 2.0 TDI AVANT Ultra S-tronic 2015", "", "")).isEqualTo("WAGON");
         assertThat(extractCarType("A6C7 avant", "", "")).isEqualTo("WAGON");
         assertThat(extractCarType("Audi a4b6 2.5tdi V6 120kw", "", "")).isEqualTo("SEDAN");
@@ -261,6 +267,7 @@ class BazosParserTest {
         assertThat(extractCarType("BMW Z4 3.0 si MANUAL Coupe", "", "")).isEqualTo("COUPE");
         assertThat(extractCarType("BMW 2, F45, Active Tourer, 225i xDrive LUXURY LINE", "", "")).isEqualTo("MINIVAN");
         assertThat(extractCarType("Citroen C 3 1.5 HDi, Edice Origins Since 1919", "", "")).isEqualTo("HATCHBACK");
+        assertThat(extractCarType("CITROEN C 4 1,6 HDI 88 kW RV 2015 NAJETO 100 TIS WEBASTO", "", "")).isEqualTo("HATCHBACK");
         assertThat(extractCarType("Citroen c-elysee 1.2", "", "")).isEqualTo("SEDAN");
         assertThat(extractCarType("Prodam Citroen Jumpy 2.0 HDI Multispace 9.mist", "", "")).isEqualTo("MINIVAN");
         assertThat(extractCarType("Lancia Kappa 2.4JTD 10V Klima, Alcantara, Bez koroze, Servis", "", "")).isEqualTo("SEDAN");
@@ -439,6 +446,8 @@ class BazosParserTest {
         assertThat(extractTransmission("Hyundai i30 Kombi 1.6 CRDi 85kW DCT (2018)")).isEqualTo("AUTOMATIC");
         assertThat(extractTransmission("BMW 750 XDRIVE 400 PS LASER LIGHT M-PACK")).isEqualTo("AUTOMATIC");
         assertThat(extractTransmission("Dacia Duster TCe 150 EDC, TOP, DPH")).isEqualTo("AUTOMATIC");
+        assertThat(extractTransmission("Audi A6 45 2.0 TFSI 195 kW 4x4 S-Tronic - zaruka Autodraft"))
+                .isEqualTo("AUTOMATIC");
         assertThat(extractTransmission("Skoda Octavia 4 combi RS 2.0TDi,147kW,DSG,4x4")).isEqualTo("AUTOMATIC");
         assertThat(extractTransmission("Skoda Octavia IV 2.0TDI 110KW DSG•2021•STYLE")).isEqualTo("AUTOMATIC");
         assertThat(extractTransmission("Ĺ koda Octavia 4 RS combi 2.0TSi,180kW,DSG,Canton,22TKM"))
@@ -594,6 +603,10 @@ class BazosParserTest {
         assertThat(looksTitleUrlMismatch(
                 "Citroen C4 zaruka elektro",
                 "https://auto.bazos.cz/inzerat/219841903/citroen-ec4-zaruka.php"))
+                .isFalse();
+        assertThat(looksTitleUrlMismatch(
+                "AUDI A4 1,9 TDi BEZ DPF , PLNY SERVIS TOP STAV SERVIS",
+                "https://auto.bazos.cz/inzerat/221901585/audi-a-4-19-tdi-bez-dpf-klasicka-rotacka-plny-servis-top.php"))
                 .isFalse();
         assertThat(looksTitleUrlMismatch(
                 "Clio kombi 1,2 benzin, plyn 54 kw, 2018, klima, tempomat CR",

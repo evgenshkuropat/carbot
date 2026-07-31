@@ -1186,6 +1186,13 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             return "DIESEL";
         }
 
+        if ((containsAny(source, " bmw ", " x1 ", " x2 ", " x3 ", " x4 ", " x5 ", " x6 ", " x7 ")
+                || compact.contains("bmw"))
+                && Pattern.compile("(?i).*(?:xdrive(?:18|20|25|30|35|40|50)d|sdrive(?:18|20|25|30)d|m50d|[123457][0-9]{2}xd|[123457][0-9]{2}d).*")
+                .matcher(compact).matches()) {
+            return "DIESEL";
+        }
+
         if (containsAny(source, " jts ", " twinspark ", " twin spark ", " tbi ", " turbo ", " ts ", " sce ",
                 " bmw m3 ", " m3 ", " civic type-r ", " civic type r ", " type-r ", " type r ", " typer ", " fn2 ", " ep2 ")
                 || compact.contains("typer")
@@ -1757,7 +1764,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
 
         if (containsAny(tokens,
                 " dsg ", " dct ", " cvt ", " ecvt ", " eat8 ", " edc ", " edcs ", " i shift ", " ishift ",
-                " stronic ", " tiptronic ", " powershift ", " multitronic ", " steptronic ", " xtronic ")) {
+                " s tronic ", " stronic ", " tiptronic ", " powershift ", " multitronic ", " steptronic ", " xtronic ")) {
             return "AUTOMATIC";
         }
 
@@ -1811,6 +1818,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " edc ",
                 " e-dcs ",
                 " edcs ",
+                " s-tronic ",
                 " s tronic ",
                 " stronic ",
                 " tiptronic ",
@@ -2591,6 +2599,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         if (containsAny(titleSource,
                 " suv ", " crossover ", " tonale ",
                 " bmw x1 ", " bmw x2 ", " bmw x3 ", " bmw x4 ", " bmw x5 ", " bmw x6 ", " bmw x7 ",
+                " x1 ", " x2 ", " x3 ", " x4 ", " x5 ", " x6 ", " x7 ",
                 " q2 ", " q3 ", " q4 ", " q5 ", " q7 ", " q8 ",
                 " q 2 ", " q 3 ", " q 4 ", " q 5 ", " q 7 ", " q 8 ",
                 " sq5 ", " sq7 ",
@@ -2703,14 +2712,14 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " fabia ", " focus ", " golf ", " polo ",
                 " i20 ", " i30 ", " i30n ", " ceed ", " mazda 2 ",
                 " aveo ", " spark ", " picanto ",
-                " c1 ", " c2 ", " c3 ", " c 3 ", " c4 ",
+                " c1 ", " c2 ", " c3 ", " c 3 ", " c4 ", " c 4 ",
                 " clio ", " megane ", " fiesta ",
                 " rs3 ", " rs 3 ",
                 " civic ", " insight ", " leon ", " swift ", " born ", " punto ", " panda ",
                 " fiat 500e ", " fiat e500 ", " 500e ", " e500 ",
                 " ec4 ", " e-c4 ", " e c4 ",
                 " leaf ", " micra ", " colt ", " spacestar ", " space star ",
-                " f40 ", " řada 1 ", " rada 1 ",
+                " f40 ", " bmw i3 ", " i3 ", " audi s1 ", " řada 1 ", " rada 1 ",
                 " a2 ", " audi a2 ", " a180 ", " a 180 ", " a180d ", " a 180d ", " a200 ", " a 200 ", " a200d ", " a 200d ", " a35 ",
                 " 116i ", " 118i ", " 120i ", " 116d ", " 118d ", " 120d ",
                 " agila ", " karl ", " astra ", " corsa ", " fusion ", " starlet ", " 1007 ", " 106 ", " 107 ", " 147 ", " 206 ", " 207 ", " 208 ", " 308 ",
@@ -3176,7 +3185,12 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             case "c3" -> slug.contains("-c3-");
             case "c4" -> slug.contains("-c4-") || slug.contains("-ec4-") || slug.contains("-e-c4-");
             case "c5" -> slug.contains("-c5-");
-            case "a8" -> slug.contains("-a8-") || slug.contains("-a8l-");
+            case "a3" -> slug.contains("-a3-") || slug.contains("-a-3-");
+            case "a4" -> slug.contains("-a4-") || slug.contains("-a-4-");
+            case "a5" -> slug.contains("-a5-") || slug.contains("-a-5-");
+            case "a6" -> slug.contains("-a6-") || slug.contains("-a-6-");
+            case "a7" -> slug.contains("-a7-") || slug.contains("-a-7-");
+            case "a8" -> slug.contains("-a8-") || slug.contains("-a-8-") || slug.contains("-a8l-");
             case "i10" -> slug.contains("-i10-") || slug.contains("-i-10-");
             case "ix20" -> slug.contains("-ix20-") || slug.contains("-ix-20-");
             default -> slug.contains("-" + model + "-");
