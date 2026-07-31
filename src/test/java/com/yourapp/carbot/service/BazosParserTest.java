@@ -457,6 +457,7 @@ class BazosParserTest {
         assertThat(looksLikelyFalseAutomatic("Fabia, 1.2 TSI Style Combi TAZNE, Aut. klima, Vyhr. sedadla", "AUTOMATIC")).isTrue();
         assertThat(looksLikelyFalseAutomatic("Skoda Rapid, 1.2 TSI SPACEBACK Sport Aut. klima, Vyhr. sedadla", "AUTOMATIC")).isTrue();
         assertThat(looksLikelyFalseAutomatic("SKODA YETI 2.0 Tdi 81 kW 4x4 ALU KOLA, TAZNE, KLIMA", "AUTOMATIC")).isTrue();
+        assertThat(looksLikelyFalseAutomatic("SKODA ROOMSTER SCOUT 1.2 Tsi BENZIN TAZNE ZARIZENI", "AUTOMATIC")).isTrue();
         assertThat(looksLikelyFalseAutomatic("Dacia Duster 1.6 16V - BENZIN - 4X4", "AUTOMATIC")).isTrue();
         assertThat(looksLikelyFalseAutomatic("Dacia Duster TCe 150 EDC, TOP, DPH", "AUTOMATIC")).isFalse();
         assertThat(looksLikelyFalseAutomatic("Dacia Sandero Stepway 1.0i 67KW LPG Keyless Vyhrev Kamera", "AUTOMATIC")).isTrue();
