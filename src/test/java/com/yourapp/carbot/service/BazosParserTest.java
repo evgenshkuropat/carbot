@@ -140,6 +140,7 @@ class BazosParserTest {
         assertThat(extractFuelType("Opel Grandland 1.2 Turbo, GS line, CR")).isEqualTo("PETROL");
         assertThat(extractFuelType("Toyota GR86 executive manualni prev. odpocet DPH")).isEqualTo("PETROL");
         assertThat(extractFuelType("Toyota GR Yaris s upravami za skoro 700.000,-")).isEqualTo("PETROL");
+        assertThat(extractFuelType("Toyota Yaris 1.8 ST r.v. 2008")).isEqualTo("PETROL");
         assertThat(extractFuelType("BMW e46 330ci, M Packet, 170KW, 231 hp")).isEqualTo("PETROL");
         assertThat(extractFuelType("Mini Cooper")).isEqualTo("PETROL");
         assertThat(extractFuelType("Prodam Toyota Mirai Executive")).isEqualTo("ELECTRIC");
@@ -342,6 +343,7 @@ class BazosParserTest {
         assertThat(extractCarType("Toyota 4runner - SPECIAL z mise OSN", "", "")).isEqualTo("SUV");
         assertThat(extractCarType("Toyota Prius Plus 7mist+LPG 2013", "", "")).isEqualTo("MINIVAN");
         assertThat(extractCarType("Toyota Prius+, 7 mist, TOP vybava, hybrid", "", "")).isEqualTo("MINIVAN");
+        assertThat(extractCarType("Toyota tundra 5.7 2021", "", "")).isEqualTo("PICKUP");
         assertThat(extractCarType("Toyota Sienna AWD 2017 7 mist 8AT tazne", "", "")).isEqualTo("MINIVAN");
         assertThat(extractCarType("Lexus IS 220d", "", "")).isEqualTo("SEDAN");
         assertThat(extractCarType("Toyota Starlet", "", "")).isEqualTo("HATCHBACK");
@@ -480,6 +482,7 @@ class BazosParserTest {
         assertThat(looksLikelyFalseAutomatic("SUZUKI VITARA 1.6 VVT 4X4 ALLGRIP AUTOMAT-KAMERA-TAZNE 17", "AUTOMATIC")).isFalse();
         assertThat(looksLikelyFalseAutomatic("Suzuki SX4 1.9 DDiS 88kW 4x4 klima Nova STK", "AUTOMATIC")).isTrue();
         assertThat(correctLikelyNoisyFuel("Toyota Sienna AWD 2017 7 mist 8AT tazne", "DIESEL")).isEqualTo("PETROL");
+        assertThat(correctLikelyNoisyFuel("Toyota Yaris 1.8 ST r.v. 2008", "DIESEL")).isEqualTo("PETROL");
         assertThat(correctLikelyNoisyFuel("Dacia Sandero Stepway", "DIESEL")).isNull();
         assertThat(correctLikelyNoisyFuel("Navara D22 Kingcab 98kw", "PETROL")).isNull();
         assertThat(correctLikelyNoisyFuel("Opel Grandland X 1 majitel servis", "LPG")).isNull();

@@ -1346,6 +1346,12 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             return "PETROL";
         }
 
+        if (source.contains(" yaris ")
+                && Pattern.compile("\\b1[\\.,]8\\b").matcher(source).find()
+                && containsAny(source, " st ", " ts ", " sport ", " compressor ")) {
+            return "PETROL";
+        }
+
         if (Pattern.compile("(?i)\\b[2-7][\\.,]\\d\\s*v[68]\\b").matcher(source).find()
                 || Pattern.compile("(?i).*[2-7]\\d[v][68].*").matcher(compact).find()) {
             return "PETROL";
@@ -1534,6 +1540,12 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         }
         if (source.contains(" sienna ") && "DIESEL".equals(fuelType)) {
             return extractFuelType(title);
+        }
+        if ("DIESEL".equals(fuelType)
+                && source.contains(" yaris ")
+                && Pattern.compile("\\b1[\\.,]8\\b").matcher(source).find()
+                && containsAny(source, " st ", " ts ", " sport ", " compressor ")) {
+            return "PETROL";
         }
 
         if (containsAny(source, " sienna ", " sandero stepway ", " navara d22 ", " grandland x ")
@@ -2474,7 +2486,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
 
         if (containsAny(titleSource,
                 " pickup ", " pick-up ",
-                " ranger ", " hilux ", " amarok ", " alaskan ",
+                " ranger ", " hilux ", " tundra ", " amarok ", " alaskan ",
                 " navara ", " l200 ", " l 200 ",
                 " ram ", " gladiator ")) {
             return "PICKUP";
@@ -2723,7 +2735,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
 
         if (containsAny(titleSource,
                 " pickup ", " pick-up ",
-                " ranger ", " hilux ", " amarok ", " alaskan ",
+                " ranger ", " hilux ", " tundra ", " amarok ", " alaskan ",
                 " navara ", " l200 ", " l 200 ",
                 " ram ", " gladiator ")) {
             return "PICKUP";
