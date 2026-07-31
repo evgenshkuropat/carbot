@@ -102,6 +102,7 @@ class SbazarParserTest {
         assertThat(resolveFuelType("ssangyong korando 2.2td 4x4 manual", "")).isEqualTo("DIESEL");
         assertThat(resolveFuelType("jeep cherokee 2.2 147kw 4x4 limited kuze nav", "")).isEqualTo("DIESEL");
         assertThat(resolveFuelType("jeep compass 1.3 110kw limited kamera navi", "")).isEqualTo("PETROL");
+        assertThat(resolveFuelType("2019 jeep compass 1.4 limited cr", "")).isEqualTo("PETROL");
         assertThat(resolveFuelType("toyota yaris 1.0 vvt-i 51kw cr", "")).isEqualTo("PETROL");
         assertThat(resolveFuelType("prodam toyota yaris 1.33 vvt-i 73kw automat", "")).isEqualTo("PETROL");
         assertThat(resolveFuelType("volkswagen e-up 60 kw serviska top stav", "")).isEqualTo("ELECTRIC");

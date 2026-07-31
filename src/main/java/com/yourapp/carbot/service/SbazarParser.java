@@ -708,7 +708,7 @@ public class SbazarParser implements CarSourceParser {
         }
 
         if (containsAny(searchable, "jeep compass")
-                && searchable.matches(".*\\b1[.,]3\\b.*")) {
+                && searchable.matches(".*\\b1[.,][34]\\b.*")) {
             return "PETROL";
         }
 
