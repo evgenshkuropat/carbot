@@ -82,6 +82,10 @@ class ToyotaProvereneVozyParserTest {
                 .isEqualTo("WAGON");
         assertThat(extractCarType("Toyota Corolla 1.8 Hybrid GR-Sport Dynamic", ""))
                 .isEqualTo("HATCHBACK");
+        assertThat(extractCarType("Toyota Corolla 1.2iT, CR-1m, Active, DPH", "Toyota Corolla 1,8 HEV Active Business TS"))
+                .isEqualTo("HATCHBACK");
+        assertThat(extractCarType("Hyundai Kona 1,6 Premium AUT.", ""))
+                .isEqualTo("SUV");
     }
 
     @Test
@@ -101,6 +105,10 @@ class ToyotaProvereneVozyParserTest {
                 .isEqualTo("HYBRID");
         assertThat(mapElectrifiedFuel("Toyota C-HR 2.0Hybrid,CZ,1Maj,Style"))
                 .isEqualTo("HYBRID");
+        assertThat(mapElectrifiedFuel("Toyota Yaris Cross 1.5L HEV130 CVT"))
+                .isEqualTo("HYBRID");
+        assertThat(mapElectrifiedFuel("Skoda Octavia 1.4,TSI,iV,150kW,DSG,Style,CZ"))
+                .isEqualTo("PLUGIN_HYBRID");
         assertThat(mapElectrifiedFuel("Volvo XC 40 B3 Plus Bright DCT"))
                 .isEqualTo("HYBRID");
     }

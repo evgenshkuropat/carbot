@@ -366,6 +366,11 @@ public class ToyotaProvereneVozyParser implements CarSourceParser {
                 || compact.contains("phev")) {
             return "PLUGIN_HYBRID";
         }
+        if ((containsAny(tokens, " skoda ", " octavia ", " superb ") || compact.contains("skoda"))
+                && containsAny(tokens, " iv ")
+                && !containsAny(tokens, " tdi ", " diesel ", " nafta ")) {
+            return "PLUGIN_HYBRID";
+        }
         if (containsAny(tokens, " electric ", " elektro ", " kwh ", " 500e ", " rz ")) {
             return "ELECTRIC";
         }
@@ -380,6 +385,9 @@ public class ToyotaProvereneVozyParser implements CarSourceParser {
         }
         if (containsAny(tokens, " c hr ", " chr ")
                 && containsAny(tokens, " 1 8 ", " 2 0 ")) {
+            return "HYBRID";
+        }
+        if (Pattern.compile("\\bhev\\d*\\b", Pattern.CASE_INSENSITIVE).matcher(tokens).find()) {
             return "HYBRID";
         }
         if (containsAny(tokens, " hybrid ", " hev ", " hsd ", " mhev ", " e cvt ", " ecvt ",
@@ -698,6 +706,11 @@ public class ToyotaProvereneVozyParser implements CarSourceParser {
                 " estate ", " sw ", " sport tourer ", " sports tourer ", " variant ")) {
             return "HATCHBACK";
         }
+        if (titleSource.contains(" corolla ")
+                && !containsAny(titleSource, " corolla sedan ", " corolla sd ", " corolla cross ", " corolla ts ",
+                " ts ", " touring ", " kombi ", " combi ", " wagon ", " sedan ")) {
+            return "HATCHBACK";
+        }
         if (containsAny(source, " kombi ", " combi ", " wagon ", " variant ", " sports tourer ", " sw ",
                 " grandtour ", " grand tour ")) {
             return "WAGON";
@@ -717,7 +730,8 @@ public class ToyotaProvereneVozyParser implements CarSourceParser {
         }
         if (containsAny(source, " yaris cross ", " aygo x ", " corolla cross ", " rav4 ", " c-hr ", " chr ", " bz4x ",
                 " highlander ", " lexus rx ", " lexus nx ", " lexus lbx ", " lbx ", " bj30 ",
-                " sportage ", " touareg ", " vitara ", " ignis ", " cr-v ", " crv ", " ecosport ", " 2008 ", " 3008 ")) {
+                " sportage ", " touareg ", " vitara ", " ignis ", " cr-v ", " crv ", " ecosport ", " kona ",
+                " 2008 ", " 3008 ")) {
             return "SUV";
         }
         if (containsAny(source, " touran ", " roomster ",
