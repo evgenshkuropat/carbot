@@ -894,7 +894,7 @@ public class SbazarParser implements CarSourceParser {
         }
         if (containsAny(searchable, "toyota highlander", "highlander", "toyota lc 120", " lc 120 ", "lc120",
                 "mercedes-benz glb", "mercedes benz glb", " glb ",
-                "mercedes-benz gl ", "mercedes benz gl ", " gl 350", "gl350")) {
+                "mercedes-benz gl ", "mercedes benz gl ", "mercedes-benz gl,", "mercedes benz gl,", " gl 350", "gl350")) {
             return "SUV";
         }
         if (containsAny(searchable, "audi tt", " tt ")) {
@@ -953,7 +953,7 @@ public class SbazarParser implements CarSourceParser {
         if (containsAny(searchable, "insignia")) {
             return "SEDAN";
         }
-        if (containsAny(searchable, "touran", "sharan", "alhambra", "altea", "s-max", "c-max", "b-max", "galaxy", "zafira", "scenic", "modus", "picasso", "roomster", "berlingo", "rifter", "caddy", "citan", "vito", "viano", "mercedes v ", "v 250", "v250", "w447", "tridy v", "tridy r", "proace verso", "proace city", "proace city verso", "multivan", "california", "volkswagen t5", "volkswagen t6", "vw t5", "vw t6", "jumpy", "trafic", "traffic", "sportsvan", "golf plus", "ford fusion", "tourneo custom", "tourneo connect", "tourneo courier", "u-tour", "u tour", "225xe", "active tourer", " f45 ", "kangoo", "dokker", "lodgy", "jogger", "b180", "b 180", "b200", "b 200", "peugeot 807", " 807 ", "mazda 5", "grandis", "voyager", "town country", "town & country", "pacifica", "grand caravan", "sienna", "corolla verso", "toyota verso", "yaris verso", " verso ", "ix20", "meriva", "partner tepee", "peugeot partner", "fiat ulysse", "ulysse", "fiat doblo", "doblo")) {
+        if (containsAny(searchable, "touran", "sharan", "alhambra", "altea", "s-max", "c-max", "b-max", "galaxy", "zafira", "scenic", "modus", "picasso", "roomster", "berlingo", "rifter", "caddy", "citan", "vito", "viano", "mercedes v ", "v 250", "v250", "w447", "tridy v", "tridy r", "proace verso", "proace city", "proace city verso", "multivan", "california", "volkswagen t5", "volkswagen t6", "vw t5", "vw t6", "jumpy", "trafic", "traffic", "sportsvan", "golf plus", "ford fusion", "tourneo custom", "tourneo connect", "tourneo courier", "u-tour", "u tour", "225xe", "active tourer", " f45 ", "kangoo", "dokker", "lodgy", "jogger", "b180", "b 180", "b200", "b 200", "peugeot 807", " 807 ", "mazda 5", "grandis", "voyager", "town country", "town & country", "pacifica", "grand caravan", "sienna", "corolla verso", "toyota verso", "yaris verso", " verso ", "staria", "ix20", "meriva", "partner tepee", "peugeot partner", "fiat ulysse", "ulysse", "fiat doblo", "doblo")) {
             return "MINIVAN";
         }
         if (containsAny(searchable, "model 3", "model s", "toyota camry", "camry", "bmw i5", "eqe", "audi a7", " a7 ", "jetta", "w220", "w 220", "w211", "w 211", "fluence", "audi s8", " s8 ", "jaguar xf", " xf ", "jaguar xe", "mercedes 211")) {

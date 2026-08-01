@@ -329,6 +329,8 @@ class SbazarParserTest {
         assertThat(resolveCarType("mercedes-benz tridy m ml 320 3,0d v6", "")).isEqualTo("SUV");
         assertThat(resolveCarType("mercedes-benz glb 200 d 4x2 150 ps", "")).isEqualTo("SUV");
         assertThat(resolveCarType("mercedes-benz gl 350cdi 2016 amg cz 7mist zaruk", "")).isEqualTo("SUV");
+        assertThat(resolveCarType("mercedes-benz gl, 350cdi/2016/amg.cz.7mist-zaruk", "")).isEqualTo("SUV");
+        assertThat(resolveCarType("hyundai staria, 2.2 crdi, 1maj, cr, dph", "")).isEqualTo("MINIVAN");
         assertThat(resolveCarType("bmw rada 4 420d 2,0 gran kupe automat", "")).isEqualTo("SEDAN");
         assertThat(resolveCarType("peugeot 301 1.2 puretech 2017", "")).isEqualTo("SEDAN");
         assertThat(resolveCarType("peugeot 508gt plug in hybrid 165kw e-eat8", "")).isEqualTo("SEDAN");
