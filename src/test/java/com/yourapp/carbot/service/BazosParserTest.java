@@ -326,6 +326,10 @@ class BazosParserTest {
         assertThat(extractCarType("Nissan Primera P12 2.2D", "", "")).isEqualTo("SEDAN");
         assertThat(extractCarType("Nissan Pulsar 1.2 85kW 2015 CZ", "", "")).isEqualTo("HATCHBACK");
         assertThat(extractCarType("Nissan Elgrand 3.5 V6", "", "")).isEqualTo("MINIVAN");
+        assertThat(extractCarType("Nissan Almera 1.5i 72KW 2006", "", "")).isEqualTo("HATCHBACK");
+        assertThat(extractCarType("Nissan note, 1.4lpg, top stav", "", "")).isEqualTo("MINIVAN");
+        assertThat(extractCarType("Nissan Cube 1.6i 81 kW panorama", "", "")).isEqualTo("MINIVAN");
+        assertThat(extractCarType("Nissan Titan 2017", "", "")).isEqualTo("PICKUP");
         assertThat(extractCarType("OPEL AMPERA PLUGIN-HYBRID ELEKTRO", "", "")).isEqualTo("HATCHBACK");
         assertThat(extractCarType("Opel Crossland X 1.2i 81kw Inovation", "", "")).isEqualTo("SUV");
         assertThat(extractCarType("OPEL VECTRA C 2.2i 16V EDICE", "", "")).isEqualTo("SEDAN");
@@ -396,6 +400,7 @@ class BazosParserTest {
         assertThat(extractCarType("MERCEDES BENZ CLA 200 SHOOTING BRAKE AMG", "", "")).isEqualTo("WAGON");
         assertThat(extractCarType("E220 All-Terrain 4Matic", "", "")).isEqualTo("WAGON");
         assertThat(extractCarType("Mercedes Benz C 220 CDI T BlueEfficiency (W204)", "", "")).isEqualTo("WAGON");
+        assertThat(extractCarType("Mercedes S204 220 CDI 2008", "", "")).isEqualTo("WAGON");
         assertThat(extractCarType("Mercedes e270cdi rv2000", "", "")).isEqualTo("SEDAN");
         assertThat(extractCarType("Mercedes C200CDI, r.v. 2003, 85kW, automat", "", "")).isEqualTo("SEDAN");
         assertThat(extractCarType("Mercedes-Benz C180 Kompressor W204 115 kW manual", "", "")).isEqualTo("SEDAN");
@@ -410,12 +415,15 @@ class BazosParserTest {
         assertThat(extractCarType("Mercedes-Benz 126.500 SEC AMG Paket", "", "")).isEqualTo("COUPE");
         assertThat(extractCarType("Mercedes Benz 200d w124/rv.1989/manual/POUZE 88.000km", "", "")).isEqualTo("SEDAN");
         assertThat(extractCarType("Mercedes E350CDI, 4-matic, spickovy stav, NOVA CENA", "", "")).isEqualTo("SEDAN");
+        assertThat(extractCarType("Mercedes-Benz Tridy E, 220 D 143kW 4MATIC, AllTERRAIN", "", "")).isEqualTo("WAGON");
         assertThat(extractCarType("Mercedes Benz GL 350 Bluetec AMG paket", "", "")).isEqualTo("SUV");
+        assertThat(extractCarType("Mercedes Benz R350i", "", "")).isEqualTo("MINIVAN");
         assertThat(extractCarType("Mercedes Viano Marco Polo 3,0 CDi 150kw Limited Edition", "", "")).isEqualTo("MINIVAN");
         assertThat(extractCarType("MERCEDES C AMG 220D 1.MAJ TOP 2023 WEBASTO", "", "")).isEqualTo("SEDAN");
         assertThat(extractCarType("PRODAM MAZDU 6 GH VE VYBORNEM STAVU", "", "")).isEqualTo("SEDAN");
         assertThat(extractCarType("Mazda Tribute 3.0 4x4 nova STK", "", "")).isEqualTo("SUV");
         assertThat(extractCarType("Mitsubishi Galant 2.4GDI r.v. 2003 STK do 11/27", "", "")).isEqualTo("SEDAN");
+        assertThat(extractCarType("Nabizim k prodei Mitsubishi Outlender", "", "")).isEqualTo("SUV");
         assertThat(extractCarType("AUDI A1 1.2 TFSI 2012", "", "")).isEqualTo("HATCHBACK");
         assertThat(extractCarType("C5 2.2HDI 16V BREAK D. rv.11.2006", "", "")).isEqualTo("WAGON");
     }
@@ -493,6 +501,7 @@ class BazosParserTest {
         assertThat(looksLikelyFalseAutomatic("Suzuki SX4 1.9 DDiS 88kW 4x4 klima Nova STK", "AUTOMATIC")).isTrue();
         assertThat(correctLikelyNoisyFuel("Toyota Sienna AWD 2017 7 mist 8AT tazne", "DIESEL")).isEqualTo("PETROL");
         assertThat(correctLikelyNoisyFuel("Toyota Yaris 1.8 ST r.v. 2008", "DIESEL")).isEqualTo("PETROL");
+        assertThat(correctLikelyNoisyFuel("benzinovy Nissan Note 2014 pravidelny servis", "DIESEL")).isEqualTo("PETROL");
         assertThat(correctLikelyNoisyFuel("Dacia Sandero Stepway", "DIESEL")).isNull();
         assertThat(correctLikelyNoisyFuel("Navara D22 Kingcab 98kw", "PETROL")).isNull();
         assertThat(correctLikelyNoisyFuel("Opel Grandland X 1 majitel servis", "LPG")).isNull();
@@ -765,6 +774,16 @@ class BazosParserTest {
                 "Mercedes-Benz C180 Kompressor W204 - 115 kW - manual",
                 "",
                 "https://auto.bazos.cz/inzerat/218778125/mercedes-benz-c180-kompressor-w204-115-kw-manual.php"))
+                .isFalse();
+        assertThat(looksCommercialVehicle(
+                "Mercedes Benz R350i",
+                "",
+                "https://auto.bazos.cz/inzerat/222001355/mercedes-benz-r350i.php"))
+                .isFalse();
+        assertThat(looksCommercialVehicle(
+                "NISSAN CUBE 1.6i 81 kW PANORAMA TEMPOMAT KAMERA",
+                "",
+                "https://auto.bazos.cz/inzerat/220573022/nissan-cube-16i-81-kw-panorama-tempomat.php"))
                 .isFalse();
 
         assertThat(looksCommercialVehicle(

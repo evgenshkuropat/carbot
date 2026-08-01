@@ -1540,6 +1540,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         }
 
         String source = " " + normalizeText(title).toLowerCase(Locale.ROOT) + " ";
+        source = source + " " + asciiSearchText(title) + " " + asciiSearchText(repairMojibake(title));
         if ("DIESEL".equals(fuelType)
                 && source.contains(" kangoo ")
                 && Pattern.compile("\\b1[\\.,]2\\b").matcher(source).find()) {
@@ -1552,6 +1553,11 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 && source.contains(" yaris ")
                 && Pattern.compile("\\b1[\\.,]8\\b").matcher(source).find()
                 && containsAny(source, " st ", " ts ", " sport ", " compressor ")) {
+            return "PETROL";
+        }
+        if ("DIESEL".equals(fuelType)
+                && containsAny(source, " benzin ", " benzín ", " benzinovy ", " benzínový ")
+                && !containsAny(source, " diesel ", " nafta ", " tdi ", " dci ", " hdi ", " cdi ", " crdi ")) {
             return "PETROL";
         }
 
@@ -2181,6 +2187,10 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             return "WAGON";
         }
 
+        if (containsAny(titleSource, " allterrain ", " all terrain ", " s204 ")) {
+            return "WAGON";
+        }
+
         if (containsAny(titleSource, " passat ") && containsAny(titleSource, " variant ", " varian ")) {
             return "WAGON";
         }
@@ -2496,7 +2506,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " pickup ", " pick-up ",
                 " ranger ", " hilux ", " tundra ", " amarok ", " alaskan ",
                 " navara ", " l200 ", " l 200 ",
-                " ram ", " gladiator ")) {
+                " ram ", " gladiator ", " titan ")) {
             return "PICKUP";
         }
 
@@ -2607,7 +2617,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " gl 350 ", " gl350 ", " gl 500 ", " gl500 ", " gl320 ", " gl 63 ", " ml 350 ", " ml350 ",
                 " kodiaq ", " karoq ", " kamiq ",
                 " tiguan ", " touareg ", " t-roc ", " troc ",
-                " pajero ", " outlander ", " eclipse cross ", " asx ",
+                " pajero ", " outlander ", " outlender ", " eclipse cross ", " asx ",
                 " qashqai ", " juke ", " x-trail ", " x trail ", " pathfinder ",
                 " land cruiser ", " landcruiser ", " patrol ", " peugeot 2008 ", " 3008 ", " 5008 ",
                 " explorer ",
@@ -2665,7 +2675,8 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " w246 ", " b 180 ", " b180 ", " b 200 ", " b200 ", " b 250e ", " b250e ",
                 " mazda 5 ",
                 " grand scenic ", " grand scénic ",
-                " kangoo ", " carens ", " fr-v ", " fr v ", " frv ", " express ")) {
+                " kangoo ", " carens ", " fr-v ", " fr v ", " frv ", " express ",
+                " r350 ", " r350i ", " r 350 ", " nissan note ", " note ", " cube ")) {
             return "MINIVAN";
         }
 
@@ -2682,7 +2693,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " kombi ", " combi ", " combi2", " kombi2",
                 " wagon ", " sportwagon ", " avant ", " variant ", " sw ", " allroad ",
                 " touring ", " turnier ", " caravan ", " estate ",
-                " rs6 ", " rs 6 ", " e61 ", " f11 ", " f31 ", " g31 ",
+                " allterrain ", " all terrain ", " rs6 ", " rs 6 ", " e61 ", " f11 ", " f31 ", " g31 ", " s204 ",
                 " alltrack ", " scout ", " outback ",
                 " proceed ", " pro ceed ",
                 " v40 ", " v50 ", " v60 ", " v70 ", " v 70 ", " v90 ", " v 90 ",
@@ -2725,7 +2736,8 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " agila ", " karl ", " astra ", " corsa ", " fusion ", " starlet ", " 1007 ", " 106 ", " 107 ", " 147 ", " 206 ", " 207 ", " 208 ", " 308 ",
                 " sandero ", " stepway ", " logan ", " scala ", " citigo ", " laguna ",
                 " fiat 500 ", " fiat500 ", " tipo ", " fiat tipo ", " bravo ", " stilo ",
-                " auris ", " aoris ", " prius ", " corolla ", " corsa ", " mazda 3 ", " rapid ", " yaris ", " getz ", " soul ")) {
+                " auris ", " aoris ", " prius ", " corolla ", " corsa ", " mazda 3 ", " rapid ", " yaris ", " getz ", " soul ",
+                " almera ")) {
             return "HATCHBACK";
         }
 
@@ -4402,10 +4414,11 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " rs 6 ",
                 " a180 ", " a 180 ", " a180d ", " a 180d ", " a200 ", " a 200 ", " a200d ", " a 200d ", " a35 ",
                 " c180 ", " c 180 ", " c180k ", " c 180k ", " c220 ", " c 220 ", " c220d ", " e220 ", " e 220 ", " e220d ", " e300 ", " e 300 ", " e300cdi ",
+                " r350 ", " r350i ", " r 350 ", " s204 ",
                 " cla ", " cls ", " slk ", " slk55 ", " sl600 ", " glc ", " gle ", " gls ", " gl500 ", " grandis ",
                 " c63 ", " c 63 ",
                 " mirai ",
-                " outlander ", " pajero ", " l200 ", " l 200 ", " lancer ", " eclipse ", " asx ", " colt ", " spacestar ", " space star ", " i-miev ", " i miev ", " imiev ",
+                " outlander ", " outlender ", " pajero ", " l200 ", " l 200 ", " lancer ", " eclipse ", " asx ", " colt ", " spacestar ", " space star ", " i-miev ", " i miev ", " imiev ",
                 " m3 ", " e36 ",
                 " g20 ", " g21 ", " g30 ", " g31 ", " f10 ", " f11 ", " f30 ", " f31 ",
                 " 116i ", " 118i ", " 120i ", " 218i ", " 220i ",
@@ -4427,6 +4440,10 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " ibiza ",
                 " sorento ",
                 " sportage ",
+                " cube ",
+                " note ",
+                " almera ",
+                " titan ",
                 " tucson ",
                 " santa fe ",
                 " i20 ",
