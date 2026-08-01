@@ -530,10 +530,10 @@ public class TipCarsParser implements CarSourceParser {
         }
 
         return normalizeText(title
-                .replaceAll("(?i)(\\b(?:\\S*ada|\\S*idy)\\s+\\d)\\s+\\d{3}(?:[\\s\\u00A0]\\d{3})+\\s*K(?!m\\b)\\p{L}{0,2}(?:\\s+bez\\s+DPH)?", "$1")
-                .replaceAll("(?i)(x\\d)\\s+\\d{3}(?:[\\s\\u00A0]\\d{3})+\\s*K(?!m\\b)\\p{L}{0,2}(?:\\s+bez\\s+DPH)?", "$1")
-                .replaceAll("(?i)\\s+\\d{1,3}(?:[\\s\\u00A0]\\d{3})+\\s*K(?!m\\b)\\p{L}{0,2}(?:\\s+bez\\s+DPH)?", " ")
-                .replaceAll("(?i)\\s+\\d{4,8}\\s*K(?!m\\b)\\p{L}{0,2}(?:\\s+bez\\s+DPH)?", " ")
+                .replaceAll("(?i)(\\b(?:\\S*ada|\\S*idy)\\s+\\d)\\s+\\d{3}(?:[\\s\\u00A0]\\d{3})+\\s*K(?![mw])\\p{L}{0,2}(?:\\s+bez\\s+DPH)?", "$1")
+                .replaceAll("(?i)(x\\d)\\s+\\d{3}(?:[\\s\\u00A0]\\d{3})+\\s*K(?![mw])\\p{L}{0,2}(?:\\s+bez\\s+DPH)?", "$1")
+                .replaceAll("(?i)\\s+\\d{1,3}(?:[\\s\\u00A0]\\d{3})+\\s*K(?![mw])\\p{L}{0,2}(?:\\s+bez\\s+DPH)?", " ")
+                .replaceAll("(?i)\\s+\\d{4,8}\\s*K(?![mw])\\p{L}{0,2}(?:\\s+bez\\s+DPH)?", " ")
                 .trim());
     }
 
@@ -571,7 +571,7 @@ public class TipCarsParser implements CarSourceParser {
             return null;
         }
 
-        Matcher matcher = Pattern.compile("(?<!\\d)(\\d{1,3}(?:[\\s\\u00A0]\\d{3})+|\\d{4,8})\\s*K(?!m\\b)\\p{L}{0,2}", Pattern.CASE_INSENSITIVE).matcher(text);
+        Matcher matcher = Pattern.compile("(?<!\\d)(\\d{1,3}(?:[\\s\\u00A0]\\d{3})+|\\d{4,8})\\s*K(?![mw])\\p{L}{0,2}", Pattern.CASE_INSENSITIVE).matcher(text);
         while (matcher.find()) {
             String rawPrice = matcher.group(1);
             if (startsWithModelSeriesNumber(text, matcher.start(), rawPrice)

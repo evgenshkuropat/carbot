@@ -260,6 +260,10 @@ class TipCarsParserTest {
                 .isEqualTo(450_000);
         assertThat(cleanupListTitle("Skoda Kodiaq 2.0 TDI 4x4 450 000 Kc"))
                 .isEqualTo("Skoda Kodiaq 2.0 TDI 4x4");
+        assertThat(extractFirstPrice("Audi e-tron 55 300kw SB BlackEdit ZARUKA"))
+                .isNull();
+        assertThat(cleanupListTitle("Audi e-tron 55 300kw SB BlackEdit ZARUKA"))
+                .isEqualTo("Audi e-tron 55 300kw SB BlackEdit ZARUKA");
     }
 
     @Test
