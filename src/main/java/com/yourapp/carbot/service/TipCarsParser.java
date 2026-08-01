@@ -18,9 +18,11 @@ import java.nio.charset.CodingErrorAction;
 import java.nio.charset.StandardCharsets;
 import java.time.Year;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -50,6 +52,7 @@ public class TipCarsParser implements CarSourceParser {
     public List<CarDto> fetchCars() {
         List<CarDto> cars = new ArrayList<>();
         Set<String> detailLinks = new LinkedHashSet<>();
+        Map<String, String> cookies = new HashMap<>();
 
         int missingPriceCount = 0;
         int invalidPriceCount = 0;
@@ -66,7 +69,9 @@ public class TipCarsParser implements CarSourceParser {
                 try {
                     int before = detailLinks.size();
 
-                    Document listDoc = connect(pageUrl).get();
+                    Connection.Response listResponse = connect(pageUrl, cookies, BASE_URL).execute();
+                    cookies.putAll(listResponse.cookies());
+                    Document listDoc = listResponse.parse();
                     Set<String> pageLinks = extractDetailLinks(listDoc);
                     detailLinks.addAll(pageLinks);
 
@@ -90,7 +95,7 @@ public class TipCarsParser implements CarSourceParser {
             log.info("TIPCARS total unique detail links found={}", detailLinks.size());
 
             for (String url : detailLinks) {
-                ParseResult result = parseDetail(url);
+                ParseResult result = parseDetail(url, cookies);
 
                 if (result.car() != null) {
                     cars.add(result.car());
@@ -133,9 +138,11 @@ public class TipCarsParser implements CarSourceParser {
         return cars;
     }
 
-    private ParseResult parseDetail(String url) {
+    private ParseResult parseDetail(String url, Map<String, String> cookies) {
         try {
-            Document doc = connect(url).get();
+            Connection.Response detailResponse = connect(url, cookies, BASE_LIST_URL).execute();
+            cookies.putAll(detailResponse.cookies());
+            Document doc = detailResponse.parse();
 
             String title = extractTitle(doc);
             String pageText = normalizeText(doc.text());
@@ -235,10 +242,10 @@ public class TipCarsParser implements CarSourceParser {
         }
     }
 
-    private Connection connect(String url) {
-        return Jsoup.connect(url)
+    private Connection connect(String url, Map<String, String> cookies, String referrer) {
+        Connection connection = Jsoup.connect(url)
                 .userAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36")
-                .referrer(BASE_URL)
+                .referrer(referrer == null || referrer.isBlank() ? BASE_URL : referrer)
                 .header("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8")
                 .header("Accept-Language", "cs-CZ,cs;q=0.9,en;q=0.8")
                 .header("Cache-Control", "no-cache")
@@ -249,6 +256,12 @@ public class TipCarsParser implements CarSourceParser {
                 .header("Upgrade-Insecure-Requests", "1")
                 .timeout(REQUEST_TIMEOUT_MS)
                 .followRedirects(true);
+
+        if (cookies != null && !cookies.isEmpty()) {
+            connection.cookies(cookies);
+        }
+
+        return connection;
     }
 
     private String buildPageUrl(int page) {
