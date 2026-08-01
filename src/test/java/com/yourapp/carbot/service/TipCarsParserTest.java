@@ -200,6 +200,11 @@ class TipCarsParserTest {
                 "",
                 "https://www.tipcars.com/toyota-proace-verso/kombi/nafta/toyota-proace-verso-2-0-d-4d-130kw-l1-family-tazne-52775826.html"))
                 .isEqualTo("MINIVAN");
+        assertThat(extractCarType(
+                "Opel Vivaro 2.5 CDTI Tour Cosmo",
+                "",
+                "https://www.tipcars.com/opel-vivaro/kombi/nafta/opel-vivaro-2-5-cdti-tour-cosmo-18578407.html"))
+                .isEqualTo("MINIVAN");
     }
 
     @Test
@@ -247,6 +252,14 @@ class TipCarsParserTest {
                 .isEqualTo("BMW Řada 3");
         assertThat(cleanupListTitle("Tesla Model 3 Long Range AWD | AMD Ryzen 598 000 Kč 494 215 Kč bez DPH"))
                 .isEqualTo("Tesla Model 3 Long Range AWD | AMD Ryzen");
+    }
+
+    @Test
+    void extractsListFallbackPriceAfterDriveMarker() throws Exception {
+        assertThat(extractFirstPrice("Skoda Kodiaq 2.0 TDI 4x4 450 000 Kc"))
+                .isEqualTo(450_000);
+        assertThat(cleanupListTitle("Skoda Kodiaq 2.0 TDI 4x4 450 000 Kc"))
+                .isEqualTo("Skoda Kodiaq 2.0 TDI 4x4");
     }
 
     @Test
@@ -303,6 +316,18 @@ class TipCarsParserTest {
                 .isEqualTo("HYBRID");
         assertThat(extractFuelType("Skoda Superb iV 1.5 TSI 150 kW DSG Sportlin"))
                 .isEqualTo("PLUGIN_HYBRID");
+        assertThat(extractFuelType("Lexus RX 400h 400 h, 4X4, Automat, CR,1.maj"))
+                .isEqualTo("HYBRID");
+    }
+
+    @Test
+    void resolvesAutomaticTransmissionWithPunctuation() throws Exception {
+        assertThat(extractTransmission("Kia Niro Hybrid, Automat, Serv.kniha"))
+                .isEqualTo("AUTOMATIC");
+        assertThat(extractTransmission("BMW X3 xDrive30d, 4X4, Automat, Kuze"))
+                .isEqualTo("AUTOMATIC");
+        assertThat(extractTransmission("Skoda Scala 1.0 TSI, Automat, CR"))
+                .isEqualTo("AUTOMATIC");
     }
 
     @Test
@@ -442,6 +467,12 @@ class TipCarsParserTest {
 
     private String extractFuelType(String text) throws Exception {
         Method method = TipCarsParser.class.getDeclaredMethod("extractFuelType", String.class);
+        method.setAccessible(true);
+        return (String) method.invoke(parser, text);
+    }
+
+    private String extractTransmission(String text) throws Exception {
+        Method method = TipCarsParser.class.getDeclaredMethod("extractTransmission", String.class);
         method.setAccessible(true);
         return (String) method.invoke(parser, text);
     }
