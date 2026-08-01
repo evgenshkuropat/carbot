@@ -52,6 +52,8 @@ class ToyotaProvereneVozyParserTest {
                 .isEqualTo("MINIVAN");
         assertThat(extractCarType("Ford Transit Courier 1,0 ECB Trend", ""))
                 .isEqualTo("VAN");
+        assertThat(extractCarType("Ford Tourneo Custom Titanium 2.0 EB 136 kW", ""))
+                .isEqualTo("MINIVAN");
         assertThat(extractCarType("Lexus LBX 1,5 HEV Original Edition 4x4", ""))
                 .isEqualTo("SUV");
         assertThat(extractCarType("Baic BJ30 BJ30 HEV 1.5T 209kW 2DHT 4x4 ALL IN MY25", ""))

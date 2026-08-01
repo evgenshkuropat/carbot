@@ -691,7 +691,7 @@ public class ToyotaProvereneVozyParser implements CarSourceParser {
         if (containsAny(source, " mercedes-benz gle ", " mercedes benz gle ", " skoda yeti ", " ford edge ", " jeep wrangler ", " wrangler ")) {
             return "SUV";
         }
-        if (containsAny(source, " proace verso ", " proace city verso ", " jumpy combi ", " citroen jumpy ",
+        if (containsAny(source, " proace verso ", " proace city verso ", " tourneo custom ", " jumpy combi ", " citroen jumpy ",
                 " peugeot partner ", " partner ", " ix20 ", " ix 20 ", " c-max ", " c max ", " grand c-max ", " grand c max ")) {
             return "MINIVAN";
         }
