@@ -82,6 +82,10 @@ class SautoParserTest {
                 .isEqualTo("SUV");
         assertThat(extractCarType("Volkswagen Eos 2.0 TDI", "", "https://www.sauto.cz/osobni/detail/volkswagen/eos/209390520"))
                 .isEqualTo("CABRIO");
+        assertThat(extractCarType("Seat Altea", "kombi", "https://www.sauto.cz/osobni/detail/seat/altea/210844946"))
+                .isEqualTo("MINIVAN");
+        assertThat(extractCarType("Citro\u00EBn C4 1.6 16V, Klima", "", "https://www.sauto.cz/osobni/detail/citroen/c4/210808973"))
+                .isEqualTo("HATCHBACK");
     }
 
     @Test
@@ -109,6 +113,8 @@ class SautoParserTest {
     @Test
     void resolvesTransmissionFromFreshSautoLogs() throws Exception {
         assertThat(extractTransmission("Volkswagen Golf 1.9 TDI AUT. KLIMA"))
+                .isEqualTo("AUTOMATIC");
+        assertThat(extractTransmission("Ford Focus Ford Focus 1.6i AT Combi, BRNO"))
                 .isEqualTo("AUTOMATIC");
     }
 

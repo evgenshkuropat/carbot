@@ -1667,6 +1667,7 @@ public class SautoParser implements CarSourceParser {
                 " 7g tronic ",
                 " 9g tronic ",
                 " g tronic ",
+                " at ",
                 " 7dct ",
                 " 8at ",
                 " 6at ",
@@ -1688,6 +1689,14 @@ public class SautoParser implements CarSourceParser {
         }
 
         if (titleSource.contains(" a3 ") && titleSource.contains(" sportback ")) {
+            return "HATCHBACK";
+        }
+
+        if (containsAny(titleSource, " altea ")) {
+            return "MINIVAN";
+        }
+
+        if (containsAny(titleSource, " citroen c4 ", " citroĂ«n c4 ", " citroën c4 ", " c4 ")) {
             return "HATCHBACK";
         }
 
@@ -1840,6 +1849,10 @@ public class SautoParser implements CarSourceParser {
         }
 
         if (containsAny(urlSource, "/peugeot/206/")) {
+            return "HATCHBACK";
+        }
+
+        if (containsAny(urlSource, "/citroen/c4/")) {
             return "HATCHBACK";
         }
 
