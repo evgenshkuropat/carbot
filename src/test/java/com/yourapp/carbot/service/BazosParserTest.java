@@ -277,6 +277,7 @@ class BazosParserTest {
         assertThat(extractCarType("Citroen C 3 1.5 HDi, Edice Origins Since 1919", "", "")).isEqualTo("HATCHBACK");
         assertThat(extractCarType("CITROEN C 4 1,6 HDI 88 kW RV 2015 NAJETO 100 TIS WEBASTO", "", "")).isEqualTo("HATCHBACK");
         assertThat(extractCarType("Citroen c-elysee 1.2", "", "")).isEqualTo("SEDAN");
+        assertThat(extractCarType("citroen c-crosser 4x4 2.4 BENZIN + PLYN ( TOP STAV )", "", "")).isEqualTo("SUV");
         assertThat(extractCarType("Prodam Citroen Jumpy 2.0 HDI Multispace 9.mist", "", "")).isEqualTo("MINIVAN");
         assertThat(extractCarType("Lancia Kappa 2.4JTD 10V Klima, Alcantara, Bez koroze, Servis", "", "")).isEqualTo("SEDAN");
         assertThat(extractCarType("Lancia Ypsilon Gold 1.2i", "", "")).isEqualTo("HATCHBACK");
@@ -286,6 +287,7 @@ class BazosParserTest {
         assertThat(extractCarType("Fiat Stilo 1.9jtd dovoz, 100tkm, servisni knizka top stav", "", "")).isEqualTo("HATCHBACK");
         assertThat(extractCarType("Fiat500", "", "")).isEqualTo("HATCHBACK");
         assertThat(extractCarType("Fiat 500c 1.2 Lounge 2015", "", "")).isEqualTo("CABRIO");
+        assertThat(extractCarType("FIAT 500 L 1,4 i 70 Kw", "", "")).isEqualTo("MINIVAN");
         assertThat(extractCarType("Fiat 500X - 1.0 FireFly - edice MIRROR", "", "")).isEqualTo("SUV");
         assertThat(extractCarType("Fiat Grande 1,2 i 48 Kw 5 dv 104 tis / km rok 2007", "", "")).isEqualTo("HATCHBACK");
         assertThat(extractCarType("Abarth 595 Competizione 180k 48tkm, 1. Majitel", "", "")).isEqualTo("HATCHBACK");
@@ -297,6 +299,7 @@ class BazosParserTest {
         assertThat(extractCarType("Citroen eC4 zaruka elektro", "", "https://auto.bazos.cz/inzerat/219841903/citroen-ec4-zaruka.php")).isEqualTo("HATCHBACK");
         assertThat(extractCarType("Citroen DS5 2016 FACELIFT/2.0 HDi AT6 133kW/183tkm/", "", "")).isEqualTo("HATCHBACK");
         assertThat(extractCarType("DACIA STEPWAY 1,0 i 66 KW TOP STAV 2017", "", "")).isEqualTo("HATCHBACK");
+        assertThat(extractCarType("Dacia Steepway", "", "")).isEqualTo("HATCHBACK");
         assertThat(extractCarType("Dacia Bigster journey hybrid 155", "", "")).isEqualTo("SUV");
         assertThat(extractCarType("HONDA ACCORD TOURER VII EXECUTIVE 2.0 i-VTEC", "", "")).isEqualTo("WAGON");
         assertThat(extractCarType("Honda Accord kombi 2,0i-Vtec slusny stav servis STK", "", "")).isEqualTo("WAGON");
