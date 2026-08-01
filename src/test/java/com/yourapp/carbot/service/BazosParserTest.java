@@ -65,6 +65,8 @@ class BazosParserTest {
                 .isEqualTo("SUZUKI");
         assertThat(extractBrand("Mercedes-AMG GT 43 4MATIC+ Brilliant Blue", ""))
                 .isEqualTo("MERCEDES");
+        assertThat(extractBrand("Mrcedes-Benz GLC 220D 4MATIC AMG / KUPE /", "bmw"))
+                .isEqualTo("MERCEDES");
     }
 
     @Test
@@ -203,6 +205,10 @@ class BazosParserTest {
         assertThat(looksAutomaticHybridTitle("Toyota Auris 1,8HSD 73kW", "HYBRID")).isTrue();
         assertThat(extractFuelType("Volvo C30 T5- Vyjimecna motorizace 227HP")).isEqualTo("PETROL");
         assertThat(extractFuelType("Civic 1.8l 103kw GT")).isEqualTo("PETROL");
+        assertThat(extractFuelType("Mazda MX-5 NC 1.8 2006 93kW")).isEqualTo("PETROL");
+        assertThat(extractFuelType("Mazda MX-5 NC 2.0")).isEqualTo("PETROL");
+        assertThat(extractFuelType("MAZDA 6 2.5 141KW AUTOMAT-KUZE-BOSE-LED-TAZNE-HEAD UP-KAMERA"))
+                .isEqualTo("PETROL");
     }
 
     @Test
@@ -315,6 +321,7 @@ class BazosParserTest {
         assertThat(extractCarType("Kia Seed 1.6 crdi 94kw", "", "")).isEqualTo("HATCHBACK");
         assertThat(extractCarType("2022 CHEVROLET COLORADO 3.6V6 Z71 Offroad 4WD", "", "")).isEqualTo("PICKUP");
         assertThat(extractCarType("Chevrolet Impala 2.6 V6 VVT", "", "")).isEqualTo("SEDAN");
+        assertThat(extractCarType("MAZDA RX-8 naj. 31.000km ( vymena )", "", "")).isEqualTo("COUPE");
         assertThat(extractCarType("Opel Astra J Sports Tourer 1.4i Turbo103Kw r.v.10/2015", "", "")).isEqualTo("WAGON");
         assertThat(extractCarType("OPEL ASTRA SPORTSTOURER 1.6 CDTi, BEZ KOROZE", "", "")).isEqualTo("WAGON");
         assertThat(extractCarType("Opel Astra Sedan 1.7 CDTi 100 kW, manual, 2014, Diesel", "", "")).isEqualTo("SEDAN");

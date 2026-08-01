@@ -1247,6 +1247,13 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             return "PETROL";
         }
 
+        if ((containsAny(source, " mazda mx-5 ", " mazda mx5 ", " mx-5 ", " mx5 ")
+                || containsAny(source, " mazda 6 ", " mazda6 "))
+                && Pattern.compile("(?i)\\b[12][\\.,][085]\\b").matcher(source).find()
+                && !containsAny(source, " diesel ", " nafta ", " dci ", " hdi ", " tdi ", " cdti ", " skyactiv-d ", " skyactiv d ")) {
+            return "PETROL";
+        }
+
         if ((containsAny(source, " volvo ", " c30 ", " v40 ", " v60 ", " v90 ", " xc40 ", " xc60 ", " xc90 ")
                 || compact.matches(".*(?:volvo|c30|v40|v60|v90|xc40|xc60|xc90).*"))
                 && (containsAny(source, " t5 ", " t 5 ") || compact.contains("t5"))
@@ -1862,7 +1869,8 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         if (containsAny(titleSource, " id.3 ", " id3 ", " id.4 ", " id4 ", " id.5 ", " id5 ")) return "VOLKSWAGEN";
         if (containsAny(titleSource, " audi ", " s4 quattro ")) return "AUDI";
         if (containsAny(titleSource, " bmw ")) return "BMW";
-        if (containsAny(titleSource, " mercedes ", " mercedes-benz ", " mercedes-amg ")) return "MERCEDES";
+        if (containsAny(titleSource, " mercedes ", " mercedes-benz ", " mercedes-amg ",
+                " mrcedes ", " mrcedes-benz ")) return "MERCEDES";
         if (containsAny(titleSource, " lexus ")) return "LEXUS";
         if (containsAny(titleSource, " toyota ", " toyata ", " c-hr ", " c hr ", " ch-r ", " chr ", " hilux ")
                 || containsAny(compactTitleSource, " hilux ")) return "TOYOTA";
@@ -1921,7 +1929,8 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         if (containsAny(source, " volkswagen ", " vw ", " scirocco ")) return "VOLKSWAGEN";
         if (containsAny(source, " audi ", " s4 quattro ")) return "AUDI";
         if (containsAny(source, " bmw ")) return "BMW";
-        if (containsAny(source, " mercedes ", " mercedes-benz ", " mercedes-amg ")) return "MERCEDES";
+        if (containsAny(source, " mercedes ", " mercedes-benz ", " mercedes-amg ",
+                " mrcedes ", " mrcedes-benz ")) return "MERCEDES";
         if (containsAny(source, " lexus ")) return "LEXUS";
         if (containsAny(source, " toyota ", " toyata ", " c-hr ", " c hr ", " ch-r ", " chr ", " hilux ")) return "TOYOTA";
         if (containsAny(source, " ford ")) return "FORD";
@@ -2552,6 +2561,10 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             return "COUPE";
         }
 
+        if (containsAny(titleSource, " mazda rx-8 ", " mazda rx8 ", " rx-8 ", " rx8 ")) {
+            return "COUPE";
+        }
+
         if (containsAny(titleSource, " covic ")) {
             return "HATCHBACK";
         }
@@ -2993,7 +3006,8 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             case "VOLKSWAGEN" -> url.contains("-volkswagen-") || url.contains("-vw-");
             case "AUDI" -> url.contains("-audi-");
             case "BMW" -> url.contains("-bmw-");
-            case "MERCEDES" -> url.contains("-mercedes-") || url.contains("-mercedes-benz-") || url.contains("-mb-");
+            case "MERCEDES" -> url.contains("-mercedes-") || url.contains("-mercedes-benz-")
+                    || url.contains("-mrcedes-") || url.contains("-mrcedes-benz-") || url.contains("-mb-");
             case "VOLVO" -> url.contains("-volvo-");
             case "TOYOTA" -> url.contains("-toyota-");
             case "FORD" -> url.contains("-ford-");
@@ -3038,7 +3052,8 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         if (url.contains("-volkswagen-") || url.contains("-vw-")) return "VOLKSWAGEN";
         if (url.contains("-audi-")) return "AUDI";
         if (url.contains("-bmw-")) return "BMW";
-        if (url.contains("-mercedes-") || url.contains("-mercedes-benz-") || url.contains("-mb-")) return "MERCEDES";
+        if (url.contains("-mercedes-") || url.contains("-mercedes-benz-")
+                || url.contains("-mrcedes-") || url.contains("-mrcedes-benz-") || url.contains("-mb-")) return "MERCEDES";
         if (url.contains("-volvo-")) return "VOLVO";
         if (url.contains("-toyota-")) return "TOYOTA";
         if (url.contains("-lexus-")) return "LEXUS";
