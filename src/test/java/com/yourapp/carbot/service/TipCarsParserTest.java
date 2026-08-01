@@ -1,8 +1,10 @@
 package com.yourapp.carbot.service;
 
+import org.jsoup.Jsoup;
 import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.Method;
+import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -209,6 +211,30 @@ class TipCarsParserTest {
                 .isEqualTo(1966);
         assertThat(extractYear("Prvni registrace 2017", "Peugeot 2008 1.2 PureTech"))
                 .isEqualTo(2017);
+    }
+
+    @Test
+    void extractsListCardDataForForbiddenDetailFallback() throws Exception {
+        Map<?, ?> listings = extractListListings("""
+                <html><body>
+                  <article class="vehicle-card">
+                    <a href="https://www.tipcars.com/dacia-duster/suv/benzin/dacia-duster-1-6i-6618504.html">
+                      <h2>Dacia Duster 1.6i</h2>
+                    </a>
+                    <img src="/images/duster.jpg">
+                    <span>199 900 Kč</span>
+                    <span>2018</span>
+                    <span>82 000 km</span>
+                    <span>Brno</span>
+                  </article>
+                </body></html>
+                """);
+
+        Object listing = listings.get("https://www.tipcars.com/dacia-duster/suv/benzin/dacia-duster-1-6i-6618504.html");
+
+        assertThat(listing).isNotNull();
+        assertThat(recordValue(listing, "title")).isEqualTo("Dacia Duster 1.6i");
+        assertThat(recordValue(listing, "text")).asString().contains("199 900 Kč");
     }
 
     @Test
@@ -424,6 +450,18 @@ class TipCarsParserTest {
         Method method = TipCarsParser.class.getDeclaredMethod("buildPageUrl", int.class);
         method.setAccessible(true);
         return (String) method.invoke(parser, page);
+    }
+
+    private Map<?, ?> extractListListings(String html) throws Exception {
+        Method method = TipCarsParser.class.getDeclaredMethod("extractListListings", org.jsoup.nodes.Document.class);
+        method.setAccessible(true);
+        return (Map<?, ?>) method.invoke(parser, Jsoup.parse(html, "https://www.tipcars.com/osobni/"));
+    }
+
+    private Object recordValue(Object record, String accessor) throws Exception {
+        Method method = record.getClass().getDeclaredMethod(accessor);
+        method.setAccessible(true);
+        return method.invoke(record);
     }
 
     private Integer extractYear(String text, String title) throws Exception {

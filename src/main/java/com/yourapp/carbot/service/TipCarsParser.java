@@ -52,6 +52,7 @@ public class TipCarsParser implements CarSourceParser {
     public List<CarDto> fetchCars() {
         List<CarDto> cars = new ArrayList<>();
         Set<String> detailLinks = new LinkedHashSet<>();
+        Map<String, ListListing> listListings = new HashMap<>();
         Map<String, String> cookies = new HashMap<>();
 
         int missingPriceCount = 0;
@@ -72,7 +73,10 @@ public class TipCarsParser implements CarSourceParser {
                     Connection.Response listResponse = connect(pageUrl, cookies, BASE_URL).execute();
                     cookies.putAll(listResponse.cookies());
                     Document listDoc = listResponse.parse();
+                    Map<String, ListListing> pageListings = extractListListings(listDoc);
                     Set<String> pageLinks = extractDetailLinks(listDoc);
+                    pageListings.forEach(listListings::putIfAbsent);
+                    detailLinks.addAll(pageListings.keySet());
                     detailLinks.addAll(pageLinks);
 
                     int addedOnPage = detailLinks.size() - before;
@@ -95,7 +99,7 @@ public class TipCarsParser implements CarSourceParser {
             log.info("TIPCARS total unique detail links found={}", detailLinks.size());
 
             for (String url : detailLinks) {
-                ParseResult result = parseDetail(url, cookies);
+                ParseResult result = parseDetail(url, cookies, listListings.get(url));
 
                 if (result.car() != null) {
                     cars.add(result.car());
@@ -138,7 +142,7 @@ public class TipCarsParser implements CarSourceParser {
         return cars;
     }
 
-    private ParseResult parseDetail(String url, Map<String, String> cookies) {
+    private ParseResult parseDetail(String url, Map<String, String> cookies, ListListing listListing) {
         try {
             Connection.Response detailResponse = connect(url, cookies, BASE_LIST_URL).execute();
             cookies.putAll(detailResponse.cookies());
@@ -230,6 +234,11 @@ public class TipCarsParser implements CarSourceParser {
 
         } catch (HttpStatusException e) {
             if (e.getStatusCode() == 403) {
+                ParseResult fallback = parseListListingFallback(url, listListing);
+                if (fallback.car() != null) {
+                    log.warn("TIPCARS detail forbidden url={} status=403 using=list_card_fallback", safe(url));
+                    return fallback;
+                }
                 log.warn("TIPCARS SKIP url={} reason=forbidden status=403", safe(url));
                 return new ParseResult(null, "forbidden");
             }
@@ -240,6 +249,70 @@ public class TipCarsParser implements CarSourceParser {
             log.warn("TIPCARS SKIP url={} reason=parse_exception error={}", safe(url), safe(e.getMessage()));
             return new ParseResult(null, "parse_exception");
         }
+    }
+
+    private ParseResult parseListListingFallback(String url, ListListing listing) {
+        if (listing == null) {
+            return new ParseResult(null, "forbidden");
+        }
+
+        String title = cleanupTitle(normalizeText(listing.title()));
+        String listText = normalizeText(listing.text());
+
+        if (title == null || title.isBlank()
+                || isJunkTitle(title)
+                || isJunkUrl(url)
+                || isJunkText(listText)
+                || looksTitleUrlBrandMismatch(title, url)
+                || looksCommercialOrCamperListing(title, url, listText)) {
+            return new ParseResult(null, "forbidden");
+        }
+
+        Integer priceValue = extractFirstPrice(listText);
+        if (priceValue == null || priceValue <= 0 || priceValue > MAX_REASONABLE_PRICE) {
+            return new ParseResult(null, "forbidden");
+        }
+
+        String fuelType = firstNonBlank(
+                extractFuelType(title),
+                extractFuelType(url),
+                extractFuelType(listText)
+        );
+        String transmission = firstNonBlank(
+                extractTransmission(title),
+                extractTransmission(url),
+                extractTransmission(listText),
+                "ELECTRIC".equals(fuelType) ? "AUTOMATIC" : null
+        );
+
+        CarDto car = new CarDto();
+        car.setSource("TIPCARS");
+        car.setTitle(repairMojibake(title));
+        car.setPrice(formatPrice(priceValue));
+        car.setPriceValue(priceValue);
+        car.setLocation(repairMojibake(extractLocationFromText(listText)));
+        car.setUrl(url);
+        car.setImageUrl(listing.imageUrl());
+        car.setBrand(extractBrand(title, url));
+        car.setYear(extractYear(listText, title));
+        car.setMileage(extractMileage(listText));
+        car.setFuelType(fuelType);
+        car.setTransmission(transmission);
+        car.setCarType(extractCarType(title, listText, url));
+
+        log.info("TIPCARS CAR title='{}' price={} location={} year={} mileage={} fuelType={} transmission={} carType={} brand={} url={} source=list_card_fallback",
+                safe(car.getTitle()),
+                priceValue,
+                safe(car.getLocation()),
+                car.getYear(),
+                car.getMileage(),
+                safe(car.getFuelType()),
+                safe(car.getTransmission()),
+                safe(car.getCarType()),
+                safe(car.getBrand()),
+                safe(url));
+
+        return new ParseResult(car, "ok");
     }
 
     private Connection connect(String url, Map<String, String> cookies, String referrer) {
@@ -275,7 +348,7 @@ public class TipCarsParser implements CarSourceParser {
         Set<String> links = new LinkedHashSet<>();
 
         for (Element a : listDoc.select("a[href]")) {
-            String href = a.absUrl("href");
+            String href = normalizeDetailUrl(a.absUrl("href"));
 
             if (!isValidDetailLink(href)) {
                 continue;
@@ -286,6 +359,106 @@ public class TipCarsParser implements CarSourceParser {
         }
 
         return links;
+    }
+
+    private Map<String, ListListing> extractListListings(Document listDoc) {
+        Map<String, ListListing> listings = new HashMap<>();
+
+        for (Element a : listDoc.select("a[href]")) {
+            String href = normalizeDetailUrl(a.absUrl("href"));
+            if (!isValidDetailLink(href) || listings.containsKey(href)) {
+                continue;
+            }
+
+            Element card = findListingCard(a);
+            if (card == null) {
+                continue;
+            }
+
+            String cardText = normalizeText(card.text());
+            if (extractFirstPrice(cardText) == null) {
+                continue;
+            }
+
+            String title = extractListTitle(card, a);
+            if (title == null || title.isBlank() || isJunkTitle(title)) {
+                continue;
+            }
+
+            listings.put(href, new ListListing(href, title, cardText, extractListImageUrl(card)));
+        }
+
+        return listings;
+    }
+
+    private Element findListingCard(Element link) {
+        Element current = link;
+        for (int depth = 0; current != null && depth < 7; depth++, current = current.parent()) {
+            String text = normalizeText(current.text());
+            if (text.length() >= 30 && text.length() <= 2500 && extractFirstPrice(text) != null) {
+                return current;
+            }
+        }
+        return null;
+    }
+
+    private String extractListTitle(Element card, Element link) {
+        for (Element el : card.select("h1, h2, h3, [class*=title], [class*=name]")) {
+            String text = cleanupTitle(normalizeText(el.text()));
+            if (isLikelyListTitle(text)) {
+                return text;
+            }
+        }
+
+        String linkText = cleanupTitle(normalizeText(link.text()));
+        if (isLikelyListTitle(linkText)) {
+            return linkText;
+        }
+
+        return null;
+    }
+
+    private boolean isLikelyListTitle(String value) {
+        if (value == null || value.isBlank()) {
+            return false;
+        }
+        String normalized = normalizeText(value);
+        if (normalized.length() < 6 || normalized.length() > 180) {
+            return false;
+        }
+        String lower = normalized.toLowerCase(Locale.ROOT);
+        return !containsAny(lower, "detail", "vice info", "vĂ­ce info", "zobrazit", "foto", "reklama", "tipcars");
+    }
+
+    private String extractListImageUrl(Element card) {
+        Element img = card.selectFirst("img[src], img[data-src], img[data-original], img[srcset], img[data-srcset]");
+        if (img == null) {
+            return null;
+        }
+
+        String src = firstNonBlank(
+                img.absUrl("src"),
+                img.absUrl("data-src"),
+                img.absUrl("data-original"),
+                firstSrcsetUrl(img.attr("srcset")),
+                firstSrcsetUrl(img.attr("data-srcset"))
+        );
+        return src == null || src.isBlank() ? null : src;
+    }
+
+    private String firstSrcsetUrl(String srcset) {
+        if (srcset == null || srcset.isBlank()) {
+            return null;
+        }
+        String first = srcset.split(",")[0].trim().split("\\s+")[0].trim();
+        return first.isBlank() ? null : first;
+    }
+
+    private String normalizeDetailUrl(String url) {
+        if (url == null) {
+            return null;
+        }
+        return url.replaceAll("[?#].*$", "");
     }
 
     private boolean isValidDetailLink(String url) {
@@ -485,6 +658,17 @@ public class TipCarsParser implements CarSourceParser {
         }
 
         Matcher cityMatcher = Pattern.compile("(?i)(praha|brno|ostrava|plzeň|plzen|liberec|olomouc|pardubice|hradec králové|hradec kralove|české budějovice|ceske budejovice|ústí nad labem|usti nad labem|zlin|zlín|jihlava|karlovy vary|opava|kladno|mladá boleslav|mlada boleslav|teplice|most|cheb|trutnov|kolín|kolin|karviná|karvina|blansko)")
+                .matcher(normalizeText(pageText));
+
+        if (cityMatcher.find()) {
+            return cleanupLocation(cityMatcher.group(1));
+        }
+
+        return null;
+    }
+
+    private String extractLocationFromText(String pageText) {
+        Matcher cityMatcher = Pattern.compile("(?i)(praha|brno|ostrava|plzen|liberec|olomouc|pardubice|hradec kralove|ceske budejovice|usti nad labem|zlin|jihlava|karlovy vary|opava|kladno|mlada boleslav|teplice|most|cheb|trutnov|kolin|karvina|blansko)")
                 .matcher(normalizeText(pageText));
 
         if (cityMatcher.find()) {
@@ -1451,6 +1635,9 @@ public class TipCarsParser implements CarSourceParser {
     }
 
     private record ParseResult(CarDto car, String reason) {
+    }
+
+    private record ListListing(String url, String title, String text, String imageUrl) {
     }
 
     private String firstNonBlank(String... values) {
