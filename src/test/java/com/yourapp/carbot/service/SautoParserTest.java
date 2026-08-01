@@ -94,6 +94,8 @@ class SautoParserTest {
                 .isEqualTo("PLUGIN_HYBRID");
         assertThat(extractFuelType("Volvo XC90 T8 AWD RECHARGE BRIGHT PLUS 7m"))
                 .isEqualTo("PLUGIN_HYBRID");
+        assertThat(extractFuelType("Volvo XC60 T8 AWD POLESTAR engineered"))
+                .isEqualTo("PLUGIN_HYBRID");
         assertThat(extractFuelType("Kia XCee´d Plug-in-Hybrid, Premium, DPH"))
                 .isEqualTo("PLUGIN_HYBRID");
         assertThat(extractFuelType("Opel Combo 1.4 i 66 kw"))
@@ -101,6 +103,8 @@ class SautoParserTest {
         assertThat(extractFuelType("Volvo XC60 B5 PLUS BLACK + 4SERVIS/ZARUKA"))
                 .isEqualTo("HYBRID");
         assertThat(extractFuelType("Volvo XC90 B5 AWD AUT BRIGHT ULTRA 7-mist"))
+                .isEqualTo("HYBRID");
+        assertThat(extractFuelType("Cupra Formentor 1.5 eTSI DSG"))
                 .isEqualTo("HYBRID");
         assertThat(extractFuelType("Volvo EX30 SINGLE RWD CORE NEW - DOTACE"))
                 .isEqualTo("ELECTRIC");

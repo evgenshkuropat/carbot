@@ -1523,6 +1523,13 @@ public class SautoParser implements CarSourceParser {
                 && containsAny(normalized, " b3 ", " b4 ", " b5 ", " b6 "))) {
             return "HYBRID";
         }
+        if (containsAny(normalized, " volvo ", " xc40 ", " xc60 ", " xc90 ", " v60 ", " v90 ", " s60 ", " s90 ")
+                && containsAny(normalized, " t8 ")) {
+            return "PLUGIN_HYBRID";
+        }
+        if (containsAny(normalized, " etsi ", " e-tsi ") || compact.contains("etsi")) {
+            return "HYBRID";
+        }
 
         if (containsAny(normalized,
                 " plug-in-hybrid ", " plug in hybrid ", " plug-in hybrid ", " plugin hybrid ", " phev ")
