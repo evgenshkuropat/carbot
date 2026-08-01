@@ -2350,7 +2350,11 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             return "SUV";
         }
 
-        if (containsAny(titleSource, " a3 ", " a5 ", " a7 ") && titleSource.contains(" sportback ")) {
+        if (containsAny(titleSource, " a7 ", " audi a7 ") && titleSource.contains(" sportback ")) {
+            return "SEDAN";
+        }
+
+        if (containsAny(titleSource, " a3 ", " a5 ") && titleSource.contains(" sportback ")) {
             return "HATCHBACK";
         }
 
@@ -2466,7 +2470,9 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         }
 
         if (containsAny(titleSource, " alfa 156 sw ", " alfa romeo 156 sw ", " romeo 156 sw ",
-                " alfa 159 sw ", " alfa romeo 159 sw ", " romeo 159 sw ")) {
+                " alfa 159 sw ", " alfa romeo 159 sw ", " romeo 159 sw ")
+                || (containsAny(titleSource, " alfa 159 ", " alfa romeo 159 ", " romeo 159 ")
+                && containsAny(titleSource, " combi ", " kombi ", " wagon ", " sportwagon "))) {
             return "WAGON";
         }
 
@@ -3477,7 +3483,8 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         String compactTitleValue = compactSearchText(title);
         String asciiTitleValue = asciiSearchText(title);
 
-        if (startsWithAny(asciiTitleValue, "strecha ")
+        if (startsWithAny(asciiTitleValue, "strecha ", "novy motor ", "novy motor alfa ", "novy motor bmw ",
+                "novy motor audi ", "novy motor mercedes ", "novy motor skoda ")
                 || containsAny(asciiTitleValue, " auto pro vozickare ", " auto s rampou ", " ztp ", " plasty do masky ")) {
             return true;
         }

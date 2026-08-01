@@ -236,6 +236,7 @@ class BazosParserTest {
         assertThat(extractCarType("AR 159 1.75TBi", "", "")).isEqualTo("SEDAN");
         assertThat(extractCarType("Alfa 159Ti 2.4 JTDm 154kw", "", "")).isEqualTo("SEDAN");
         assertThat(extractCarType("Alfa Romeo 156 SW 2.4 JTD 20v TI", "", "")).isEqualTo("WAGON");
+        assertThat(extractCarType("Prodam Alfa Romeo 159 1,9 JTDM 110KW Combi", "", "")).isEqualTo("WAGON");
         assertThat(extractCarType("Alfa Romeo Guilietta", "", "")).isEqualTo("HATCHBACK");
         assertThat(extractCarType("Volvo C30 T5- Vyjimecna motorizace 227HP", "", "")).isEqualTo("HATCHBACK");
         assertThat(extractCarType("Honda Accord VIII Tourer 2.2 i-DTEC 110 kW", "", "")).isEqualTo("WAGON");
@@ -255,6 +256,7 @@ class BazosParserTest {
         assertThat(extractCarType("BMW i3 REx Hybrid 75 kW, 2016", "", "")).isEqualTo("HATCHBACK");
         assertThat(extractCarType("Audi A6 2.0 TDI AVANT Ultra S-tronic 2015", "", "")).isEqualTo("WAGON");
         assertThat(extractCarType("A6C7 avant", "", "")).isEqualTo("WAGON");
+        assertThat(extractCarType("Audi A7 Sportback S-Line 3.0 TDI 180 kW Quattro", "", "")).isEqualTo("SEDAN");
         assertThat(extractCarType("Audi a4b6 2.5tdi V6 120kw", "", "")).isEqualTo("SEDAN");
         assertThat(extractCarType("S4 Quattro BSR 402PS 1.majitel koupeno v CR full servis -DPH", "", ""))
                 .isEqualTo("SEDAN");
@@ -512,6 +514,7 @@ class BazosParserTest {
         assertThat(correctLikelyFalseElectricFuel("TOYOTA RAV4,Hybrid,Selection,4x4,Tazne", "ELECTRIC")).isEqualTo("HYBRID");
 
         assertThat(looksNonCarListing("Alfa Romeo 156 blatniky", "", "", "")).isTrue();
+        assertThat(looksNonCarListing("Novy motor Alfa Romeo 2.5 V6 Busso ( rarita )", "", "", "")).isTrue();
         assertThat(looksNonCarListing("Znaky Alfa Romeo 74mm", "", "", "")).isTrue();
         assertThat(looksNonCarListing("Hlinikove kryty pedalu Alfa 159", "", "", "")).isTrue();
         assertThat(looksNonCarListing("TI Zadni pruziny Alfa Romeo 159 1.9JTDm, JTS, 2.0, 2.2, 1.8", "", "", "")).isTrue();
