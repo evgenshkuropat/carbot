@@ -238,6 +238,18 @@ class TipCarsParserTest {
     }
 
     @Test
+    void extractsListFallbackPriceWithoutJoiningPowerOrMileage() throws Exception {
+        assertThat(extractFirstPrice("Fiat Bravo Fiat Bravo 1.4 16V 90 59 000 Kč"))
+                .isEqualTo(59_000);
+        assertThat(extractFirstPrice("Audi A5 2010 310 300 km 140 000 Kč"))
+                .isEqualTo(140_000);
+        assertThat(cleanupListTitle("BMW Řada 3 399 000 Kč"))
+                .isEqualTo("BMW Řada 3");
+        assertThat(cleanupListTitle("Tesla Model 3 Long Range AWD | AMD Ryzen 598 000 Kč 494 215 Kč bez DPH"))
+                .isEqualTo("Tesla Model 3 Long Range AWD | AMD Ryzen");
+    }
+
+    @Test
     void resolvesHybridFuelFromTipCarsTitlesBeforePetrolUrl() throws Exception {
         assertThat(extractFuelType("Toyota C-HR 1.8 Hybrid, Automat"))
                 .isEqualTo("HYBRID");
@@ -456,6 +468,18 @@ class TipCarsParserTest {
         Method method = TipCarsParser.class.getDeclaredMethod("extractListListings", org.jsoup.nodes.Document.class);
         method.setAccessible(true);
         return (Map<?, ?>) method.invoke(parser, Jsoup.parse(html, "https://www.tipcars.com/osobni/"));
+    }
+
+    private Integer extractFirstPrice(String text) throws Exception {
+        Method method = TipCarsParser.class.getDeclaredMethod("extractFirstPrice", String.class);
+        method.setAccessible(true);
+        return (Integer) method.invoke(parser, text);
+    }
+
+    private String cleanupListTitle(String title) throws Exception {
+        Method method = TipCarsParser.class.getDeclaredMethod("cleanupListTitle", String.class);
+        method.setAccessible(true);
+        return (String) method.invoke(parser, title);
     }
 
     private Object recordValue(Object record, String accessor) throws Exception {

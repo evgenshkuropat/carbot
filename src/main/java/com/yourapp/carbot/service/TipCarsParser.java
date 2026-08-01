@@ -256,7 +256,7 @@ public class TipCarsParser implements CarSourceParser {
             return new ParseResult(null, "forbidden");
         }
 
-        String title = cleanupTitle(normalizeText(listing.title()));
+        String title = cleanupListTitle(cleanupTitle(normalizeText(listing.title())));
         String listText = normalizeText(listing.text());
 
         if (title == null || title.isBlank()
@@ -404,13 +404,13 @@ public class TipCarsParser implements CarSourceParser {
 
     private String extractListTitle(Element card, Element link) {
         for (Element el : card.select("h1, h2, h3, [class*=title], [class*=name]")) {
-            String text = cleanupTitle(normalizeText(el.text()));
+            String text = cleanupListTitle(cleanupTitle(normalizeText(el.text())));
             if (isLikelyListTitle(text)) {
                 return text;
             }
         }
 
-        String linkText = cleanupTitle(normalizeText(link.text()));
+        String linkText = cleanupListTitle(cleanupTitle(normalizeText(link.text())));
         if (isLikelyListTitle(linkText)) {
             return linkText;
         }
@@ -524,6 +524,18 @@ public class TipCarsParser implements CarSourceParser {
         );
     }
 
+    private String cleanupListTitle(String title) {
+        if (title == null) {
+            return null;
+        }
+
+        return normalizeText(title
+                .replaceAll("(?i)(\\b(?:\\S*ada|\\S*idy)\\s+\\d)\\s+\\d{3}(?:[\\s\\u00A0]\\d{3})+\\s*K(?!m\\b)\\p{L}{0,2}(?:\\s+bez\\s+DPH)?", "$1")
+                .replaceAll("(?i)\\s+\\d{1,3}(?:[\\s\\u00A0]\\d{3})+\\s*K(?!m\\b)\\p{L}{0,2}(?:\\s+bez\\s+DPH)?", " ")
+                .replaceAll("(?i)\\s+\\d{4,8}\\s*K(?!m\\b)\\p{L}{0,2}(?:\\s+bez\\s+DPH)?", " ")
+                .trim());
+    }
+
     private Integer extractPriceValue(Document doc, String pageText) {
         List<String> candidates = new ArrayList<>();
 
@@ -558,15 +570,28 @@ public class TipCarsParser implements CarSourceParser {
             return null;
         }
 
-        Matcher matcher = Pattern.compile("(\\d[\\d\\s\\u00A0]{1,20})\\s*Kč", Pattern.CASE_INSENSITIVE).matcher(text);
+        Matcher matcher = Pattern.compile("(?<!\\d)(\\d{1,3}(?:[\\s\\u00A0]\\d{3})+|\\d{4,8})\\s*K(?!m\\b)\\p{L}{0,2}", Pattern.CASE_INSENSITIVE).matcher(text);
         while (matcher.find()) {
-            Integer parsed = parseIntSafe(matcher.group(1));
+            String rawPrice = matcher.group(1);
+            if (startsWithModelSeriesNumber(text, matcher.start(), rawPrice)) {
+                rawPrice = rawPrice.replaceFirst("^\\d{1,2}[\\s\\u00A0]+", "");
+            }
+            Integer parsed = parseIntSafe(rawPrice);
             if (parsed != null && parsed > 0) {
                 return parsed;
             }
         }
 
         return null;
+    }
+
+    private boolean startsWithModelSeriesNumber(String text, int matchStart, String rawPrice) {
+        if (text == null || rawPrice == null || !rawPrice.matches("^\\d{1,2}[\\s\\u00A0]+\\d{3}.*")) {
+            return false;
+        }
+
+        String before = normalizeText(text.substring(0, Math.max(0, matchStart))).toLowerCase(Locale.ROOT);
+        return before.matches(".*\\b(\\S*ada|\\S*idy)\\s*$");
     }
 
     private Integer extractYear(String text, String title) {
