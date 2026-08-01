@@ -740,6 +740,16 @@ class BazosParserTest {
     }
 
     @Test
+    void resolvesRecentBazosTitleSignals() throws Exception {
+        assertThat(extractTransmission("Suzuki Vitara 1,4i BoosterJet 103kw, 4x4, 2016, ELEGANCE, AT"))
+                .isEqualTo("AUTOMATIC");
+        assertThat(extractMileage("Suzuki Ignis 1.2 CVT automat - 7 300 km, zaruka, odpocet DPH", ""))
+                .isEqualTo(7300);
+        assertThat(extractFuelType("Toyota Yaris 1.3 koupeno v CR prvni majitel"))
+                .isEqualTo("PETROL");
+    }
+
+    @Test
     void keepsCommercialTransitCustomOutOfPassengerResults() throws Exception {
         assertThat(looksCommercialVehicle(
                 "FORD Transit CUSTOM 2,2 tdci 114kw L1 H1 Navigace",
