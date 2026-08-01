@@ -1847,6 +1847,8 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
 
             sendMessage(adminChatId, approve ? "Approved." : "Rejected.");
             if (car.getOwnerChatId() != null) {
+                log.info("USER LISTING notifying ownerChatId={} carId={} status={}",
+                        car.getOwnerChatId(), car.getId(), car.getListingStatus());
                 sendMessage(car.getOwnerChatId(), approve ? listingApprovedText(car.getOwnerChatId()) : listingRejectedText(car.getOwnerChatId()));
             }
         });
@@ -2848,7 +2850,7 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
         try {
             telegramClient.execute(message);
         } catch (Exception e) {
-            e.printStackTrace();
+            log.warn("BOT SEND MESSAGE failed chatId={}", chatId, e);
         }
     }
 
@@ -2862,7 +2864,7 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
         try {
             telegramClient.execute(message);
         } catch (Exception e) {
-            e.printStackTrace();
+            log.warn("BOT SEND MESSAGE failed chatId={} withInlineKeyboard=true", chatId, e);
         }
     }
 
@@ -2876,7 +2878,7 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
         try {
             telegramClient.execute(message);
         } catch (Exception e) {
-            e.printStackTrace();
+            log.warn("BOT SEND MESSAGE failed chatId={} withReplyKeyboard=true", chatId, e);
         }
     }
 
