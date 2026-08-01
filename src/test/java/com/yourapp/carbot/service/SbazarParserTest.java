@@ -112,6 +112,10 @@ class SbazarParserTest {
         assertThat(resolveTransmission("bmw ix1 xdrive30 m zaruka tazne cr", "", "ELECTRIC")).isEqualTo("AUTOMATIC");
         assertThat(resolveFuelType("toyota corolla 1,8 hsd 122ps ts gr sport a/t", "")).isEqualTo("HYBRID");
         assertThat(resolveFuelType("ford focus 2,0 eb 184kw st navi", "")).isEqualTo("PETROL");
+        assertThat(resolveFuelType("ford focus 1.5eb 2023 1maj cool zaruka36", "")).isEqualTo("PETROL");
+        assertThat(resolveFuelType("ford kuga 2.0eb 140kw 2021 titan 4x4 z36", "")).isEqualTo("PETROL");
+        assertThat(resolveFuelType("toyota highlander 2.5hev e-cvt cz dph prestige", "")).isEqualTo("HYBRID");
+        assertThat(resolveFuelType("mercedes-benz glb 200 d 4x2 150 ps", "")).isEqualTo("DIESEL");
         assertThat(resolveFuelType("mazda mx-5 1.5 96 kw softtop", "")).isEqualTo("PETROL");
         assertThat(resolveFuelType("toyota rav4 2,0 158ps life a/t 4x4", "")).isEqualTo("PETROL");
         assertThat(resolveFuelType("mitsubishi outlander 2,0 150ps intense a/t 4x4", "")).isEqualTo("PETROL");
@@ -272,6 +276,7 @@ class SbazarParserTest {
         assertThat(resolveCarType("suzuki sx4 s-cross 1,4 boosterjet premium 2x4", "")).isEqualTo("SUV");
         assertThat(resolveCarType("peugeot 308 2,0 bhdi 110kw", "")).isEqualTo("HATCHBACK");
         assertThat(resolveCarType("peugeot 308 sw 1,2 pt eat8 pripravujeme", "")).isEqualTo("WAGON");
+        assertThat(resolveCarType("peugeot 308sw allure koup cr led", "")).isEqualTo("WAGON");
         assertThat(resolveCarType("peugeot 308 1,6 hdi automat", "coupe cabrio")).isEqualTo("HATCHBACK");
         assertThat(resolveCarType("opel insignia 2.0 aut kamera vyhrev serviska", "")).isEqualTo("SEDAN");
         assertThat(resolveCarType("opel insignia 2.0cdti manual vyhrev tazne", "")).isEqualTo("SEDAN");
@@ -281,6 +286,8 @@ class SbazarParserTest {
         assertThat(resolveCarType("toyota starlet", "")).isEqualTo("HATCHBACK");
         assertThat(resolveCarType("toyota auris 1.4 d-4d 66kw koupeno cr 2016", "")).isEqualTo("HATCHBACK");
         assertThat(resolveCarType("toyota land cruiser 2,8 mhev invincible", "")).isEqualTo("SUV");
+        assertThat(resolveCarType("toyota lc 120 3.0 d4d automat 2007", "")).isEqualTo("SUV");
+        assertThat(resolveCarType("toyota highlander 2.5hev e-cvt cz dph prestige", "")).isEqualTo("SUV");
         assertThat(resolveCarType("toyota urban cruiser 1,3i 74 kw spojka stk", "")).isEqualTo("SUV");
         assertThat(resolveCarType("nissan terrano ii 2.7td 92kw puvod cr nova stk", "")).isEqualTo("SUV");
         assertThat(resolveCarType("citroen jumpy 2.0hdi 94kw 8mist", "")).isEqualTo("MINIVAN");
@@ -320,6 +327,8 @@ class SbazarParserTest {
         assertThat(resolveCarType("hyundai kona 1,0 t-gdi 88 kw comfort", "")).isEqualTo("SUV");
         assertThat(resolveCarType("toyota corolla verso automat 1,8i vvt-i", "")).isEqualTo("MINIVAN");
         assertThat(resolveCarType("mercedes-benz tridy m ml 320 3,0d v6", "")).isEqualTo("SUV");
+        assertThat(resolveCarType("mercedes-benz glb 200 d 4x2 150 ps", "")).isEqualTo("SUV");
+        assertThat(resolveCarType("mercedes-benz gl 350cdi 2016 amg cz 7mist zaruk", "")).isEqualTo("SUV");
         assertThat(resolveCarType("bmw rada 4 420d 2,0 gran kupe automat", "")).isEqualTo("SEDAN");
         assertThat(resolveCarType("peugeot 301 1.2 puretech 2017", "")).isEqualTo("SEDAN");
         assertThat(resolveCarType("peugeot 508gt plug in hybrid 165kw e-eat8", "")).isEqualTo("SEDAN");
