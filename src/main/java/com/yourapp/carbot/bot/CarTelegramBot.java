@@ -324,6 +324,7 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
                 handleLanguage(chatId);
             }
             case "/admin" -> handleAdmin(chatId);
+            case "/admin_owner_list" -> handleAdminOwnerList(chatId);
             default -> sendMessage(
                     chatId,
                     messages.get(lang(chatId), "command.unknown"),
@@ -3362,10 +3363,53 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
                 + "\n\nScheduler last run:\n"
                 + parserDiagnostics
                 + "\n\nYour filter diagnostics:\n"
-                + filterDiagnostics;
+                + filterDiagnostics
+                + "\n\nAdmin commands:\n"
+                + "- /admin_owner_list - latest user listings";
 
         sendMessage(chatId, text);
         sendPendingUserListings(chatId);
+    }
+
+    private void handleAdminOwnerList(Long chatId) {
+        if (!isAdmin(chatId)) {
+            sendMessage(chatId, "Admin access denied.");
+            return;
+        }
+
+        List<CarEntity> cars = carRepository.findTop50BySourceOrderByCreatedAtDesc("USER");
+        if (cars.isEmpty()) {
+            sendMessage(chatId, "No user listings found.");
+            return;
+        }
+
+        long total = carRepository.countBySource("USER");
+        long pending = cars.stream()
+                .filter(car -> "PENDING".equalsIgnoreCase(car.getListingStatus()))
+                .count();
+        long active = cars.stream()
+                .filter(car -> "ACTIVE".equalsIgnoreCase(car.getListingStatus()))
+                .count();
+        long rejected = cars.stream()
+                .filter(car -> "REJECTED".equalsIgnoreCase(car.getListingStatus()))
+                .count();
+        long inactive = cars.stream()
+                .filter(car -> "INACTIVE".equalsIgnoreCase(car.getListingStatus()))
+                .count();
+
+        sendMessage(chatId, """
+                User listings:
+                - total: %d
+                - showing latest: %d
+                - in shown list: pending=%d, active=%d, rejected=%d, inactive=%d
+                """.formatted(total, cars.size(), pending, active, rejected, inactive).trim());
+
+        for (CarEntity car : cars) {
+            InlineKeyboardMarkup keyboard = "PENDING".equalsIgnoreCase(car.getListingStatus())
+                    ? keyboardFactory.sellAdminReviewKeyboard(car.getId())
+                    : null;
+            sendCarMessage(chatId, car, formatAdminUserListing(car), keyboard);
+        }
     }
 
     private String buildParserDiagnostics() {
@@ -3460,6 +3504,27 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
                     keyboardFactory.sellAdminReviewKeyboard(car.getId())
             );
         }
+    }
+
+    private String formatAdminUserListing(CarEntity car) {
+        return """
+                User listing
+
+                ID: %s
+                Owner chat: %s
+                Owner username: %s
+                Contact: %s
+                Created: %s
+
+                %s
+                """.formatted(
+                car.getId(),
+                car.getOwnerChatId() == null ? "-" : car.getOwnerChatId(),
+                safe(car.getSellerUsername()),
+                safe(car.getSellerContact()),
+                car.getCreatedAt() == null ? "-" : car.getCreatedAt().withNano(0),
+                formatUserListing("en", car)
+        ).trim();
     }
 
     private String formatSourceStats(List<CarRepository.SourceCount> stats) {
