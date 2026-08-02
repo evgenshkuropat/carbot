@@ -1057,13 +1057,14 @@ public class SbazarParser implements CarSourceParser {
     private boolean looksNonCarListing(String searchable) {
         if ("osobni vuz".equals(searchable)
                 || "osobni auto".equals(searchable)
+                || "osobni automobil".equals(searchable)
                 || "auto".equals(searchable)
                 || (("prodam".equals(searchable)
                 || (searchable.startsWith("prodam ") && searchable.endsWith(" prodam")))
                 && "-".equals(detectBrand(searchable))
                 && "-".equals(detectFuelType(searchable))
                 && "-".equals(detectCarType(searchable)))
-                || ((searchable.startsWith("osobni vuz ") || searchable.startsWith("osobni auto ") || searchable.startsWith("auto "))
+                || ((searchable.startsWith("osobni vuz ") || searchable.startsWith("osobni auto ") || searchable.startsWith("osobni automobil ") || searchable.startsWith("auto "))
                 && "-".equals(detectBrand(searchable))
                 && "-".equals(detectFuelType(searchable))
                 && "-".equals(detectCarType(searchable)))) {
@@ -1217,6 +1218,13 @@ public class SbazarParser implements CarSourceParser {
             int codePoint = value.codePointAt(offset);
             String ch = new String(Character.toChars(codePoint));
 
+            if (codePoint == 0x0139 && looksLikeNormalizedMojibakeNbsp(value, offset)) {
+                out.write(0xC5);
+                out.write(0xA0);
+                offset += Character.charCount(codePoint) + 1;
+                continue;
+            }
+
             if (codePoint <= 0xFF) {
                 out.write(codePoint);
             } else {
@@ -1238,6 +1246,16 @@ public class SbazarParser implements CarSourceParser {
         }
 
         return out.toByteArray();
+    }
+
+    private boolean looksLikeNormalizedMojibakeNbsp(String value, int offset) {
+        int afterCurrent = offset + 1;
+        if (afterCurrent >= value.length() || value.charAt(afterCurrent) != ' ') {
+            return false;
+        }
+
+        int afterSpace = afterCurrent + 1;
+        return afterSpace < value.length() && Character.isLetter(value.charAt(afterSpace));
     }
 
     private boolean looksLikeMojibake(String value) {
@@ -1280,7 +1298,15 @@ public class SbazarParser implements CarSourceParser {
                     || codePoint == '\u0139'
                     || codePoint == '\u00C2'
                     || codePoint == '\u00E2'
-                    || codePoint == '\uFFFD') {
+                    || codePoint == '\u015A'
+                    || codePoint == '\u017B'
+                    || codePoint == '\u013E'
+                    || codePoint == '\u0165'
+                    || codePoint == '\u02C7'
+                    || codePoint == '\u02DD'
+                    || codePoint == '\u2030'
+                    || codePoint == '\uFFFD'
+                    || (codePoint >= 0x0080 && codePoint <= 0x009F)) {
                 score++;
             }
             offset += Character.charCount(codePoint);

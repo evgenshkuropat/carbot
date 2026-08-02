@@ -351,6 +351,7 @@ class SbazarParserTest {
         assertThat(looksNonCarListing("padlo a rucni pumpicka")).isTrue();
         assertThat(looksNonCarListing("pc pocitac")).isTrue();
         assertThat(looksNonCarListing("osobni vuz https www sbazar cz inzerat 231248942 osobni vuz")).isTrue();
+        assertThat(looksNonCarListing("osobni automobil https www sbazar cz inzerat 232785945 osobni automobil")).isTrue();
         assertThat(looksNonCarListing("osobni vuz opel corsa e 1.4 xel automat")).isFalse();
         assertThat(looksNonCarListing("auto https www sbazar cz inzerat 231274019 auto")).isTrue();
         assertThat(looksNonCarListing("prodam https www sbazar cz inzerat 232430412 prodam")).isTrue();
@@ -434,8 +435,14 @@ class SbazarParserTest {
                 .isEqualTo("Mercedes-Benz T\u0159\u00EDdy C, 180 CDI");
         assertThat(repairMojibake("v okres Hlavn\u0102\u00AD m\u00C4\u203Asto Praha"))
                 .isEqualTo("v okres Hlavn\u00ED m\u011Bsto Praha");
+        assertThat(repairMojibake("v okres Brno-m\u00C4\u203Asto"))
+                .isEqualTo("v okres Brno-m\u011Bsto");
         assertThat(repairMojibake("Ta\u0139\u013En\u0102\u00A9 Mas\u0102\u02C7"))
                 .isEqualTo("Ta\u017En\u00E9 Mas\u00E1");
+        assertThat(repairMojibake("Volkswagen Golf, 1.0TSI MANU\u0102\u0081L V\u0102\u0165H\u0139\u0098EV TA\u0139\u02DDN\u0102\u2030"))
+                .isEqualTo("Volkswagen Golf, 1.0TSI MANU\u00C1L V\u00DDH\u0158EV TA\u017DN\u00C9");
+        assertThat(repairMojibake("\u0139 koda Fabia 3 kombi, 1.0 TSI 70 kW"))
+                .isEqualTo("\u0160koda Fabia 3 kombi, 1.0 TSI 70 kW");
         assertThat(repairMojibake("v Krom\u00C4\u203A\u0139\u2122\u0102\u00AD\u0139\u013E"))
                 .isEqualTo("v Krom\u011B\u0159\u00ED\u017E");
         assertThat(repairMojibake("v Hodon\u0102\u00ADn"))
