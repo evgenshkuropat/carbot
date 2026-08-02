@@ -38,8 +38,11 @@ public class CarBotKeyboardFactory {
         row3.add(new KeyboardButton("⭐ " + messages.get(lang, "menu.favorites")));
         row3.add(new KeyboardButton("🌐 " + messages.get(lang, "menu.language")));
 
+        KeyboardRow row4 = new KeyboardRow();
+        row4.add(new KeyboardButton(sellMenuText(lang)));
+
         return ReplyKeyboardMarkup.builder()
-                .keyboard(List.of(row1, row2, row3))
+                .keyboard(List.of(row1, row2, row3, row4))
                 .resizeKeyboard(true)
                 .selective(true)
                 .build();
@@ -48,12 +51,7 @@ public class CarBotKeyboardFactory {
     public InlineKeyboardMarkup servicesKeyboard(String lang) {
         List<InlineKeyboardRow> rows = new ArrayList<>();
 
-        rows.add(twoButtonsRow(
-                sellMenuText(lang),
-                "sell_start",
-                myCarsMenuText(lang),
-                "sell_mycars"
-        ));
+        rows.add(singleButtonRow(myCarsMenuText(lang), "sell_mycars"));
 
         rows.add(singleUrlButtonRow(
                 "🏠 " + messages.get(lang, "services.housingBot"),
