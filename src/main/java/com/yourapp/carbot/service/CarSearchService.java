@@ -5,8 +5,12 @@ import com.yourapp.carbot.entity.UserFilterEntity;
 import com.yourapp.carbot.repository.CarRepository;
 import org.springframework.stereotype.Service;
 
+import java.text.Normalizer;
+import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class CarSearchService {
@@ -81,14 +85,15 @@ public class CarSearchService {
         System.out.println("==================================");
 
 
-        List<CarEntity> matched = allCars.stream()
+        List<CarEntity> sortedMatched = allCars.stream()
                 .filter(car -> carFilterMatcher.matches(car, filter))
                 .sorted(Comparator.comparing(
                         CarEntity::getCreatedAt,
                         Comparator.nullsLast(Comparator.naturalOrder())
                 ).reversed())
-                .limit(limit)
                 .toList();
+
+        List<CarEntity> matched = deduplicateSearchResults(sortedMatched, limit);
 
         System.out.println("========== FINAL MATCHED CARS ==========");
         matched.forEach(car -> System.out.println(
@@ -106,6 +111,64 @@ public class CarSearchService {
         System.out.println("========================================");
 
         return matched;
+    }
+
+    private List<CarEntity> deduplicateSearchResults(List<CarEntity> cars, int limit) {
+        List<CarEntity> result = new ArrayList<>();
+        Set<String> seen = new LinkedHashSet<>();
+
+        for (CarEntity car : cars) {
+            String key = searchDuplicateKey(car);
+            if (!seen.add(key)) {
+                continue;
+            }
+
+            result.add(car);
+            if (result.size() >= limit) {
+                break;
+            }
+        }
+
+        return result;
+    }
+
+    private String searchDuplicateKey(CarEntity car) {
+        if (car == null) {
+            return "";
+        }
+
+        String title = normalizeForDuplicateKey(car.getTitle());
+        String location = normalizeForDuplicateKey(car.getLocation());
+
+        if (title.isBlank()) {
+            return "url:" + normalizeForDuplicateKey(car.getUrl());
+        }
+
+        return String.join("|",
+                title,
+                valueForKey(car.getPriceValue()),
+                valueForKey(car.getYear()),
+                valueForKey(car.getMileage()),
+                location
+        );
+    }
+
+    private String valueForKey(Object value) {
+        return value == null ? "-" : value.toString();
+    }
+
+    private String normalizeForDuplicateKey(String value) {
+        if (value == null || value.isBlank()) {
+            return "";
+        }
+
+        String normalized = Normalizer.normalize(value, Normalizer.Form.NFD)
+                .replaceAll("\\p{M}", "")
+                .toLowerCase()
+                .replaceAll("[^a-z0-9]+", " ")
+                .trim();
+
+        return normalized.replaceAll("\\s+", " ");
     }
 
     private boolean looksLikeRenault(CarEntity car) {
