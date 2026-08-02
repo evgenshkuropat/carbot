@@ -151,6 +151,21 @@ class CarStorageServiceTest {
     }
 
     @Test
+    void keepsPassengerVansAndRejectsPlainCommercialVans() throws Exception {
+        CarDto passengerVivaro = car("Opel Vivaro 2.5 CDTI Tour Cosmo");
+        passengerVivaro.setBrand("OPEL");
+        passengerVivaro.setFuelType("DIESEL");
+        passengerVivaro.setCarType("MINIVAN");
+        assertThat(isValidForSave(passengerVivaro, 279_000)).isTrue();
+
+        CarDto cargoVivaro = car("Opel Vivaro 2.0 CDTI L2H1");
+        cargoVivaro.setBrand("OPEL");
+        cargoVivaro.setFuelType("DIESEL");
+        cargoVivaro.setCarType("MINIVAN");
+        assertThat(isValidForSave(cargoVivaro, 279_000)).isFalse();
+    }
+
+    @Test
     void rejectsGenericCarTitles() throws Exception {
         assertThat(looksLikeBadTitle("Osobni automobil")).isTrue();
         assertThat(looksLikeBadTitle("Skoda")).isTrue();

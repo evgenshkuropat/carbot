@@ -433,6 +433,12 @@ class TipCarsParserTest {
 
     @Test
     void repairsCurrentTipCarsMojibakeFromLogs() throws Exception {
+        assertThat(repairMojibake("Tesla Model 3 SR+ Facelift, TaĹľnĂ©, DPH"))
+                .isEqualTo("Tesla Model 3 SR+ Facelift, Tažné, DPH");
+        assertThat(repairMojibake("Seat Ibiza 1.2 12V, ÄŚR,1.maj, Serv.kniha"))
+                .isEqualTo("Seat Ibiza 1.2 12V, ČR,1.maj, Serv.kniha");
+        assertThat(repairMojibake("Ĺ koda Fabia Ambition 1.0 TSI, ÄŚR,1.maj"))
+                .isEqualTo("Škoda Fabia Ambition 1.0 TSI, ČR,1.maj");
         assertThat(repairMojibake("Suzuki Swift 1.2i KOUPENO \u00C4\u015AR,1.MAJITEL"))
                 .isEqualTo("Suzuki Swift 1.2i KOUPENO \u010CR,1.MAJITEL");
         assertThat(repairMojibake("\u0139\u00A0koda Rapid 1.2 Tsi, Monte Carlo"))

@@ -933,6 +933,10 @@ public class CarStorageService {
     private boolean looksLikeCommercialVehicle(String title) {
         String t = title.toLowerCase(Locale.ROOT);
 
+        if (looksLikePassengerVan(title)) {
+            return false;
+        }
+
         return t.contains("sprinter")
                 || t.contains("dodávka")
                 || t.contains("dodavka")
@@ -955,6 +959,37 @@ public class CarStorageService {
                 || t.contains("obytna auta")
                 || t.contains("mikrobus")
                 || t.contains("autobus");
+    }
+
+    private boolean looksLikePassengerVan(String title) {
+        String ascii = Normalizer.normalize(title.toLowerCase(Locale.ROOT), Normalizer.Form.NFD)
+                .replaceAll("\\p{M}", "");
+
+        boolean passengerVanModel = containsAny(ascii,
+                "vivaro",
+                "trafic",
+                "primastar");
+
+        if (!passengerVanModel) {
+            return false;
+        }
+
+        return containsAny(ascii,
+                " tour ",
+                " tourer",
+                " life",
+                " cosmo",
+                " westfalia",
+                " passenger",
+                " osobni",
+                " kombi",
+                " combi",
+                " 7 mist",
+                " 8 mist",
+                " 9 mist",
+                " 7mist",
+                " 8mist",
+                " 9mist");
     }
 
     private boolean looksLikeBadTitle(String title) {
