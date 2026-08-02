@@ -157,6 +157,10 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
                 return;
             }
 
+            if (handleMenuButton(chatId, text)) {
+                return;
+            }
+
             if (userStateService.getStep(chatId) == BotStep.SELL_EDIT_VALUE) {
                 handleListingEditText(chatId, text);
                 return;
@@ -164,10 +168,6 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
 
             if (isSellStep(userStateService.getStep(chatId))) {
                 handleSellText(chatId, username, text);
-                return;
-            }
-
-            if (handleMenuButton(chatId, text)) {
                 return;
             }
 
@@ -197,41 +197,49 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
                 .trim();
 
         if (normalized.equals(messages.get(lang, "menu.search")) || text.equals("/find")) {
+            resetActiveInputFlows(chatId);
             handleFind(chatId);
             return true;
         }
 
         if (normalized.equals(messages.get(lang, "menu.filter")) || text.equals("/filter")) {
+            resetActiveInputFlows(chatId);
             startNewFilterSetup(chatId);
             return true;
         }
 
         if (normalized.equals(messages.get(lang, "menu.myFilter")) || text.equals("/myfilter")) {
+            resetActiveInputFlows(chatId);
             showCurrentFilter(chatId);
             return true;
         }
 
         if (normalized.equals(messages.get(lang, "menu.services")) || normalized.equals(messages.get(lang, "menu.latest")) || text.equals("/services") || text.equals("/latest")) {
+            resetActiveInputFlows(chatId);
             showServices(chatId);
             return true;
         }
 
         if (normalized.equals(messages.get(lang, "menu.favorites")) || text.equals("/favorites")) {
+            resetActiveInputFlows(chatId);
             handleFavorites(chatId);
             return true;
         }
 
         if (isSellMenuText(normalized) || text.equals("/sell")) {
+            resetActiveInputFlows(chatId);
             startSellFlowSafely(chatId);
             return true;
         }
 
         if (isMyCarsMenuText(normalized) || text.equals("/mycars")) {
+            resetActiveInputFlows(chatId);
             handleMyCars(chatId);
             return true;
         }
 
         if (normalized.equals(messages.get(lang, "menu.language")) || text.equals("/language")) {
+            resetActiveInputFlows(chatId);
             handleLanguage(chatId);
             return true;
         }
@@ -239,14 +247,39 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
         return false;
     }
 
+    private void resetActiveInputFlows(Long chatId) {
+        sellDrafts.remove(chatId);
+        listingEditSessions.remove(chatId);
+        editingFilterSessions.remove(chatId);
+        userStateService.reset(chatId);
+    }
+
     private void handleCommand(Long chatId, String username, String telegramLanguageCode, String text) {
         switch (text.split("\\s+")[0].toLowerCase()) {
-            case "/start" -> handleStart(chatId, username, telegramLanguageCode);
-            case "/latest", "/services" -> showServices(chatId);
-            case "/find" -> handleFind(chatId);
-            case "/favorites" -> handleFavorites(chatId);
-            case "/sell" -> startSellFlowSafely(chatId);
-            case "/mycars" -> handleMyCars(chatId);
+            case "/start" -> {
+                resetActiveInputFlows(chatId);
+                handleStart(chatId, username, telegramLanguageCode);
+            }
+            case "/latest", "/services" -> {
+                resetActiveInputFlows(chatId);
+                showServices(chatId);
+            }
+            case "/find" -> {
+                resetActiveInputFlows(chatId);
+                handleFind(chatId);
+            }
+            case "/favorites" -> {
+                resetActiveInputFlows(chatId);
+                handleFavorites(chatId);
+            }
+            case "/sell" -> {
+                resetActiveInputFlows(chatId);
+                startSellFlowSafely(chatId);
+            }
+            case "/mycars" -> {
+                resetActiveInputFlows(chatId);
+                handleMyCars(chatId);
+            }
             case "/skip" -> {
                 BotStep step = userStateService.getStep(chatId);
                 if (step == BotStep.SELL_PHOTO) {
@@ -277,10 +310,19 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
                 }
             }
             case "/help" -> handleHelp(chatId);
-            case "/filter" -> startNewFilterSetup(chatId);
-            case "/myfilter" -> showCurrentFilter(chatId);
+            case "/filter" -> {
+                resetActiveInputFlows(chatId);
+                startNewFilterSetup(chatId);
+            }
+            case "/myfilter" -> {
+                resetActiveInputFlows(chatId);
+                showCurrentFilter(chatId);
+            }
             case "/resetfilter" -> confirmResetFilter(chatId);
-            case "/language" -> handleLanguage(chatId);
+            case "/language" -> {
+                resetActiveInputFlows(chatId);
+                handleLanguage(chatId);
+            }
             case "/admin" -> handleAdmin(chatId);
             default -> sendMessage(
                     chatId,
