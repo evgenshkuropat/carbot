@@ -4248,7 +4248,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
 
         String current = value;
         try {
-            for (int attempt = 0; attempt < 3; attempt++) {
+            for (int attempt = 0; attempt < 5; attempt++) {
                 if (!looksLikeMojibake(current) && mojibakeScore(current) == 0) {
                     break;
                 }
@@ -4261,9 +4261,14 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                         .decode(ByteBuffer.wrap(bytes))
                         .toString();
 
-                if (mojibakeScore(repaired) < mojibakeScore(current)
-                        || (looksLikeMojibake(current) && !looksLikeMojibake(repaired))) {
-                    current = normalizeText(repaired);
+                String normalizedRepaired = normalizeText(repaired);
+                int currentScore = mojibakeScore(current);
+                int repairedScore = mojibakeScore(normalizedRepaired);
+
+                if (repairedScore < currentScore
+                        || (repairedScore <= currentScore && !normalizedRepaired.equals(current))
+                        || (looksLikeMojibake(current) && !looksLikeMojibake(normalizedRepaired))) {
+                    current = normalizedRepaired;
                 } else {
                     break;
                 }

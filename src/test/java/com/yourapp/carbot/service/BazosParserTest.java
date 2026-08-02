@@ -1065,6 +1065,25 @@ class BazosParserTest {
                 .isEqualTo("P\u0159edn\u00ED n\u00E1razn\u00EDk");
     }
 
+    @Test
+    void repairsAugustBazosMojibakeFromLogsToFinalUnicode() throws Exception {
+        assertThat(repairMojibake("M\u00C4\u203Aln\u0102\u00ADk")).isEqualTo("M\u011Bln\u00EDk");
+        assertThat(repairMojibake("mo\u0139\u013En\u0102\u02C7 v\u0102\u00BDm\u00C4\u203Ana")).isEqualTo("mo\u017En\u00E1 v\u00FDm\u011Bna");
+        assertThat(repairMojibake("ODPO\u00C4\u015AET DPH")).isEqualTo("ODPO\u010CET DPH");
+        assertThat(repairMojibake("D\u00C4\u203A\u00C4\u0164\u0102\u00ADn")).isEqualTo("D\u011B\u010D\u00EDn");
+        assertThat(repairMojibake("Bene\u0139\u02C7ov")).isEqualTo("Bene\u0161ov");
+        assertThat(repairMojibake("manu\u0102\u02C7l CZ p\u0139\u017Bvod")).isEqualTo("manu\u00E1l CZ p\u016Fvod");
+        assertThat(repairMojibake("\u0139\u00A0umperk")).isEqualTo("\u0160umperk");
+        assertThat(repairMojibake("v\u0102\u00BDjime\u00C4\u0164n\u0102\u00BD stav")).isEqualTo("v\u00FDjime\u010Dn\u00FD stav");
+        assertThat(repairMojibake("B\u0139\u2122eclav")).isEqualTo("B\u0159eclav");
+        assertThat(repairMojibake("\u00C4\u015AERVEN\u0102\u0081")).isEqualTo("\u010CERVEN\u00C1");
+        assertThat(repairMojibake("Prod\u0102\u02C7m Alfa Romeo GT")).isEqualTo("Prod\u00E1m Alfa Romeo GT");
+        assertThat(repairMojibake("\u00C4\u015Aesk\u0102\u02C7 L\u0102\u00ADpa")).isEqualTo("\u010Cesk\u00E1 L\u00EDpa");
+        assertThat(repairMojibake("P\u0139\u2122edn\u0102\u00AD n\u0102\u02C7razn\u0102\u00ADk")).isEqualTo("P\u0159edn\u00ED n\u00E1razn\u00EDk");
+        assertThat(repairMojibake("MANU\u0102\u0081L TA\u0139\u02DDN\u0102\u2030")).isEqualTo("MANU\u00C1L TA\u017DN\u00C9");
+        assertThat(repairMojibake("Zl\u0102\u00ADn")).isEqualTo("Zl\u00EDn");
+    }
+
     private String extractFuelType(String text) throws Exception {
         Method method = BazosParser.class.getDeclaredMethod("extractFuelType", String.class);
         method.setAccessible(true);
