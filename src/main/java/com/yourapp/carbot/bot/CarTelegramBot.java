@@ -282,7 +282,7 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
             }
             case "/skip" -> {
                 BotStep step = userStateService.getStep(chatId);
-                if (step == BotStep.SELL_PHOTO) {
+                if (step == BotStep.SELL_DESCRIPTION || step == BotStep.SELL_PHOTO) {
                     handleSellText(chatId, username, text);
                 } else if (step == BotStep.SELL_EDIT_VALUE) {
                     handleListingEditText(chatId, text);
@@ -1609,6 +1609,15 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
             }
             case SELL_CONTACT -> {
                 draft.sellerContact = limitText(text, 180);
+                userStateService.setStep(chatId, BotStep.SELL_DESCRIPTION);
+                sendMessage(chatId, sellPrompt(chatId, "description"));
+            }
+            case SELL_DESCRIPTION -> {
+                if ("/skip".equalsIgnoreCase(text) || "skip".equalsIgnoreCase(text)) {
+                    draft.description = null;
+                } else {
+                    draft.description = limitText(text, 1000);
+                }
                 userStateService.setStep(chatId, BotStep.SELL_PHOTO);
                 sendMessage(chatId, sellPrompt(chatId, "photo"));
             }
@@ -1931,6 +1940,7 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
                 || step == BotStep.SELL_TRANSMISSION
                 || step == BotStep.SELL_CAR_TYPE
                 || step == BotStep.SELL_CONTACT
+                || step == BotStep.SELL_DESCRIPTION
                 || step == BotStep.SELL_PHOTO
                 || step == BotStep.SELL_CONFIRM;
     }
@@ -2028,6 +2038,12 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
                 case "cs" -> "Zadejte kontakt pro kupujícího: telefon nebo @username";
                 default -> "Enter buyer contact: phone or @username";
             };
+            case "description" -> switch (lang) {
+                case "ru" -> "Добавьте описание авто: состояние, комплектация, сервис, нюансы. Или напишите /skip, чтобы пропустить.";
+                case "uk" -> "Додайте опис авто: стан, комплектація, сервіс, нюанси. Або напишіть /skip, щоб пропустити.";
+                case "cs" -> "Přidejte popis auta: stav, výbava, servis, poznámky. Nebo napište /skip pro přeskočení.";
+                default -> "Add car description: condition, equipment, service, notes. Or type /skip to skip.";
+            };
             case "photo" -> switch (lang) {
                 case "ru" -> "Пришлите одно фото авто или напишите /skip, чтобы пропустить.";
                 case "uk" -> "Надішліть одне фото авто або напишіть /skip, щоб пропустити.";
@@ -2119,6 +2135,7 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
             case "mileage" -> sellPrompt(chatId, "mileage");
             case "location" -> sellPrompt(chatId, "location");
             case "contact" -> sellPrompt(chatId, "contact");
+            case "description" -> sellPrompt(chatId, "description");
             case "fuel" -> sellPrompt(chatId, "fuel");
             case "transmission" -> sellPrompt(chatId, "transmission");
             case "carType" -> sellPrompt(chatId, "carType");
@@ -2179,7 +2196,7 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
                 formatCarType(lang, draft.carType),
                 safe(draft.sellerContact),
                 draft.imageUrl == null || draft.imageUrl.isBlank() ? "-" : "OK"
-        ).trim();
+        ).trim() + "\nInfo: " + safeListingDescription(draft.description);
     }
 
     private String formatUserListing(Long chatId, CarEntity car) {
@@ -2211,7 +2228,15 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
                 formatTransmissionValue(lang, car.getTransmission()),
                 formatCarType(lang, car.getCarType()),
                 safe(car.getSellerContact())
-        ).trim();
+        ).trim() + "\nInfo: " + safeListingDescription(car.getDescription());
+    }
+
+    private String safeListingDescription(String description) {
+        String value = safe(description);
+        if ("-".equals(value)) {
+            return value;
+        }
+        return limitText(value.replaceAll("\\s+", " ").trim(), 350);
     }
 
     private String buildUserListingTitle(SellDraft draft) {
@@ -2230,6 +2255,7 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
                 || "mileage".equals(field)
                 || "location".equals(field)
                 || "contact".equals(field)
+                || "description".equals(field)
                 || "fuel".equals(field)
                 || "transmission".equals(field)
                 || "carType".equals(field)
@@ -2267,6 +2293,13 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
             }
             case "location" -> car.setLocation(limitText(value, 120));
             case "contact" -> car.setSellerContact(limitText(value, 180));
+            case "description" -> {
+                if (value == null || "/skip".equalsIgnoreCase(value) || "skip".equalsIgnoreCase(value)) {
+                    car.setDescription(null);
+                } else {
+                    car.setDescription(limitText(value, 1000));
+                }
+            }
             case "fuel" -> {
                 String fuel = normalizeSellFuel(value);
                 if (fuel == null) {

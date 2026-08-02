@@ -751,6 +751,7 @@ public class CarBotKeyboardFactory {
         rows.add(twoButtonsRow("Location", "sell_edit:" + carId + ":location", "Contact", "sell_edit:" + carId + ":contact"));
         rows.add(twoButtonsRow("Fuel", "sell_edit:" + carId + ":fuel", "Transmission", "sell_edit:" + carId + ":transmission"));
         rows.add(twoButtonsRow("Car type", "sell_edit:" + carId + ":carType", "Photo", "sell_edit:" + carId + ":photo"));
+        rows.add(singleButtonRow("Description", "sell_edit:" + carId + ":description"));
         rows.add(singleButtonRow("Back", "sell_mycars"));
 
         return InlineKeyboardMarkup.builder()
