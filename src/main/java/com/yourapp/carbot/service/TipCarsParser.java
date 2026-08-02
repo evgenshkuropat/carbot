@@ -1606,7 +1606,15 @@ public class TipCarsParser implements CarSourceParser {
                     || codePoint == '\u0139'
                     || codePoint == '\u00C2'
                     || codePoint == '\u00E2'
-                    || codePoint == '\uFFFD') {
+                    || codePoint == '\u015A'
+                    || codePoint == '\u017B'
+                    || codePoint == '\u013E'
+                    || codePoint == '\u0165'
+                    || codePoint == '\u02C7'
+                    || codePoint == '\u02DD'
+                    || codePoint == '\u2030'
+                    || codePoint == '\uFFFD'
+                    || (codePoint >= 0x0080 && codePoint <= 0x009F)) {
                 score++;
             }
             offset += Character.charCount(codePoint);

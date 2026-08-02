@@ -439,6 +439,16 @@ class TipCarsParserTest {
                 .isEqualTo("Seat Ibiza 1.2 12V, ČR,1.maj, Serv.kniha");
         assertThat(repairMojibake("Ĺ koda Fabia Ambition 1.0 TSI, ÄŚR,1.maj"))
                 .isEqualTo("Škoda Fabia Ambition 1.0 TSI, ČR,1.maj");
+        assertThat(repairMojibake("Tesla Model 3 SR+ Facelift, Ta\u0139\u013En\u0102\u00A9, DPH"))
+                .isEqualTo("Tesla Model 3 SR+ Facelift, Ta\u017En\u00E9, DPH");
+        assertThat(repairMojibake("Ford Fiesta 1.3, 2.maj,\u00C4\u015AR"))
+                .isEqualTo("Ford Fiesta 1.3, 2.maj,\u010CR");
+        assertThat(repairMojibake("Honda CR-V Executive nejvy\u0139\u02C7\u0139\u02C7\u0102\u00AD v\u0102\u02DDbava"))
+                .isEqualTo("Honda CR-V Executive nejvy\u0161\u0161\u00ED v\u00FDbava");
+        assertThat(repairMojibake("\u0139\u00A0koda Superb Style 2.0 TDI, Automat, K\u0139\u017B\u0139\u013Ee"))
+                .isEqualTo("\u0160koda Superb Style 2.0 TDI, Automat, K\u016F\u017Ee");
+        assertThat(repairMojibake("Ford Transit 2.2,85kW,KLIM.,9M\u0102\u0164ST,TA\u0139\u02DD.ZA\u0139\u0098."))
+                .isEqualTo("Ford Transit 2.2,85kW,KLIM.,9M\u00CDST,TA\u017D.ZA\u0158.");
         assertThat(repairMojibake("Suzuki Swift 1.2i KOUPENO \u00C4\u015AR,1.MAJITEL"))
                 .isEqualTo("Suzuki Swift 1.2i KOUPENO \u010CR,1.MAJITEL");
         assertThat(repairMojibake("\u0139\u00A0koda Rapid 1.2 Tsi, Monte Carlo"))
