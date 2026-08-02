@@ -1155,11 +1155,7 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
 
         userStateService.setStep(chatId, BotStep.COMPLETED);
 
-        sendMessage(
-                chatId,
-                buildFilterSummary(filter) + "\n\n" + messages.get(lang(chatId), "filter.saved.next"),
-                keyboardFactory.myFilterActionsKeyboard(lang(chatId))
-        );
+        handleFind(chatId);
     }
 
     private void showServices(Long chatId) {
