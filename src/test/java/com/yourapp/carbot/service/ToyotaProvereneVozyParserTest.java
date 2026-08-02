@@ -181,10 +181,18 @@ class ToyotaProvereneVozyParserTest {
                 .isEqualTo("Tsusho Praha Pr\u016Fhonice");
         assertThat(repairMojibake("Citro\u0102\u00ABn C4 1.2 Puretech"))
                 .isEqualTo("Citro\u00EBn C4 1.2 Puretech");
+        assertThat(repairMojibake("Citro\u0102\u00ABn C3 1.2 PureTech 82k Feel"))
+                .isEqualTo("Citro\u00EBn C3 1.2 PureTech 82k Feel");
         assertThat(repairMojibake("\u0139\u00A0koda Octavia 1.6 TDI Combi"))
                 .isEqualTo("\u0160koda Octavia 1.6 TDI Combi");
         assertThat(repairMojibake("Dol\u0102\u02C7k P\u0139\u2122\u0102\u00ADbram"))
                 .isEqualTo("Dol\u00E1k P\u0159\u00EDbram");
+        assertThat(repairMojibake("C&K Brno - V\u0102\u00ADde\u0139\u0088sk\u0102\u02C7"))
+                .isEqualTo("C&K Brno - V\u00EDde\u0148sk\u00E1");
+        assertThat(repairMojibake("Dol\u0102\u02C7k \u00C4\u015Aesk\u0102\u00A9 Bud\u00C4\u203Ajovice"))
+                .isEqualTo("Dol\u00E1k \u010Cesk\u00E9 Bud\u011Bjovice");
+        assertThat(repairMojibake("Emil Frey Peka\u0139\u2122sk\u0102\u02C7"))
+                .isEqualTo("Emil Frey Peka\u0159sk\u00E1");
         assertThat(repairMojibake("Tsusho Praha Pr\u0139\u017Bhonice"))
                 .isEqualTo("Tsusho Praha Pr\u016Fhonice");
         assertThat(repairMojibake("Hradec Kr\u0102\u02C7lov\u0102\u00A9"))
