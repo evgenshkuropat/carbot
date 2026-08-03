@@ -86,6 +86,23 @@ class AutoEsaParserTest {
         assertThat(extractDetailValue(doc, "Stav tachometru")).isEqualTo("56718 km");
     }
 
+    @Test
+    void repairsAutoEsaMojibakeTitles() throws Exception {
+        assertThat(repairMojibake("Ĺ koda Octavia IV 2.0 TDi Style 4x4"))
+                .isEqualTo("Škoda Octavia IV 2.0 TDi Style 4x4");
+        assertThat(repairMojibake("CitroĂ«n C3 Picasso 1.6i"))
+                .isEqualTo("Citroën C3 Picasso 1.6i");
+        assertThat(repairMojibake("Renault ScĂ©nic 1.8 dCi Business"))
+                .isEqualTo("Renault Scénic 1.8 dCi Business");
+    }
+
+    @Test
+    void detectsBrandsSeenInAutoEsaLogs() throws Exception {
+        assertThat(normalizeBrand("ds", "DS DS3 1.2PT")).isEqualTo("DS");
+        assertThat(normalizeBrand("maserati", "Maserati GranTurismo 4.7 V8 S Automatic")).isEqualTo("MASERATI");
+        assertThat(normalizeBrand("jaguar", "Jaguar F-Type 3.0 V6 V6 S AWD Coupe")).isEqualTo("JAGUAR");
+    }
+
     private CarDto parseCard(Element card, String url) throws Exception {
         Method method = AutoEsaParser.class.getDeclaredMethod("parseCard", Element.class, String.class);
         method.setAccessible(true);
@@ -96,5 +113,17 @@ class AutoEsaParserTest {
         Method method = AutoEsaParser.class.getDeclaredMethod("extractDetailValue", Document.class, String.class);
         method.setAccessible(true);
         return (String) method.invoke(parser, doc, label);
+    }
+
+    private String repairMojibake(String value) throws Exception {
+        Method method = AutoEsaParser.class.getDeclaredMethod("repairMojibake", String.class);
+        method.setAccessible(true);
+        return (String) method.invoke(parser, value);
+    }
+
+    private String normalizeBrand(String raw, String title) throws Exception {
+        Method method = AutoEsaParser.class.getDeclaredMethod("normalizeBrand", String.class, String.class);
+        method.setAccessible(true);
+        return (String) method.invoke(parser, raw, title);
     }
 }
