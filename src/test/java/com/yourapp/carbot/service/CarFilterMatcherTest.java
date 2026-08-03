@@ -56,6 +56,29 @@ class CarFilterMatcherTest {
                 .isFalse();
     }
 
+    @Test
+    void rejectsStoredTipCarsRecordsWhenTitleBrandConflictsWithUrlBrand() {
+        UserFilterEntity renaultFilter = new UserFilterEntity();
+        renaultFilter.setBrand("RENAULT");
+
+        CarEntity mismatched = car("Renault Thalia 1.2 16V, nova STK", "SEDAN");
+        mismatched.setSource("TIPCARS");
+        mismatched.setBrand("RENAULT");
+        mismatched.setUrl("https://www.tipcars.com/mercedes-benz-cla/kombi/benzin/mercedes-benz-cla-amg-paket-250-e-54002804.html");
+
+        assertThat(matcher.matches(mismatched, renaultFilter)).isFalse();
+
+        UserFilterEntity mercedesFilter = new UserFilterEntity();
+        mercedesFilter.setBrand("MERCEDES");
+
+        CarEntity matching = car("Mercedes-Benz CLA AMG paket 250 e", "WAGON");
+        matching.setSource("TIPCARS");
+        matching.setBrand("MERCEDES");
+        matching.setUrl("https://www.tipcars.com/mercedes-benz-cla/kombi/benzin/mercedes-benz-cla-amg-paket-250-e-54002804.html");
+
+        assertThat(matcher.matches(matching, mercedesFilter)).isTrue();
+    }
+
     private CarEntity car(String title, String carType) {
         CarEntity car = new CarEntity();
         car.setTitle(title);

@@ -20,6 +20,10 @@ public class CarFilterMatcher {
             return new FilterCheckResult(false, false, false, false, false, false, false, false, false);
         }
 
+        if (looksTipCarsTitleUrlBrandMismatch(car)) {
+            return new FilterCheckResult(false, false, false, false, false, false, false, false, false);
+        }
+
         if (filter == null) {
             return new FilterCheckResult(true, true, true, true, true, true, true, true, true);
         }
@@ -840,6 +844,71 @@ public class CarFilterMatcher {
                 .replace('-', '_')
                 .replace(' ', '_')
                 .trim();
+    }
+
+    private boolean looksTipCarsTitleUrlBrandMismatch(CarEntity car) {
+        if (car == null || !"TIPCARS".equalsIgnoreCase(car.getSource())) {
+            return false;
+        }
+
+        String urlBrand = extractTipCarsUrlBrand(car.getUrl());
+        String carBrand = firstNonBlank(normalizeToken(car.getBrand()), detectBrandFromTitle(car.getTitle()));
+
+        return !urlBrand.isBlank()
+                && !carBrand.isBlank()
+                && !urlBrand.equals(carBrand);
+    }
+
+    private String extractTipCarsUrlBrand(String url) {
+        String normalized = normalizeText(url)
+                .replace('_', '-')
+                .toLowerCase(Locale.ROOT);
+        String marker = "tipcars.com/";
+        int markerIndex = normalized.indexOf(marker);
+        if (markerIndex < 0) {
+            return "";
+        }
+
+        String path = normalized.substring(markerIndex + marker.length());
+        int slashIndex = path.indexOf('/');
+        if (slashIndex >= 0) {
+            path = path.substring(0, slashIndex);
+        }
+
+        return detectBrandFromTitle(path.replace('-', ' '));
+    }
+
+    private String detectBrandFromTitle(String title) {
+        String source = " " + normalizeText(title) + " ";
+
+        if (containsAny(source, " ALFA ROMEO ", " GIULIA ", " GIULIETTA ", " STELVIO ")) return "ALFA_ROMEO";
+        if (containsAny(source, " LAND ROVER ", " RANGE ROVER ", " DEFENDER ", " DISCOVERY ")) return "LAND_ROVER";
+        if (containsAny(source, " MERCEDES ", " MERCEDES BENZ ", " MERCEDES-BENZ ", " BENZ ", " CLA ", " GLA ", " GLB ", " GLC ", " GLE ", " GLS ")) return "MERCEDES";
+        if (containsAny(source, " VOLKSWAGEN ", " VW ", " GOLF ", " PASSAT ", " TIGUAN ", " TOUAREG ", " POLO ")) return "VOLKSWAGEN";
+        if (containsAny(source, " RENAULT ", " CLIO ", " MEGANE ", " SCENIC ", " THALIA ", " FLUENCE ", " CAPTUR ", " KADJAR ", " KOLEOS ", " TWINGO ", " ZOE ")) return "RENAULT";
+        if (containsAny(source, " SKODA ", " OCTAVIA ", " SUPERB ", " FABIA ", " KODIAQ ", " KAROQ ", " KAMIQ ", " YETI ", " ENYAQ ")) return "SKODA";
+        if (containsAny(source, " CITROEN ", " C2 ", " C3 ", " C4 ", " C5 ", " BERLINGO ")) return "CITROEN";
+        if (containsAny(source, " PEUGEOT ", " 2008 ", " 3008 ", " 5008 ", " 208 ", " 308 ")) return "PEUGEOT";
+        if (containsAny(source, " TOYOTA ", " AYGO ", " YARIS ", " COROLLA ", " RAV4 ")) return "TOYOTA";
+        if (containsAny(source, " AUDI ", " A3 ", " A4 ", " A5 ", " A6 ", " Q3 ", " Q5 ", " Q7 ")) return "AUDI";
+        if (containsAny(source, " BMW ", " X1 ", " X2 ", " X3 ", " X5 ", " RADA 3 ", " RADA 5 ")) return "BMW";
+        if (containsAny(source, " FORD ", " FOCUS ", " FIESTA ", " KUGA ", " MONDEO ")) return "FORD";
+        if (containsAny(source, " HYUNDAI ", " I10 ", " I20 ", " I30 ", " TUCSON ", " KONA ")) return "HYUNDAI";
+        if (containsAny(source, " KIA ", " CEED ", " SPORTAGE ", " SORENTO ")) return "KIA";
+        if (containsAny(source, " OPEL ", " ASTRA ", " CORSA ", " MOKKA ", " ZAFIRA ")) return "OPEL";
+        if (containsAny(source, " MAZDA ", " CX-3 ", " CX-5 ", " CX 3 ", " CX 5 ")) return "MAZDA";
+        if (containsAny(source, " HONDA ", " CIVIC ", " CR-V ", " HR-V ")) return "HONDA";
+        if (containsAny(source, " VOLVO ", " XC40 ", " XC60 ", " XC90 ", " V60 ", " V90 ")) return "VOLVO";
+        if (containsAny(source, " SEAT ", " IBIZA ", " LEON ", " ATECA ", " ARONA ")) return "SEAT";
+        if (containsAny(source, " DACIA ", " DUSTER ", " LOGAN ", " SANDERO ", " DOKKER ", " JOGGER ")) return "DACIA";
+        if (containsAny(source, " FIAT ", " PUNTO ", " 500 ", " 500L ", " 500X ")) return "FIAT";
+        if (containsAny(source, " TESLA ", " MODEL 3 ", " MODEL Y ")) return "TESLA";
+
+        return "";
+    }
+
+    private String firstNonBlank(String first, String second) {
+        return !isBlank(first) ? first : second;
     }
 
     private String normalizeText(String value) {

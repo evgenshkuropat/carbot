@@ -351,6 +351,10 @@ class TipCarsParserTest {
                 "https://www.tipcars.com/volkswagen-golf/kombi/benzin/volkswagen-golf-1-4-tsi-navi-park-senzory-7042596.html"))
                 .isTrue();
         assertThat(looksTitleUrlBrandMismatch(
+                "Renault Thalia 1.2 16V, nova STK",
+                "https://www.tipcars.com/mercedes-benz-cla/kombi/benzin/mercedes-benz-cla-amg-paket-250-e-54002804.html"))
+                .isTrue();
+        assertThat(looksTitleUrlBrandMismatch(
                 "Citroen C4 Feel 1.2 PureTech CR 1.maj",
                 "https://www.tipcars.com/citroen-c4/hatchback/benzin/citroen-c4-feel-1-2-puretech-cr-1-maj-54001459.html"))
                 .isFalse();
