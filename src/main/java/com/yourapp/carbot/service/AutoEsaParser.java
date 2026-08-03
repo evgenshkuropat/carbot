@@ -92,6 +92,7 @@ public class AutoEsaParser extends AbstractJsoupParser implements CarSourceParse
                         }
 
                         enrichFromDetailQuietly(car);
+                        normalizeParsedText(car);
 
                         log.info("AUTOESA CAR title='{}' price={} location={} year={} mileage={} fuelType={} transmission={} carType={} brand={} url={}",
                                 safe(car.getTitle()),
@@ -133,6 +134,15 @@ public class AutoEsaParser extends AbstractJsoupParser implements CarSourceParse
                 cars.size(), missingPriceCount, invalidPriceCount, commercialVehicleCount, parseExceptionCount);
 
         return cars;
+    }
+
+    private void normalizeParsedText(CarDto car) {
+        if (car == null) {
+            return;
+        }
+
+        car.setTitle(repairMojibake(car.getTitle()));
+        car.setLocation(repairMojibake(car.getLocation()));
     }
 
     private String buildPageUrl(int page) {
@@ -485,7 +495,7 @@ public class AutoEsaParser extends AbstractJsoupParser implements CarSourceParse
             return value;
         }
 
-        String current = value;
+        String current = repairCommonMojibake(value);
         try {
             for (int attempt = 0; attempt < 5; attempt++) {
                 if (!looksLikeMojibake(current) && mojibakeScore(current) == 0) {
@@ -516,6 +526,21 @@ public class AutoEsaParser extends AbstractJsoupParser implements CarSourceParse
         } catch (Exception e) {
             return current;
         }
+    }
+
+    private String repairCommonMojibake(String value) {
+        if (value == null || value.isBlank()) {
+            return value;
+        }
+
+        return value
+                .replace("\u0139\u00A0", "Š")
+                .replace("\u0139 ", "Š")
+                .replace("\u0139\u0098", "Ř")
+                .replace("\u0139\u2122", "ř")
+                .replace("\u0102\u00AB", "ë")
+                .replace("\u0102\u00A9", "é")
+                .replace("\u0102\u00AD", "í");
     }
 
     private byte[] encodeMojibakeBytes(String value) throws Exception {
