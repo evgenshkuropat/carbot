@@ -30,7 +30,7 @@ public class AutoEsaParser extends AbstractJsoupParser implements CarSourceParse
 
     private static final String BASE_URL = "https://www.autoesa.cz";
     private static final String BASE_LIST_URL = BASE_URL + "/vsechna-auta";
-    private static final int MAX_LIST_PAGES = 5;
+    private static final int MAX_LIST_PAGES = 10;
     private static final int CURRENT_YEAR = Year.now().getValue();
     private static final int MIN_VALID_PRICE = 30_000;
     private static final int MAX_REASONABLE_PRICE = 10_000_000;
