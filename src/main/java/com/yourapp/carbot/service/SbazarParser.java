@@ -562,7 +562,7 @@ public class SbazarParser implements CarSourceParser {
                 {"NISSAN", "nissan", "qashqai", "x-trail", "micra"},
                 {"SUZUKI", "suzuki", "vitara", "sx4", "ignis"},
                 {"DACIA", "dacia", "duster", "logan", "dokker", "lodgy", "sandero"},
-                {"VOLVO", "volvo", "xc40", "xc60", "xc90", "v50", "v60", "v90", "s40"},
+                {"VOLVO", "volvo", "xc40", "xc60", "xc70", "xc90", "v50", "v60", "v90", "s40"},
                 {"MAZDA", "mazda", "cx-3", "cx3", "cx-5", "cx5", "mazda 5"},
                 {"HONDA", "honda", "civic", "accord", "cr-v", "hr-v"},
                 {"FORD", "ford", "focus", "mondeo", "kuga", "s-max", "galaxy", "ranger"},
@@ -1072,6 +1072,15 @@ public class SbazarParser implements CarSourceParser {
             return true;
         }
 
+        if (looksPartsListing(searchable)) {
+            return true;
+        }
+
+        if (containsAny(searchable, "nehavarovane", "nebourane")
+                && hasSpecificCarOfferSignal(searchable)) {
+            return false;
+        }
+
         if (containsAny(searchable, "pneu", "pneumatik")
                 && !containsAny(searchable, "alu kola", "sada kol", "disky", "elektrony")
                 && hasSpecificCarOfferSignal(searchable)) {
@@ -1099,8 +1108,14 @@ public class SbazarParser implements CarSourceParser {
                 "parkovaci senzor", "sklo zrcatka", "zadni sklo",
                 "zadni kamera", "couvaci kamera",
                 "packy blinkr", "packa blinkru", "paka blinkru", "paska airbag", "paska volantu", "paska pod volantem",
-                "posilovac krouticiho momentu", "5x dv 9sed",
+                "posilovac krouticiho momentu", "5x dv 9sed", "nosic kontejneru", "nosic kontejner", "kontejneru", "kontejner", "fornal",
                 " padlo ", "rucni pumpicka", "pumpicka", "cmx", "rebel", "triumph america");
+    }
+
+    private boolean looksPartsListing(String searchable) {
+        return containsAny(searchable,
+                " na nd", " na n.d", " na n d", " na nahradni dily",
+                "nahradni dily", "nahradni dil", "dily na", "rozprodavam", "bouracka na dily");
     }
 
     private boolean hasSpecificCarOfferSignal(String searchable) {

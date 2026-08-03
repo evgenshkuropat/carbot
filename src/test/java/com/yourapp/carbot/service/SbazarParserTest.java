@@ -153,6 +153,7 @@ class SbazarParserTest {
         assertThat(detectBrand("ostatni ktm x-bow gt-xr 2024 nove")).isEqualTo("KTM");
         assertThat(detectBrand("opel tigra roadster 1.4 16v benzin")).isEqualTo("OPEL");
         assertThat(detectBrand("hyudai i10 1.0 49 kw hatchback")).isEqualTo("HYUNDAI");
+        assertThat(detectBrand("xc70 2,4d 120kw crosscountry awd gps xenon 2013")).isEqualTo("VOLVO");
     }
 
     @Test
@@ -376,6 +377,9 @@ class SbazarParserTest {
         assertThat(looksNonCarListing("renault megane 1,6 16v serviska 2 sada kol")).isFalse();
         assertThat(looksNonCarListing("motor cgq 3.0tdi audi a7 a6 biturbo")).isTrue();
         assertThat(looksNonCarListing("jeep grand cherokee wj packy blinkr a paska")).isTrue();
+        assertThat(looksNonCarListing("fornal nosic kontejneru 6 tun")).isTrue();
+        assertThat(looksNonCarListing("skoda octavia scout na nd")).isTrue();
+        assertThat(looksNonCarListing("skoda octavia 2.0tdi style nehavarovane")).isFalse();
         assertThat(looksCommercialVehicle("opel vivaro r.v. 2010 https www sbazar cz inzerat 231253178 opel vivaro rv 2010")).isTrue();
         assertThat(looksCommercialVehicle("peugeot expert 2.0 hdi")).isTrue();
     }
