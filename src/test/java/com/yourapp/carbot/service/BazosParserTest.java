@@ -1092,6 +1092,14 @@ class BazosParserTest {
         assertThat(repairMojibake("P\u0139\u2122edn\u0102\u00AD n\u0102\u02C7razn\u0102\u00ADk")).isEqualTo("P\u0159edn\u00ED n\u00E1razn\u00EDk");
         assertThat(repairMojibake("MANU\u0102\u0081L TA\u0139\u02DDN\u0102\u2030")).isEqualTo("MANU\u00C1L TA\u017DN\u00C9");
         assertThat(repairMojibake("Zl\u0102\u00ADn")).isEqualTo("Zl\u00EDn");
+        assertThat(repairMojibake("Opel Zafira 1.8i 103 kW 7 m\u0102\u00ADst Klima, Ta\u0139\u013En\u0102\u00A9"))
+                .isEqualTo("Opel Zafira 1.8i 103 kW 7 m\u00EDst Klima, Ta\u017En\u00E9");
+        assertThat(repairMojibake("Praha - v\u0102\u00BDchod")).isEqualTo("Praha - v\u00FDchod");
+        assertThat(repairMojibake("Ji\u00C4\u0164\u0102\u00ADn")).isEqualTo("Ji\u010D\u00EDn");
+        assertThat(repairMojibake("Renault Grand Sc\u0102\u00A9nic 1.6dC MANU\u0102\u0081L LED V\u0102\u0165H\u0139\u0098EV KAMERA SERVISKA"))
+                .isEqualTo("Renault Grand Sc\u00E9nic 1.6dC MANU\u00C1L LED V\u00DDH\u0158EV KAMERA SERVISKA");
+        assertThat(repairMojibake("Peugeot 4008 1.8HDI 4x4 MANU\u0102\u0081L KAMERA TA\u0139\u02DDN\u0102\u2030 V\u0102\u0165H\u0139\u0098EV"))
+                .isEqualTo("Peugeot 4008 1.8HDI 4x4 MANU\u00C1L KAMERA TA\u017DN\u00C9 V\u00DDH\u0158EV");
     }
 
     private String extractFuelType(String text) throws Exception {

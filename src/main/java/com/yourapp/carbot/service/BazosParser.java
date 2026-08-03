@@ -4248,7 +4248,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             return value;
         }
 
-        String current = value;
+        String current = repairCommonMojibake(value);
         try {
             for (int attempt = 0; attempt < 5; attempt++) {
                 if (!looksLikeMojibake(current) && mojibakeScore(current) == 0) {
@@ -4275,10 +4275,82 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                     break;
                 }
             }
-            return current;
+            return repairFinalMojibake(current);
         } catch (Exception e) {
-            return current;
+            return repairFinalMojibake(current);
         }
+    }
+
+    private String repairCommonMojibake(String value) {
+        if (value == null || value.isBlank()) {
+            return value;
+        }
+
+        return value
+                .replace("\u0139\u00A0", "Ĺ ")
+                .replace("\u0139 ", "Ĺ ")
+                .replace("\u0139\u0098", "Ĺ")
+                .replace("\u0139\u2122", "Ĺ™")
+                .replace("\u0139\u013E", "Ĺľ")
+                .replace("\u0102\u0081", "Ă")
+                .replace("\u0102\u2030", "Ă‰")
+                .replace("\u0102\u00AB", "Ă«")
+                .replace("\u0102\u00A9", "Ă©")
+                .replace("\u0102\u00AD", "Ă­")
+                .replace("\u0102\u00BD", "Ă˝")
+                .replace("\u0102\u02C7", "Ăˇ")
+                .replace("\u0102\u02DD", "Ă˝")
+                .replace("\u0102\u0164", "ĂŤ")
+                .replace("\u0102\u0165", "Ăť")
+                .replace("\u0102\u201E", "Ă„")
+                .replace("\u00C4\u015A", "ÄŚ")
+                .replace("\u00C4\u0164", "ÄŤ")
+                .replace("\u00C4\u203A", "Ä›")
+                .replace("\u0139\u02DD", "Ĺ˝")
+                .replace("\u0139\u02C7", "Ĺˇ")
+                .replace("\u0139\u017B", "ĹŻ")
+                .replace("\u00E2\u20AC\u201C", "–")
+                .replace("\u00E2\u20AC\u02D8", "•")
+                .replace("\u00E2\u015B\u2026", "✅")
+                .replace("\u00E2\u00AD\u0090", "⭐");
+    }
+
+    private String repairFinalMojibake(String value) {
+        if (value == null || value.isBlank()) {
+            return value;
+        }
+
+        return value
+                .replace("ÄŚ", "Č")
+                .replace("ÄŤ", "č")
+                .replace("Ä›", "ě")
+                .replace("ÄŹ", "ď")
+                .replace("Äľ", "ž")
+                .replace("Ĺ ", "Š")
+                .replace("Ĺ", "Ř")
+                .replace("Ĺ™", "ř")
+                .replace("Ĺľ", "ž")
+                .replace("Ĺ˝", "Ž")
+                .replace("Ĺˇ", "š")
+                .replace("ĹŻ", "ů")
+                .replace("Ĺ", "ň")
+                .replace("Ă", "Á")
+                .replace("Ă‰", "É")
+                .replace("Ă«", "ë")
+                .replace("Ã«", "ë")
+                .replace("Ă©", "é")
+                .replace("Ă­", "í")
+                .replace("Ă˝", "ý")
+                .replace("Ăˇ", "á")
+                .replace("ĂŤ", "Í")
+                .replace("Ăť", "Ý")
+                .replace("Ăš", "Ú")
+                .replace("Ăş", "ú")
+                .replace("Ă¤", "ä")
+                .replace("Ă¶", "ö")
+                .replace("ĂĽ", "ü")
+                .replace("Ă—", "×")
+                .replace("Ă„", "Ä");
     }
 
     private byte[] encodeMojibakeBytes(String value) throws Exception {
