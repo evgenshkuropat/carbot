@@ -2889,6 +2889,10 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
             return "https://www.tipcars.com/";
         }
 
+        if (source.contains("AUTOESA")) {
+            return "https://www.autoesa.cz/";
+        }
+
         return "https://www.google.com/";
     }
 
