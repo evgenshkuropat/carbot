@@ -774,6 +774,7 @@ public class CarNotificationService {
             case "SAUTO" -> "Sauto.cz";
             case "USER" -> "AutoCZ users";
             case "BAZOS" -> "Bazoš.cz";
+            case "AUTOESA" -> "Auto ESA";
             default -> source.trim();
         };
     }

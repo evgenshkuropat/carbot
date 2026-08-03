@@ -3144,6 +3144,10 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
             return "Toyota prověřené vozy";
         }
 
+        if (normalized.contains("AUTOESA")) {
+            return "Auto ESA";
+        }
+
         if (normalized.contains("USER")) {
             return "AutoCZ users";
         }
