@@ -220,6 +220,7 @@ class SbazarParserTest {
         assertThat(resolveCarType("suzuki jimny 1.3 60kw 4x4 tazne", "")).isEqualTo("SUV");
         assertThat(resolveCarType("ford mustang convertible 5.0ti-vct v8 gt automat", "")).isEqualTo("CABRIO");
         assertThat(resolveCarType("jaguar f-type s 3.0 380 ps kamera panorama", "")).isEqualTo("COUPE");
+        assertThat(resolveCarType("jaguar f-pace svr 5.0 v8 405kw 550 koni", "")).isEqualTo("SUV");
         assertThat(resolveCarType("bmw m2 competition cr hk", "")).isEqualTo("COUPE");
         assertThat(resolveCarType("suzuki grand vitara 2,4i", "")).isEqualTo("SUV");
         assertThat(resolveCarType("hyundai i30 cw 1.6d r.v. 2010", "")).isEqualTo("WAGON");
@@ -364,6 +365,7 @@ class SbazarParserTest {
         assertThat(looksNonCarListing("triumph america lt cr 2015")).isTrue();
         assertThat(looksNonCarListing("bmw i3 125 kw 120 ah tep.cerpadlo")).isFalse();
         assertThat(looksNonCarListing("posilovac krouticiho momentu")).isTrue();
+        assertThat(looksNonCarListing("5x dv 9sed rozvody")).isTrue();
         assertThat(looksNonCarListing("toyota yaris 1.3benzin klima 5l/100km z+l pneu")).isFalse();
         assertThat(looksNonCarListing("jeep grand cherokee wj packy blinkr a paska")).isTrue();
         assertThat(looksCommercialVehicle("opel vivaro r.v. 2010 https www sbazar cz inzerat 231253178 opel vivaro rv 2010")).isTrue();
