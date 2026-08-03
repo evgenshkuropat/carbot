@@ -202,6 +202,7 @@ public class CarStorageService {
         String title = clean(car.getTitle());
         String price = clean(car.getPrice());
         String location = normalizeLocation(car.getLocation());
+        String source = clean(car.getSource());
         String brand = normalizeBrand(car.getBrand(), car.getTitle());
         String fuelType = normalizeFuelType(car.getFuelType(), car.getTitle());
         String transmission = normalizeTransmission(car.getTransmission(), car.getTitle(), car.getFuelType());
@@ -216,6 +217,10 @@ public class CarStorageService {
         }
 
         if (priceValue <= 0) {
+            return false;
+        }
+
+        if (looksSourceUrlBrandMismatch(source, url, title, brand)) {
             return false;
         }
 
@@ -240,6 +245,29 @@ public class CarStorageService {
         }
 
         return !(brand == null && fuelType == null && transmission == null && carType == null && !looksLikeRealCar(title));
+    }
+
+    private boolean looksSourceUrlBrandMismatch(String source, String url, String title, String brand) {
+        if (!"TIPCARS".equalsIgnoreCase(safe(source)) || url == null || title == null) {
+            return false;
+        }
+
+        String urlBrand = extractTipCarsUrlBrand(url);
+        String titleBrand = normalizeBrand(brand, title);
+
+        return urlBrand != null
+                && titleBrand != null
+                && !urlBrand.equals(titleBrand);
+    }
+
+    private String extractTipCarsUrlBrand(String url) {
+        String normalizedUrl = safe(url).toLowerCase(Locale.ROOT);
+        Matcher matcher = Pattern.compile("tipcars\\.com/([^/]+)/").matcher(normalizedUrl);
+        if (!matcher.find()) {
+            return null;
+        }
+
+        return normalizeBrand(null, matcher.group(1).replace('-', ' '));
     }
 
     private CarEntity toEntity(CarDto car, Integer priceValue) {

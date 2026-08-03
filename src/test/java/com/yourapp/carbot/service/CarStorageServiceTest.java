@@ -136,6 +136,23 @@ class CarStorageServiceTest {
     }
 
     @Test
+    void rejectsTipCarsListingsWhenTitleBrandConflictsWithUrlBrand() throws Exception {
+        CarDto mismatchedTipCars = car("Renault Fluence 1.6 16V, Tempomat");
+        mismatchedTipCars.setSource("TIPCARS");
+        mismatchedTipCars.setBrand("RENAULT");
+        mismatchedTipCars.setUrl("https://www.tipcars.com/volkswagen-golf/kombi/benzin/volkswagen-golf-1-4-tsi-navi-park-senzory-7042596.html");
+
+        assertThat(isValidForSave(mismatchedTipCars, 90_000)).isFalse();
+
+        CarDto matchingTipCars = car("Volkswagen Golf 1.4 TSI, Navi, Park. senzory");
+        matchingTipCars.setSource("TIPCARS");
+        matchingTipCars.setBrand("VOLKSWAGEN");
+        matchingTipCars.setUrl("https://www.tipcars.com/volkswagen-golf/kombi/benzin/volkswagen-golf-1-4-tsi-navi-park-senzory-7042596.html");
+
+        assertThat(isValidForSave(matchingTipCars, 90_000)).isTrue();
+    }
+
+    @Test
     void keepsSaabWithExtraWheelsAndRamPickup() throws Exception {
         CarDto saab = car("Saab 9-3 2.0TiD 110KW man - 2x KOLA");
         saab.setBrand("SAAB");

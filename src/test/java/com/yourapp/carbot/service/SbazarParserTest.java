@@ -274,6 +274,7 @@ class SbazarParserTest {
         assertThat(resolveCarType("seat arona 1,6 tdi 85kw fr", "")).isEqualTo("SUV");
         assertThat(resolveCarType("klima bez koroze tempomat seat toledo 1.9 tdi 81kw", "")).isEqualTo("SEDAN");
         assertThat(resolveCarType("alfa romeo stelvio 2.2 jtdm competizione q4", "")).isEqualTo("SUV");
+        assertThat(resolveCarType("alfa romeo stelvio 2.0 ti 206 kw", "")).isEqualTo("SUV");
         assertThat(resolveCarType("suzuki sx4 s-cross 1,4 boosterjet premium 2x4", "")).isEqualTo("SUV");
         assertThat(resolveCarType("peugeot 308 2,0 bhdi 110kw", "")).isEqualTo("HATCHBACK");
         assertThat(resolveCarType("peugeot 308 sw 1,2 pt eat8 pripravujeme", "")).isEqualTo("WAGON");
@@ -345,6 +346,11 @@ class SbazarParserTest {
         assertThat(resolveCarType("toyota corolla 1,8 hsd 122ps ts gr sport a/t", "")).isEqualTo("WAGON");
         assertThat(resolveCarType("toyota avensis 2.2 d-4d 110 kw plny servis", "")).isEqualTo("SEDAN");
         assertThat(resolveCarType("mercedes benz ml 400cdi w163 facelift automat kuze", "")).isEqualTo("SUV");
+        assertThat(resolveCarType("volkswagen golf 2,0tdi 110kw style masaz acc", "")).isEqualTo("HATCHBACK");
+        assertThat(resolveCarType("skoda octavia 4 sportline 2.0tdi 110kw dsg led", "")).isEqualTo("SEDAN");
+        assertThat(resolveCarType("fiat 500l 1.4 turbo 88kw trekking", "")).isEqualTo("MINIVAN");
+        assertThat(resolveCarType("hyundai santafe", "")).isEqualTo("SUV");
+        assertThat(resolveCarType("hummer h2 6,2 v8 aut cr 1 maj servis", "")).isEqualTo("SUV");
     }
 
     @Test
@@ -367,6 +373,8 @@ class SbazarParserTest {
         assertThat(looksNonCarListing("posilovac krouticiho momentu")).isTrue();
         assertThat(looksNonCarListing("5x dv 9sed rozvody")).isTrue();
         assertThat(looksNonCarListing("toyota yaris 1.3benzin klima 5l/100km z+l pneu")).isFalse();
+        assertThat(looksNonCarListing("renault megane 1,6 16v serviska 2 sada kol")).isFalse();
+        assertThat(looksNonCarListing("motor cgq 3.0tdi audi a7 a6 biturbo")).isTrue();
         assertThat(looksNonCarListing("jeep grand cherokee wj packy blinkr a paska")).isTrue();
         assertThat(looksCommercialVehicle("opel vivaro r.v. 2010 https www sbazar cz inzerat 231253178 opel vivaro rv 2010")).isTrue();
         assertThat(looksCommercialVehicle("peugeot expert 2.0 hdi")).isTrue();
@@ -437,6 +445,12 @@ class SbazarParserTest {
                 .isEqualTo("v Ho\u0159ovice");
         assertThat(repairMojibake("Mercedes-Benz T\u0139\u2122\u0102\u00ADdy C, 180 CDI"))
                 .isEqualTo("Mercedes-Benz T\u0159\u00EDdy C, 180 CDI");
+        assertThat(repairMojibake("\u0139\u00A0koda Octavia, 2,0TDi 85kW STYLE Vyh\u0139\u2122.Okno \u00C4\u015AR"))
+                .isEqualTo("\u0160koda Octavia, 2,0TDi 85kW STYLE Vyh\u0159.Okno \u010CR");
+        assertThat(repairMojibake("Audi A4 kombi 1.9Tdi, 74kW,Bez DPF,Nov\u0102\u02C7 STK"))
+                .isEqualTo("Audi A4 kombi 1.9Tdi, 74kW,Bez DPF,Nov\u00E1 STK");
+        assertThat(repairMojibake("v Hav\u0102\u00AD\u0139\u2122ov, M\u00C4\u203Asto"))
+                .isEqualTo("v Hav\u00ED\u0159ov, M\u011Bsto");
         assertThat(repairMojibake("v okres Hlavn\u0102\u00AD m\u00C4\u203Asto Praha"))
                 .isEqualTo("v okres Hlavn\u00ED m\u011Bsto Praha");
         assertThat(repairMojibake("v okres Brno-m\u00C4\u203Asto"))

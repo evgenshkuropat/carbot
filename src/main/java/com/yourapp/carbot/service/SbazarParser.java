@@ -890,7 +890,7 @@ public class SbazarParser implements CarSourceParser {
         if (containsAny(searchable, "volkswagen cc", "vw cc", "passat cc")) {
             return "SEDAN";
         }
-        if (containsAny(searchable, "model y", "renegade", "id.4", " id 4 ", " id4 ")) {
+        if (containsAny(searchable, "model y", "renegade", "stelvio", "santafe", "santa fe", "hummer h2", " h2 ", "id.4", " id 4 ", " id4 ")) {
             return "SUV";
         }
         if (containsAny(searchable, "toyota highlander", "highlander", "toyota lc 120", " lc 120 ", "lc120",
@@ -954,7 +954,7 @@ public class SbazarParser implements CarSourceParser {
         if (containsAny(searchable, "insignia")) {
             return "SEDAN";
         }
-        if (containsAny(searchable, "touran", "sharan", "alhambra", "altea", "s-max", "c-max", "b-max", "galaxy", "zafira", "scenic", "modus", "picasso", "roomster", "berlingo", "rifter", "caddy", "citan", "vito", "viano", "mercedes v ", "v 250", "v250", "w447", "tridy v", "tridy r", "proace verso", "proace city", "proace city verso", "multivan", "california", "volkswagen t5", "volkswagen t6", "vw t5", "vw t6", "jumpy", "trafic", "traffic", "sportsvan", "golf plus", "ford fusion", "tourneo custom", "tourneo connect", "tourneo courier", "u-tour", "u tour", "225xe", "active tourer", " f45 ", "kangoo", "dokker", "lodgy", "jogger", "b180", "b 180", "b200", "b 200", "peugeot 807", " 807 ", "mazda 5", "grandis", "voyager", "town country", "town & country", "pacifica", "grand caravan", "sienna", "corolla verso", "toyota verso", "yaris verso", " verso ", "staria", "ix20", "meriva", "partner tepee", "peugeot partner", "fiat ulysse", "ulysse", "fiat doblo", "doblo")) {
+        if (containsAny(searchable, "touran", "sharan", "alhambra", "altea", "s-max", "c-max", "b-max", "galaxy", "zafira", "scenic", "modus", "picasso", "roomster", "berlingo", "rifter", "caddy", "citan", "vito", "viano", "mercedes v ", "v 250", "v250", "w447", "tridy v", "tridy r", "proace verso", "proace city", "proace city verso", "multivan", "california", "volkswagen t5", "volkswagen t6", "vw t5", "vw t6", "jumpy", "trafic", "traffic", "sportsvan", "golf plus", "ford fusion", "tourneo custom", "tourneo connect", "tourneo courier", "u-tour", "u tour", "225xe", "active tourer", " f45 ", "kangoo", "dokker", "lodgy", "jogger", "b180", "b 180", "b200", "b 200", "peugeot 807", " 807 ", "mazda 5", "grandis", "voyager", "town country", "town & country", "pacifica", "grand caravan", "sienna", "corolla verso", "toyota verso", "yaris verso", " verso ", "staria", "ix20", "meriva", "partner tepee", "peugeot partner", "fiat ulysse", "ulysse", "fiat doblo", "doblo", "fiat 500l", " 500l")) {
             return "MINIVAN";
         }
         if (containsAny(searchable, "model 3", "model s", "toyota camry", "camry", "bmw i5", "eqe", "audi a7", " a7 ", "jetta", "w220", "w 220", "w211", "w 211", "fluence", "audi s8", " s8 ", "jaguar xf", " xf ", "jaguar xe", "mercedes 211")) {
@@ -1076,6 +1076,16 @@ public class SbazarParser implements CarSourceParser {
                 && !containsAny(searchable, "alu kola", "sada kol", "disky", "elektrony")
                 && hasSpecificCarOfferSignal(searchable)) {
             return false;
+        }
+
+        if (containsAny(searchable, "sada kol", "sady kol", "2 sada kol", "2x kola", "2xkola", "zimni kola", "letni kola")
+                && hasSpecificCarOfferSignal(searchable)
+                && !containsAny(searchable, "prodam sadu", "sada alu", "sada disku", "sada pneu", "alu disky", "alu kola", "pneu", "pneumatik")) {
+            return false;
+        }
+
+        if (searchable.startsWith("motor ")) {
+            return true;
         }
 
         return containsAny(searchable,
