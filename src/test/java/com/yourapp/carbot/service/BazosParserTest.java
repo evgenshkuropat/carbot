@@ -975,6 +975,14 @@ class BazosParserTest {
 
     @Test
     void repairsCurrentBazosMojibakeFromLogs() throws Exception {
+        assertThat(repairMojibake("Kr\u0102\u02C7sn\u0102\u02DD Peugeot 207 1.4i 54kw Rozvody Spojka"))
+                .isEqualTo("Kr\u00E1sn\u00FD Peugeot 207 1.4i 54kw Rozvody Spojka");
+        assertThat(repairMojibake("Ji\u00C4\u0164\u0102\u00ADn"))
+                .isEqualTo("Ji\u010D\u00EDn");
+        assertThat(repairMojibake("Rychnov nad Kn\u00C4\u203A\u0139\u013Enou"))
+                .isEqualTo("Rychnov nad Kn\u011B\u017Enou");
+        assertThat(repairMojibake("MANU\u0102\u0081L TA\u0139\u02DDN\u0102\u2030"))
+                .isEqualTo("MANU\u00C1L TA\u017DN\u00C9");
         assertThat(repairMojibake("Ĺ koda Superb III combi 2.0 TDi,147kW,DSG,4x4,Sportline,Webas"))
                 .isEqualTo("Škoda Superb III combi 2.0 TDi,147kW,DSG,4x4,Sportline,Webas");
         assertThat(repairMojibake("Ĺ koda Superb III combi 2.0 TDi,147kW,DSG,4x4,Sportline,Webas"))
