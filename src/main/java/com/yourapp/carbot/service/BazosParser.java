@@ -1891,7 +1891,9 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         if (containsAny(titleSource, " qashqai ", " juke ", " x-trail ", " x trail ", " navara ", " micra ", " leaf ", " primera ", " terrano ", " pixo ", " pulsar ")) return "NISSAN";
         if (containsAny(titleSource, " honda ", " hondu ", " acura ", " insight ")) return "HONDA";
         if (containsAny(titleSource, " suzuki ")) return "SUZUKI";
-        if (containsAny(titleSource, " samurai ", " samuraj ", " wagon r ", " wagon r+ ")) return "SUZUKI";
+        if (containsAny(titleSource,
+                " samurai ", " samuraj ", " wagon r ", " wagon r+ ",
+                " vitara ", " swift ", " sx4 ", " sx 4 ", " splash ", " jimny ", " ignis ")) return "SUZUKI";
         if (containsAny(titleSource, " dacia ", " dacie ", " duster ", " sandero ", " logan ", " dokker ", " lodgy ", " jogger ", " bigster ")) return "DACIA";
         if (containsAny(titleSource, " cupra ")) return "CUPRA";
         if (containsAny(titleSource, " jeep ")) return "JEEP";

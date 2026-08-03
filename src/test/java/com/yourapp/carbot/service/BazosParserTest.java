@@ -61,6 +61,8 @@ class BazosParserTest {
                 .isEqualTo("SUZUKI");
         assertThat(extractBrand("Suzuki samuraj 1.3", ""))
                 .isEqualTo("SUZUKI");
+        assertThat(extractBrand("Grant Vitara", "skoda fabia"))
+                .isEqualTo("SUZUKI");
         assertThat(extractBrand("Suzuki Wagon R 1.3i 56 kW, 2002, tazny", ""))
                 .isEqualTo("SUZUKI");
         assertThat(extractBrand("Mercedes-AMG GT 43 4MATIC+ Brilliant Blue", ""))
