@@ -470,7 +470,8 @@ public class SbazarParser implements CarSourceParser {
         String context = searchable.substring(Math.max(0, start - 80), Math.min(searchable.length(), end + 80));
         return containsAny(context,
                 "zaruka", "zaruky", "garance", "stk", "emise",
-                "servis do", "platne do", "platnost", "do roku",
+                "servis do", "platne do", "platnost", "do roku", "od roku",
+                "na trhu", "firma", "spolecnost", "autobazar", "prodejce",
                 "vlozen", "vlozeno", "pridano", "aktualiz", "inzerat");
     }
 

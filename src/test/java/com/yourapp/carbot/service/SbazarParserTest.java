@@ -378,6 +378,8 @@ class SbazarParserTest {
                 .isNull();
         assertThat(resolveYear("opel insignia 2.0 aut kamera vyhrev serviska", "opel insignia rok 2017"))
                 .isEqualTo(2017);
+        assertThat(resolveYear("skoda scala 1.0 tsi style plus pdc", "skoda scala na trhu od roku 1996 okres hlavni mesto praha"))
+                .isNull();
         assertThat(resolveYear("seat leon 2007 2.0 tdi dsg", "seat leon https www sbazar cz inzerat 231659934"))
                 .isEqualTo(2007);
         assertThat(resolveYear("skoda yeti 1.2 tsi dsg 2011", "skoda yeti https www.sbazar.cz inzerat 228718145"))
