@@ -267,6 +267,12 @@ class TipCarsParserTest {
     }
 
     @Test
+    void rejectsInflatedListFallbackPrices() throws Exception {
+        assertThat(isValidListFallbackPrice(1_499_000)).isTrue();
+        assertThat(isValidListFallbackPrice(9_179_000)).isFalse();
+    }
+
+    @Test
     void resolvesHybridFuelFromTipCarsTitlesBeforePetrolUrl() throws Exception {
         assertThat(extractFuelType("Toyota C-HR 1.8 Hybrid, Automat"))
                 .isEqualTo("HYBRID");
@@ -531,6 +537,12 @@ class TipCarsParserTest {
         Method method = TipCarsParser.class.getDeclaredMethod("cleanupListTitle", String.class);
         method.setAccessible(true);
         return (String) method.invoke(parser, title);
+    }
+
+    private boolean isValidListFallbackPrice(Integer priceValue) throws Exception {
+        Method method = TipCarsParser.class.getDeclaredMethod("isValidListFallbackPrice", Integer.class);
+        method.setAccessible(true);
+        return (boolean) method.invoke(parser, priceValue);
     }
 
     private Object recordValue(Object record, String accessor) throws Exception {

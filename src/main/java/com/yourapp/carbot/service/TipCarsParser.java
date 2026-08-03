@@ -42,6 +42,7 @@ public class TipCarsParser implements CarSourceParser {
     private static final int MIN_YEAR = 1990;
     private static final int MIN_TITLE_YEAR = 1900;
     private static final int MAX_REASONABLE_PRICE = 10_000_000;
+    private static final int MAX_LIST_FALLBACK_PRICE = 5_000_000;
 
     @Override
     public String getSourceName() {
@@ -269,7 +270,7 @@ public class TipCarsParser implements CarSourceParser {
         }
 
         Integer priceValue = extractFirstPrice(listText);
-        if (priceValue == null || priceValue <= 0 || priceValue > MAX_REASONABLE_PRICE) {
+        if (!isValidListFallbackPrice(priceValue)) {
             return new ParseResult(null, "forbidden");
         }
 
@@ -585,6 +586,10 @@ public class TipCarsParser implements CarSourceParser {
         }
 
         return null;
+    }
+
+    private boolean isValidListFallbackPrice(Integer priceValue) {
+        return priceValue != null && priceValue > 0 && priceValue <= MAX_LIST_FALLBACK_PRICE;
     }
 
     private boolean startsWithModelSeriesNumber(String text, int matchStart, String rawPrice) {
