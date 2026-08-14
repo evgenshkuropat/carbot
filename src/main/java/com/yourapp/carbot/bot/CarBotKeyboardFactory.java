@@ -52,6 +52,10 @@ public class CarBotKeyboardFactory {
         List<InlineKeyboardRow> rows = new ArrayList<>();
 
         rows.add(singleButtonRow(myCarsMenuText(lang), "sell_mycars"));
+        rows.add(singleButtonRow(
+                "\uD83C\uDDFA\uD83C\uDDE6 " + messages.get(lang, "services.dpDocument"),
+                "service_dp_document"
+        ));
 
         rows.add(singleUrlButtonRow(
                 "🏠 " + messages.get(lang, "services.housingBot"),
@@ -70,6 +74,15 @@ public class CarBotKeyboardFactory {
 
         return InlineKeyboardMarkup.builder()
                 .keyboard(rows)
+                .build();
+    }
+
+    public InlineKeyboardMarkup dpDocumentKeyboard(String lang) {
+        return InlineKeyboardMarkup.builder()
+                .keyboard(List.of(singleUrlButtonRow(
+                        "\uD83D\uDCF1 " + messages.get(lang, "services.dpDocument.open"),
+                        "https://t.me/dpdoc_prague"
+                )))
                 .build();
     }
 

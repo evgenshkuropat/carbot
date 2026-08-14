@@ -91,6 +91,15 @@ public class MessageService {
                     Map.entry("menu.latest", "Новые объявления"),
                     Map.entry("menu.services", "\u0421\u0435\u0440\u0432\u0438\u0441\u044B"),
                     Map.entry("services.text", "\uD83E\uDDF0 \u0421\u0435\u0440\u0432\u0438\u0441\u044B"),
+                    Map.entry("services.dpDocument", "\u0417\u0430\u043F\u0438\u0441\u044C \u0432 \u0414\u041F \u0414\u043E\u043A\u0443\u043C\u0435\u043D\u0442"),
+                    Map.entry("services.dpDocument.open", "\u041E\u0442\u043A\u0440\u044B\u0442\u044C \u043A\u0430\u043D\u0430\u043B"),
+                    Map.entry("services.dpDocument.text", """
+                            \uD83C\uDDFA\uD83C\uDDE6 \u0417\u0430\u043F\u0438\u0441\u044C \u0432 \u0414\u041F \u0414\u043E\u043A\u0443\u043C\u0435\u043D\u0442 \u041F\u0440\u0430\u0433\u0430
+
+                            \u041D\u0435\u043E\u0444\u0438\u0446\u0438\u0430\u043B\u044C\u043D\u044B\u0439 \u043A\u0430\u043D\u0430\u043B, \u0433\u0434\u0435 \u043E\u0442\u0441\u043B\u0435\u0436\u0438\u0432\u0430\u044E\u0442 \u044D\u043B\u0435\u043A\u0442\u0440\u043E\u043D\u043D\u0443\u044E \u043E\u0447\u0435\u0440\u0435\u0434\u044C \u0438 \u0434\u043E\u0441\u0442\u0443\u043F\u043D\u044B\u0435 \u043C\u0435\u0441\u0442\u0430 \u0434\u043B\u044F \u0437\u0430\u043F\u0438\u0441\u0438 \u0432 \u0446\u0435\u043D\u0442\u0440\u0435 \u0414\u041F \u00AB\u0414\u043E\u043A\u0443\u043C\u0435\u043D\u0442\u00BB \u0432 \u041F\u0440\u0430\u0433\u0435 \u0438 \u0434\u0440\u0443\u0433\u0438\u0445 \u0433\u043E\u0440\u043E\u0434\u0430\u0445.
+
+                            \u041F\u0440\u043E\u0432\u0435\u0440\u044F\u0439\u0442\u0435 \u0438\u043D\u0444\u043E\u0440\u043C\u0430\u0446\u0438\u044E \u0441\u0430\u043C\u043E\u0441\u0442\u043E\u044F\u0442\u0435\u043B\u044C\u043D\u043E — \u0431\u043E\u0442 \u043B\u0438\u0448\u044C \u0434\u0435\u043B\u0438\u0442\u0441\u044F \u043F\u043E\u043B\u0435\u0437\u043D\u044B\u043C \u0438\u0441\u0442\u043E\u0447\u043D\u0438\u043A\u043E\u043C.
+                            """),
                     Map.entry("services.housingBot", "\u041F\u043E\u0438\u0441\u043A \u0436\u0438\u043B\u044C\u044F \u0432 \u0427\u0435\u0445\u0438\u0438"),
                     Map.entry("services.feedback", "\u041E\u0431\u0440\u0430\u0442\u043D\u0430\u044F \u0441\u0432\u044F\u0437\u044C"),
                     Map.entry("services.supportProject", "\u041F\u043E\u0434\u0434\u0435\u0440\u0436\u0430\u0442\u044C \u043F\u0440\u043E\u0435\u043A\u0442"),
@@ -398,6 +407,15 @@ public class MessageService {
                     Map.entry("menu.latest", "Нові оголошення"),
                     Map.entry("menu.services", "\u0421\u0435\u0440\u0432\u0456\u0441\u0438"),
                     Map.entry("services.text", "\uD83E\uDDF0 \u0421\u0435\u0440\u0432\u0456\u0441\u0438"),
+                    Map.entry("services.dpDocument", "\u0417\u0430\u043F\u0438\u0441 \u0443 \u0414\u041F \u0414\u043E\u043A\u0443\u043C\u0435\u043D\u0442"),
+                    Map.entry("services.dpDocument.open", "\u0412\u0456\u0434\u043A\u0440\u0438\u0442\u0438 \u043A\u0430\u043D\u0430\u043B"),
+                    Map.entry("services.dpDocument.text", """
+                            \uD83C\uDDFA\uD83C\uDDE6 \u0417\u0430\u043F\u0438\u0441 \u0443 \u0414\u041F \u0414\u043E\u043A\u0443\u043C\u0435\u043D\u0442 \u041F\u0440\u0430\u0433\u0430
+
+                            \u041D\u0435\u043E\u0444\u0456\u0446\u0456\u0439\u043D\u0438\u0439 \u043A\u0430\u043D\u0430\u043B, \u0434\u0435 \u0432\u0456\u0434\u0441\u0442\u0435\u0436\u0443\u044E\u0442\u044C \u0435\u043B\u0435\u043A\u0442\u0440\u043E\u043D\u043D\u0443 \u0447\u0435\u0440\u0433\u0443 \u0442\u0430 \u0434\u043E\u0441\u0442\u0443\u043F\u043D\u0456 \u043C\u0456\u0441\u0446\u044F \u0434\u043B\u044F \u0437\u0430\u043F\u0438\u0441\u0443 \u0432 \u0446\u0435\u043D\u0442\u0440\u0456 \u0414\u041F \u00AB\u0414\u043E\u043A\u0443\u043C\u0435\u043D\u0442\u00BB \u0443 \u041F\u0440\u0430\u0437\u0456 \u0442\u0430 \u0456\u043D\u0448\u0438\u0445 \u043C\u0456\u0441\u0442\u0430\u0445.
+
+                            \u041F\u0435\u0440\u0435\u0432\u0456\u0440\u044F\u0439\u0442\u0435 \u0456\u043D\u0444\u043E\u0440\u043C\u0430\u0446\u0456\u044E \u0441\u0430\u043C\u043E\u0441\u0442\u0456\u0439\u043D\u043E — \u0431\u043E\u0442 \u043B\u0438\u0448\u0435 \u0434\u0456\u043B\u0438\u0442\u044C\u0441\u044F \u043A\u043E\u0440\u0438\u0441\u043D\u0438\u043C \u0434\u0436\u0435\u0440\u0435\u043B\u043E\u043C.
+                            """),
                     Map.entry("services.housingBot", "\u041F\u043E\u0448\u0443\u043A \u0436\u0438\u0442\u043B\u0430 \u0432 \u0427\u0435\u0445\u0456\u0457"),
                     Map.entry("services.feedback", "\u0417\u0432\u043E\u0440\u043E\u0442\u043D\u0438\u0439 \u0437\u0432\u2019\u044F\u0437\u043E\u043A"),
                     Map.entry("services.supportProject", "\u041F\u0456\u0434\u0442\u0440\u0438\u043C\u0430\u0442\u0438 \u043F\u0440\u043E\u0454\u043A\u0442"),
@@ -705,6 +723,15 @@ public class MessageService {
                     Map.entry("menu.latest", "Nové inzeráty"),
                     Map.entry("menu.services", "Slu\u017Eby"),
                     Map.entry("services.text", "\uD83E\uDDF0 Slu\u017Eby"),
+                    Map.entry("services.dpDocument", "Rezervace DP Dokument"),
+                    Map.entry("services.dpDocument.open", "Otev\u0159\u00EDt kan\u00E1l"),
+                    Map.entry("services.dpDocument.text", """
+                            \uD83C\uDDFA\uD83C\uDDE6 Rezervace DP Dokument Praha
+
+                            Neofici\u00E1ln\u00ED kan\u00E1l, kter\u00FD sleduje elektronickou frontu a voln\u00E1 m\u00EDsta pro rezervaci v centru DP \u201EDokument\u201C v Praze a dal\u0161\u00EDch m\u011Bstech.
+
+                            Informace si pros\u00EDm ov\u011B\u0159ujte sami — bot pouze sd\u00EDl\u00ED u\u017Eite\u010Dn\u00FD zdroj.
+                            """),
                     Map.entry("services.housingBot", "Hled\u00E1n\u00ED bydlen\u00ED v \u010Cesku"),
                     Map.entry("services.feedback", "Zp\u011Btn\u00E1 vazba"),
                     Map.entry("services.supportProject", "Podpo\u0159it projekt"),
@@ -1012,6 +1039,15 @@ public class MessageService {
                     Map.entry("menu.latest", "New listings"),
                     Map.entry("menu.services", "Services"),
                     Map.entry("services.text", "\uD83E\uDDF0 Services"),
+                    Map.entry("services.dpDocument", "DP Document appointments"),
+                    Map.entry("services.dpDocument.open", "Open channel"),
+                    Map.entry("services.dpDocument.text", """
+                            \uD83C\uDDFA\uD83C\uDDE6 DP Document Prague appointments
+
+                            An unofficial channel that tracks the electronic queue and available appointment slots at the DP Document center in Prague and other cities.
+
+                            Please verify the information yourself — the bot only shares a useful source.
+                            """),
                     Map.entry("services.housingBot", "Housing search in Czechia"),
                     Map.entry("services.feedback", "Feedback"),
                     Map.entry("services.supportProject", "Support the project"),

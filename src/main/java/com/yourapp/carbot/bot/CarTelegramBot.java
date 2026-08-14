@@ -539,6 +539,11 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
             return;
         }
 
+        if ("service_dp_document".equals(data)) {
+            showDpDocumentService(chatId);
+            return;
+        }
+
         if (data.startsWith("fav_add:")) {
             handleAddFavorite(chatId, data.substring("fav_add:".length()));
             return;
@@ -1166,6 +1171,15 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
                 keyboardFactory.servicesKeyboard(lang(chatId))
         );
     }
+
+    private void showDpDocumentService(Long chatId) {
+        sendMessage(
+                chatId,
+                messages.get(lang(chatId), "services.dpDocument.text"),
+                keyboardFactory.dpDocumentKeyboard(lang(chatId))
+        );
+    }
+
     private void handleLatest(Long chatId) {
         List<CarEntity> cars = carRepository.findTop5ByOrderByCreatedAtDesc();
 
