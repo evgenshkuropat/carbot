@@ -89,15 +89,17 @@ class AutoEsaParserTest {
     @Test
     void repairsAutoEsaMojibakeTitles() throws Exception {
         assertThat(repairMojibake("\u0139\u00A0koda Octavia IV 2.0 TDi Style 4x4"))
-                .isEqualTo("Škoda Octavia IV 2.0 TDi Style 4x4");
-        assertThat(repairMojibake("CitroĂ«n C3 Picasso 1.6i"))
-                .isEqualTo("Citroën C3 Picasso 1.6i");
-        assertThat(repairMojibake("Renault ScĂ©nic 1.8 dCi Business"))
-                .isEqualTo("Renault Scénic 1.8 dCi Business");
-        assertThat(repairMojibake("BMW Ĺ\u0098ada 2 1.5 i Advantage 218i"))
-                .isEqualTo("BMW Řada 2 1.5 i Advantage 218i");
-        assertThat(repairMojibake("Mercedes-Benz TĹ™Ă­da C 1.6 d C 200 d"))
-                .isEqualTo("Mercedes-Benz Třída C 1.6 d C 200 d");
+                .isEqualTo("\u0160koda Octavia IV 2.0 TDi Style 4x4");
+        assertThat(repairMojibake("Citro\u00C4\u201A\u00C2\u00ABn C3 Picasso 1.6i"))
+                .isEqualTo("Citro\u00EBn C3 Picasso 1.6i");
+        assertThat(repairMojibake("Renault Sc\u00C4\u201A\u00C2\u00A9nic 1.8 dCi Business"))
+                .isEqualTo("Renault Sc\u00E9nic 1.8 dCi Business");
+        assertThat(repairMojibake("Mercedes-Benz T\u0139\u2122\u0102\u00ADda C 1.6 d C 200 d"))
+                .isEqualTo("Mercedes-Benz T\u0159\u00EDda C 1.6 d C 200 d");
+        assertThat(repairMojibake("Citro\u0102\u00ABn C5 Aircross 1.5 HDI"))
+                .isEqualTo("Citro\u00EBn C5 Aircross 1.5 HDI");
+        assertThat(repairMojibake("\u0139\u00A0koda Superb III 2.0 TSI L&K 4x4"))
+                .isEqualTo("\u0160koda Superb III 2.0 TSI L&K 4x4");
     }
 
     @Test
