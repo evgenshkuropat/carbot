@@ -1872,7 +1872,7 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
 
     private void handleAdminReview(Long adminChatId, String carIdValue, boolean approve) {
         if (!isAdmin(adminChatId)) {
-            sendMessage(adminChatId, "Admin access denied.");
+            sendMessage(adminChatId, "Доступ до адмін-панелі заборонено.");
             return;
         }
 
@@ -3332,7 +3332,7 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
     private void handleAdmin(Long chatId) {
 
         if (!isAdmin(chatId)) {
-            sendMessage(chatId, "⛔ Admin access denied.");
+            sendMessage(chatId, "⛔ Доступ до адмін-панелі заборонено.");
             return;
         }
 
@@ -3368,25 +3368,25 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
         }
 
         String text = """
-        🛠 Admin panel
+        🛠 Адмін-панель
 
-        ✅ Bot status: running
+        ✅ Статус бота: працює
 
-        👥 Users total: %d
-        🔔 Active subscriptions: %d
-        ⭐ Favorites saved: %d
+        👥 Користувачів усього: %d
+        🔔 Активних підписок: %d
+        ⭐ Збережено в обраному: %d
 
-        🚗 Cars in DB: %d
-        🆕 New last 24h: %d
-        🧾 User listings pending: %d
+        🚗 Авто в базі: %d
+        🆕 Нових за 24 год: %d
+        🧾 Оголошень користувачів на перевірці: %d
 
-        📦 Sources total:
+        📦 Джерела всього:
         %s
 
-        🕒 Sources last 24h:
+        🕒 Джерела за 24 год:
         %s
 
-        🧾 Latest cars:
+        🧾 Останні авто:
         %s
         """.formatted(
                 usersTotal,
@@ -3401,12 +3401,12 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
         );
 
         text = text
-                + "\n\nScheduler last run:\n"
+                + "\n\nОстанній запуск планувальника:\n"
                 + parserDiagnostics
-                + "\n\nYour filter diagnostics:\n"
+                + "\n\nДіагностика твого фільтра:\n"
                 + filterDiagnostics
-                + "\n\nAdmin commands:\n"
-                + "- /admin_owner_list - latest user listings";
+                + "\n\nАдмін-команди:\n"
+                + "- /admin_owner_list - останні оголошення користувачів";
 
         sendMessage(chatId, text);
         sendPendingUserListings(chatId);
@@ -3414,13 +3414,13 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
 
     private void handleAdminOwnerList(Long chatId) {
         if (!isAdmin(chatId)) {
-            sendMessage(chatId, "Admin access denied.");
+            sendMessage(chatId, "Доступ до адмін-панелі заборонено.");
             return;
         }
 
         List<CarEntity> cars = carRepository.findTop50BySourceOrderByCreatedAtDesc("USER");
         if (cars.isEmpty()) {
-            sendMessage(chatId, "No user listings found.");
+            sendMessage(chatId, "Оголошень користувачів не знайдено.");
             return;
         }
 
@@ -3439,10 +3439,10 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
                 .count();
 
         sendMessage(chatId, """
-                User listings:
-                - total: %d
-                - showing latest: %d
-                - in shown list: pending=%d, active=%d, rejected=%d, inactive=%d
+                Оголошення користувачів:
+                - усього: %d
+                - показано останніх: %d
+                - у списку: на перевірці=%d, активні=%d, відхилені=%d, неактивні=%d
                 """.formatted(total, cars.size(), pending, active, rejected, inactive).trim());
 
         for (CarEntity car : cars) {
@@ -3457,22 +3457,22 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
         LocalDateTime lastRunAt = parserRunStatsService.getLastRunAt();
 
         if (lastRunAt == null) {
-            return "- no parser run recorded since app start";
+            return "- з моменту запуску застосунку парсери ще не запускалися";
         }
 
         StringBuilder builder = new StringBuilder();
         boolean running = parserRunStatsService.isRunning();
         LocalDateTime finishedAt = parserRunStatsService.getLastFinishedAt();
 
-        builder.append("- status: ")
-                .append(running ? "running (numbers are partial)" : "finished")
+        builder.append("- статус: ")
+                .append(running ? "працює (цифри ще неповні)" : "завершено")
                 .append("\n");
-        builder.append("- last started: ").append(lastRunAt.withNano(0)).append("\n");
+        builder.append("- останній старт: ").append(lastRunAt.withNano(0)).append("\n");
         if (finishedAt != null) {
-            builder.append("- last finished: ").append(finishedAt.withNano(0)).append("\n");
+            builder.append("- останнє завершення: ").append(finishedAt.withNano(0)).append("\n");
         }
-        builder.append("- parsed unique: ").append(parserRunStatsService.getTotalParsedUnique()).append("\n");
-        builder.append("- newly saved: ").append(parserRunStatsService.getTotalSaved()).append("\n");
+        builder.append("- розібрано унікальних: ").append(parserRunStatsService.getTotalParsedUnique()).append("\n");
+        builder.append("- нових збережено: ").append(parserRunStatsService.getTotalSaved()).append("\n");
 
         Map<String, ParserRunStatsService.ParserStats> stats = parserRunStatsService.getParserStats();
         if (stats == null || stats.isEmpty()) {
@@ -3483,17 +3483,17 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
             ParserRunStatsService.ParserStats stat = entry.getValue();
             builder.append("- ")
                     .append(formatSource(entry.getKey()))
-                    .append(": returned=")
+                    .append(": отримано=")
                     .append(stat.returned())
-                    .append(", added=")
+                    .append(", додано=")
                     .append(stat.added())
-                    .append(", duplicates=")
+                    .append(", дублікати=")
                     .append(stat.duplicatesSkipped())
-                    .append(", invalid=")
+                    .append(", невалідні=")
                     .append(stat.invalidSkipped());
 
             if (stat.failed()) {
-                builder.append(", FAILED");
+                builder.append(", ПОМИЛКА");
             }
 
             builder.append("\n");
@@ -3505,7 +3505,7 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
     private String buildAdminFilterDiagnostics(Long chatId, LocalDateTime since) {
         UserFilterEntity filter = userFilterService.findByChatId(chatId).orElse(null);
         if (!isFilterConfigured(filter)) {
-            return "- no active filter configured";
+            return "- активний фільтр не налаштовано";
         }
 
         List<CarEntity> recentCars = carRepository.findAllByListingStatusAndCreatedAtAfterOrderByCreatedAtDesc("ACTIVE", since);
@@ -3514,18 +3514,18 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
                 .count();
 
         StringBuilder builder = new StringBuilder();
-        builder.append("- active filter: ")
-                .append("brand=").append(safe(filter.getBrand()))
-                .append(", type=").append(safe(filter.getCarType()))
-                .append(", maxPrice=").append(filter.getMaxPrice() == null ? "-" : filter.getMaxPrice())
-                .append(", location=").append(safe(filter.getLocation()))
-                .append(", maxMileage=").append(filter.getMaxMileage() == null ? "-" : filter.getMaxMileage())
-                .append(", fuel=").append(safe(filter.getFuelType()))
-                .append(", transmission=").append(safe(filter.getTransmission()))
-                .append(", yearFrom=").append(filter.getYearFrom() == null ? "-" : filter.getYearFrom())
+        builder.append("- активний фільтр: ")
+                .append("марка=").append(safe(filter.getBrand()))
+                .append(", тип=").append(safe(filter.getCarType()))
+                .append(", макс. ціна=").append(filter.getMaxPrice() == null ? "-" : filter.getMaxPrice())
+                .append(", локація=").append(safe(filter.getLocation()))
+                .append(", макс. пробіг=").append(filter.getMaxMileage() == null ? "-" : filter.getMaxMileage())
+                .append(", пальне=").append(safe(filter.getFuelType()))
+                .append(", коробка=").append(safe(filter.getTransmission()))
+                .append(", рік від=").append(filter.getYearFrom() == null ? "-" : filter.getYearFrom())
                 .append("\n");
-        builder.append("- new ACTIVE cars last 24h: ").append(recentCars.size()).append("\n");
-        builder.append("- matched your filter last 24h: ").append(matched);
+        builder.append("- нових ACTIVE авто за 24 год: ").append(recentCars.size()).append("\n");
+        builder.append("- збігів із твоїм фільтром за 24 год: ").append(matched);
 
         return builder.toString();
     }
