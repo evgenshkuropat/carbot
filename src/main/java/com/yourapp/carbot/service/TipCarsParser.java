@@ -147,6 +147,13 @@ public class TipCarsParser implements CarSourceParser {
         try {
             Connection.Response detailResponse = connect(url, cookies, BASE_LIST_URL).execute();
             cookies.putAll(detailResponse.cookies());
+            String finalUrl = normalizeDetailUrl(detailResponse.url() == null ? null : detailResponse.url().toString());
+            if (!isValidDetailLink(finalUrl)) {
+                log.warn("TIPCARS SKIP url={} reason=detail_redirected_to_non_detail final_url={}",
+                        safe(url), safe(finalUrl));
+                return new ParseResult(null, "broken_listing");
+            }
+
             Document doc = detailResponse.parse();
 
             String title = extractTitle(doc);
@@ -154,19 +161,19 @@ public class TipCarsParser implements CarSourceParser {
 
             if (title == null || title.isBlank()
                     || isJunkTitle(title)
-                    || isJunkUrl(url)
+                    || isJunkUrl(finalUrl)
                     || isJunkText(pageText)) {
-                log.warn("TIPCARS SKIP url={} reason=broken_listing title={}", safe(url), safe(title));
+                log.warn("TIPCARS SKIP url={} reason=broken_listing title={}", safe(finalUrl), safe(title));
                 return new ParseResult(null, "broken_listing");
             }
 
-            if (looksTitleUrlBrandMismatch(title, url)) {
-                log.warn("TIPCARS SKIP url={} reason=title_url_brand_mismatch title={}", safe(url), safe(title));
+            if (looksTitleUrlBrandMismatch(title, finalUrl)) {
+                log.warn("TIPCARS SKIP url={} reason=title_url_brand_mismatch title={}", safe(finalUrl), safe(title));
                 return new ParseResult(null, "broken_listing");
             }
 
-            if (looksCommercialOrCamperListing(title, url, pageText)) {
-                log.info("TIPCARS SKIP url={} reason=commercial_vehicle title={}", safe(url), safe(title));
+            if (looksCommercialOrCamperListing(title, finalUrl, pageText)) {
+                log.info("TIPCARS SKIP url={} reason=commercial_vehicle title={}", safe(finalUrl), safe(title));
                 return new ParseResult(null, "commercial_vehicle");
             }
 
@@ -186,21 +193,21 @@ public class TipCarsParser implements CarSourceParser {
             Integer mileage = extractMileage(pageText);
             String location = extractLocation(doc, pageText);
             String imageUrl = extractImageUrl(doc);
-            String brand = extractBrand(title, url);
+            String brand = extractBrand(title, finalUrl);
             String fuelType = firstNonBlank(
                     extractFuelType(title),
-                    extractFuelType(url),
+                    extractFuelType(finalUrl),
                     extractFuelType(pageText)
             );
 
             String transmission = firstNonBlank(
                     extractTransmission(title),
                     extractTransmissionFromSpecs(doc),
-                    extractTransmission(url),
+                    extractTransmission(finalUrl),
                     "ELECTRIC".equals(fuelType) ? "AUTOMATIC" : null
             );
 
-            String carType = extractCarType(title, "", url);
+            String carType = extractCarType(title, "", finalUrl);
             String outputTitle = repairMojibake(title);
             String outputLocation = repairMojibake(location);
 
@@ -210,7 +217,7 @@ public class TipCarsParser implements CarSourceParser {
             car.setPrice(formatPrice(priceValue));
             car.setPriceValue(priceValue);
             car.setLocation(outputLocation);
-            car.setUrl(url);
+            car.setUrl(finalUrl);
             car.setImageUrl(imageUrl);
             car.setBrand(brand);
             car.setYear(year);
@@ -229,7 +236,7 @@ public class TipCarsParser implements CarSourceParser {
                     safe(transmission),
                     safe(carType),
                     safe(brand),
-                    safe(url));
+                    safe(finalUrl));
 
             return new ParseResult(car, "ok");
 
@@ -393,14 +400,34 @@ public class TipCarsParser implements CarSourceParser {
     }
 
     private Element findListingCard(Element link) {
+        String targetHref = normalizeDetailUrl(link.absUrl("href"));
         Element current = link;
         for (int depth = 0; current != null && depth < 7; depth++, current = current.parent()) {
             String text = normalizeText(current.text());
-            if (text.length() >= 30 && text.length() <= 2500 && extractFirstPrice(text) != null) {
+            if (text.length() >= 30
+                    && text.length() <= 2500
+                    && extractFirstPrice(text) != null
+                    && containsOnlyTargetDetailLink(current, targetHref)) {
                 return current;
             }
         }
         return null;
+    }
+
+    private boolean containsOnlyTargetDetailLink(Element element, String targetHref) {
+        if (element == null || targetHref == null || targetHref.isBlank()) {
+            return false;
+        }
+
+        Set<String> detailHrefs = new LinkedHashSet<>();
+        for (Element nestedLink : element.select("a[href]")) {
+            String href = normalizeDetailUrl(nestedLink.absUrl("href"));
+            if (isValidDetailLink(href)) {
+                detailHrefs.add(href);
+            }
+        }
+
+        return detailHrefs.size() == 1 && detailHrefs.contains(targetHref);
     }
 
     private String extractListTitle(Element card, Element link) {

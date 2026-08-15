@@ -243,6 +243,63 @@ class TipCarsParserTest {
     }
 
     @Test
+    void doesNotUseSharedListContainerAsFallbackCard() throws Exception {
+        Map<?, ?> listings = extractListListings("""
+                <html><body>
+                  <section class="results">
+                    <a href="https://www.tipcars.com/renault-fluence/kombi/benzin/renault-fluence-1-6-16v-tempomat-7042596.html">
+                      <h2>Renault Fluence 1.6 16V, Tempomat</h2>
+                    </a>
+                    <img src="/images/renault.jpg">
+                    <span>90 000 Kč</span>
+
+                    <a href="https://www.tipcars.com/volkswagen-golf/kombi/benzin/volkswagen-golf-1-4-tsi-navi-park-senzory-7042596.html">
+                      <h2>Volkswagen Golf 1.4 TSI Navi</h2>
+                    </a>
+                    <img src="/images/golf.jpg">
+                    <span>150 000 Kč</span>
+                  </section>
+                </body></html>
+                """);
+
+        assertThat(listings).isEmpty();
+    }
+
+    @Test
+    void keepsListFallbackDataInsideEachOwnCard() throws Exception {
+        Map<?, ?> listings = extractListListings("""
+                <html><body>
+                  <section class="results">
+                    <article>
+                      <a href="https://www.tipcars.com/renault-fluence/kombi/benzin/renault-fluence-1-6-16v-tempomat-7042596.html">
+                        <h2>Renault Fluence 1.6 16V, Tempomat</h2>
+                      </a>
+                      <img src="/images/renault.jpg">
+                      <span>90 000 Kč</span>
+                    </article>
+                    <article>
+                      <a href="https://www.tipcars.com/volkswagen-golf/kombi/benzin/volkswagen-golf-1-4-tsi-navi-park-senzory-7042596.html">
+                        <h2>Volkswagen Golf 1.4 TSI Navi</h2>
+                      </a>
+                      <img src="/images/golf.jpg">
+                      <span>150 000 Kč</span>
+                    </article>
+                  </section>
+                </body></html>
+                """);
+
+        Object renault = listings.get("https://www.tipcars.com/renault-fluence/kombi/benzin/renault-fluence-1-6-16v-tempomat-7042596.html");
+        Object golf = listings.get("https://www.tipcars.com/volkswagen-golf/kombi/benzin/volkswagen-golf-1-4-tsi-navi-park-senzory-7042596.html");
+
+        assertThat(renault).isNotNull();
+        assertThat(golf).isNotNull();
+        assertThat(recordValue(renault, "title")).isEqualTo("Renault Fluence 1.6 16V, Tempomat");
+        assertThat(recordValue(renault, "imageUrl")).isEqualTo("https://www.tipcars.com/images/renault.jpg");
+        assertThat(recordValue(golf, "title")).isEqualTo("Volkswagen Golf 1.4 TSI Navi");
+        assertThat(recordValue(golf, "imageUrl")).isEqualTo("https://www.tipcars.com/images/golf.jpg");
+    }
+
+    @Test
     void extractsListFallbackPriceWithoutJoiningPowerOrMileage() throws Exception {
         assertThat(extractFirstPrice("Fiat Bravo Fiat Bravo 1.4 16V 90 59 000 Kč"))
                 .isEqualTo(59_000);
