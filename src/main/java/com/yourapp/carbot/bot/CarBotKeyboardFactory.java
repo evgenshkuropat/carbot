@@ -734,9 +734,9 @@ public class CarBotKeyboardFactory {
     public InlineKeyboardMarkup sellAdminReviewKeyboard(Long carId) {
         return InlineKeyboardMarkup.builder()
                 .keyboard(List.of(twoButtonsRow(
-                        "Approve",
+                        "✅ Схвалити",
                         "sell_admin_approve:" + carId,
-                        "Reject",
+                        "⛔ Відхилити",
                         "sell_admin_reject:" + carId
                 )))
                 .build();
@@ -764,13 +764,38 @@ public class CarBotKeyboardFactory {
     public InlineKeyboardMarkup userListingEditKeyboard(String lang, Long carId) {
         List<InlineKeyboardRow> rows = new ArrayList<>();
 
-        rows.add(twoButtonsRow("Title", "sell_edit:" + carId + ":title", "Price", "sell_edit:" + carId + ":price"));
-        rows.add(twoButtonsRow("Year", "sell_edit:" + carId + ":year", "Mileage", "sell_edit:" + carId + ":mileage"));
-        rows.add(twoButtonsRow("Location", "sell_edit:" + carId + ":location", "Contact", "sell_edit:" + carId + ":contact"));
-        rows.add(twoButtonsRow("Fuel", "sell_edit:" + carId + ":fuel", "Transmission", "sell_edit:" + carId + ":transmission"));
-        rows.add(twoButtonsRow("Car type", "sell_edit:" + carId + ":carType", "Photo", "sell_edit:" + carId + ":photo"));
-        rows.add(singleButtonRow("Description", "sell_edit:" + carId + ":description"));
-        rows.add(singleButtonRow("Back", "sell_mycars"));
+        rows.add(twoButtonsRow(
+                editFieldText(lang, "title"),
+                "sell_edit:" + carId + ":title",
+                editFieldText(lang, "price"),
+                "sell_edit:" + carId + ":price"
+        ));
+        rows.add(twoButtonsRow(
+                editFieldText(lang, "year"),
+                "sell_edit:" + carId + ":year",
+                editFieldText(lang, "mileage"),
+                "sell_edit:" + carId + ":mileage"
+        ));
+        rows.add(twoButtonsRow(
+                editFieldText(lang, "location"),
+                "sell_edit:" + carId + ":location",
+                editFieldText(lang, "contact"),
+                "sell_edit:" + carId + ":contact"
+        ));
+        rows.add(twoButtonsRow(
+                editFieldText(lang, "fuel"),
+                "sell_edit:" + carId + ":fuel",
+                editFieldText(lang, "transmission"),
+                "sell_edit:" + carId + ":transmission"
+        ));
+        rows.add(twoButtonsRow(
+                editFieldText(lang, "carType"),
+                "sell_edit:" + carId + ":carType",
+                editFieldText(lang, "photo"),
+                "sell_edit:" + carId + ":photo"
+        ));
+        rows.add(singleButtonRow(editFieldText(lang, "description"), "sell_edit:" + carId + ":description"));
+        rows.add(singleButtonRow("⬅️ " + messages.get(lang, "button.prev"), "sell_mycars"));
 
         return InlineKeyboardMarkup.builder()
                 .keyboard(rows)
@@ -857,6 +882,77 @@ public class CarBotKeyboardFactory {
             case "uk" -> "🗑 Видалити";
             case "cs" -> "🗑 Smazat";
             default -> "🗑 Delete";
+        };
+    }
+
+    private String editFieldText(String lang, String field) {
+        return switch (field) {
+            case "title" -> switch (lang) {
+                case "ru" -> "Название";
+                case "uk" -> "Назва";
+                case "cs" -> "Název";
+                default -> "Title";
+            };
+            case "price" -> switch (lang) {
+                case "ru" -> "Цена";
+                case "uk" -> "Ціна";
+                case "cs" -> "Cena";
+                default -> "Price";
+            };
+            case "year" -> switch (lang) {
+                case "ru" -> "Год";
+                case "uk" -> "Рік";
+                case "cs" -> "Rok";
+                default -> "Year";
+            };
+            case "mileage" -> switch (lang) {
+                case "ru" -> "Пробег";
+                case "uk" -> "Пробіг";
+                case "cs" -> "Nájezd";
+                default -> "Mileage";
+            };
+            case "location" -> switch (lang) {
+                case "ru" -> "Город";
+                case "uk" -> "Місто";
+                case "cs" -> "Město";
+                default -> "Location";
+            };
+            case "contact" -> switch (lang) {
+                case "ru" -> "Контакт";
+                case "uk" -> "Контакт";
+                case "cs" -> "Kontakt";
+                default -> "Contact";
+            };
+            case "fuel" -> switch (lang) {
+                case "ru" -> "Топливо";
+                case "uk" -> "Пальне";
+                case "cs" -> "Palivo";
+                default -> "Fuel";
+            };
+            case "transmission" -> switch (lang) {
+                case "ru" -> "Коробка";
+                case "uk" -> "Коробка";
+                case "cs" -> "Převodovka";
+                default -> "Transmission";
+            };
+            case "carType" -> switch (lang) {
+                case "ru" -> "Кузов";
+                case "uk" -> "Кузов";
+                case "cs" -> "Karoserie";
+                default -> "Body";
+            };
+            case "photo" -> switch (lang) {
+                case "ru", "uk" -> "Фото";
+                case "cs" -> "Foto";
+                default -> "Photo";
+            };
+            case "description" -> switch (lang) {
+                case "ru" -> "Описание";
+                case "uk" -> "Опис";
+                case "cs" -> "Popis";
+                default -> "Description";
+            };
+            default -> field;
         };
     }
 

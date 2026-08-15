@@ -1784,7 +1784,7 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
 
         carRepository.findById(carId).ifPresent(car -> {
             if (!Objects.equals(car.getOwnerChatId(), chatId)) {
-                sendMessage(chatId, "This listing belongs to another user.");
+                sendMessage(chatId, listingOwnershipDeniedText(chatId));
                 return;
             }
 
@@ -1802,7 +1802,7 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
 
         carRepository.findById(carId).ifPresent(car -> {
             if (!Objects.equals(car.getOwnerChatId(), chatId)) {
-                sendMessage(chatId, "This listing belongs to another user.");
+                sendMessage(chatId, listingOwnershipDeniedText(chatId));
                 return;
             }
 
@@ -1819,7 +1819,7 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
 
         carRepository.findById(carId).ifPresent(car -> {
             if (!Objects.equals(car.getOwnerChatId(), chatId)) {
-                sendMessage(chatId, "This listing belongs to another user.");
+                sendMessage(chatId, listingOwnershipDeniedText(chatId));
                 return;
             }
 
@@ -1841,7 +1841,7 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
 
         carRepository.findById(carId).ifPresent(car -> {
             if (!Objects.equals(car.getOwnerChatId(), chatId)) {
-                sendMessage(chatId, "This listing belongs to another user.");
+                sendMessage(chatId, listingOwnershipDeniedText(chatId));
                 return;
             }
 
@@ -1899,7 +1899,7 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
     private void applyListingEdit(Long chatId, ListingEditSession session, String value) {
         carRepository.findById(session.carId()).ifPresent(car -> {
             if (!Objects.equals(car.getOwnerChatId(), chatId)) {
-                sendMessage(chatId, "This listing belongs to another user.");
+                sendMessage(chatId, listingOwnershipDeniedText(chatId));
                 return;
             }
 
@@ -1938,7 +1938,7 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
 
         carRepository.findById(carId).ifPresent(car -> {
             if (!"PENDING".equalsIgnoreCase(car.getListingStatus())) {
-                sendMessage(adminChatId, "Listing already reviewed: " + safe(car.getListingStatus()));
+                sendMessage(adminChatId, "Оголошення вже перевірено: " + formatListingStatus("uk", car.getListingStatus()));
                 return;
             }
 
@@ -1948,7 +1948,7 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
             }
             carRepository.save(car);
 
-            sendMessage(adminChatId, approve ? "Approved." : "Rejected.");
+            sendMessage(adminChatId, approve ? "Схвалено." : "Відхилено.");
             if (car.getOwnerChatId() != null) {
                 log.info("USER LISTING notifying ownerChatId={} carId={} status={}",
                         car.getOwnerChatId(), car.getId(), car.getListingStatus());
@@ -1964,18 +1964,18 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
         }
 
         String text = """
-                New user car listing
+                Нове оголошення користувача
 
                 ID: %s
-                Owner chat: %s
-                Contact: %s
+                Chat власника: %s
+                Контакт: %s
 
                 %s
                 """.formatted(
                 car.getId(),
                 car.getOwnerChatId(),
                 safe(car.getSellerContact()),
-                formatUserListing("en", car)
+                formatUserListing("uk", car)
         );
 
         for (Long adminChatId : adminChatIds) {
@@ -2164,6 +2164,15 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
         };
     }
 
+    private String listingOwnershipDeniedText(Long chatId) {
+        return switch (lang(chatId)) {
+            case "ru" -> "Это объявление принадлежит другому пользователю.";
+            case "uk" -> "Це оголошення належить іншому користувачу.";
+            case "cs" -> "Tento inzerát patří jinému uživateli.";
+            default -> "This listing belongs to another user.";
+        };
+    }
+
     private String listingUpdatedText(Long chatId) {
         return switch (lang(chatId)) {
             case "ru" -> "✅ Объявление обновлено и отправлено на проверку.";
@@ -2251,7 +2260,7 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
                 formatCarType(lang, draft.carType),
                 safe(draft.sellerContact),
                 draft.imageUrl == null || draft.imageUrl.isBlank() ? "-" : "OK"
-        ).trim() + "\nInfo: " + safeListingDescription(draft.description);
+        ).trim() + "\n" + listingDescriptionLabel(lang) + ": " + safeListingDescription(draft.description);
     }
 
     private String formatUserListing(Long chatId, CarEntity car) {
@@ -2263,7 +2272,7 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
         return """
                 🚗 %s
 
-                Status: %s
+                %s: %s
                 💰 %s
                 📍 %s
                 📅 %s
@@ -2274,7 +2283,8 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
                 ☎️ %s
                 """.formatted(
                 safe(car.getTitle()),
-                status,
+                listingStatusLabel(lang),
+                formatListingStatus(lang, status),
                 formatPrice(car),
                 safe(car.getLocation()),
                 car.getYear() == null ? "-" : car.getYear(),
@@ -2283,7 +2293,55 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
                 formatTransmissionValue(lang, car.getTransmission()),
                 formatCarType(lang, car.getCarType()),
                 safe(car.getSellerContact())
-        ).trim() + "\nInfo: " + safeListingDescription(car.getDescription());
+        ).trim() + "\n" + listingDescriptionLabel(lang) + ": " + safeListingDescription(car.getDescription());
+    }
+
+    private String listingStatusLabel(String lang) {
+        return switch (lang) {
+            case "ru" -> "Статус";
+            case "uk" -> "Статус";
+            case "cs" -> "Stav";
+            default -> "Status";
+        };
+    }
+
+    private String listingDescriptionLabel(String lang) {
+        return switch (lang) {
+            case "ru" -> "Описание";
+            case "uk" -> "Опис";
+            case "cs" -> "Popis";
+            default -> "Info";
+        };
+    }
+
+    private String formatListingStatus(String lang, String status) {
+        String normalized = status == null || status.isBlank() ? "ACTIVE" : status.trim().toUpperCase();
+        return switch (normalized) {
+            case "PENDING" -> switch (lang) {
+                case "ru" -> "на проверке";
+                case "uk" -> "на перевірці";
+                case "cs" -> "čeká na kontrolu";
+                default -> "pending";
+            };
+            case "REJECTED" -> switch (lang) {
+                case "ru" -> "отклонено";
+                case "uk" -> "відхилено";
+                case "cs" -> "zamítnuto";
+                default -> "rejected";
+            };
+            case "INACTIVE" -> switch (lang) {
+                case "ru" -> "снято с продажи";
+                case "uk" -> "знято з продажу";
+                case "cs" -> "staženo z prodeje";
+                default -> "removed";
+            };
+            default -> switch (lang) {
+                case "ru" -> "активно";
+                case "uk" -> "активне";
+                case "cs" -> "aktivní";
+                default -> "active";
+            };
+        };
     }
 
     private String safeListingDescription(String description) {
@@ -3619,12 +3677,12 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
             return;
         }
 
-        sendMessage(adminChatId, "Pending user listings:");
+        sendMessage(adminChatId, "Оголошення користувачів на перевірці:");
         for (CarEntity car : pendingCars) {
             sendCarMessage(
                     adminChatId,
                     car,
-                    formatUserListing("en", car),
+                    formatUserListing("uk", car),
                     keyboardFactory.sellAdminReviewKeyboard(car.getId())
             );
         }
@@ -3632,13 +3690,13 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
 
     private String formatAdminUserListing(CarEntity car) {
         return """
-                User listing
+                Оголошення користувача
 
                 ID: %s
-                Owner chat: %s
-                Owner username: %s
-                Contact: %s
-                Created: %s
+                Chat власника: %s
+                Username власника: %s
+                Контакт: %s
+                Створено: %s
 
                 %s
                 """.formatted(
@@ -3647,7 +3705,7 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
                 safe(car.getSellerUsername()),
                 safe(car.getSellerContact()),
                 car.getCreatedAt() == null ? "-" : car.getCreatedAt().withNano(0),
-                formatUserListing("en", car)
+                formatUserListing("uk", car)
         ).trim();
     }
 
