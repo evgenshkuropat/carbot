@@ -1309,30 +1309,10 @@ public class MessageService {
                 default -> "Model";
             };
             case "model.choose" -> switch (lang) {
-                case "ru" -> """
-                        Введите модель или ключевые слова, например: Octavia 1.6 TDI
-
-                        /skip — не ограничивать по модели
-                        /cancel — назад
-                        """;
-                case "uk" -> """
-                        Введіть модель або ключові слова, наприклад: Octavia 1.6 TDI
-
-                        /skip — не обмежувати за моделлю
-                        /cancel — назад
-                        """;
-                case "cs" -> """
-                        Zadejte model nebo klíčová slova, například: Octavia 1.6 TDI
-
-                        /skip — bez omezení podle modelu
-                        /cancel — zpět
-                        """;
-                default -> """
-                        Enter model or keywords, for example: Octavia 1.6 TDI
-
-                        /skip — do not limit by model
-                        /cancel — back
-                        """;
+                case "ru" -> "Введите модель или ключевые слова, например: Octavia 1.6 TDI";
+                case "uk" -> "Введіть модель або ключові слова, наприклад: Octavia 1.6 TDI";
+                case "cs" -> "Zadejte model nebo klíčová slova, například: Octavia 1.6 TDI";
+                default -> "Enter model or keywords, for example: Octavia 1.6 TDI";
             };
             case "filter.model.saved" -> switch (lang) {
                 case "ru" -> "✅ Модель сохранена";

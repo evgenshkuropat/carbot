@@ -618,6 +618,16 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
             return;
         }
 
+        if ("model_query:skip".equals(data)) {
+            clearModelQuery(chatId);
+            return;
+        }
+
+        if ("model_query:back".equals(data)) {
+            handleModelQueryBack(chatId);
+            return;
+        }
+
         if (data.startsWith("car_type:toggle:")) {
             handleCarTypeToggle(update, chatId, data.substring("car_type:toggle:".length()));
             return;
@@ -758,7 +768,8 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
                 userStateService.setStep(chatId, BotStep.WAITING_MODEL_QUERY);
                 sendMessage(
                         chatId,
-                        messages.get(lang, "model.choose") + "\n\n" + buildFilterProgress(filter)
+                        messages.get(lang, "model.choose") + "\n\n" + buildFilterProgress(filter),
+                        keyboardFactory.modelQueryKeyboard(lang, true)
                 );
             }
 
@@ -855,7 +866,8 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
                 userStateService.setStep(chatId, BotStep.EDITING_MODEL_QUERY);
                 sendMessage(
                         chatId,
-                        messages.get(lang, "model.choose") + "\n\n" + buildFilterProgress(filter)
+                        messages.get(lang, "model.choose") + "\n\n" + buildFilterProgress(filter),
+                        keyboardFactory.modelQueryKeyboard(lang, true)
                 );
             }
             case "max_price" -> {
@@ -934,6 +946,15 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
         showMaxPriceStep(chatId, filter, messages.get(lang(chatId), "filter.model.cleared"));
     }
 
+    private void handleModelQueryBack(Long chatId) {
+        if (isFilterEditFlow(chatId)) {
+            finishEditField(chatId);
+            return;
+        }
+
+        handleWizardBack(chatId, "brand");
+    }
+
     private void showModelQueryStep(Long chatId, UserFilterEntity filter, String introText) {
         userStateService.setStep(chatId, BotStep.WAITING_MODEL_QUERY);
         sendMessage(
@@ -942,7 +963,8 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
                         + "\n\n"
                         + buildFilterProgress(filter)
                         + "\n\n"
-                        + messages.get(lang(chatId), "model.choose")
+                        + messages.get(lang(chatId), "model.choose"),
+                keyboardFactory.modelQueryKeyboard(lang(chatId), true)
         );
     }
 

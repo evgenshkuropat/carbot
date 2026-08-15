@@ -364,6 +364,26 @@ public class CarBotKeyboardFactory {
                 .build();
     }
 
+    public InlineKeyboardMarkup modelQueryKeyboard(String lang, boolean showBack) {
+        List<InlineKeyboardRow> rows = new ArrayList<>();
+
+        rows.add(singleButtonRow(
+                "⏭ " + messages.get(lang, "button.skip"),
+                "model_query:skip"
+        ));
+
+        if (showBack) {
+            rows.add(singleButtonRow(
+                    "⬅️ " + messages.get(lang, "button.prev"),
+                    "model_query:back"
+            ));
+        }
+
+        return InlineKeyboardMarkup.builder()
+                .keyboard(rows)
+                .build();
+    }
+
     private void addBrandRows(
             List<InlineKeyboardRow> rows,
             String lang,
