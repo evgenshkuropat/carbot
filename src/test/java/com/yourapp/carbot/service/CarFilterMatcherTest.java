@@ -79,6 +79,33 @@ class CarFilterMatcherTest {
         assertThat(matcher.matches(matching, mercedesFilter)).isTrue();
     }
 
+    @Test
+    void matchesModelQueryByNormalizedKeywords() {
+        UserFilterEntity filter = new UserFilterEntity();
+        filter.setBrand("SEAT");
+        filter.setModelQuery("Ibiza 1.4");
+
+        CarEntity matching = car("Seat Ibiza 1,4 MPI 16V 114 tis Km", "HATCHBACK");
+        matching.setBrand("SEAT");
+
+        CarEntity otherSeat = car("Seat Leon 1,4 TSI", "HATCHBACK");
+        otherSeat.setBrand("SEAT");
+
+        assertThat(matcher.matches(matching, filter)).isTrue();
+        assertThat(matcher.matches(otherSeat, filter)).isFalse();
+    }
+
+    @Test
+    void matchesCompactModelQueryWithSeparators() {
+        UserFilterEntity filter = new UserFilterEntity();
+        filter.setModelQuery("CHR");
+
+        CarEntity car = car("Toyota C-HR Hybrid 1.8", "SUV");
+        car.setBrand("TOYOTA");
+
+        assertThat(matcher.matches(car, filter)).isTrue();
+    }
+
     private CarEntity car(String title, String carType) {
         CarEntity car = new CarEntity();
         car.setTitle(title);

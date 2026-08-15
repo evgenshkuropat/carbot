@@ -24,6 +24,9 @@ public class UserFilterEntity {
     @Column(length = 300)
     private String brand;
 
+    @Column(name = "model_query", length = 255)
+    private String modelQuery;
+
     private Integer maxPrice;
     private Integer maxMileage;
 
@@ -97,6 +100,14 @@ public class UserFilterEntity {
 
     public void setBrand(String brand) {
         this.brand = brand;
+    }
+
+    public String getModelQuery() {
+        return modelQuery;
+    }
+
+    public void setModelQuery(String modelQuery) {
+        this.modelQuery = modelQuery;
     }
 
     public Integer getMaxPrice() {

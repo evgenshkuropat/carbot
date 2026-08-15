@@ -161,6 +161,11 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
                 return;
             }
 
+            if (userStateService.getStep(chatId) == BotStep.EDITING_MODEL_QUERY) {
+                handleModelQueryText(chatId, text);
+                return;
+            }
+
             if (userStateService.getStep(chatId) == BotStep.SELL_EDIT_VALUE) {
                 handleListingEditText(chatId, text);
                 return;
@@ -282,7 +287,9 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
             }
             case "/skip" -> {
                 BotStep step = userStateService.getStep(chatId);
-                if (step == BotStep.SELL_DESCRIPTION || step == BotStep.SELL_PHOTO) {
+                if (step == BotStep.EDITING_MODEL_QUERY) {
+                    clearModelQuery(chatId);
+                } else if (step == BotStep.SELL_DESCRIPTION || step == BotStep.SELL_PHOTO) {
                     handleSellText(chatId, username, text);
                 } else if (step == BotStep.SELL_EDIT_VALUE) {
                     handleListingEditText(chatId, text);
@@ -295,7 +302,9 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
                 }
             }
             case "/cancel" -> {
-                if (isSellStep(userStateService.getStep(chatId))) {
+                if (userStateService.getStep(chatId) == BotStep.EDITING_MODEL_QUERY) {
+                    finishEditField(chatId);
+                } else if (isSellStep(userStateService.getStep(chatId))) {
                     cancelSellFlow(chatId);
                 } else if (userStateService.getStep(chatId) == BotStep.SELL_EDIT_VALUE) {
                     listingEditSessions.remove(chatId);
@@ -360,6 +369,7 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
 
         return (filter.getCarType() != null && !filter.getCarType().isBlank())
                 || (filter.getBrand() != null && !filter.getBrand().isBlank())
+                || (filter.getModelQuery() != null && !filter.getModelQuery().isBlank())
                 || filter.getMaxPrice() != null
                 || filter.getMaxMileage() != null
                 || (filter.getLocation() != null && !filter.getLocation().isBlank())
@@ -371,6 +381,7 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
     private boolean isEditingStep(BotStep step) {
         return step == BotStep.EDITING_CAR_TYPE
                 || step == BotStep.EDITING_BRAND
+                || step == BotStep.EDITING_MODEL_QUERY
                 || step == BotStep.EDITING_MAX_PRICE
                 || step == BotStep.EDITING_LOCATION
                 || step == BotStep.EDITING_MAX_MILEAGE
@@ -678,6 +689,7 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
         return switch (data) {
             case "edit_car_type", "edit:car_type", "filter_edit:car_type" -> "car_type";
             case "edit_brand", "edit:brand", "filter_edit:brand" -> "brand";
+            case "edit_model", "edit:model", "edit_model_query", "edit:model_query", "filter_edit:model" -> "model_query";
             case "edit_max_price", "edit:price", "edit:max_price", "filter_edit:max_price" -> "max_price";
             case "edit_location", "edit:location", "filter_edit:location" -> "location";
             case "edit_max_mileage", "edit:mileage", "edit:max_mileage", "filter_edit:max_mileage" -> "max_mileage";
@@ -813,6 +825,13 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
                         keyboardFactory.brandKeyboard(lang, filter.getBrand(), true)
                 );
             }
+            case "model_query" -> {
+                userStateService.setStep(chatId, BotStep.EDITING_MODEL_QUERY);
+                sendMessage(
+                        chatId,
+                        messages.get(lang, "model.choose") + "\n\n" + buildFilterProgress(filter)
+                );
+            }
             case "max_price" -> {
                 sendMessage(
                         chatId,
@@ -857,6 +876,26 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
             }
             default -> showCurrentFilter(chatId);
         }
+    }
+
+    private void handleModelQueryText(Long chatId, String text) {
+        UserFilterEntity filter = userFilterService.getOrCreate(chatId);
+        String value = limitText(text, 120);
+
+        filter.setModelQuery(value.isBlank() ? null : value);
+        userFilterService.save(filter);
+
+        sendMessage(chatId, messages.get(lang(chatId), "filter.model.saved"));
+        finishEditField(chatId);
+    }
+
+    private void clearModelQuery(Long chatId) {
+        UserFilterEntity filter = userFilterService.getOrCreate(chatId);
+        filter.setModelQuery(null);
+        userFilterService.save(filter);
+
+        sendMessage(chatId, messages.get(lang(chatId), "filter.model.cleared"));
+        finishEditField(chatId);
     }
 
     private void handleCarTypeToggle(Update update, Long chatId, String carTypeValue) {
@@ -1332,11 +1371,13 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
             %s: %s
             %s: %s
             %s: %s
+            %s: %s
             """.formatted(
                 messages.get(lang, "cars.matchesFound"),
                 totalFound,
                 messages.get(lang, "label.carType"), formatCarType(lang, filter.getCarType()),
                 messages.get(lang, "label.brand"), formatBrand(lang, filter.getBrand()),
+                messages.get(lang, "label.model"), formatModelQuery(lang, filter.getModelQuery()),
                 messages.get(lang, "label.maxPrice"), filter.getMaxPrice() == null ? messages.get(lang, "common.noLimit") : filter.getMaxPrice() + " Kč",
                 messages.get(lang, "label.location"), formatLocation(lang, filter.getLocation()),
                 messages.get(lang, "label.maxMileage"), filter.getMaxMileage() == null ? messages.get(lang, "common.noLimit") : filter.getMaxMileage() + " km",
@@ -2462,10 +2503,12 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
             %s: %s
             %s: %s
             %s: %s
+            %s: %s
             """.formatted(
                 messages.get(lang, "summary.currentFilter"),
                 messages.get(lang, "label.carType"), formatCarType(lang, filter.getCarType()),
                 messages.get(lang, "label.brand"), formatBrand(lang, filter.getBrand()),
+                messages.get(lang, "label.model"), formatModelQuery(lang, filter.getModelQuery()),
                 messages.get(lang, "label.maxPrice"), maxPrice,
                 messages.get(lang, "label.location"), formatLocation(lang, filter.getLocation()),
                 messages.get(lang, "label.maxMileage"), maxMileage,
@@ -2539,11 +2582,13 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
                 %s: %s
                 %s: %s
                 %s: %s
+                %s: %s
                 """.formatted(
                 messages.get(lang, "filter.saved"),
                 messages.get(lang, "summary.settings"),
                 messages.get(lang, "label.carType"), formatCarType(lang, filter.getCarType()),
                 messages.get(lang, "label.brand"), formatBrand(lang, filter.getBrand()),
+                messages.get(lang, "label.model"), formatModelQuery(lang, filter.getModelQuery()),
                 messages.get(lang, "label.maxPrice"), filter.getMaxPrice() == null ? messages.get(lang, "common.noLimit") : filter.getMaxPrice() + " Kč",
                 messages.get(lang, "label.location"), formatLocation(lang, filter.getLocation()),
                 messages.get(lang, "label.maxMileage"), filter.getMaxMileage() == null ? messages.get(lang, "common.noLimit") : filter.getMaxMileage() + " km",
@@ -2666,6 +2711,13 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
             sb.append(messages.get(lang, "label.brand"))
                     .append(": ")
                     .append(formatBrand(lang, filter.getBrand()))
+                    .append("\n");
+        }
+
+        if (filter.getModelQuery() != null && !filter.getModelQuery().isBlank()) {
+            sb.append(messages.get(lang, "label.model"))
+                    .append(": ")
+                    .append(filter.getModelQuery().trim())
                     .append("\n");
         }
 
@@ -3322,6 +3374,14 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
         return result.isEmpty() ? messages.get(lang, "common.any") : result.toString();
     }
 
+    private String formatModelQuery(String lang, String value) {
+        if (value == null || value.isBlank()) {
+            return messages.get(lang, "common.any");
+        }
+
+        return value.trim();
+    }
+
     private String formatTransmission(String lang, String value) {
         if (value == null || value.isBlank() || "ANY".equals(value)) {
             return messages.get(lang, "common.any");
@@ -3538,6 +3598,7 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
         StringBuilder builder = new StringBuilder();
         builder.append("- активний фільтр: ")
                 .append("марка=").append(safe(filter.getBrand()))
+                .append(", модель=").append(safe(filter.getModelQuery()))
                 .append(", тип=").append(safe(filter.getCarType()))
                 .append(", макс. ціна=").append(filter.getMaxPrice() == null ? "-" : filter.getMaxPrice())
                 .append(", локація=").append(safe(filter.getLocation()))

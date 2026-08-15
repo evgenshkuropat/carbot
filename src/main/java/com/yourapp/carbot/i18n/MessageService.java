@@ -1275,11 +1275,78 @@ public class MessageService {
 
     public String get(String language, String key) {
         Map<String, String> langMap = messages.getOrDefault(language, messages.get("en"));
-        return langMap.getOrDefault(key, messages.get("en").getOrDefault(key, key));
+        String value = langMap.get(key);
+        if (value != null) {
+            return value;
+        }
+
+        String englishValue = messages.get("en").get(key);
+        if (englishValue != null) {
+            return englishValue;
+        }
+
+        return fallbackMessage(language, key, key);
     }
 
     public String getOrDefault(String language, String key, String fallback) {
         Map<String, String> langMap = messages.getOrDefault(language, messages.get("en"));
-        return langMap.getOrDefault(key, fallback);
+        String value = langMap.get(key);
+        if (value != null) {
+            return value;
+        }
+
+        return fallbackMessage(language, key, fallback);
+    }
+
+    private String fallbackMessage(String language, String key, String fallback) {
+        String lang = language == null ? "en" : language;
+
+        return switch (key) {
+            case "label.model" -> switch (lang) {
+                case "ru" -> "Модель";
+                case "uk" -> "Модель";
+                case "cs" -> "Model";
+                default -> "Model";
+            };
+            case "model.choose" -> switch (lang) {
+                case "ru" -> """
+                        Введите модель или ключевые слова, например: Octavia 1.6 TDI
+
+                        /skip — не ограничивать по модели
+                        /cancel — назад
+                        """;
+                case "uk" -> """
+                        Введіть модель або ключові слова, наприклад: Octavia 1.6 TDI
+
+                        /skip — не обмежувати за моделлю
+                        /cancel — назад
+                        """;
+                case "cs" -> """
+                        Zadejte model nebo klíčová slova, například: Octavia 1.6 TDI
+
+                        /skip — bez omezení podle modelu
+                        /cancel — zpět
+                        """;
+                default -> """
+                        Enter model or keywords, for example: Octavia 1.6 TDI
+
+                        /skip — do not limit by model
+                        /cancel — back
+                        """;
+            };
+            case "filter.model.saved" -> switch (lang) {
+                case "ru" -> "✅ Модель сохранена";
+                case "uk" -> "✅ Модель збережено";
+                case "cs" -> "✅ Model byl uložen";
+                default -> "✅ Model saved";
+            };
+            case "filter.model.cleared" -> switch (lang) {
+                case "ru" -> "✅ Ограничение по модели убрано";
+                case "uk" -> "✅ Обмеження за моделлю прибрано";
+                case "cs" -> "✅ Omezení podle modelu bylo odebráno";
+                default -> "✅ Model limit removed";
+            };
+            default -> fallback;
+        };
     }
 }

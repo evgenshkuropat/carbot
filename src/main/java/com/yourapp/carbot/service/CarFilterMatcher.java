@@ -17,19 +17,20 @@ public class CarFilterMatcher {
 
     public FilterCheckResult check(CarEntity car, UserFilterEntity filter) {
         if (car == null) {
-            return new FilterCheckResult(false, false, false, false, false, false, false, false, false);
+            return new FilterCheckResult(false, false, false, false, false, false, false, false, false, false);
         }
 
         if (looksTipCarsTitleUrlBrandMismatch(car)) {
-            return new FilterCheckResult(false, false, false, false, false, false, false, false, false);
+            return new FilterCheckResult(false, false, false, false, false, false, false, false, false, false);
         }
 
         if (filter == null) {
-            return new FilterCheckResult(true, true, true, true, true, true, true, true, true);
+            return new FilterCheckResult(true, true, true, true, true, true, true, true, true, true);
         }
 
         boolean carTypeOk = matchesCarType(car, filter);
         boolean brandOk = matchesBrand(car, filter);
+        boolean modelOk = matchesModelQuery(car, filter);
         boolean maxPriceOk = matchesMaxPrice(car, filter);
         boolean locationOk = matchesLocation(car, filter);
         boolean mileageOk = matchesMaxMileage(car, filter);
@@ -39,6 +40,7 @@ public class CarFilterMatcher {
 
         boolean result = carTypeOk
                 && brandOk
+                && modelOk
                 && maxPriceOk
                 && locationOk
                 && mileageOk
@@ -50,6 +52,7 @@ public class CarFilterMatcher {
                 result,
                 carTypeOk,
                 brandOk,
+                modelOk,
                 maxPriceOk,
                 locationOk,
                 mileageOk,
@@ -497,6 +500,50 @@ public class CarFilterMatcher {
         return false;
     }
 
+    private boolean matchesModelQuery(CarEntity car, UserFilterEntity filter) {
+        String query = normalizeModelText(filter.getModelQuery());
+
+        if (query.isBlank()) {
+            return true;
+        }
+
+        String haystack = normalizeModelText(
+                nullToEmpty(car.getTitle()) + " " +
+                        nullToEmpty(car.getBrand())
+        );
+
+        if (haystack.isBlank()) {
+            return false;
+        }
+
+        String compactQuery = query.replace(" ", "");
+        String compactHaystack = haystack.replace(" ", "");
+
+        if (!compactQuery.isBlank() && compactHaystack.contains(compactQuery)) {
+            return true;
+        }
+
+        boolean hasMeaningfulToken = false;
+
+        for (String token : query.split("\\s+")) {
+            if (token.isBlank()) {
+                continue;
+            }
+
+            boolean meaningful = token.length() >= 2 || token.chars().allMatch(Character::isDigit);
+            if (!meaningful) {
+                continue;
+            }
+
+            hasMeaningfulToken = true;
+            if (!containsToken(haystack, token)) {
+                return false;
+            }
+        }
+
+        return hasMeaningfulToken;
+    }
+
     private boolean matchesMaxPrice(CarEntity car, UserFilterEntity filter) {
         Integer maxPrice = filter.getMaxPrice();
         Integer priceValue = car.getPriceValue();
@@ -846,6 +893,15 @@ public class CarFilterMatcher {
                 .trim();
     }
 
+    private String normalizeModelText(String value) {
+        String normalized = normalizeText(value)
+                .replaceAll("[^A-Z0-9]+", " ")
+                .replaceAll("\\s+", " ")
+                .trim();
+
+        return normalized;
+    }
+
     private boolean looksTipCarsTitleUrlBrandMismatch(CarEntity car) {
         if (car == null || !"TIPCARS".equalsIgnoreCase(car.getSource())) {
             return false;
@@ -939,5 +995,13 @@ public class CarFilterMatcher {
         }
 
         return false;
+    }
+
+    private boolean containsToken(String source, String token) {
+        return (" " + source + " ").contains(" " + token + " ");
+    }
+
+    private String nullToEmpty(String value) {
+        return value == null ? "" : value;
     }
 }

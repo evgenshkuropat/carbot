@@ -48,6 +48,7 @@ public class UserFilterService {
         UserFilterEntity filter = existing.get();
         filter.setCarType(null);
         filter.setBrand(null);
+        filter.setModelQuery(null);
         filter.setMaxPrice(null);
         filter.setMaxMileage(null);
         filter.setLocation(null);

@@ -148,6 +148,11 @@ public class CarBotKeyboardFactory {
                 "myfilter_field:brand"
         ));
 
+        rows.add(singleButtonRow(
+                messages.get(lang, "label.model"),
+                "myfilter_field:model_query"
+        ));
+
         rows.add(twoButtonsRow(
                 messages.get(lang, "label.maxPrice"),
                 "myfilter_field:max_price",

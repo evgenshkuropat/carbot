@@ -21,6 +21,7 @@ public class DatabaseSchemaMigrationService {
     public void migrate() {
         migrateTelegramSubscribers();
         migrateUserStateSteps();
+        migrateUserFilters();
         migrateCarsUserListings();
     }
 
@@ -88,6 +89,15 @@ public class DatabaseSchemaMigrationService {
                 """);
 
         log.info("Database schema migration checked user_states step column");
+    }
+
+    private void migrateUserFilters() {
+        jdbcTemplate.execute("""
+                ALTER TABLE IF EXISTS user_filters
+                    ADD COLUMN IF NOT EXISTS model_query varchar(255)
+                """);
+
+        log.info("Database schema migration checked user_filters model query column");
     }
 
     private void migrateCarsUserListings() {

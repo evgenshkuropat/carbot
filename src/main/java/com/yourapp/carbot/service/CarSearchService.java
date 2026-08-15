@@ -39,6 +39,7 @@ public class CarSearchService {
 
         long carTypePassed = 0;
         long brandPassed = 0;
+        long modelPassed = 0;
         long pricePassed = 0;
         long locationPassed = 0;
         long mileagePassed = 0;
@@ -52,6 +53,7 @@ public class CarSearchService {
 
             if (check.carTypeOk()) carTypePassed++;
             if (check.brandOk()) brandPassed++;
+            if (check.modelOk()) modelPassed++;
             if (check.maxPriceOk()) pricePassed++;
             if (check.locationOk()) locationPassed++;
             if (check.mileageOk()) mileagePassed++;
@@ -66,6 +68,7 @@ public class CarSearchService {
         System.out.println("FILTER:");
         System.out.println("carType = " + filter.getCarType());
         System.out.println("brand = " + filter.getBrand());
+        System.out.println("modelQuery = " + filter.getModelQuery());
         System.out.println("maxPrice = " + filter.getMaxPrice());
         System.out.println("location = " + filter.getLocation());
         System.out.println("maxMileage = " + filter.getMaxMileage());
@@ -75,6 +78,7 @@ public class CarSearchService {
         System.out.println("----------------------------------");
         System.out.println("PASSED carType = " + carTypePassed);
         System.out.println("PASSED brand = " + brandPassed);
+        System.out.println("PASSED model = " + modelPassed);
         System.out.println("PASSED price = " + pricePassed);
         System.out.println("PASSED location = " + locationPassed);
         System.out.println("PASSED mileage = " + mileagePassed);

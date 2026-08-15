@@ -4,6 +4,7 @@ public record FilterCheckResult(
         boolean result,
         boolean carTypeOk,
         boolean brandOk,
+        boolean modelOk,
         boolean maxPriceOk,
         boolean locationOk,
         boolean mileageOk,

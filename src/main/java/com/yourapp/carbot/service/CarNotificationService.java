@@ -162,6 +162,7 @@ public class CarNotificationService {
 
         return hasText(filter.getCarType())
                 || hasText(filter.getBrand())
+                || hasText(filter.getModelQuery())
                 || filter.getMaxPrice() != null
                 || filter.getMaxMileage() != null
                 || hasText(filter.getLocation())
@@ -258,15 +259,16 @@ public class CarNotificationService {
 
         log.debug(
                 "FILTER chatId={} title='{}' result={} | " +
-                        "filter[carType={}, brand={}, maxPrice={}, location={}, maxMileage={}, fuelType={}, transmission={}, yearFrom={}] | " +
+                        "filter[carType={}, brand={}, modelQuery={}, maxPrice={}, location={}, maxMileage={}, fuelType={}, transmission={}, yearFrom={}] | " +
                         "car[carType={}, brand={}, priceValue={}, location={}, mileage={}, fuelType={}, transmission={}, year={}] | " +
-                        "checks[carTypeOk={}, brandOk={}, maxPriceOk={}, locationOk={}, mileageOk={}, fuelTypeOk={}, transmissionOk={}, yearOk={}]",
+                        "checks[carTypeOk={}, brandOk={}, modelOk={}, maxPriceOk={}, locationOk={}, mileageOk={}, fuelTypeOk={}, transmissionOk={}, yearOk={}]",
                 chatId,
                 safe(car.getTitle()),
                 check.result() ? "PASS" : "FAIL",
 
                 safe(filter.getCarType()),
                 safe(filter.getBrand()),
+                safe(filter.getModelQuery()),
                 filter.getMaxPrice(),
                 safe(filter.getLocation()),
                 filter.getMaxMileage(),
@@ -285,6 +287,7 @@ public class CarNotificationService {
 
                 check.carTypeOk(),
                 check.brandOk(),
+                check.modelOk(),
                 check.maxPriceOk(),
                 check.locationOk(),
                 check.mileageOk(),
