@@ -268,7 +268,7 @@ public class CarBotKeyboardFactory {
         ));
 
         rows.add(singleButtonRow(
-                "🔘 " + messages.get(lang, "common.any"),
+                anyOptionText(lang),
                 "car_type:any"
         ));
 
@@ -307,7 +307,7 @@ public class CarBotKeyboardFactory {
         rows.add(twoButtonsRow(
                 "➕ " + moreBrandsText(lang),
                 "brand_page:other",
-                "🔘 " + messages.get(lang, "common.any"),
+                anyOptionText(lang),
                 "brand:any"
         ));
 
@@ -420,7 +420,7 @@ public class CarBotKeyboardFactory {
         rows.add(singleButtonRow("1 500 000 Kč", "max_price:1500000"));
 
         rows.add(singleButtonRow(
-                "🔘 " + messages.get(lang, "common.noLimit"),
+                noLimitOptionText(lang),
                 "max_price:0"
         ));
 
@@ -477,7 +477,7 @@ public class CarBotKeyboardFactory {
         ));
 
         rows.add(singleButtonRow(
-                "🔘 " + messages.get(lang, "common.any"),
+                anyOptionText(lang),
                 "location:ANY"
         ));
 
@@ -503,7 +503,7 @@ public class CarBotKeyboardFactory {
         rows.add(twoButtonsRow("250 000 km", "mileage:250000", "300 000 km", "mileage:300000"));
 
         rows.add(singleButtonRow(
-                "🔘 " + messages.get(lang, "common.noLimit"),
+                noLimitOptionText(lang),
                 "mileage:0"
         ));
 
@@ -530,7 +530,7 @@ public class CarBotKeyboardFactory {
         ));
 
         rows.add(singleButtonRow(
-                "🔘 " + messages.get(lang, "common.any"),
+                anyOptionText(lang),
                 "transmission:ANY"
         ));
 
@@ -572,7 +572,7 @@ public class CarBotKeyboardFactory {
         ));
 
         rows.add(singleButtonRow(
-                "🔘 " + messages.get(lang, "common.any"),
+                anyOptionText(lang),
                 "fuel_type:ANY"
         ));
 
@@ -600,7 +600,7 @@ public class CarBotKeyboardFactory {
         rows.add(twoButtonsRow("2024+", "year_from:2024", "2025+", "year_from:2025"));
 
         rows.add(singleButtonRow(
-                "🔘 " + messages.get(lang, "common.notImportant"),
+                notImportantOptionText(lang),
                 "year_from:0"
         ));
 
@@ -938,6 +938,18 @@ public class CarBotKeyboardFactory {
 
     private String buildSelectableText(boolean selected, String label) {
         return (selected ? "✅ " : "▫️ ") + label;
+    }
+
+    private String anyOptionText(String lang) {
+        return "↪️ " + messages.get(lang, "common.any");
+    }
+
+    private String noLimitOptionText(String lang) {
+        return "∞ " + messages.get(lang, "common.noLimit");
+    }
+
+    private String notImportantOptionText(String lang) {
+        return "↪️ " + messages.get(lang, "common.notImportant");
     }
 
     private String selectableText(boolean selected, String label) {
