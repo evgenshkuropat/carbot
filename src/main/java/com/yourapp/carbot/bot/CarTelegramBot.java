@@ -634,7 +634,22 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
         }
 
         if (data.startsWith("brand:toggle:")) {
-            handleBrandToggle(update, chatId, data.substring("brand:toggle:".length()));
+            handleBrandToggle(update, chatId, data.substring("brand:toggle:".length()), false);
+            return;
+        }
+
+        if (data.startsWith("brand_other:toggle:")) {
+            handleBrandToggle(update, chatId, data.substring("brand_other:toggle:".length()), true);
+            return;
+        }
+
+        if ("brand_page:main".equals(data)) {
+            showBrandPage(update, chatId, false);
+            return;
+        }
+
+        if ("brand_page:other".equals(data)) {
+            showBrandPage(update, chatId, true);
             return;
         }
 
@@ -1034,7 +1049,7 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
         );
     }
 
-    private void handleBrandToggle(Update update, Long chatId, String brandValue) {
+    private void handleBrandToggle(Update update, Long chatId, String brandValue, boolean otherPage) {
         UserFilterEntity filter = userFilterService.getOrCreate(chatId);
 
         Set<String> selected = parseValues(filter.getBrand());
@@ -1054,7 +1069,23 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
                 chatId,
                 messageId,
                 buildBrandSelectionText(chatId, selected),
-                keyboardFactory.brandKeyboard(lang(chatId), filter.getBrand(), true)
+                otherPage
+                        ? keyboardFactory.brandOtherKeyboard(lang(chatId), filter.getBrand(), true)
+                        : keyboardFactory.brandKeyboard(lang(chatId), filter.getBrand(), true)
+        );
+    }
+
+    private void showBrandPage(Update update, Long chatId, boolean otherPage) {
+        UserFilterEntity filter = userFilterService.getOrCreate(chatId);
+        int messageId = update.getCallbackQuery().getMessage().getMessageId();
+
+        editMessageTextAndKeyboard(
+                chatId,
+                messageId,
+                buildBrandSelectionText(chatId, parseValues(filter.getBrand())),
+                otherPage
+                        ? keyboardFactory.brandOtherKeyboard(lang(chatId), filter.getBrand(), true)
+                        : keyboardFactory.brandKeyboard(lang(chatId), filter.getBrand(), true)
         );
     }
 

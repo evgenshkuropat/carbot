@@ -293,121 +293,20 @@ public class CarBotKeyboardFactory {
         Set<String> selected = parseSelectedValues(selectedBrands);
         List<InlineKeyboardRow> rows = new ArrayList<>();
 
-        rows.add(twoButtonsRow(
-                buildSelectableText(selected.contains("SKODA"), messages.get(lang, "brand.SKODA")),
-                "brand:toggle:SKODA",
-                buildSelectableText(selected.contains("VOLKSWAGEN"), messages.get(lang, "brand.VOLKSWAGEN")),
-                "brand:toggle:VOLKSWAGEN"
-        ));
+        addBrandRows(rows, lang, selected, "brand:toggle:",
+                "SKODA", "VOLKSWAGEN",
+                "TOYOTA", "FORD",
+                "RENAULT", "HYUNDAI",
+                "KIA", "PEUGEOT",
+                "CITROEN", "OPEL",
+                "BMW", "AUDI",
+                "MERCEDES", "SEAT",
+                "DACIA", "FIAT"
+        );
 
         rows.add(twoButtonsRow(
-                buildSelectableText(selected.contains("AUDI"), messages.get(lang, "brand.AUDI")),
-                "brand:toggle:AUDI",
-                buildSelectableText(selected.contains("BMW"), messages.get(lang, "brand.BMW")),
-                "brand:toggle:BMW"
-        ));
-
-        rows.add(twoButtonsRow(
-                buildSelectableText(selected.contains("MERCEDES"), messages.get(lang, "brand.MERCEDES")),
-                "brand:toggle:MERCEDES",
-                buildSelectableText(selected.contains("TOYOTA"), messages.get(lang, "brand.TOYOTA")),
-                "brand:toggle:TOYOTA"
-        ));
-
-        rows.add(twoButtonsRow(
-                buildSelectableText(selected.contains("FORD"), messages.get(lang, "brand.FORD")),
-                "brand:toggle:FORD",
-                buildSelectableText(selected.contains("RENAULT"), messages.get(lang, "brand.RENAULT")),
-                "brand:toggle:RENAULT"
-        ));
-
-        rows.add(twoButtonsRow(
-                buildSelectableText(selected.contains("HYUNDAI"), messages.get(lang, "brand.HYUNDAI")),
-                "brand:toggle:HYUNDAI",
-                buildSelectableText(selected.contains("KIA"), messages.get(lang, "brand.KIA")),
-                "brand:toggle:KIA"
-        ));
-
-        rows.add(twoButtonsRow(
-                buildSelectableText(selected.contains("PEUGEOT"), messages.get(lang, "brand.PEUGEOT")),
-                "brand:toggle:PEUGEOT",
-                buildSelectableText(selected.contains("CITROEN"), messages.get(lang, "brand.CITROEN")),
-                "brand:toggle:CITROEN"
-        ));
-
-        rows.add(twoButtonsRow(
-                buildSelectableText(selected.contains("OPEL"), messages.get(lang, "brand.OPEL")),
-                "brand:toggle:OPEL",
-                buildSelectableText(selected.contains("MAZDA"), messages.get(lang, "brand.MAZDA")),
-                "brand:toggle:MAZDA"
-        ));
-
-        rows.add(twoButtonsRow(
-                buildSelectableText(selected.contains("HONDA"), messages.get(lang, "brand.HONDA")),
-                "brand:toggle:HONDA",
-                buildSelectableText(selected.contains("VOLVO"), messages.get(lang, "brand.VOLVO")),
-                "brand:toggle:VOLVO"
-        ));
-
-        rows.add(twoButtonsRow(
-                buildSelectableText(selected.contains("SEAT"), messages.get(lang, "brand.SEAT")),
-                "brand:toggle:SEAT",
-                buildSelectableText(selected.contains("DACIA"), messages.get(lang, "brand.DACIA")),
-                "brand:toggle:DACIA"
-        ));
-
-        rows.add(twoButtonsRow(
-                buildSelectableText(selected.contains("FIAT"), messages.get(lang, "brand.FIAT")),
-                "brand:toggle:FIAT",
-                buildSelectableText(selected.contains("TESLA"), messages.get(lang, "brand.TESLA")),
-                "brand:toggle:TESLA"
-        ));
-
-        rows.add(twoButtonsRow(
-                buildSelectableText(selected.contains("CUPRA"), messages.get(lang, "brand.CUPRA")),
-                "brand:toggle:CUPRA",
-                buildSelectableText(selected.contains("LEXUS"), messages.get(lang, "brand.LEXUS")),
-                "brand:toggle:LEXUS"
-        ));
-
-        rows.add(twoButtonsRow(
-                buildSelectableText(selected.contains("NISSAN"), messages.get(lang, "brand.NISSAN")),
-                "brand:toggle:NISSAN",
-                buildSelectableText(selected.contains("SUZUKI"), messages.get(lang, "brand.SUZUKI")),
-                "brand:toggle:SUZUKI"
-        ));
-
-        rows.add(twoButtonsRow(
-                buildSelectableText(selected.contains("JEEP"), messages.get(lang, "brand.JEEP")),
-                "brand:toggle:JEEP",
-                buildSelectableText(selected.contains("SUBARU"), messages.get(lang, "brand.SUBARU")),
-                "brand:toggle:SUBARU"
-        ));
-
-        rows.add(twoButtonsRow(
-                buildSelectableText(selected.contains("MITSUBISHI"), messages.get(lang, "brand.MITSUBISHI")),
-                "brand:toggle:MITSUBISHI",
-                buildSelectableText(selected.contains("PORSCHE"), messages.get(lang, "brand.PORSCHE")),
-                "brand:toggle:PORSCHE"
-        ));
-
-        rows.add(twoButtonsRow(
-                buildSelectableText(selected.contains("LAND_ROVER"), messages.get(lang, "brand.LAND_ROVER")),
-                "brand:toggle:LAND_ROVER",
-                buildSelectableText(selected.contains("MINI"), messages.get(lang, "brand.MINI")),
-                "brand:toggle:MINI"
-        ));
-
-        rows.add(twoButtonsRow(
-                buildSelectableText(selected.contains("ALFA_ROMEO"), messages.get(lang, "brand.ALFA_ROMEO")),
-                "brand:toggle:ALFA_ROMEO",
-                buildSelectableText(selected.contains("CHEVROLET"), messages.get(lang, "brand.CHEVROLET")),
-                "brand:toggle:CHEVROLET"
-        ));
-
-        rows.add(twoButtonsRow(
-                buildSelectableText(selected.contains("BYD"), messages.get(lang, "brand.BYD")),
-                "brand:toggle:BYD",
+                "➕ " + moreBrandsText(lang),
+                "brand_page:other",
                 "🔘 " + messages.get(lang, "common.any"),
                 "brand:any"
         ));
@@ -427,6 +326,87 @@ public class CarBotKeyboardFactory {
         return InlineKeyboardMarkup.builder()
                 .keyboard(rows)
                 .build();
+    }
+
+    public InlineKeyboardMarkup brandOtherKeyboard(String lang, String selectedBrands, boolean showBack) {
+        Set<String> selected = parseSelectedValues(selectedBrands);
+        List<InlineKeyboardRow> rows = new ArrayList<>();
+
+        addBrandRows(rows, lang, selected, "brand_other:toggle:",
+                "MAZDA", "HONDA",
+                "VOLVO", "NISSAN",
+                "SUZUKI", "TESLA",
+                "CUPRA", "LEXUS",
+                "BYD", "JEEP",
+                "SUBARU", "MITSUBISHI",
+                "PORSCHE", "LAND_ROVER",
+                "MINI", "ALFA_ROMEO",
+                "CHEVROLET", "DS",
+                "DODGE", "MG"
+        );
+
+        rows.add(twoButtonsRow(
+                "⬅️ " + mainBrandsText(lang),
+                "brand_page:main",
+                "✅ " + messages.get(lang, "common.done"),
+                "brand:done"
+        ));
+
+        if (showBack) {
+            rows.add(singleButtonRow(
+                    "⬅️ " + messages.get(lang, "button.prev"),
+                    "wizard_back:car_type"
+            ));
+        }
+
+        return InlineKeyboardMarkup.builder()
+                .keyboard(rows)
+                .build();
+    }
+
+    private void addBrandRows(
+            List<InlineKeyboardRow> rows,
+            String lang,
+            Set<String> selected,
+            String callbackPrefix,
+            String... brandCodes
+    ) {
+        for (int i = 0; i < brandCodes.length; i += 2) {
+            String first = brandCodes[i];
+            String second = i + 1 < brandCodes.length ? brandCodes[i + 1] : null;
+
+            if (second == null) {
+                rows.add(singleButtonRow(
+                        buildSelectableText(selected.contains(first), messages.get(lang, "brand." + first)),
+                        callbackPrefix + first
+                ));
+            } else {
+                rows.add(twoButtonsRow(
+                        buildSelectableText(selected.contains(first), messages.get(lang, "brand." + first)),
+                        callbackPrefix + first,
+                        buildSelectableText(selected.contains(second), messages.get(lang, "brand." + second)),
+                        callbackPrefix + second
+                ));
+            }
+        }
+    }
+
+    private String moreBrandsText(String lang) {
+        return switch (lang) {
+            case "ru" -> "Другие марки";
+            case "uk" -> "Інші марки";
+            case "cs" -> "Další značky";
+            default -> "More brands";
+        };
+    }
+
+    private String mainBrandsText(String lang) {
+        return switch (lang) {
+            case "ru" -> "Основные марки";
+            case "uk" -> "Основні марки";
+            case "cs" -> "Hlavní značky";
+            default -> "Main brands";
+        };
     }
 
     public InlineKeyboardMarkup maxPriceKeyboard(String lang, boolean showBack) {
