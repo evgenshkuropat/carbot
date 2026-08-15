@@ -447,7 +447,7 @@ public class CarBotKeyboardFactory {
         if (showBack) {
             rows.add(twoButtonsRow(
                     "⬅️ " + messages.get(lang, "button.prev"),
-                    "wizard_back:brand",
+                    "wizard_back:model_query",
                     "⏭ " + messages.get(lang, "button.skip"),
                     "max_price:0"
             ));
