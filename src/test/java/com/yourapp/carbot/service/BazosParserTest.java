@@ -1102,6 +1102,30 @@ class BazosParserTest {
                 .isEqualTo("Peugeot 4008 1.8HDI 4x4 MANU\u00C1L KAMERA TA\u017DN\u00C9 V\u00DDH\u0158EV");
     }
 
+    @Test
+    void flagsSuspiciousBazosModelFactsFromLogs() throws Exception {
+        assertThat(suspiciousModelFactsReason(
+                "Alfa Romeo Stelvio 2.2 JTDM 118kw 160ps Executive Automatic",
+                "",
+                425_000,
+                2006
+        )).isEqualTo("suspicious_model_year");
+
+        assertThat(suspiciousModelFactsReason(
+                "Giulietta 1.6 JTD,88 kW,bila, facelift",
+                "",
+                800_000,
+                2018
+        )).isEqualTo("suspicious_model_price");
+
+        assertThat(suspiciousModelFactsReason(
+                "2017 ALFA ROMEO STELVIO 2,2 JTD Q4 154 kW - 4x4 nová STK",
+                "",
+                385_000,
+                2017
+        )).isNull();
+    }
+
     private String extractFuelType(String text) throws Exception {
         Method method = BazosParser.class.getDeclaredMethod("extractFuelType", String.class);
         method.setAccessible(true);
@@ -1178,6 +1202,18 @@ class BazosParserTest {
         Method method = BazosParser.class.getDeclaredMethod("repairMojibake", String.class);
         method.setAccessible(true);
         return (String) method.invoke(parser, value);
+    }
+
+    private String suspiciousModelFactsReason(String title, String text, Integer priceValue, Integer year) throws Exception {
+        Method method = BazosParser.class.getDeclaredMethod(
+                "suspiciousModelFactsReason",
+                String.class,
+                String.class,
+                Integer.class,
+                Integer.class
+        );
+        method.setAccessible(true);
+        return (String) method.invoke(parser, title, text, priceValue, year);
     }
 
     private boolean looksSuspiciousListing(String title, String text) throws Exception {

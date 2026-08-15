@@ -411,6 +411,21 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 return ParseResult.skip("suspicious_listing");
             }
 
+            String suspiciousFactsReason = suspiciousModelFactsReason(title, analysisText, priceValue, year);
+            if (suspiciousFactsReason != null) {
+                log.info(
+                        "BAZOS SKIP url={} reason={} title={} price={} year={} brand={} carType={}",
+                        safe(url),
+                        suspiciousFactsReason,
+                        safe(title),
+                        priceValue,
+                        year,
+                        safe(brand),
+                        safe(carType)
+                );
+                return ParseResult.skip("suspicious_listing");
+            }
+
             String outputTitle = repairMojibake(title);
             String outputLocation = repairMojibake(location);
 
@@ -497,6 +512,64 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                     && containsAny(titleSource, " zafira ", " 308 ", " mokka ", " corsa ", " 5008 ")) {
                 return false;
             }
+            return true;
+        }
+
+        return false;
+    }
+
+    private String suspiciousModelFactsReason(String title,
+                                              String text,
+                                              Integer priceValue,
+                                              Integer year) {
+        String source = " " + normalizeText(title + " " + shortenForCheck(text, 500)).toLowerCase(Locale.ROOT) + " ";
+
+        if (year != null && hasImpossibleModelYear(source, year)) {
+            return "suspicious_model_year";
+        }
+
+        if (priceValue != null && hasSuspiciousModelPrice(source, priceValue, year)) {
+            return "suspicious_model_price";
+        }
+
+        return null;
+    }
+
+    private boolean hasImpossibleModelYear(String source, int year) {
+        return (year < 2016 && containsAny(source, " stelvio "))
+                || (year < 2015 && containsAny(source, " giulia "))
+                || (year < 2021 && containsAny(source, " cupra born ", " born 150kw ", " born 62kwh "))
+                || (year < 2020 && containsAny(source, " formentor "))
+                || (year < 2024 && containsAny(source, " tavascan "))
+                || (year < 2024 && containsAny(source, " tayron "))
+                || (year < 2021 && containsAny(source, " yaris cross "))
+                || (year < 2020 && containsAny(source, " corolla cross "))
+                || (year < 2016 && containsAny(source, " c-hr ", " chr "))
+                || (year < 2020 && containsAny(source, " enyaq "))
+                || (year < 2019 && containsAny(source, " kamiq ", " scala "))
+                || (year < 2017 && containsAny(source, " karoq "))
+                || (year < 2019 && containsAny(source, " arkana "))
+                || (year < 2015 && containsAny(source, " kadjar "))
+                || (year < 2022 && containsAny(source, " austral "))
+                || (year < 2021 && containsAny(source, " eqs "))
+                || (year < 2021 && containsAny(source, " q4 e-tron ", " q4 etron "))
+                || (year < 2021 && containsAny(source, " bmw ix ", " ix xdrive "));
+    }
+
+    private boolean hasSuspiciousModelPrice(String source, int priceValue, Integer year) {
+        if (year == null) {
+            return false;
+        }
+
+        if (year <= 2020 && priceValue >= 600_000 && containsAny(source, " giulietta ")) {
+            return true;
+        }
+
+        if (year <= 2020 && priceValue >= 1_200_000 && containsAny(source, " peugeot 208 ", " 208 1.2 ")) {
+            return true;
+        }
+
+        if (year <= 2018 && priceValue >= 450_000 && containsAny(source, " fabia ", " panda ", " punto ", " linea ")) {
             return true;
         }
 
