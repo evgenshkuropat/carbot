@@ -3277,6 +3277,8 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
             sb.append("☎️ ").append(car.getSellerContact().trim()).append("\n");
         }
 
+        appendUserListingDescription(sb, lang, car);
+
         if (freshness != null) {
             sb.append("🕒 ").append(freshness).append("\n");
         }
@@ -3286,6 +3288,19 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
         }
 
         return sb.toString().trim();
+    }
+
+    private void appendUserListingDescription(StringBuilder sb, String lang, CarEntity car) {
+        if (!"USER".equalsIgnoreCase(car.getSource())) {
+            return;
+        }
+
+        String description = safeListingDescription(car.getDescription());
+        if ("-".equals(description)) {
+            return;
+        }
+
+        sb.append("📝 ").append(listingDescriptionLabel(lang)).append(": ").append(description).append("\n");
     }
 
     private String formatTitle(String rawTitle) {

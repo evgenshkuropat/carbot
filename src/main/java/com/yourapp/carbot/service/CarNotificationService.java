@@ -719,11 +719,51 @@ public class CarNotificationService {
             sb.append("☎️ ").append(car.getSellerContact().trim()).append("\n");
         }
 
+        appendUserListingDescription(sb, car, lang);
+
         if (freshness != null) {
             sb.append("🕒 ").append(freshness).append("\n");
         }
 
         return sb.toString().trim();
+    }
+
+    private void appendUserListingDescription(StringBuilder sb, CarEntity car, String lang) {
+        if (!"USER".equalsIgnoreCase(car.getSource())) {
+            return;
+        }
+
+        String description = safeListingDescription(car.getDescription());
+        if (description == null) {
+            return;
+        }
+
+        sb.append("📝 ").append(listingDescriptionLabel(lang)).append(": ").append(description).append("\n");
+    }
+
+    private String listingDescriptionLabel(String lang) {
+        return switch (lang) {
+            case "ru" -> "Описание";
+            case "uk" -> "Опис";
+            case "cs" -> "Popis";
+            default -> "Info";
+        };
+    }
+
+    private String safeListingDescription(String description) {
+        String value = safeOrNull(description);
+        if (value == null) {
+            return null;
+        }
+        return limitText(value.replaceAll("\\s+", " ").trim(), 350);
+    }
+
+    private String limitText(String value, int maxLen) {
+        if (value == null) {
+            return "";
+        }
+        String normalized = value.replaceAll("\\s+", " ").trim();
+        return normalized.length() <= maxLen ? normalized : normalized.substring(0, maxLen).trim();
     }
 
     private String formatTitle(String rawTitle) {
