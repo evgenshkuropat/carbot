@@ -300,6 +300,32 @@ class TipCarsParserTest {
     }
 
     @Test
+    void skipsBrandMismatchedDetailImages() throws Exception {
+        String imageUrl = extractImageUrl("""
+                <html><body>
+                  <img src="/images/skoda-octavia.jpg" alt="Skoda Octavia 1.6 TDI">
+                  <main>
+                    <img src="/images/renault-fluence.jpg" alt="Renault Fluence 1.6 16V">
+                  </main>
+                </body></html>
+                """, "Renault Fluence 1.6 16V, Tempomat");
+
+        assertThat(imageUrl).isEqualTo("https://www.tipcars.com/images/renault-fluence.jpg");
+    }
+
+    @Test
+    void ignoresLogosWhenExtractingDetailImage() throws Exception {
+        String imageUrl = extractImageUrl("""
+                <html><body>
+                  <img src="/assets/tipcars-logo.png" alt="TipCars">
+                  <img src="/foto/dacia-duster.webp" alt="Dacia Duster 1.6i">
+                </body></html>
+                """, "Dacia Duster 1.6i");
+
+        assertThat(imageUrl).isEqualTo("https://www.tipcars.com/foto/dacia-duster.webp");
+    }
+
+    @Test
     void extractsListFallbackPriceWithoutJoiningPowerOrMileage() throws Exception {
         assertThat(extractFirstPrice("Fiat Bravo Fiat Bravo 1.4 16V 90 59 000 Kč"))
                 .isEqualTo(59_000);
@@ -598,6 +624,12 @@ class TipCarsParserTest {
         Method method = TipCarsParser.class.getDeclaredMethod("extractListListings", org.jsoup.nodes.Document.class);
         method.setAccessible(true);
         return (Map<?, ?>) method.invoke(parser, Jsoup.parse(html, "https://www.tipcars.com/osobni/"));
+    }
+
+    private String extractImageUrl(String html, String title) throws Exception {
+        Method method = TipCarsParser.class.getDeclaredMethod("extractImageUrl", org.jsoup.nodes.Document.class, String.class);
+        method.setAccessible(true);
+        return (String) method.invoke(parser, Jsoup.parse(html, "https://www.tipcars.com/osobni/"), title);
     }
 
     private Integer extractFirstPrice(String text) throws Exception {

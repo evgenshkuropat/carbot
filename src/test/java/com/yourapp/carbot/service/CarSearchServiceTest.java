@@ -39,6 +39,31 @@ class CarSearchServiceTest {
                 .containsExactly(newerDuplicate, otherCar);
     }
 
+    @Test
+    void hidesMalformedTipCarsRecordsFromSearch() throws Exception {
+        CarEntity renaultWithVolkswagenUrl = new CarEntity();
+        renaultWithVolkswagenUrl.setSource("TIPCARS");
+        renaultWithVolkswagenUrl.setBrand("RENAULT");
+        renaultWithVolkswagenUrl.setTitle("Renault Fluence 1.6 16V, Tempomat");
+        renaultWithVolkswagenUrl.setUrl("https://www.tipcars.com/volkswagen-golf/kombi/benzin/volkswagen-golf-1-4-tsi-7042596.html");
+
+        CarEntity renaultWithMainUrl = new CarEntity();
+        renaultWithMainUrl.setSource("TIPCARS");
+        renaultWithMainUrl.setBrand("RENAULT");
+        renaultWithMainUrl.setTitle("Renault Fluence 1.6 16V, Tempomat");
+        renaultWithMainUrl.setUrl("https://www.tipcars.com/osobni/");
+
+        CarEntity validRenault = new CarEntity();
+        validRenault.setSource("TIPCARS");
+        validRenault.setBrand("RENAULT");
+        validRenault.setTitle("Renault Fluence 1.6 16V, Tempomat");
+        validRenault.setUrl("https://www.tipcars.com/renault-fluence/sedan/benzin/renault-fluence-1-6-16v-tempomat-7042596.html");
+
+        assertThat(isSearchableCar(renaultWithVolkswagenUrl)).isFalse();
+        assertThat(isSearchableCar(renaultWithMainUrl)).isFalse();
+        assertThat(isSearchableCar(validRenault)).isTrue();
+    }
+
     private CarEntity seatIbiza(String url, LocalDateTime createdAt) {
         CarEntity car = new CarEntity();
         car.setTitle("Seat Ibiza 1,4 MPI 16V 114 tis Km");
@@ -56,5 +81,11 @@ class CarSearchServiceTest {
         Method method = CarSearchService.class.getDeclaredMethod("deduplicateSearchResults", List.class, int.class);
         method.setAccessible(true);
         return (List<CarEntity>) method.invoke(service, cars, limit);
+    }
+
+    private boolean isSearchableCar(CarEntity car) throws Exception {
+        Method method = CarSearchService.class.getDeclaredMethod("isSearchableCar", CarEntity.class);
+        method.setAccessible(true);
+        return (boolean) method.invoke(service, car);
     }
 }

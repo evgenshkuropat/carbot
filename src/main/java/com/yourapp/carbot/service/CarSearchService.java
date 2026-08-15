@@ -10,7 +10,10 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Service
 public class CarSearchService {
@@ -36,6 +39,9 @@ public class CarSearchService {
         }
 
         List<CarEntity> allCars = carRepository.findAllByListingStatusOrderByCreatedAtDesc("ACTIVE");
+        List<CarEntity> searchableCars = allCars.stream()
+                .filter(this::isSearchableCar)
+                .toList();
 
         long carTypePassed = 0;
         long brandPassed = 0;
@@ -48,7 +54,7 @@ public class CarSearchService {
         long yearPassed = 0;
         long finalPassed = 0;
 
-        for (CarEntity car : allCars) {
+        for (CarEntity car : searchableCars) {
             FilterCheckResult check = carFilterMatcher.check(car, filter);
 
             if (check.carTypeOk()) carTypePassed++;
@@ -65,6 +71,7 @@ public class CarSearchService {
 
         System.out.println("========== DEBUG SEARCH ==========");
         System.out.println("ALL CARS IN DB = " + allCars.size());
+        System.out.println("SEARCHABLE CARS = " + searchableCars.size());
         System.out.println("FILTER:");
         System.out.println("carType = " + filter.getCarType());
         System.out.println("brand = " + filter.getBrand());
@@ -89,7 +96,7 @@ public class CarSearchService {
         System.out.println("==================================");
 
 
-        List<CarEntity> sortedMatched = allCars.stream()
+        List<CarEntity> sortedMatched = searchableCars.stream()
                 .filter(car -> carFilterMatcher.matches(car, filter))
                 .sorted(Comparator.comparing(
                         CarEntity::getCreatedAt,
@@ -173,6 +180,86 @@ public class CarSearchService {
                 .trim();
 
         return normalized.replaceAll("\\s+", " ");
+    }
+
+    private boolean isSearchableCar(CarEntity car) {
+        if (car == null) {
+            return false;
+        }
+
+        if (!"TIPCARS".equalsIgnoreCase(valueForKey(car.getSource()))) {
+            return true;
+        }
+
+        String url = valueForKey(car.getUrl()).toLowerCase(Locale.ROOT).replaceAll("[?#].*$", "");
+        if (!url.matches("https://www\\.tipcars\\.com/.+-\\d+\\.html")) {
+            return false;
+        }
+
+        String urlBrand = extractTipCarsUrlBrand(url);
+        String carBrand = normalizeBrandForComparison(car.getBrand());
+
+        return urlBrand == null || carBrand == null || urlBrand.equals(carBrand);
+    }
+
+    private String extractTipCarsUrlBrand(String url) {
+        Matcher matcher = Pattern.compile("tipcars\\.com/([^/]+)/").matcher(valueForKey(url).toLowerCase(Locale.ROOT));
+        if (!matcher.find()) {
+            return null;
+        }
+
+        return normalizeTipCarsUrlBrand(matcher.group(1));
+    }
+
+    private String normalizeTipCarsUrlBrand(String value) {
+        String normalized = normalizeBrandForComparison(value);
+        if (normalized == null) {
+            return null;
+        }
+
+        if (normalized.startsWith("mercedes_benz") || normalized.startsWith("mercedes")) return "mercedes";
+        if (normalized.startsWith("volkswagen") || normalized.startsWith("vw")) return "volkswagen";
+        if (normalized.startsWith("skoda")) return "skoda";
+        if (normalized.startsWith("citroen")) return "citroen";
+        if (normalized.startsWith("renault")) return "renault";
+        if (normalized.startsWith("peugeot")) return "peugeot";
+        if (normalized.startsWith("toyota")) return "toyota";
+        if (normalized.startsWith("audi")) return "audi";
+        if (normalized.startsWith("bmw")) return "bmw";
+        if (normalized.startsWith("ford")) return "ford";
+        if (normalized.startsWith("opel")) return "opel";
+        if (normalized.startsWith("seat")) return "seat";
+        if (normalized.startsWith("hyundai")) return "hyundai";
+        if (normalized.startsWith("kia")) return "kia";
+        if (normalized.startsWith("nissan")) return "nissan";
+        if (normalized.startsWith("fiat")) return "fiat";
+        if (normalized.startsWith("honda")) return "honda";
+        if (normalized.startsWith("volvo")) return "volvo";
+        if (normalized.startsWith("dacia")) return "dacia";
+        if (normalized.startsWith("mazda")) return "mazda";
+        if (normalized.startsWith("subaru")) return "subaru";
+        if (normalized.startsWith("mitsubishi")) return "mitsubishi";
+        if (normalized.startsWith("alfa_romeo")) return "alfa_romeo";
+        if (normalized.startsWith("land_rover")) return "land_rover";
+
+        return normalized;
+    }
+
+    private String normalizeBrandForComparison(String value) {
+        String normalized = normalizeForDuplicateKey(value).replace(' ', '_');
+        if (normalized.isBlank()) {
+            return null;
+        }
+
+        return switch (normalized) {
+            case "mercedes_benz", "mercedes" -> "mercedes";
+            case "volkswagen", "vw" -> "volkswagen";
+            case "skoda" -> "skoda";
+            case "citroen" -> "citroen";
+            case "alfa_romeo" -> "alfa_romeo";
+            case "land_rover" -> "land_rover";
+            default -> normalized;
+        };
     }
 
     private boolean looksLikeRenault(CarEntity car) {

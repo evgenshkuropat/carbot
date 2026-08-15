@@ -192,7 +192,7 @@ public class TipCarsParser implements CarSourceParser {
             Integer year = extractYear(pageText, title);
             Integer mileage = extractMileage(pageText);
             String location = extractLocation(doc, pageText);
-            String imageUrl = extractImageUrl(doc);
+            String imageUrl = extractImageUrl(doc, title);
             String brand = extractBrand(title, finalUrl);
             String fuelType = firstNonBlank(
                     extractFuelType(title),
@@ -790,24 +790,74 @@ public class TipCarsParser implements CarSourceParser {
         return capitalizeWords(normalized);
     }
 
-    private String extractImageUrl(Document doc) {
+    private String extractImageUrl(Document doc, String title) {
         Element og = doc.selectFirst("meta[property=og:image]");
         if (og != null) {
             String value = normalizeText(og.attr("content"));
-            if (!value.isBlank()) {
+            if (isUsableDetailImageUrl(value)) {
                 return value;
             }
         }
 
-        Element img = doc.selectFirst("img[src]");
-        if (img != null) {
-            String value = img.absUrl("src");
-            if (value != null && !value.isBlank()) {
+        for (Element img : doc.select("img[src], img[data-src], img[data-original], img[srcset], img[data-srcset]")) {
+            String value = firstNonBlank(
+                    img.absUrl("src"),
+                    img.absUrl("data-src"),
+                    img.absUrl("data-original"),
+                    firstSrcsetUrl(img.attr("srcset")),
+                    firstSrcsetUrl(img.attr("data-srcset"))
+            );
+
+            if (isUsableDetailImageUrl(value) && isImageTextCompatibleWithTitle(img, title)) {
                 return value;
             }
         }
 
         return null;
+    }
+
+    private boolean isUsableDetailImageUrl(String imageUrl) {
+        if (imageUrl == null || imageUrl.isBlank()) {
+            return false;
+        }
+
+        String lower = imageUrl.toLowerCase(Locale.ROOT);
+        if (!lower.startsWith("http://") && !lower.startsWith("https://")) {
+            return false;
+        }
+
+        if (!lower.matches(".*\\.(jpg|jpeg|png|webp)(\\?.*)?$")) {
+            return false;
+        }
+
+        return !containsAny(lower,
+                "logo",
+                "icon",
+                "favicon",
+                "avatar",
+                "placeholder",
+                "blank",
+                "banner",
+                "reklama",
+                "advert",
+                "sprite");
+    }
+
+    private boolean isImageTextCompatibleWithTitle(Element img, String title) {
+        String imageText = normalizeText(firstNonBlank(
+                img.attr("alt"),
+                img.attr("title"),
+                img.attr("aria-label")
+        ));
+
+        if (imageText.isBlank()) {
+            return true;
+        }
+
+        String titleBrand = extractBrand(title, null);
+        String imageBrand = extractBrand(imageText, null);
+
+        return titleBrand == null || imageBrand == null || titleBrand.equals(imageBrand);
     }
 
     private String extractBrand(String title, String url) {
