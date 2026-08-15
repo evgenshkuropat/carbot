@@ -3173,6 +3173,14 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
         return source.trim();
     }
 
+    private String formatAdminSource(String source) {
+        if (source != null && source.trim().toUpperCase().contains("USER")) {
+            return "Користувачі AutoCZ";
+        }
+
+        return formatSource(source);
+    }
+
     private String formatFreshness(String lang, LocalDateTime createdAt) {
         if (createdAt == null) {
             return null;
@@ -3374,7 +3382,7 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
         } else {
             for (CarEntity car : latestCars) {
                 latest.append("• ")
-                        .append(formatSource(car.getSource()))
+                        .append(formatAdminSource(car.getSource()))
                         .append(" — ")
                         .append(formatTitleForAdmin(car.getTitle()))
                         .append("\n");
@@ -3394,10 +3402,10 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
         🆕 Нових за 24 год: %d
         🧾 Оголошень користувачів на перевірці: %d
 
-        📦 Джерела всього:
+        📦 Усього за джерелами:
         %s
 
-        🕒 Джерела за 24 год:
+        🕒 За джерелами за 24 год:
         %s
 
         🧾 Останні авто:
@@ -3420,7 +3428,7 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
                 + "\n\nДіагностика твого фільтра:\n"
                 + filterDiagnostics
                 + "\n\nАдмін-команди:\n"
-                + "- /admin_owner_list - останні оголошення користувачів";
+                + "- /admin_owner_list — останні оголошення користувачів";
 
         sendMessage(chatId, text);
         sendPendingUserListings(chatId);
@@ -3485,7 +3493,7 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
         if (finishedAt != null) {
             builder.append("- останнє завершення: ").append(finishedAt.withNano(0)).append("\n");
         }
-        builder.append("- розібрано унікальних: ").append(parserRunStatsService.getTotalParsedUnique()).append("\n");
+        builder.append("- оброблено унікальних: ").append(parserRunStatsService.getTotalParsedUnique()).append("\n");
         builder.append("- нових збережено: ").append(parserRunStatsService.getTotalSaved()).append("\n");
 
         Map<String, ParserRunStatsService.ParserStats> stats = parserRunStatsService.getParserStats();
@@ -3496,14 +3504,14 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
         for (Map.Entry<String, ParserRunStatsService.ParserStats> entry : stats.entrySet()) {
             ParserRunStatsService.ParserStats stat = entry.getValue();
             builder.append("- ")
-                    .append(formatSource(entry.getKey()))
+                    .append(formatAdminSource(entry.getKey()))
                     .append(": отримано=")
                     .append(stat.returned())
                     .append(", додано=")
                     .append(stat.added())
                     .append(", дублікати=")
                     .append(stat.duplicatesSkipped())
-                    .append(", невалідні=")
+                    .append(", некоректні=")
                     .append(stat.invalidSkipped());
 
             if (stat.failed()) {
