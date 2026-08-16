@@ -29,7 +29,7 @@ public class SautoParser implements CarSourceParser {
     private static final Logger log = LoggerFactory.getLogger(SautoParser.class);
 
     private static final String BASE_LIST_URL = "https://www.sauto.cz/inzerce/osobni?cena-od=30000&razeni=od-nejlevnejsich";
-    private static final int MAX_LIST_PAGES = 8;
+    private static final int MAX_LIST_PAGES = 10;
     private static final int REQUEST_TIMEOUT_MS = 15_000;
 
     private static final int CURRENT_YEAR = Year.now().getValue();
