@@ -161,7 +161,7 @@ public class AutoEsaParser extends AbstractJsoupParser implements CarSourceParse
 
         Integer priceValue = extractSalePrice(card);
         Integer mileage = parseIntSafe(text(card, ".car_item__icon.icon_range"));
-        String fuelType = mapFuel(text(card, ".car_item__icon.icon_fuel"));
+        String fuelType = mapFuel(firstNonBlank(text(card, ".car_item__icon.icon_fuel"), url));
         String carType = mapCarType(extractPathPart(url, 2), title);
         String brand = normalizeBrand(extractPathPart(url, 0), title);
         String imageUrl = cleanImageUrl(firstNonBlank(
@@ -350,13 +350,13 @@ public class AutoEsaParser extends AbstractJsoupParser implements CarSourceParse
     }
 
     private String mapFuel(String value) {
-        String source = " " + normalizeAscii(value).toLowerCase(Locale.ROOT) + " ";
+        String source = " " + normalizeAscii(value).toLowerCase(Locale.ROOT).replaceAll("[^a-z0-9+-]+", " ") + " ";
 
         if (containsAny(source, " lpg ")) return "LPG";
         if (containsAny(source, " cng ")) return "CNG";
         if (containsAny(source, " elektro ", " electric ", " kwh ")) return "ELECTRIC";
         if (containsAny(source, " plug-in ", " plugin ", " phev ")) return "PLUGIN_HYBRID";
-        if (containsAny(source, " hybrid ", " hev ")) return "HYBRID";
+        if (containsAny(source, " hybrid ", " hybridni ", " hev ")) return "HYBRID";
         if (containsAny(source, " nafta ", " diesel ", " tdi ", " dci ", " hdi ", " cdti ")) return "DIESEL";
         if (containsAny(source, " benzin ", " petrol ", " tsi ", " tfsi ", " tce ", " mpi ")) return "PETROL";
 

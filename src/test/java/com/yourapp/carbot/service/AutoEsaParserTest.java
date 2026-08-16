@@ -111,6 +111,12 @@ class AutoEsaParserTest {
         assertThat(normalizeBrand("jaguar", "Jaguar F-Type 3.0 V6 V6 S AWD Coupe")).isEqualTo("JAGUAR");
     }
 
+    @Test
+    void detectsHybridFuelFromAutoEsaUrl() throws Exception {
+        assertThat(mapFuel("https://www.autoesa.cz/toyota/corolla/kombi/hybridni/656457957"))
+                .isEqualTo("HYBRID");
+    }
+
     private CarDto parseCard(Element card, String url) throws Exception {
         Method method = AutoEsaParser.class.getDeclaredMethod("parseCard", Element.class, String.class);
         method.setAccessible(true);
@@ -133,5 +139,11 @@ class AutoEsaParserTest {
         Method method = AutoEsaParser.class.getDeclaredMethod("normalizeBrand", String.class, String.class);
         method.setAccessible(true);
         return (String) method.invoke(parser, raw, title);
+    }
+
+    private String mapFuel(String value) throws Exception {
+        Method method = AutoEsaParser.class.getDeclaredMethod("mapFuel", String.class);
+        method.setAccessible(true);
+        return (String) method.invoke(parser, value);
     }
 }
