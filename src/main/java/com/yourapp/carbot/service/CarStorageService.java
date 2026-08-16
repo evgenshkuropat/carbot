@@ -405,7 +405,7 @@ public class CarStorageService {
                     "JEEP", "MINI", "LEXUS", "PORSCHE", "MITSUBISHI", "BYD",
                     "MG", "DS", "LAND_ROVER", "ALFA_ROMEO", "CHEVROLET",
                     "SSANGYONG", "CHRYSLER", "LOTUS", "LAMBORGHINI", "FERRARI",
-                    "JAECOO", "OMODA", "SWM", "SMART", "INFINITI", "DONGFENG",
+                    "MASERATI", "JAGUAR", "JAECOO", "OMODA", "SWM", "SMART", "INFINITI", "DONGFENG",
                     "ISUZU", "CADILLAC", "ALPINA", "LANCIA", "SAAB", "RAM"
             );
 
@@ -432,6 +432,8 @@ public class CarStorageService {
         if (t.contains("lotus") || t.contains("emira")) return "LOTUS";
         if (t.contains("lamborghini") || t.contains("hurac")) return "LAMBORGHINI";
         if (t.contains("ferrari") || t.contains("california")) return "FERRARI";
+        if (t.contains("maserati")) return "MASERATI";
+        if (t.contains("jaguar")) return "JAGUAR";
         if (t.contains("jaecoo")) return "JAECOO";
         if (t.contains("omoda")) return "OMODA";
         if (t.contains("dongfeng") || t.contains("u-tour") || t.contains("u tour")) return "DONGFENG";

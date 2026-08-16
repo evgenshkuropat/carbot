@@ -105,6 +105,8 @@ class AutoEsaParserTest {
     @Test
     void detectsBrandsSeenInAutoEsaLogs() throws Exception {
         assertThat(normalizeBrand("ds", "DS DS3 1.2PT")).isEqualTo("DS");
+        assertThat(normalizeBrand("mg", "MG ZS 1.0 T-GDi Elegance")).isEqualTo("MG");
+        assertThat(normalizeBrand("ssangyong", "SsangYong Korando 1.5T-GDi 4x4")).isEqualTo("SSANGYONG");
         assertThat(normalizeBrand("maserati", "Maserati GranTurismo 4.7 V8 S Automatic")).isEqualTo("MASERATI");
         assertThat(normalizeBrand("jaguar", "Jaguar F-Type 3.0 V6 V6 S AWD Coupe")).isEqualTo("JAGUAR");
     }

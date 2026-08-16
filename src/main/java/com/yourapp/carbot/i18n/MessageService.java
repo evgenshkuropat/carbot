@@ -296,6 +296,9 @@ public class MessageService {
                     Map.entry("brand.ALFA_ROMEO", "Alfa Romeo"),
                     Map.entry("brand.DS", "DS"),
                     Map.entry("brand.CHEVROLET", "Chevrolet"),
+                    Map.entry("brand.SSANGYONG", "SsangYong"),
+                    Map.entry("brand.MASERATI", "Maserati"),
+                    Map.entry("brand.JAGUAR", "Jaguar"),
 
                     Map.entry("transmission.MANUAL", "Механика"),
                     Map.entry("transmission.AUTOMATIC", "Автомат"),
@@ -612,6 +615,9 @@ public class MessageService {
                     Map.entry("brand.ALFA_ROMEO", "Alfa Romeo"),
                     Map.entry("brand.DS", "DS"),
                     Map.entry("brand.CHEVROLET", "Chevrolet"),
+                    Map.entry("brand.SSANGYONG", "SsangYong"),
+                    Map.entry("brand.MASERATI", "Maserati"),
+                    Map.entry("brand.JAGUAR", "Jaguar"),
 
                     Map.entry("transmission.MANUAL", "Механіка"),
                     Map.entry("transmission.AUTOMATIC", "Автомат"),
@@ -928,6 +934,9 @@ public class MessageService {
                     Map.entry("brand.ALFA_ROMEO", "Alfa Romeo"),
                     Map.entry("brand.DS", "DS"),
                     Map.entry("brand.CHEVROLET", "Chevrolet"),
+                    Map.entry("brand.SSANGYONG", "SsangYong"),
+                    Map.entry("brand.MASERATI", "Maserati"),
+                    Map.entry("brand.JAGUAR", "Jaguar"),
 
                     Map.entry("transmission.MANUAL", "Manuální"),
                     Map.entry("transmission.AUTOMATIC", "Automat"),
@@ -1244,6 +1253,9 @@ public class MessageService {
                     Map.entry("brand.ALFA_ROMEO", "Alfa Romeo"),
                     Map.entry("brand.DS", "DS"),
                     Map.entry("brand.CHEVROLET", "Chevrolet"),
+                    Map.entry("brand.SSANGYONG", "SsangYong"),
+                    Map.entry("brand.MASERATI", "Maserati"),
+                    Map.entry("brand.JAGUAR", "Jaguar"),
 
                     Map.entry("transmission.MANUAL", "Manual"),
                     Map.entry("transmission.AUTOMATIC", "Automatic"),

@@ -342,7 +342,9 @@ public class CarBotKeyboardFactory {
                 "PORSCHE", "LAND_ROVER",
                 "MINI", "ALFA_ROMEO",
                 "CHEVROLET", "DS",
-                "DODGE", "MG"
+                "DODGE", "MG",
+                "SSANGYONG", "MASERATI",
+                "JAGUAR"
         );
 
         rows.add(twoButtonsRow(
