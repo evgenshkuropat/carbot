@@ -33,7 +33,7 @@ public class SbazarParser implements CarSourceParser {
 
     private static final String BASE_HOST = "https://www.sbazar.cz";
     private static final String BASE_LIST_URL = BASE_HOST + "/170-osobni-auta";
-    private static final int MAX_LIST_PAGES = 3;
+    private static final int MAX_LIST_PAGES = 5;
     private static final int REQUEST_TIMEOUT_MS = 20_000;
     private static final int DETAIL_DELAY_MS = 150;
     private static final int MIN_VALID_PRICE = 30_000;
