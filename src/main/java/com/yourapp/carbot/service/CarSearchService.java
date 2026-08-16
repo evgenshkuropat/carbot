@@ -3,6 +3,8 @@ package com.yourapp.carbot.service;
 import com.yourapp.carbot.entity.CarEntity;
 import com.yourapp.carbot.entity.UserFilterEntity;
 import com.yourapp.carbot.repository.CarRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.text.Normalizer;
@@ -17,6 +19,8 @@ import java.util.regex.Pattern;
 
 @Service
 public class CarSearchService {
+
+    private static final Logger log = LoggerFactory.getLogger(CarSearchService.class);
 
     private final CarRepository carRepository;
     private final UserFilterService userFilterService;
@@ -34,7 +38,7 @@ public class CarSearchService {
         UserFilterEntity filter = userFilterService.findByChatId(chatId).orElse(null);
 
         if (filter == null) {
-            System.out.println("DEBUG SEARCH: filter is null for chatId=" + chatId);
+            log.debug("Search skipped: filter is null for chatId={}", chatId);
             return List.of();
         }
 
@@ -69,32 +73,30 @@ public class CarSearchService {
             if (check.result()) finalPassed++;
         }
 
-        System.out.println("========== DEBUG SEARCH ==========");
-        System.out.println("ALL CARS IN DB = " + allCars.size());
-        System.out.println("SEARCHABLE CARS = " + searchableCars.size());
-        System.out.println("FILTER:");
-        System.out.println("carType = " + filter.getCarType());
-        System.out.println("brand = " + filter.getBrand());
-        System.out.println("modelQuery = " + filter.getModelQuery());
-        System.out.println("maxPrice = " + filter.getMaxPrice());
-        System.out.println("location = " + filter.getLocation());
-        System.out.println("maxMileage = " + filter.getMaxMileage());
-        System.out.println("fuelType = " + filter.getFuelType());
-        System.out.println("transmission = " + filter.getTransmission());
-        System.out.println("yearFrom = " + filter.getYearFrom());
-        System.out.println("----------------------------------");
-        System.out.println("PASSED carType = " + carTypePassed);
-        System.out.println("PASSED brand = " + brandPassed);
-        System.out.println("PASSED model = " + modelPassed);
-        System.out.println("PASSED price = " + pricePassed);
-        System.out.println("PASSED location = " + locationPassed);
-        System.out.println("PASSED mileage = " + mileagePassed);
-        System.out.println("PASSED fuelType = " + fuelPassed);
-        System.out.println("PASSED transmission = " + transmissionPassed);
-        System.out.println("PASSED year = " + yearPassed);
-        System.out.println("FINAL MATCHED = " + finalPassed);
-        System.out.println("==================================");
-
+        log.debug(
+                "Search diagnostics: allCars={} searchableCars={} filter=[carType={}, brand={}, modelQuery={}, maxPrice={}, location={}, maxMileage={}, fuelType={}, transmission={}, yearFrom={}] passed=[carType={}, brand={}, model={}, price={}, location={}, mileage={}, fuelType={}, transmission={}, year={}, final={}]",
+                allCars.size(),
+                searchableCars.size(),
+                filter.getCarType(),
+                filter.getBrand(),
+                filter.getModelQuery(),
+                filter.getMaxPrice(),
+                filter.getLocation(),
+                filter.getMaxMileage(),
+                filter.getFuelType(),
+                filter.getTransmission(),
+                filter.getYearFrom(),
+                carTypePassed,
+                brandPassed,
+                modelPassed,
+                pricePassed,
+                locationPassed,
+                mileagePassed,
+                fuelPassed,
+                transmissionPassed,
+                yearPassed,
+                finalPassed
+        );
 
         List<CarEntity> sortedMatched = searchableCars.stream()
                 .filter(car -> carFilterMatcher.matches(car, filter))
@@ -106,20 +108,21 @@ public class CarSearchService {
 
         List<CarEntity> matched = deduplicateSearchResults(sortedMatched, limit);
 
-        System.out.println("========== FINAL MATCHED CARS ==========");
-        matched.forEach(car -> System.out.println(
-                "title=" + car.getTitle()
-                        + " | brand=" + car.getBrand()
-                        + " | price=" + car.getPriceValue()
-                        + " | mileage=" + car.getMileage()
-                        + " | year=" + car.getYear()
-                        + " | fuel=" + car.getFuelType()
-                        + " | transmission=" + car.getTransmission()
-                        + " | type=" + car.getCarType()
-                        + " | location=" + car.getLocation()
-                        + " | createdAt=" + car.getCreatedAt()
-        ));
-        System.out.println("========================================");
+        if (log.isDebugEnabled()) {
+            matched.forEach(car -> log.debug(
+                    "Final matched car: title='{}' brand={} price={} mileage={} year={} fuel={} transmission={} type={} location={} createdAt={}",
+                    car.getTitle(),
+                    car.getBrand(),
+                    car.getPriceValue(),
+                    car.getMileage(),
+                    car.getYear(),
+                    car.getFuelType(),
+                    car.getTransmission(),
+                    car.getCarType(),
+                    car.getLocation(),
+                    car.getCreatedAt()
+            ));
+        }
 
         return matched;
     }
