@@ -40,6 +40,27 @@ class CarSearchServiceTest {
     }
 
     @Test
+    void deduplicatesSameSearchResultWhenTitleHasMinorDifferences() throws Exception {
+        CarEntity newerDuplicate = skodaOctavia(
+                "Škoda Octavia 3 2,0TDi DSG 2020 najeto 130000km",
+                "https://www.sbazar.cz/inzerat/newer-octavia",
+                LocalDateTime.now()
+        );
+        CarEntity olderDuplicate = skodaOctavia(
+                "Škoda Octavia 3 2,0TDi 110kw DSG najeto 130000km",
+                "https://www.sbazar.cz/inzerat/older-octavia",
+                LocalDateTime.now().minusDays(8)
+        );
+
+        List<CarEntity> deduplicated = deduplicateSearchResults(
+                List.of(newerDuplicate, olderDuplicate),
+                10
+        );
+
+        assertThat(deduplicated).containsExactly(newerDuplicate);
+    }
+
+    @Test
     void hidesMalformedTipCarsRecordsFromSearch() throws Exception {
         CarEntity renaultWithVolkswagenUrl = new CarEntity();
         renaultWithVolkswagenUrl.setSource("TIPCARS");
@@ -92,6 +113,19 @@ class CarSearchServiceTest {
         car.setMileage(114_000);
         car.setLocation("v Louny");
         car.setUrl(url);
+        car.setCreatedAt(createdAt);
+        return car;
+    }
+
+    private CarEntity skodaOctavia(String title, String url, LocalDateTime createdAt) {
+        CarEntity car = new CarEntity();
+        car.setTitle(title);
+        car.setPriceValue(285_000);
+        car.setYear(2020);
+        car.setMileage(130_000);
+        car.setLocation("v okres Most");
+        car.setUrl(url);
+        car.setImageUrl("https://www.sbazar.cz/images/octavia-blue.jpg?token=abc");
         car.setCreatedAt(createdAt);
         return car;
     }

@@ -155,6 +155,21 @@ public class CarSearchService {
 
         String title = normalizeForDuplicateKey(car.getTitle());
         String location = normalizeForDuplicateKey(car.getLocation());
+        String image = normalizeUrlForDuplicateKey(car.getImageUrl());
+
+        if (!image.isBlank()
+                && car.getPriceValue() != null
+                && car.getYear() != null
+                && car.getMileage() != null) {
+            return String.join("|",
+                    "image",
+                    image,
+                    valueForKey(car.getPriceValue()),
+                    valueForKey(car.getYear()),
+                    valueForKey(car.getMileage()),
+                    location
+            );
+        }
 
         if (title.isBlank()) {
             return "url:" + normalizeForDuplicateKey(car.getUrl());
@@ -185,6 +200,17 @@ public class CarSearchService {
                 .trim();
 
         return normalized.replaceAll("\\s+", " ");
+    }
+
+    private String normalizeUrlForDuplicateKey(String value) {
+        if (value == null || value.isBlank()) {
+            return "";
+        }
+
+        return value.toLowerCase(Locale.ROOT)
+                .replaceAll("[?#].*$", "")
+                .replaceAll("/+", "/")
+                .trim();
     }
 
     private boolean isSearchableCar(CarEntity car) {
