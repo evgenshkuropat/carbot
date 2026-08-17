@@ -302,7 +302,7 @@ class TipCarsParserTest {
 
     @Test
     void detectsAmbiguousTipCarsDetailIdsBeforeFallback() throws Exception {
-        Set<?> ambiguousIds = findAmbiguousDetailIds(Set.of(
+        Set<String> ambiguousIds = findAmbiguousDetailIds(Set.of(
                 "https://www.tipcars.com/toyota-yaris/hatchback/benzin/toyota-yaris-1-5vvti-selection-cz-49547096.html",
                 "https://www.tipcars.com/land-rover-discovery/suv/nafta/land-rover-discovery-d300-se-r-dynamic-awd-aut-49547096.html",
                 "https://www.tipcars.com/dacia-duster/suv/benzin/dacia-duster-1-6i-6618504.html"
@@ -639,10 +639,10 @@ class TipCarsParserTest {
     }
 
     @SuppressWarnings("unchecked")
-    private Set<?> findAmbiguousDetailIds(Set<String> urls) throws Exception {
+    private Set<String> findAmbiguousDetailIds(Set<String> urls) throws Exception {
         Method method = TipCarsParser.class.getDeclaredMethod("findAmbiguousDetailIds", Set.class);
         method.setAccessible(true);
-        return (Set<?>) method.invoke(parser, urls);
+        return (Set<String>) method.invoke(parser, urls);
     }
 
     private String extractImageUrl(String html, String title) throws Exception {
