@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.text.Normalizer;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.LinkedHashSet;
@@ -21,6 +22,7 @@ import java.util.regex.Pattern;
 public class CarSearchService {
 
     private static final Logger log = LoggerFactory.getLogger(CarSearchService.class);
+    private static final int TIPCARS_SEARCH_MAX_AGE_DAYS = 45;
 
     private final CarRepository carRepository;
     private final UserFilterService userFilterService;
@@ -199,10 +201,19 @@ public class CarSearchService {
             return false;
         }
 
+        if (isStaleTipCarsRecord(car)) {
+            return false;
+        }
+
         String urlBrand = extractTipCarsUrlBrand(url);
         String carBrand = normalizeBrandForComparison(car.getBrand());
 
         return urlBrand == null || carBrand == null || urlBrand.equals(carBrand);
+    }
+
+    private boolean isStaleTipCarsRecord(CarEntity car) {
+        LocalDateTime createdAt = car.getCreatedAt();
+        return createdAt != null && createdAt.isBefore(LocalDateTime.now().minusDays(TIPCARS_SEARCH_MAX_AGE_DAYS));
     }
 
     private String extractTipCarsUrlBrand(String url) {

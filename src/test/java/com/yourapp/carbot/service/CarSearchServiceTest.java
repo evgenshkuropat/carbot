@@ -64,6 +64,26 @@ class CarSearchServiceTest {
         assertThat(isSearchableCar(validRenault)).isTrue();
     }
 
+    @Test
+    void hidesStaleTipCarsRecordsFromSearch() throws Exception {
+        CarEntity staleToyota = new CarEntity();
+        staleToyota.setSource("TIPCARS");
+        staleToyota.setBrand("TOYOTA");
+        staleToyota.setTitle("Toyota Yaris 1.5VVT-i SELECTION CZ");
+        staleToyota.setUrl("https://www.tipcars.com/toyota-yaris/hatchback/benzin/toyota-yaris-1-5vvti-selection-cz-49547096.html");
+        staleToyota.setCreatedAt(LocalDateTime.now().minusDays(60));
+
+        CarEntity freshToyota = new CarEntity();
+        freshToyota.setSource("TIPCARS");
+        freshToyota.setBrand("TOYOTA");
+        freshToyota.setTitle("Toyota Yaris 1.5VVT-i SELECTION CZ");
+        freshToyota.setUrl("https://www.tipcars.com/toyota-yaris/hatchback/benzin/toyota-yaris-1-5vvti-selection-cz-49547096.html");
+        freshToyota.setCreatedAt(LocalDateTime.now().minusDays(2));
+
+        assertThat(isSearchableCar(staleToyota)).isFalse();
+        assertThat(isSearchableCar(freshToyota)).isTrue();
+    }
+
     private CarEntity seatIbiza(String url, LocalDateTime createdAt) {
         CarEntity car = new CarEntity();
         car.setTitle("Seat Ibiza 1,4 MPI 16V 114 tis Km");

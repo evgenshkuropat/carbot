@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.Method;
 import java.util.Map;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -297,6 +298,17 @@ class TipCarsParserTest {
         assertThat(recordValue(renault, "imageUrl")).isEqualTo("https://www.tipcars.com/images/renault.jpg");
         assertThat(recordValue(golf, "title")).isEqualTo("Volkswagen Golf 1.4 TSI Navi");
         assertThat(recordValue(golf, "imageUrl")).isEqualTo("https://www.tipcars.com/images/golf.jpg");
+    }
+
+    @Test
+    void detectsAmbiguousTipCarsDetailIdsBeforeFallback() throws Exception {
+        Set<?> ambiguousIds = findAmbiguousDetailIds(Set.of(
+                "https://www.tipcars.com/toyota-yaris/hatchback/benzin/toyota-yaris-1-5vvti-selection-cz-49547096.html",
+                "https://www.tipcars.com/land-rover-discovery/suv/nafta/land-rover-discovery-d300-se-r-dynamic-awd-aut-49547096.html",
+                "https://www.tipcars.com/dacia-duster/suv/benzin/dacia-duster-1-6i-6618504.html"
+        ));
+
+        assertThat(ambiguousIds).containsExactly("49547096");
     }
 
     @Test
@@ -624,6 +636,13 @@ class TipCarsParserTest {
         Method method = TipCarsParser.class.getDeclaredMethod("extractListListings", org.jsoup.nodes.Document.class);
         method.setAccessible(true);
         return (Map<?, ?>) method.invoke(parser, Jsoup.parse(html, "https://www.tipcars.com/osobni/"));
+    }
+
+    @SuppressWarnings("unchecked")
+    private Set<?> findAmbiguousDetailIds(Set<String> urls) throws Exception {
+        Method method = TipCarsParser.class.getDeclaredMethod("findAmbiguousDetailIds", Set.class);
+        method.setAccessible(true);
+        return (Set<?>) method.invoke(parser, urls);
     }
 
     private String extractImageUrl(String html, String title) throws Exception {

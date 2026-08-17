@@ -98,8 +98,21 @@ public class TipCarsParser implements CarSourceParser {
             }
 
             log.info("TIPCARS total unique detail links found={}", detailLinks.size());
+            Set<String> ambiguousDetailIds = findAmbiguousDetailIds(detailLinks);
+            if (!ambiguousDetailIds.isEmpty()) {
+                log.warn("TIPCARS found ambiguous detail ids count={} ids={}",
+                        ambiguousDetailIds.size(), ambiguousDetailIds);
+            }
 
             for (String url : detailLinks) {
+                String detailId = extractDetailId(url);
+                if (detailId != null && ambiguousDetailIds.contains(detailId)) {
+                    brokenCount++;
+                    log.warn("TIPCARS SKIP url={} reason=ambiguous_detail_id detail_id={}",
+                            safe(url), safe(detailId));
+                    continue;
+                }
+
                 ParseResult result = parseDetail(url, cookies, listListings.get(url));
 
                 if (result.car() != null) {
@@ -518,6 +531,41 @@ public class TipCarsParser implements CarSourceParser {
         }
 
         return normalized.matches("https://www\\.tipcars\\.com/.+-\\d+\\.html");
+    }
+
+    private Set<String> findAmbiguousDetailIds(Set<String> urls) {
+        Map<String, Set<String>> urlsById = new HashMap<>();
+
+        if (urls == null || urls.isEmpty()) {
+            return Set.of();
+        }
+
+        for (String url : urls) {
+            String detailId = extractDetailId(url);
+            if (detailId == null) {
+                continue;
+            }
+            urlsById.computeIfAbsent(detailId, ignored -> new LinkedHashSet<>()).add(normalizeDetailUrl(url));
+        }
+
+        Set<String> ambiguousIds = new LinkedHashSet<>();
+        for (Map.Entry<String, Set<String>> entry : urlsById.entrySet()) {
+            if (entry.getValue().size() > 1) {
+                ambiguousIds.add(entry.getKey());
+            }
+        }
+
+        return ambiguousIds;
+    }
+
+    private String extractDetailId(String url) {
+        String normalized = normalizeDetailUrl(url);
+        if (normalized == null || normalized.isBlank()) {
+            return null;
+        }
+
+        Matcher matcher = Pattern.compile("-(\\d+)\\.html$", Pattern.CASE_INSENSITIVE).matcher(normalized);
+        return matcher.find() ? matcher.group(1) : null;
     }
 
     private String extractTitle(Document doc) {
