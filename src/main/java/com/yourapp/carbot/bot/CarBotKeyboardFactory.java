@@ -963,7 +963,7 @@ public class CarBotKeyboardFactory {
     }
 
     private String anyOptionText(String lang) {
-        return "↪️ " + messages.get(lang, "common.any");
+        return "▫️ " + messages.get(lang, "common.any");
     }
 
     private String noLimitOptionText(String lang) {
