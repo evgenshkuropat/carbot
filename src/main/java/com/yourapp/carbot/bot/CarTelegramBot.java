@@ -193,6 +193,7 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
 
         String normalized = text
                 .replace("🔍 ", "")
+                .replace("🔎 ", "")
                 .replace("⚙️ ", "")
                 .replace("📋 ", "")
                 .replace("📝 ", "")

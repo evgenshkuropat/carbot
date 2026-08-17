@@ -27,15 +27,14 @@ public class CarBotKeyboardFactory {
 
     public ReplyKeyboard mainMenuKeyboard(String lang) {
         KeyboardRow row1 = new KeyboardRow();
-        row1.add(new KeyboardButton("🔍 " + messages.get(lang, "menu.search")));
-        row1.add(new KeyboardButton("⚙️ " + messages.get(lang, "menu.filter")));
+        row1.add(new KeyboardButton("📋 " + messages.get(lang, "menu.myFilter")));
+        row1.add(new KeyboardButton("🔎 " + messages.get(lang, "menu.filter")));
 
         KeyboardRow row2 = new KeyboardRow();
-        row2.add(new KeyboardButton("📋 " + messages.get(lang, "menu.myFilter")));
+        row2.add(new KeyboardButton("⭐ " + messages.get(lang, "menu.favorites")));
         row2.add(new KeyboardButton("🧰 " + messages.get(lang, "menu.services")));
 
         KeyboardRow row3 = new KeyboardRow();
-        row3.add(new KeyboardButton("⭐ " + messages.get(lang, "menu.favorites")));
         row3.add(new KeyboardButton("🌐 " + messages.get(lang, "menu.language")));
 
         KeyboardRow row4 = new KeyboardRow();

@@ -85,8 +85,8 @@ public class MessageService {
                             \u042F \u0431\u0443\u0434\u0443 \u043F\u0440\u0438\u0441\u044B\u043B\u0430\u0442\u044C \u043D\u043E\u0432\u044B\u0435 \u043E\u0431\u044A\u044F\u0432\u043B\u0435\u043D\u0438\u044F \u043F\u043E \u0432\u0430\u0448\u0435\u043C\u0443 \u0444\u0438\u043B\u044C\u0442\u0440\u0443.
                             \u041C\u043E\u0436\u043D\u043E \u043D\u0430\u0447\u0430\u0442\u044C \u043F\u043E\u0438\u0441\u043A \u043F\u0440\u044F\u043C\u043E \u0441\u0435\u0439\u0447\u0430\u0441 \uD83D\uDC47
                             """),
-                    Map.entry("menu.search", "\u041D\u0430\u0439\u0442\u0438 \u0430\u0432\u0442\u043E"),
-                    Map.entry("menu.filter", "\u041D\u0430\u0441\u0442\u0440\u043E\u0438\u0442\u044C \u0444\u0438\u043B\u044C\u0442\u0440"),
+                    Map.entry("menu.search", "Показать авто"),
+                    Map.entry("menu.filter", "Новый поиск"),
                     Map.entry("menu.myFilter", "\u041C\u043E\u0439 \u0444\u0438\u043B\u044C\u0442\u0440"),
                     Map.entry("menu.latest", "Новые объявления"),
                     Map.entry("menu.services", "\u0421\u0435\u0440\u0432\u0438\u0441\u044B"),
@@ -107,10 +107,10 @@ public class MessageService {
                     Map.entry("menu.language", "Язык"),
 
                     Map.entry("button.showFilter", "\u041F\u043E\u043A\u0430\u0437\u0430\u0442\u044C \u0444\u0438\u043B\u044C\u0442\u0440"),
-                    Map.entry("button.findCars", "\u041D\u0430\u0439\u0442\u0438 \u0430\u0432\u0442\u043E"),
+                    Map.entry("button.findCars", "Показать авто"),
                     Map.entry("button.editFilter", "\u0418\u0437\u043C\u0435\u043D\u0438\u0442\u044C \u0444\u0438\u043B\u044C\u0442\u0440"),
                     Map.entry("button.resetFilter", "\u0421\u0431\u0440\u043E\u0441\u0438\u0442\u044C \u0444\u0438\u043B\u044C\u0442\u0440"),
-                    Map.entry("button.createNewFilter", "\u0421\u043E\u0437\u0434\u0430\u0442\u044C \u043D\u043E\u0432\u044B\u0439 \u0444\u0438\u043B\u044C\u0442\u0440"),
+                    Map.entry("button.createNewFilter", "Новый поиск"),
                     Map.entry("button.open", "\u041E\u0442\u043A\u0440\u044B\u0442\u044C \u043E\u0431\u044A\u044F\u0432\u043B\u0435\u043D\u0438\u0435"),
                     Map.entry("button.addFavorite", "\u0414\u043E\u0431\u0430\u0432\u0438\u0442\u044C \u0432 \u0438\u0437\u0431\u0440\u0430\u043D\u043D\u043E\u0435"),
                     Map.entry("button.removeFavorite", "\u0423\u0434\u0430\u043B\u0438\u0442\u044C \u0438\u0437 \u0438\u0437\u0431\u0440\u0430\u043D\u043D\u043E\u0433\u043E"),
@@ -404,8 +404,8 @@ public class MessageService {
                             \u042F \u043D\u0430\u0434\u0441\u0438\u043B\u0430\u0442\u0438\u043C\u0443 \u043D\u043E\u0432\u0456 \u043E\u0433\u043E\u043B\u043E\u0448\u0435\u043D\u043D\u044F \u0437\u0430 \u0432\u0430\u0448\u0438\u043C \u0444\u0456\u043B\u044C\u0442\u0440\u043E\u043C.
                             \u041C\u043E\u0436\u043D\u0430 \u043F\u043E\u0447\u0430\u0442\u0438 \u043F\u043E\u0448\u0443\u043A \u043F\u0440\u044F\u043C\u043E \u0437\u0430\u0440\u0430\u0437 \uD83D\uDC47
                             """),
-                    Map.entry("menu.search", "\u0417\u043D\u0430\u0439\u0442\u0438 \u0430\u0432\u0442\u043E"),
-                    Map.entry("menu.filter", "\u041D\u0430\u043B\u0430\u0448\u0442\u0443\u0432\u0430\u0442\u0438 \u0444\u0456\u043B\u044C\u0442\u0440"),
+                    Map.entry("menu.search", "Показати авто"),
+                    Map.entry("menu.filter", "Новий пошук"),
                     Map.entry("menu.myFilter", "\u041C\u0456\u0439 \u0444\u0456\u043B\u044C\u0442\u0440"),
                     Map.entry("menu.latest", "Нові оголошення"),
                     Map.entry("menu.services", "\u0421\u0435\u0440\u0432\u0456\u0441\u0438"),
@@ -426,10 +426,10 @@ public class MessageService {
                     Map.entry("menu.language", "Мова"),
 
                     Map.entry("button.showFilter", "\u041F\u043E\u043A\u0430\u0437\u0430\u0442\u0438 \u0444\u0456\u043B\u044C\u0442\u0440"),
-                    Map.entry("button.findCars", "\u0417\u043D\u0430\u0439\u0442\u0438 \u0430\u0432\u0442\u043E"),
+                    Map.entry("button.findCars", "Показати авто"),
                     Map.entry("button.editFilter", "\u0417\u043C\u0456\u043D\u0438\u0442\u0438 \u0444\u0456\u043B\u044C\u0442\u0440"),
                     Map.entry("button.resetFilter", "\u0421\u043A\u0438\u043D\u0443\u0442\u0438 \u0444\u0456\u043B\u044C\u0442\u0440"),
-                    Map.entry("button.createNewFilter", "\u0421\u0442\u0432\u043E\u0440\u0438\u0442\u0438 \u043D\u043E\u0432\u0438\u0439 \u0444\u0456\u043B\u044C\u0442\u0440"),
+                    Map.entry("button.createNewFilter", "Новий пошук"),
                     Map.entry("button.open", "\u0412\u0456\u0434\u043A\u0440\u0438\u0442\u0438 \u043E\u0433\u043E\u043B\u043E\u0448\u0435\u043D\u043D\u044F"),
                     Map.entry("button.addFavorite", "\u0414\u043E\u0434\u0430\u0442\u0438 \u0432 \u043E\u0431\u0440\u0430\u043D\u0435"),
                     Map.entry("button.removeFavorite", "\u0412\u0438\u0434\u0430\u043B\u0438\u0442\u0438 \u0437 \u043E\u0431\u0440\u0430\u043D\u043E\u0433\u043E"),
@@ -723,8 +723,8 @@ public class MessageService {
                             Budu pos\u00EDlat nov\u00E9 inzer\u00E1ty podle va\u0161eho filtru.
                             M\u016F\u017Eete za\u010D\u00EDt hledat hned te\u010F \uD83D\uDC47
                             """),
-                    Map.entry("menu.search", "Naj\u00EDt auto"),
-                    Map.entry("menu.filter", "Nastavit filtr"),
+                    Map.entry("menu.search", "Zobrazit auta"),
+                    Map.entry("menu.filter", "Nové hledání"),
                     Map.entry("menu.myFilter", "M\u016Fj filtr"),
                     Map.entry("menu.latest", "Nové inzeráty"),
                     Map.entry("menu.services", "Slu\u017Eby"),
@@ -745,10 +745,10 @@ public class MessageService {
                     Map.entry("menu.language", "Jazyk"),
 
                     Map.entry("button.showFilter", "Zobrazit filtr"),
-                    Map.entry("button.findCars", "Naj\u00EDt auta"),
+                    Map.entry("button.findCars", "Zobrazit auta"),
                     Map.entry("button.editFilter", "Upravit filtr"),
                     Map.entry("button.resetFilter", "Resetovat filtr"),
-                    Map.entry("button.createNewFilter", "Vytvo\u0159it nov\u00FD filtr"),
+                    Map.entry("button.createNewFilter", "Nové hledání"),
                     Map.entry("button.open", "Otev\u0159\u00EDt inzer\u00E1t"),
                     Map.entry("button.addFavorite", "P\u0159idat do obl\u00EDben\u00FDch"),
                     Map.entry("button.removeFavorite", "Odebrat z obl\u00EDben\u00FDch"),
@@ -1042,8 +1042,8 @@ public class MessageService {
                             I will send new listings matching your filter.
                             You can start searching right now \uD83D\uDC47
                             """),
-                    Map.entry("menu.search", "Find cars"),
-                    Map.entry("menu.filter", "Set filter"),
+                    Map.entry("menu.search", "Show cars"),
+                    Map.entry("menu.filter", "New search"),
                     Map.entry("menu.myFilter", "My filter"),
                     Map.entry("menu.latest", "New listings"),
                     Map.entry("menu.services", "Services"),
@@ -1064,10 +1064,10 @@ public class MessageService {
                     Map.entry("menu.language", "Language"),
 
                     Map.entry("button.showFilter", "Show filter"),
-                    Map.entry("button.findCars", "Find cars"),
+                    Map.entry("button.findCars", "Show cars"),
                     Map.entry("button.editFilter", "Edit filter"),
                     Map.entry("button.resetFilter", "Reset filter"),
-                    Map.entry("button.createNewFilter", "Create new filter"),
+                    Map.entry("button.createNewFilter", "New search"),
                     Map.entry("button.open", "Open listing"),
                     Map.entry("button.addFavorite", "Add to favorites"),
                     Map.entry("button.removeFavorite", "Remove from favorites"),
