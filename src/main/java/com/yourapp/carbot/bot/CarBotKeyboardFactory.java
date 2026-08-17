@@ -35,10 +35,10 @@ public class CarBotKeyboardFactory {
         row2.add(new KeyboardButton("🧰 " + messages.get(lang, "menu.services")));
 
         KeyboardRow row3 = new KeyboardRow();
-        row3.add(new KeyboardButton("🌐 " + messages.get(lang, "menu.language")));
+        row3.add(new KeyboardButton(sellMenuText(lang)));
 
         KeyboardRow row4 = new KeyboardRow();
-        row4.add(new KeyboardButton(sellMenuText(lang)));
+        row4.add(new KeyboardButton("🌐 " + messages.get(lang, "menu.language")));
 
         return ReplyKeyboardMarkup.builder()
                 .keyboard(List.of(row1, row2, row3, row4))
