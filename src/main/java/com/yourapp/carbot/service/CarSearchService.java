@@ -22,7 +22,7 @@ import java.util.regex.Pattern;
 public class CarSearchService {
 
     private static final Logger log = LoggerFactory.getLogger(CarSearchService.class);
-    private static final int TIPCARS_SEARCH_MAX_AGE_DAYS = 45;
+    private static final int TIPCARS_SEARCH_MAX_AGE_DAYS = 14;
 
     private final CarRepository carRepository;
     private final UserFilterService userFilterService;

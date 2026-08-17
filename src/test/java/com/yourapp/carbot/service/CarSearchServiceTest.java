@@ -71,7 +71,7 @@ class CarSearchServiceTest {
         staleToyota.setBrand("TOYOTA");
         staleToyota.setTitle("Toyota Yaris 1.5VVT-i SELECTION CZ");
         staleToyota.setUrl("https://www.tipcars.com/toyota-yaris/hatchback/benzin/toyota-yaris-1-5vvti-selection-cz-49547096.html");
-        staleToyota.setCreatedAt(LocalDateTime.now().minusDays(60));
+        staleToyota.setCreatedAt(LocalDateTime.now().minusDays(20));
 
         CarEntity freshToyota = new CarEntity();
         freshToyota.setSource("TIPCARS");
