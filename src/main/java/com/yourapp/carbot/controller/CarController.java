@@ -5,10 +5,14 @@ import com.yourapp.carbot.repository.CarRepository;
 import com.yourapp.carbot.service.CarParserService;
 import com.yourapp.carbot.service.dto.CarDto;
 import com.yourapp.carbot.service.dto.CarResponseDto;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -17,11 +21,14 @@ public class CarController {
 
     private final CarParserService carParserService;
     private final CarRepository carRepository;
+    private final String apiAdminToken;
 
     public CarController(CarParserService carParserService,
-                         CarRepository carRepository) {
+                         CarRepository carRepository,
+                         @Value("${api.admin-token:}") String apiAdminToken) {
         this.carParserService = carParserService;
         this.carRepository = carRepository;
+        this.apiAdminToken = apiAdminToken;
     }
 
     @GetMapping("/api/cars")
@@ -30,13 +37,14 @@ public class CarController {
     }
 
     @GetMapping("/api/cars/save")
-    public String saveCars() {
+    public String saveCars(@RequestHeader(value = "X-API-ADMIN-TOKEN", required = false) String adminToken) {
+        requireAdminToken(adminToken);
         return "Saved new cars: " + carParserService.fetchAndStoreCars().size();
     }
 
     @GetMapping("/api/cars/db")
     public List<CarResponseDto> getCarsFromDb() {
-        return carRepository.findAll()
+        return carRepository.findTop200ByOrderByCreatedAtDesc()
                 .stream()
                 .map(this::toDto)
                 .toList();
@@ -117,6 +125,16 @@ public class CarController {
                         (car.getTitle() != null && car.getTitle().toLowerCase().contains(query.toLowerCase())))
                 .map(this::toDto)
                 .toList();
+    }
+
+    private void requireAdminToken(String token) {
+        if (apiAdminToken == null || apiAdminToken.isBlank()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        }
+
+        if (token == null || !apiAdminToken.equals(token)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+        }
     }
 
     private CarResponseDto toDto(CarEntity car) {

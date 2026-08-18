@@ -53,6 +53,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleThreadUpdateConsumer {
 
     private static final Logger log = LoggerFactory.getLogger(CarTelegramBot.class);
+    private static final long MAX_IMAGE_DOWNLOAD_BYTES = 8L * 1024 * 1024;
 
     private final TelegramClient telegramClient;
     private final String botToken;
@@ -3112,7 +3113,7 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
         try (InputStream inputStream = connection.getInputStream();
              FileOutputStream outputStream = new FileOutputStream(tempFile)) {
 
-            inputStream.transferTo(outputStream);
+            copyWithLimit(inputStream, outputStream, MAX_IMAGE_DOWNLOAD_BYTES);
         }
 
         if (tempFile.length() == 0) {
@@ -3158,6 +3159,20 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
             return ".webp";
         }
         return ".jpg";
+    }
+
+    private void copyWithLimit(InputStream inputStream, FileOutputStream outputStream, long maxBytes) throws Exception {
+        byte[] buffer = new byte[8192];
+        long total = 0;
+        int read;
+
+        while ((read = inputStream.read(buffer)) != -1) {
+            total += read;
+            if (total > maxBytes) {
+                throw new IllegalStateException("Image is too large");
+            }
+            outputStream.write(buffer, 0, read);
+        }
     }
 
     private boolean hasImage(String imageUrl) {

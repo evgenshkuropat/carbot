@@ -20,6 +20,9 @@ telegram:
     username: ${TELEGRAM_BOT_USERNAME}
     admin-chat-ids: ${TELEGRAM_ADMIN_CHAT_IDS:}
 
+api:
+  admin-token: ${API_ADMIN_TOKEN:}
+
 support:
   paypal-url: ${SUPPORT_PAYPAL_URL:https://www.paypal.me/YEVHENSHKUROPAT}
   privatbank-url: ${SUPPORT_PRIVATBANK_URL:https://www.privat24.ua/send/47m35}

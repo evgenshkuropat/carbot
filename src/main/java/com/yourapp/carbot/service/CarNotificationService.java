@@ -39,6 +39,7 @@ public class CarNotificationService {
     private static final String PLACEHOLDER_IMAGE_PATH = "static/images/no-car-photo.jpg";
     private static final int MAX_CAPTION_LENGTH = 900;
     private static final int MAX_MESSAGE_LENGTH = 3500;
+    private static final long MAX_IMAGE_DOWNLOAD_BYTES = 8L * 1024 * 1024;
 
     private final TelegramSubscriberRepository subscriberRepository;
     private final UserFilterRepository userFilterRepository;
@@ -599,7 +600,7 @@ public class CarNotificationService {
         try (InputStream inputStream = connection.getInputStream();
              FileOutputStream outputStream = new FileOutputStream(tempFile)) {
 
-            inputStream.transferTo(outputStream);
+            copyWithLimit(inputStream, outputStream, MAX_IMAGE_DOWNLOAD_BYTES);
         }
 
         if (tempFile.length() == 0) {
@@ -637,6 +638,20 @@ public class CarNotificationService {
             return ".webp";
         }
         return ".jpg";
+    }
+
+    private void copyWithLimit(InputStream inputStream, FileOutputStream outputStream, long maxBytes) throws Exception {
+        byte[] buffer = new byte[8192];
+        long total = 0;
+        int read;
+
+        while ((read = inputStream.read(buffer)) != -1) {
+            total += read;
+            if (total > maxBytes) {
+                throw new IllegalStateException("Image is too large");
+            }
+            outputStream.write(buffer, 0, read);
+        }
     }
 
     private InlineKeyboardMarkup buildOpenUrlKeyboard(String url, String lang) {

@@ -360,7 +360,16 @@ public class CarStorageService {
         }
 
         if (value.startsWith("//")) {
-            return "https:" + value;
+            value = "https:" + value;
+        }
+
+        String lower = value.toLowerCase(Locale.ROOT);
+        if (!(lower.startsWith("http://") || lower.startsWith("https://"))) {
+            return null;
+        }
+
+        if (lower.endsWith(".svg")) {
+            return null;
         }
 
         return value;
