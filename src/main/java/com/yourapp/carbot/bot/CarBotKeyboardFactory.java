@@ -94,28 +94,28 @@ public class CarBotKeyboardFactory {
 
         if (isExternalUrl(supportPaypalUrl)) {
             rows.add(singleUrlButtonRow(
-                    "PayPal",
+                    "💳 PayPal",
                     supportPaypalUrl
             ));
         }
 
         if (isExternalUrl(supportPrivatbankUrl)) {
             rows.add(singleUrlButtonRow(
-                    "ПриватБанк",
+                    "🇺🇦 ПриватБанк",
                     supportPrivatbankUrl
             ));
         }
 
         if (isExternalUrl(supportRevolutUrl)) {
             rows.add(singleUrlButtonRow(
-                    "Revolut",
+                    "💙 Revolut",
                     supportRevolutUrl
             ));
         }
 
         if (supportRaiffeisenAccount != null && !supportRaiffeisenAccount.isBlank()) {
             rows.add(singleButtonRow(
-                    "Raiffeisenbank",
+                    "🏦 Raiffeisenbank",
                     "service_support_raiffeisen"
             ));
         }
