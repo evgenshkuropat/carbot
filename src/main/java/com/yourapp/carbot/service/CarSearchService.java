@@ -164,8 +164,7 @@ public class CarSearchService {
                     "image",
                     image,
                     valueForKey(car.getYear()),
-                    valueForKey(car.getMileage()),
-                    location
+                    valueForKey(car.getMileage())
             );
         }
 

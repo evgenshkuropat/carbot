@@ -51,6 +51,8 @@ class CarSearchServiceTest {
                 "https://www.sbazar.cz/inzerat/older-octavia",
                 LocalDateTime.now().minusDays(8)
         );
+        newerDuplicate.setLocation("Praha 10");
+        olderDuplicate.setLocation("v Praha, Vršovice");
         olderDuplicate.setPriceValue(295_000);
 
         List<CarEntity> deduplicated = deduplicateSearchResults(
