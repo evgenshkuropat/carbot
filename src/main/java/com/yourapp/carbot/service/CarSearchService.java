@@ -158,13 +158,11 @@ public class CarSearchService {
         String image = normalizeUrlForDuplicateKey(car.getImageUrl());
 
         if (!image.isBlank()
-                && car.getPriceValue() != null
                 && car.getYear() != null
                 && car.getMileage() != null) {
             return String.join("|",
                     "image",
                     image,
-                    valueForKey(car.getPriceValue()),
                     valueForKey(car.getYear()),
                     valueForKey(car.getMileage()),
                     location

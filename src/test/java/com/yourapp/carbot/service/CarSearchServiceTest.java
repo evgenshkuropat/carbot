@@ -51,6 +51,7 @@ class CarSearchServiceTest {
                 "https://www.sbazar.cz/inzerat/older-octavia",
                 LocalDateTime.now().minusDays(8)
         );
+        olderDuplicate.setPriceValue(295_000);
 
         List<CarEntity> deduplicated = deduplicateSearchResults(
                 List.of(newerDuplicate, olderDuplicate),
