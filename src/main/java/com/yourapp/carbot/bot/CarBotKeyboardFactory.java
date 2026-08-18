@@ -2,6 +2,7 @@ package com.yourapp.carbot.bot;
 
 import com.yourapp.carbot.i18n.MessageService;
 import com.yourapp.carbot.entity.TelegramSubscriberEntity;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboard;
@@ -20,9 +21,21 @@ import java.util.Set;
 public class CarBotKeyboardFactory {
 
     private final MessageService messages;
+    private final String supportPaypalUrl;
+    private final String supportPrivatbankUrl;
+    private final String supportRevolutUrl;
+    private final String supportRaiffeisenAccount;
 
-    public CarBotKeyboardFactory(MessageService messages) {
+    public CarBotKeyboardFactory(MessageService messages,
+                                 @Value("${support.paypal-url:}") String supportPaypalUrl,
+                                 @Value("${support.privatbank-url:}") String supportPrivatbankUrl,
+                                 @Value("${support.revolut-url:}") String supportRevolutUrl,
+                                 @Value("${support.raiffeisen-account:}") String supportRaiffeisenAccount) {
         this.messages = messages;
+        this.supportPaypalUrl = supportPaypalUrl;
+        this.supportPrivatbankUrl = supportPrivatbankUrl;
+        this.supportRevolutUrl = supportRevolutUrl;
+        this.supportRaiffeisenAccount = supportRaiffeisenAccount;
     }
 
     public ReplyKeyboard mainMenuKeyboard(String lang) {
@@ -66,10 +79,48 @@ public class CarBotKeyboardFactory {
                 "https://t.me/evzen_cz"
         ));
 
-        rows.add(singleUrlButtonRow(
+        rows.add(singleButtonRow(
                 "☕ " + messages.get(lang, "services.supportProject"),
-                "https://revolut.me/evzen13"
+                "service_support_project"
         ));
+
+        return InlineKeyboardMarkup.builder()
+                .keyboard(rows)
+                .build();
+    }
+
+    public InlineKeyboardMarkup supportProjectKeyboard(String lang) {
+        List<InlineKeyboardRow> rows = new ArrayList<>();
+
+        if (isExternalUrl(supportPaypalUrl)) {
+            rows.add(singleUrlButtonRow(
+                    "PayPal",
+                    supportPaypalUrl
+            ));
+        }
+
+        if (isExternalUrl(supportPrivatbankUrl)) {
+            rows.add(singleUrlButtonRow(
+                    "ПриватБанк",
+                    supportPrivatbankUrl
+            ));
+        }
+
+        if (isExternalUrl(supportRevolutUrl)) {
+            rows.add(singleUrlButtonRow(
+                    "Revolut",
+                    supportRevolutUrl
+            ));
+        }
+
+        if (supportRaiffeisenAccount != null && !supportRaiffeisenAccount.isBlank()) {
+            rows.add(singleButtonRow(
+                    "Raiffeisenbank",
+                    "service_support_raiffeisen"
+            ));
+        }
+
+        rows.add(singleButtonRow("⬅️ " + messages.get(lang, "menu.services"), "service_back"));
 
         return InlineKeyboardMarkup.builder()
                 .keyboard(rows)

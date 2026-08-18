@@ -102,7 +102,21 @@ public class MessageService {
                             """),
                     Map.entry("services.housingBot", "\u041F\u043E\u0438\u0441\u043A \u0436\u0438\u043B\u044C\u044F \u0432 \u0427\u0435\u0445\u0438\u0438"),
                     Map.entry("services.feedback", "\u041E\u0431\u0440\u0430\u0442\u043D\u0430\u044F \u0441\u0432\u044F\u0437\u044C"),
-                    Map.entry("services.supportProject", "\u041F\u043E\u0434\u0434\u0435\u0440\u0436\u0430\u0442\u044C \u043F\u0440\u043E\u0435\u043A\u0442"),
+                    Map.entry("services.supportProject", "\u0423\u0433\u043E\u0441\u0442\u0438\u0442\u044C \u043A\u043E\u0444\u0435"),
+                    Map.entry("services.supportProject.text", """
+                            \u2615 \u0423\u0433\u043E\u0441\u0442\u0438\u0442\u044C AutoCZ \u043A\u043E\u0444\u0435
+
+                            \u0411\u043E\u0442 \u043E\u0441\u0442\u0430\u0435\u0442\u0441\u044F \u0431\u0435\u0441\u043F\u043B\u0430\u0442\u043D\u044B\u043C. \u0415\u0441\u043B\u0438 \u043E\u043D \u043F\u043E\u043C\u043E\u0433\u0430\u0435\u0442 \u0432\u0430\u043C \u044D\u043A\u043E\u043D\u043E\u043C\u0438\u0442\u044C \u0432\u0440\u0435\u043C\u044F, \u043C\u043E\u0436\u043D\u043E \u043F\u043E\u0434\u0434\u0435\u0440\u0436\u0430\u0442\u044C \u0441\u0435\u0440\u0432\u0435\u0440 \u0438 \u0440\u0430\u0437\u0432\u0438\u0442\u0438\u0435 \u043F\u0440\u043E\u0435\u043A\u0442\u0430.
+
+                            \u0412\u044B\u0431\u0435\u0440\u0438\u0442\u0435 \u0443\u0434\u043E\u0431\u043D\u044B\u0439 \u0441\u043F\u043E\u0441\u043E\u0431:
+                            """),
+                    Map.entry("services.supportProject.raiffeisen", """
+                            \uD83D\uDCB3 Raiffeisenbank
+
+                            \u0421\u0447\u0435\u0442: {account}
+
+                            \u041E\u0442\u043A\u0440\u043E\u0439\u0442\u0435 \u0432\u0430\u0448 \u0431\u0430\u043D\u043A, \u0432\u044B\u0431\u0435\u0440\u0438\u0442\u0435 \u043F\u043B\u0430\u0442\u0435\u0436 \u043F\u043E \u0440\u0435\u043A\u0432\u0438\u0437\u0438\u0442\u0430\u043C \u0438 \u0432\u0441\u0442\u0430\u0432\u044C\u0442\u0435 \u044D\u0442\u043E\u0442 \u0441\u0447\u0435\u0442.
+                            """),
                     Map.entry("menu.favorites", "Избранное"),
                     Map.entry("menu.language", "Язык"),
 
@@ -421,7 +435,21 @@ public class MessageService {
                             """),
                     Map.entry("services.housingBot", "\u041F\u043E\u0448\u0443\u043A \u0436\u0438\u0442\u043B\u0430 \u0432 \u0427\u0435\u0445\u0456\u0457"),
                     Map.entry("services.feedback", "\u0417\u0432\u043E\u0440\u043E\u0442\u043D\u0438\u0439 \u0437\u0432\u2019\u044F\u0437\u043E\u043A"),
-                    Map.entry("services.supportProject", "\u041F\u0456\u0434\u0442\u0440\u0438\u043C\u0430\u0442\u0438 \u043F\u0440\u043E\u0454\u043A\u0442"),
+                    Map.entry("services.supportProject", "\u041F\u0440\u0438\u0433\u043E\u0441\u0442\u0438\u0442\u0438 \u043A\u0430\u0432\u043E\u044E"),
+                    Map.entry("services.supportProject.text", """
+                            \u2615 \u041F\u0440\u0438\u0433\u043E\u0441\u0442\u0438\u0442\u0438 AutoCZ \u043A\u0430\u0432\u043E\u044E
+
+                            \u0411\u043E\u0442 \u0437\u0430\u043B\u0438\u0448\u0430\u0454\u0442\u044C\u0441\u044F \u0431\u0435\u0437\u043A\u043E\u0448\u0442\u043E\u0432\u043D\u0438\u043C. \u042F\u043A\u0449\u043E \u0432\u0456\u043D \u0434\u043E\u043F\u043E\u043C\u0430\u0433\u0430\u0454 \u0432\u0430\u043C \u0435\u043A\u043E\u043D\u043E\u043C\u0438\u0442\u0438 \u0447\u0430\u0441, \u043C\u043E\u0436\u043D\u0430 \u043F\u0456\u0434\u0442\u0440\u0438\u043C\u0430\u0442\u0438 \u0441\u0435\u0440\u0432\u0435\u0440 \u0456 \u0440\u043E\u0437\u0432\u0438\u0442\u043E\u043A \u043F\u0440\u043E\u0454\u043A\u0442\u0443.
+
+                            \u041E\u0431\u0435\u0440\u0456\u0442\u044C \u0437\u0440\u0443\u0447\u043D\u0438\u0439 \u0441\u043F\u043E\u0441\u0456\u0431:
+                            """),
+                    Map.entry("services.supportProject.raiffeisen", """
+                            \uD83D\uDCB3 Raiffeisenbank
+
+                            \u0420\u0430\u0445\u0443\u043D\u043E\u043A: {account}
+
+                            \u0412\u0456\u0434\u043A\u0440\u0438\u0439\u0442\u0435 \u0432\u0430\u0448 \u0431\u0430\u043D\u043A, \u043E\u0431\u0435\u0440\u0456\u0442\u044C \u043F\u043B\u0430\u0442\u0456\u0436 \u0437\u0430 \u0440\u0435\u043A\u0432\u0456\u0437\u0438\u0442\u0430\u043C\u0438 \u0442\u0430 \u0432\u0441\u0442\u0430\u0432\u0442\u0435 \u0446\u0435\u0439 \u0440\u0430\u0445\u0443\u043D\u043E\u043A.
+                            """),
                     Map.entry("menu.favorites", "Обране"),
                     Map.entry("menu.language", "Мова"),
 
@@ -740,7 +768,21 @@ public class MessageService {
                             """),
                     Map.entry("services.housingBot", "Hled\u00E1n\u00ED bydlen\u00ED v \u010Cesku"),
                     Map.entry("services.feedback", "Zp\u011Btn\u00E1 vazba"),
-                    Map.entry("services.supportProject", "Podpo\u0159it projekt"),
+                    Map.entry("services.supportProject", "Pozvat na k\u00E1vu"),
+                    Map.entry("services.supportProject.text", """
+                            \u2615 Pozvat AutoCZ na k\u00E1vu
+
+                            Bot z\u016Fst\u00E1v\u00E1 zdarma. Pokud v\u00E1m pom\u00E1h\u00E1 \u0161et\u0159it \u010Das, m\u016F\u017Eete podpo\u0159it server a dal\u0161\u00ED rozvoj projektu.
+
+                            Vyberte pohodln\u00FD zp\u016Fsob:
+                            """),
+                    Map.entry("services.supportProject.raiffeisen", """
+                            \uD83D\uDCB3 Raiffeisenbank
+
+                            \u00DA\u010Det: {account}
+
+                            Otev\u0159ete svou banku, zvolte platbu podle \u00FAdaj\u016F a vlo\u017Ete tento \u00FA\u010Det.
+                            """),
                     Map.entry("menu.favorites", "Oblíbené"),
                     Map.entry("menu.language", "Jazyk"),
 
@@ -1059,7 +1101,21 @@ public class MessageService {
                             """),
                     Map.entry("services.housingBot", "Housing search in Czechia"),
                     Map.entry("services.feedback", "Feedback"),
-                    Map.entry("services.supportProject", "Support the project"),
+                    Map.entry("services.supportProject", "Buy me a coffee"),
+                    Map.entry("services.supportProject.text", """
+                            \u2615 Buy AutoCZ a coffee
+
+                            The bot stays free. If it helps you save time, you can support the server and future development.
+
+                            Choose a convenient option:
+                            """),
+                    Map.entry("services.supportProject.raiffeisen", """
+                            \uD83D\uDCB3 Raiffeisenbank
+
+                            Account: {account}
+
+                            Open your bank app, choose payment by bank details, and paste this account.
+                            """),
                     Map.entry("menu.favorites", "Favorites"),
                     Map.entry("menu.language", "Language"),
 

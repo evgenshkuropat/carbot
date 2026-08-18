@@ -67,6 +67,7 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
     private final ParserRunStatsService parserRunStatsService;
     private final CarBotKeyboardFactory keyboardFactory;
     private final MessageService messages;
+    private final String supportRaiffeisenAccount;
 
     private final Map<Long, SearchSession> searchSessions = new ConcurrentHashMap<>();
     private final Map<Long, SellDraft> sellDrafts = new ConcurrentHashMap<>();
@@ -86,6 +87,7 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
             ParserRunStatsService parserRunStatsService,
             CarBotKeyboardFactory keyboardFactory,
             MessageService messages,
+            @Value("${support.raiffeisen-account:}") String supportRaiffeisenAccount,
             @Value("${telegram.bot.admin-chat-ids:}") String adminChatIdsRaw
     ) {
         this.botToken = botToken;
@@ -100,6 +102,7 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
         this.parserRunStatsService = parserRunStatsService;
         this.keyboardFactory = keyboardFactory;
         this.messages = messages;
+        this.supportRaiffeisenAccount = supportRaiffeisenAccount;
         this.adminChatIds = parseAdminChatIds(adminChatIdsRaw);
     }
 
@@ -557,6 +560,21 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
 
         if ("service_dp_document".equals(data)) {
             showDpDocumentService(chatId);
+            return;
+        }
+
+        if ("service_support_project".equals(data)) {
+            showSupportProject(chatId);
+            return;
+        }
+
+        if ("service_back".equals(data)) {
+            showServices(chatId);
+            return;
+        }
+
+        if ("service_support_raiffeisen".equals(data)) {
+            showRaiffeisenSupport(chatId);
             return;
         }
 
@@ -1303,6 +1321,26 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
                 chatId,
                 messages.get(lang(chatId), "services.dpDocument.text"),
                 keyboardFactory.dpDocumentKeyboard(lang(chatId))
+        );
+    }
+
+    private void showSupportProject(Long chatId) {
+        sendMessage(
+                chatId,
+                messages.get(lang(chatId), "services.supportProject.text"),
+                keyboardFactory.supportProjectKeyboard(lang(chatId))
+        );
+    }
+
+    private void showRaiffeisenSupport(Long chatId) {
+        String account = supportRaiffeisenAccount == null || supportRaiffeisenAccount.isBlank()
+                ? "-"
+                : supportRaiffeisenAccount.trim();
+        sendMessage(
+                chatId,
+                messages.get(lang(chatId), "services.supportProject.raiffeisen")
+                        .replace("{account}", account),
+                keyboardFactory.supportProjectKeyboard(lang(chatId))
         );
     }
 
