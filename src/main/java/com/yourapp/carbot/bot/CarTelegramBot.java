@@ -37,6 +37,7 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.net.URLConnection;
 import java.nio.file.Files;
+import java.text.Normalizer;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Comparator;
@@ -2441,10 +2442,10 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
     private String buildUserListingTitle(SellDraft draft) {
         String brand = draft.brand == null ? "" : draft.brand.trim();
         String title = draft.title == null ? "" : draft.title.trim();
-        if (title.toLowerCase().startsWith(brand.toLowerCase())) {
-            return limitText(title, 240);
+        if (titleStartsWithBrand(title, brand)) {
+            return limitText(removeLeadingDuplicatedBrand((formatBrandForTitle(brand) + " " + title).trim()), 240);
         }
-        return limitText((brand + " " + title).trim(), 240);
+        return limitText((formatBrandForTitle(brand) + " " + title).trim(), 240);
     }
 
     private boolean isEditableListingField(String field) {
@@ -3309,7 +3310,7 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
             return "-";
         }
 
-        String cleaned = rawTitle.replaceAll("\\s+", " ").trim();
+        String cleaned = removeLeadingDuplicatedBrand(rawTitle.replaceAll("\\s+", " ").trim());
 
         if (cleaned.length() <= 55) {
             return cleaned;
@@ -3328,6 +3329,79 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
         }
 
         return first + "\n" + second;
+    }
+
+    private boolean titleStartsWithBrand(String title, String brand) {
+        if (title == null || title.isBlank() || brand == null || brand.isBlank()) {
+            return false;
+        }
+        String normalizedTitleBrand = normalizeBrandWord(title.split("\\s+", 2)[0]);
+        String normalizedBrand = normalizeBrandWord(brand);
+        return !normalizedBrand.isBlank() && normalizedBrand.equals(normalizedTitleBrand);
+    }
+
+    private String removeLeadingDuplicatedBrand(String title) {
+        if (title == null || title.isBlank()) {
+            return title;
+        }
+
+        String[] parts = title.split("\\s+", 3);
+        if (parts.length < 2) {
+            return title;
+        }
+
+        String firstBrand = normalizeBrandWord(parts[0]);
+        String secondBrand = normalizeBrandWord(parts[1]);
+        if (firstBrand.isBlank() || !firstBrand.equals(secondBrand)) {
+            return title;
+        }
+
+        String rest = parts.length == 3 ? " " + parts[2] : "";
+        return formatBrandForTitle(firstBrand) + rest;
+    }
+
+    private String normalizeBrandWord(String value) {
+        if (value == null || value.isBlank()) {
+            return "";
+        }
+
+        String normalized = Normalizer.normalize(value, Normalizer.Form.NFD)
+                .replaceAll("\\p{M}", "")
+                .replace('_', ' ')
+                .replaceAll("[^A-Za-z0-9]", "")
+                .toUpperCase();
+
+        if (normalized.startsWith("SKOD")) {
+            return "SKODA";
+        }
+
+        return normalized;
+    }
+
+    private String formatBrandForTitle(String brand) {
+        String normalized = normalizeBrandWord(brand);
+        if ("SKODA".equals(normalized)) {
+            return "Škoda";
+        }
+        if ("BMW".equals(normalized) || "BYD".equals(normalized) || "MG".equals(normalized) || "DS".equals(normalized)) {
+            return normalized;
+        }
+        if (brand == null || brand.isBlank()) {
+            return "";
+        }
+
+        String cleaned = brand.replace('_', ' ').replaceAll("\\s+", " ").trim().toLowerCase();
+        StringBuilder result = new StringBuilder();
+        for (String word : cleaned.split(" ")) {
+            if (word.isBlank()) {
+                continue;
+            }
+            if (!result.isEmpty()) {
+                result.append(" ");
+            }
+            result.append(Character.toUpperCase(word.charAt(0))).append(word.substring(1));
+        }
+        return result.toString();
     }
 
     private String formatPrice(CarEntity car) {

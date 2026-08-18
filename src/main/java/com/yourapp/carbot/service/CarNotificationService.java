@@ -24,6 +24,7 @@ import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.file.Files;
+import java.text.Normalizer;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -434,7 +435,7 @@ public class CarNotificationService {
             return "-";
         }
 
-        String cleaned = rawTitle.replaceAll("\\s+", " ").trim();
+        String cleaned = removeLeadingDuplicatedBrand(rawTitle.replaceAll("\\s+", " ").trim());
         return cleaned.length() <= 70 ? cleaned : cleaned.substring(0, 67).trim() + "...";
     }
 
@@ -790,6 +791,70 @@ public class CarNotificationService {
         }
 
         return first + "\n" + second;
+    }
+
+    private String removeLeadingDuplicatedBrand(String title) {
+        if (title == null || title.isBlank()) {
+            return title;
+        }
+
+        String[] parts = title.split("\\s+", 3);
+        if (parts.length < 2) {
+            return title;
+        }
+
+        String firstBrand = normalizeBrandWord(parts[0]);
+        String secondBrand = normalizeBrandWord(parts[1]);
+        if (firstBrand.isBlank() || !firstBrand.equals(secondBrand)) {
+            return title;
+        }
+
+        String rest = parts.length == 3 ? " " + parts[2] : "";
+        return formatBrandForTitle(firstBrand) + rest;
+    }
+
+    private String normalizeBrandWord(String value) {
+        if (value == null || value.isBlank()) {
+            return "";
+        }
+
+        String normalized = Normalizer.normalize(value, Normalizer.Form.NFD)
+                .replaceAll("\\p{M}", "")
+                .replace('_', ' ')
+                .replaceAll("[^A-Za-z0-9]", "")
+                .toUpperCase();
+
+        if (normalized.startsWith("SKOD")) {
+            return "SKODA";
+        }
+
+        return normalized;
+    }
+
+    private String formatBrandForTitle(String brand) {
+        String normalized = normalizeBrandWord(brand);
+        if ("SKODA".equals(normalized)) {
+            return "Škoda";
+        }
+        if ("BMW".equals(normalized) || "BYD".equals(normalized) || "MG".equals(normalized) || "DS".equals(normalized)) {
+            return normalized;
+        }
+        if (brand == null || brand.isBlank()) {
+            return "";
+        }
+
+        String cleaned = brand.replace('_', ' ').replaceAll("\\s+", " ").trim().toLowerCase();
+        StringBuilder result = new StringBuilder();
+        for (String word : cleaned.split(" ")) {
+            if (word.isBlank()) {
+                continue;
+            }
+            if (!result.isEmpty()) {
+                result.append(" ");
+            }
+            result.append(Character.toUpperCase(word.charAt(0))).append(word.substring(1));
+        }
+        return result.toString();
     }
 
     private String formatPrice(CarEntity car) {
