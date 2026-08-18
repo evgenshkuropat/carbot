@@ -64,6 +64,29 @@ class CarSearchServiceTest {
     }
 
     @Test
+    void deduplicatesSameSearchResultWhenAdTextSuffixChanges() throws Exception {
+        CarEntity newerDuplicate = vwArteon(
+                "Volkswagen Arteon 2.0TD 4x4 AUT NEZÁVISLÉ TOP FULL VÝBAVA ČR",
+                "https://auto.bazos.cz/inzerat/newer-arteon",
+                "https://auto.bazos.cz/img/1/newer-arteon.jpg",
+                LocalDateTime.now()
+        );
+        CarEntity olderDuplicate = vwArteon(
+                "Volkswagen Arteon 2.0TD 4x4 AUT 1.MAJITEL FULL VÝBAVA ČR",
+                "https://auto.bazos.cz/inzerat/older-arteon",
+                "https://auto.bazos.cz/img/2/older-arteon.jpg",
+                LocalDateTime.now().minusMinutes(1)
+        );
+
+        List<CarEntity> deduplicated = deduplicateSearchResults(
+                List.of(newerDuplicate, olderDuplicate),
+                10
+        );
+
+        assertThat(deduplicated).containsExactly(newerDuplicate);
+    }
+
+    @Test
     void hidesMalformedTipCarsRecordsFromSearch() throws Exception {
         CarEntity renaultWithVolkswagenUrl = new CarEntity();
         renaultWithVolkswagenUrl.setSource("TIPCARS");
@@ -129,6 +152,19 @@ class CarSearchServiceTest {
         car.setLocation("v okres Most");
         car.setUrl(url);
         car.setImageUrl("https://www.sbazar.cz/images/octavia-blue.jpg?token=abc");
+        car.setCreatedAt(createdAt);
+        return car;
+    }
+
+    private CarEntity vwArteon(String title, String url, String imageUrl, LocalDateTime createdAt) {
+        CarEntity car = new CarEntity();
+        car.setTitle(title);
+        car.setPriceValue(419_000);
+        car.setYear(2025);
+        car.setMileage(246_730);
+        car.setLocation("Praha");
+        car.setUrl(url);
+        car.setImageUrl(imageUrl);
         car.setCreatedAt(createdAt);
         return car;
     }

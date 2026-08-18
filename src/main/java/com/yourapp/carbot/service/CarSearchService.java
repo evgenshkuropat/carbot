@@ -134,11 +134,12 @@ public class CarSearchService {
         Set<String> seen = new LinkedHashSet<>();
 
         for (CarEntity car : cars) {
-            String key = searchDuplicateKey(car);
-            if (!seen.add(key)) {
+            List<String> keys = searchDuplicateKeys(car);
+            if (keys.stream().anyMatch(seen::contains)) {
                 continue;
             }
 
+            seen.addAll(keys);
             result.add(car);
             if (result.size() >= limit) {
                 break;
@@ -148,9 +149,11 @@ public class CarSearchService {
         return result;
     }
 
-    private String searchDuplicateKey(CarEntity car) {
+    private List<String> searchDuplicateKeys(CarEntity car) {
+        List<String> keys = new ArrayList<>();
         if (car == null) {
-            return "";
+            keys.add("");
+            return keys;
         }
 
         String title = normalizeForDuplicateKey(car.getTitle());
@@ -160,25 +163,55 @@ public class CarSearchService {
         if (!image.isBlank()
                 && car.getYear() != null
                 && car.getMileage() != null) {
-            return String.join("|",
+            keys.add(String.join("|",
                     "image",
                     image,
                     valueForKey(car.getYear()),
                     valueForKey(car.getMileage())
-            );
+            ));
+        }
+
+        String titleSignature = titleSignatureForDuplicateKey(title);
+        if (!image.isBlank()
+                && !titleSignature.isBlank()
+                && car.getPriceValue() != null
+                && car.getYear() != null
+                && car.getMileage() != null) {
+            keys.add(String.join("|",
+                    "signature",
+                    titleSignature,
+                    valueForKey(car.getPriceValue()),
+                    valueForKey(car.getYear()),
+                    valueForKey(car.getMileage())
+            ));
         }
 
         if (title.isBlank()) {
-            return "url:" + normalizeForDuplicateKey(car.getUrl());
+            keys.add("url:" + normalizeForDuplicateKey(car.getUrl()));
+            return keys;
         }
 
-        return String.join("|",
-                title,
-                valueForKey(car.getPriceValue()),
-                valueForKey(car.getYear()),
-                valueForKey(car.getMileage()),
-                location
-        );
+        if (keys.isEmpty()) {
+            keys.add(String.join("|",
+                    title,
+                    valueForKey(car.getPriceValue()),
+                    valueForKey(car.getYear()),
+                    valueForKey(car.getMileage()),
+                    location
+            ));
+        }
+
+        return keys;
+    }
+
+    private String titleSignatureForDuplicateKey(String normalizedTitle) {
+        if (normalizedTitle == null || normalizedTitle.isBlank()) {
+            return "";
+        }
+
+        String[] tokens = normalizedTitle.split("\\s+");
+        int tokenCount = Math.min(tokens.length, 6);
+        return String.join(" ", List.of(tokens).subList(0, tokenCount));
     }
 
     private String valueForKey(Object value) {
