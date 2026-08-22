@@ -148,7 +148,7 @@ public class ToyotaProvereneVozyParser implements CarSourceParser {
                 .ignoreContentType(false)
                 .ignoreHttpErrors(true)
                 .execute();
-        return Jsoup.parse(response.bodyAsBytes(), StandardCharsets.UTF_8.name(), url);
+        return Jsoup.parse(new String(response.bodyAsBytes(), StandardCharsets.UTF_8), url);
     }
 
     private String buildPageUrl(int page) {

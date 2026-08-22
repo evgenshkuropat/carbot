@@ -1,0 +1,5 @@
+[phases.build]
+cmds = ["mvn -B \"-Dmaven.test.skip=true\" clean package -Pproduction"]
+
+[start]
+cmd = "java -jar target/carbot-0.0.1-SNAPSHOT.jar"
