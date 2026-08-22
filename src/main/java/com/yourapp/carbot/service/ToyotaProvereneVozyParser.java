@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.charset.Charset;
@@ -60,7 +61,7 @@ public class ToyotaProvereneVozyParser implements CarSourceParser {
             String pageUrl = buildPageUrl(page);
 
             try {
-                Document doc = connect(pageUrl).get();
+                Document doc = loadDocument(pageUrl);
                 List<CarDto> pageCars = parseListPage(doc, seenUrls);
 
                 log.info("TOYOTA_PROVERENE list page={} url={} parsed={} total_unique={}",
@@ -142,6 +143,14 @@ public class ToyotaProvereneVozyParser implements CarSourceParser {
                 .followRedirects(true);
     }
 
+    private Document loadDocument(String url) throws IOException {
+        Connection.Response response = connect(url)
+                .ignoreContentType(false)
+                .ignoreHttpErrors(true)
+                .execute();
+        return Jsoup.parse(response.bodyAsBytes(), StandardCharsets.UTF_8.name(), url);
+    }
+
     private String buildPageUrl(int page) {
         return BASE_URL + "/nabidky?na-strone=" + PER_PAGE + "&strona=" + page;
     }
@@ -156,7 +165,7 @@ public class ToyotaProvereneVozyParser implements CarSourceParser {
             }
 
             try {
-                Document detailDoc = connect(url).get();
+                Document detailDoc = loadDocument(url);
                 CarDto car = parseListItem(titleLink, url, detailDoc);
                 if (car != null) {
                     cars.add(car);
