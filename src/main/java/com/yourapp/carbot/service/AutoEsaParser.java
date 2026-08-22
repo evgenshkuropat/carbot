@@ -1,6 +1,8 @@
 package com.yourapp.carbot.service;
 
 import com.yourapp.carbot.service.dto.CarDto;
+import org.jsoup.Connection;
+import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.slf4j.Logger;
@@ -8,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.charset.Charset;
@@ -38,6 +41,22 @@ public class AutoEsaParser extends AbstractJsoupParser implements CarSourceParse
     @Override
     public String getSourceName() {
         return "AUTOESA";
+    }
+
+    @Override
+    protected Document loadDocument(String url) throws IOException {
+        Connection.Response response = Jsoup.connect(url)
+                .userAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36")
+                .referrer(BASE_URL)
+                .header("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8")
+                .header("Accept-Language", "cs-CZ,cs;q=0.9,en;q=0.8")
+                .timeout(30_000)
+                .maxBodySize(0)
+                .followRedirects(true)
+                .ignoreContentType(false)
+                .ignoreHttpErrors(true)
+                .execute();
+        return Jsoup.parse(new String(response.bodyAsBytes(), StandardCharsets.UTF_8), url);
     }
 
     @Override
