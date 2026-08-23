@@ -46,19 +46,19 @@ class TipCarsParserTest {
                 .isEqualTo("MINIVAN");
 
         assertThat(extractCarType(
-                "Suzuki Jimny 1.3i 63KW KLIMA 4X4 TAŽNÉ",
+                "Suzuki Jimny 1.3i 63KW KLIMA 4X4 TAĹ˝NĂ‰",
                 "",
                 "https://www.tipcars.com/suzuki-jimny/terenni/benzin/suzuki-jimny.html"))
                 .isEqualTo("SUV");
 
         assertThat(extractCarType(
-                "Citroën Berlingo 1,5 BlueHDi DPH 1.maj původ ČR",
+                "CitroĂ«n Berlingo 1,5 BlueHDi DPH 1.maj pĹŻvod ÄŚR",
                 "",
                 "https://www.tipcars.com/citroen-berlingo/kombi/nafta/citroen-berlingo.html"))
                 .isEqualTo("MINIVAN");
 
         assertThat(extractCarType(
-                "Ford C-MAX 1,5 EcoBoost 1.majitel, pěkný",
+                "Ford C-MAX 1,5 EcoBoost 1.majitel, pÄ›knĂ˝",
                 "",
                 "https://www.tipcars.com/ford-c-max/kombi/benzin/ford-c-max.html"))
                 .isEqualTo("MINIVAN");
@@ -228,7 +228,7 @@ class TipCarsParserTest {
                       <h2>Dacia Duster 1.6i</h2>
                     </a>
                     <img src="/images/duster.jpg">
-                    <span>199 900 Kč</span>
+                    <span>199 900 KÄŤ</span>
                     <span>2018</span>
                     <span>82 000 km</span>
                     <span>Brno</span>
@@ -240,7 +240,7 @@ class TipCarsParserTest {
 
         assertThat(listing).isNotNull();
         assertThat(recordValue(listing, "title")).isEqualTo("Dacia Duster 1.6i");
-        assertThat(recordValue(listing, "text")).asString().contains("199 900 Kč");
+        assertThat(recordValue(listing, "text")).asString().contains("199 900 KÄŤ");
     }
 
     @Test
@@ -252,13 +252,13 @@ class TipCarsParserTest {
                       <h2>Renault Fluence 1.6 16V, Tempomat</h2>
                     </a>
                     <img src="/images/renault.jpg">
-                    <span>90 000 Kč</span>
+                    <span>90 000 KÄŤ</span>
 
                     <a href="https://www.tipcars.com/volkswagen-golf/kombi/benzin/volkswagen-golf-1-4-tsi-navi-park-senzory-7042596.html">
                       <h2>Volkswagen Golf 1.4 TSI Navi</h2>
                     </a>
                     <img src="/images/golf.jpg">
-                    <span>150 000 Kč</span>
+                    <span>150 000 KÄŤ</span>
                   </section>
                 </body></html>
                 """);
@@ -276,14 +276,14 @@ class TipCarsParserTest {
                         <h2>Renault Fluence 1.6 16V, Tempomat</h2>
                       </a>
                       <img src="/images/renault.jpg">
-                      <span>90 000 Kč</span>
+                      <span>90 000 KÄŤ</span>
                     </article>
                     <article>
                       <a href="https://www.tipcars.com/volkswagen-golf/kombi/benzin/volkswagen-golf-1-4-tsi-navi-park-senzory-7042596.html">
                         <h2>Volkswagen Golf 1.4 TSI Navi</h2>
                       </a>
                       <img src="/images/golf.jpg">
-                      <span>150 000 Kč</span>
+                      <span>150 000 KÄŤ</span>
                     </article>
                   </section>
                 </body></html>
@@ -339,13 +339,13 @@ class TipCarsParserTest {
 
     @Test
     void extractsListFallbackPriceWithoutJoiningPowerOrMileage() throws Exception {
-        assertThat(extractFirstPrice("Fiat Bravo Fiat Bravo 1.4 16V 90 59 000 Kč"))
+        assertThat(extractFirstPrice("Fiat Bravo Fiat Bravo 1.4 16V 90 59 000 KÄŤ"))
                 .isEqualTo(59_000);
-        assertThat(extractFirstPrice("Audi A5 2010 310 300 km 140 000 Kč"))
+        assertThat(extractFirstPrice("Audi A5 2010 310 300 km 140 000 KÄŤ"))
                 .isEqualTo(140_000);
-        assertThat(cleanupListTitle("BMW Řada 3 399 000 Kč"))
-                .isEqualTo("BMW Řada 3");
-        assertThat(cleanupListTitle("Tesla Model 3 Long Range AWD | AMD Ryzen 598 000 Kč 494 215 Kč bez DPH"))
+        assertThat(cleanupListTitle("BMW Ĺada 3 399 000 KÄŤ"))
+                .isEqualTo("BMW Ĺada 3");
+        assertThat(cleanupListTitle("Tesla Model 3 Long Range AWD | AMD Ryzen 598 000 KÄŤ 494 215 KÄŤ bez DPH"))
                 .isEqualTo("Tesla Model 3 Long Range AWD | AMD Ryzen");
     }
 
@@ -542,19 +542,19 @@ class TipCarsParserTest {
 
     @Test
     void repairsCurrentTipCarsMojibakeFromLogs() throws Exception {
-        assertThat(repairMojibake("Mercedes-Benz TĹ™Ă­dy E Mercedes-Benz E 53 AMG 4Matic+"))
+        assertThat(repairMojibake("Mercedes-Benz TÄąâ„˘Ä‚Â­dy E Mercedes-Benz E 53 AMG 4Matic+"))
                 .isEqualTo("Mercedes-Benz Třídy E Mercedes-Benz E 53 AMG 4Matic+");
-        assertThat(repairMojibake("Land Rover Defender 130 D300 SE AWD AUT CZ 8mĂ­st"))
+        assertThat(repairMojibake("Land Rover Defender 130 D300 SE AWD AUT CZ 8mÄ‚Â­st"))
                 .isEqualTo("Land Rover Defender 130 D300 SE AWD AUT CZ 8míst");
-        assertThat(repairMojibake("Ĺ koda Octavia 2.0 TDi 110kW STYLE, ÄŚR, DPH"))
+        assertThat(repairMojibake("ÄąÂ koda Octavia 2.0 TDi 110kW STYLE, Ă„ĹšR, DPH"))
                 .isEqualTo("Škoda Octavia 2.0 TDi 110kW STYLE, ČR, DPH");
-        assertThat(repairMojibake("Audi A6 Allroad DPH, taĹľnĂ©, kĹŻĹľe, nebouranĂ©"))
+        assertThat(repairMojibake("Audi A6 Allroad DPH, taÄąÄľnÄ‚Â©, kÄąĹ»ÄąÄľe, nebouranÄ‚Â©"))
                 .isEqualTo("Audi A6 Allroad DPH, tažné, kůže, nebourané");
-        assertThat(repairMojibake("Tesla Model 3 SR+ Facelift, TaĹľnĂ©, DPH"))
+        assertThat(repairMojibake("Tesla Model 3 SR+ Facelift, TaÄąÄľnÄ‚Â©, DPH"))
                 .isEqualTo("Tesla Model 3 SR+ Facelift, Tažné, DPH");
-        assertThat(repairMojibake("Seat Ibiza 1.2 12V, ÄŚR,1.maj, Serv.kniha"))
+        assertThat(repairMojibake("Seat Ibiza 1.2 12V, Ă„ĹšR,1.maj, Serv.kniha"))
                 .isEqualTo("Seat Ibiza 1.2 12V, ČR,1.maj, Serv.kniha");
-        assertThat(repairMojibake("Ĺ koda Fabia Ambition 1.0 TSI, ÄŚR,1.maj"))
+        assertThat(repairMojibake("ÄąÂ koda Fabia Ambition 1.0 TSI, Ă„ĹšR,1.maj"))
                 .isEqualTo("Škoda Fabia Ambition 1.0 TSI, ČR,1.maj");
         assertThat(repairMojibake("Tesla Model 3 SR+ Facelift, Ta\u0139\u013En\u0102\u00A9, DPH"))
                 .isEqualTo("Tesla Model 3 SR+ Facelift, Ta\u017En\u00E9, DPH");
@@ -585,14 +585,28 @@ class TipCarsParserTest {
     }
 
     @Test
+    void repairsTipCarsFallbackMojibakeFromForbiddenLogs() throws Exception {
+        assertThat(repairMojibake("Mercedes-Benz T\u0139\u2122\u0102\u00ADdy R 320 CDI 4X4 165 KW STK"))
+                .isEqualTo("Mercedes-Benz T\u0159\u00EDdy R 320 CDI 4X4 165 KW STK");
+        assertThat(repairMojibake("Volkswagen Sharan 2,0 TDI 4M CZ Highline 7-M\u0102\u00ADst"))
+                .isEqualTo("Volkswagen Sharan 2,0 TDI 4M CZ Highline 7-M\u00EDst");
+        assertThat(repairMojibake("\u0139\u00A0koda Octavia 1.6 TDi, Ambition, DSG"))
+                .isEqualTo("\u0160koda Octavia 1.6 TDi, Ambition, DSG");
+        assertThat(repairMojibake("Volvo V40 2.0D3 MANU\u0102\u0081L CROSS SERVISKA"))
+                .isEqualTo("Volvo V40 2.0D3 MANU\u00C1L CROSS SERVISKA");
+        assertThat(repairMojibake("Volkswagen Polo 1.2 12V, po STK, jezd\u0102\u00AD v\u0102\u02DDborn\u00C4\u203A"))
+                .isEqualTo("Volkswagen Polo 1.2 12V, po STK, jezd\u00ED v\u00FDborn\u011B");
+    }
+
+    @Test
     void repairsTipCarsMojibakeBeforeOutputLegacy() throws Exception {
-        assertThat(repairMojibake("Ĺ koda Superb 2,0 TDi Ambition"))
+        assertThat(repairMojibake("ÄąÂ koda Superb 2,0 TDi Ambition"))
                 .isEqualTo("Škoda Superb 2,0 TDi Ambition");
-        assertThat(repairMojibake("Mazda CX-7 2.2i DISI TURBO AWD, ZĂVÄšS"))
+        assertThat(repairMojibake("Mazda CX-7 2.2i DISI TURBO AWD, ZÄ‚ÂVĂ„ĹˇS"))
                 .isEqualTo("Mazda CX-7 2.2i DISI TURBO AWD, ZÁVĚS");
-        assertThat(repairMojibake("Ford Focus 1.6i, 2.maj,ÄŚR"))
+        assertThat(repairMojibake("Ford Focus 1.6i, 2.maj,Ă„ĹšR"))
                 .isEqualTo("Ford Focus 1.6i, 2.maj,ČR");
-        assertThat(repairMojibake("Hyundai Tucson NovĂ˝ Comfort 1,6 T-GDi"))
+        assertThat(repairMojibake("Hyundai Tucson NovÄ‚Ëť Comfort 1,6 T-GDi"))
                 .isEqualTo("Hyundai Tucson Nový Comfort 1,6 T-GDi");
     }
 
