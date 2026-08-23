@@ -110,6 +110,18 @@ class AutoEsaParserTest {
                 .isEqualTo("Citro\u00EBn C5 Aircross 1.5 HDI");
         assertThat(repairMojibake("\u0139\u00A0koda Superb III 2.0 TSI L&K 4x4"))
                 .isEqualTo("\u0160koda Superb III 2.0 TSI L&K 4x4");
+        assertThat(repairMojibake("\u0139\u00A0koda Fabia II 1.6TDi Ambiente"))
+                .isEqualTo("\u0160koda Fabia II 1.6TDi Ambiente");
+        assertThat(repairMojibake("Mercedes-Benz T\u0139\u2122\u0102\u00ADda M 3.5 ML350 4M"))
+                .isEqualTo("Mercedes-Benz T\u0159\u00EDda M 3.5 ML350 4M");
+        assertThat(repairMojibake("BMW \u0139\u0098ada 5 2.0D 525D"))
+                .isEqualTo("BMW \u0158ada 5 2.0D 525D");
+        assertThat(repairMojibake("Ford Galaxy 2.0TDCi 7m\u0102\u00ADst"))
+                .isEqualTo("Ford Galaxy 2.0TDCi 7m\u00EDst");
+        assertThat(repairMojibake("Renault Sc\u0102\u00A9nic 1.8"))
+                .isEqualTo("Renault Sc\u00E9nic 1.8");
+        assertThat(repairMojibake("Citro\u0102\u00ABn C4 Picasso 2.0 HDI 7m\u0102\u00ADst"))
+                .isEqualTo("Citro\u00EBn C4 Picasso 2.0 HDI 7m\u00EDst");
     }
 
     @Test
