@@ -88,6 +88,16 @@ class AutoEsaParserTest {
 
     @Test
     void repairsAutoEsaMojibakeTitles() throws Exception {
+        assertThat(repairMojibake("Citro\u0102\u00ABn C3 Aircross 1.2PT"))
+                .isEqualTo("Citro\u00EBn C3 Aircross 1.2PT");
+        assertThat(repairMojibake("\u0139\u00A0koda Rapid 1.2 TSi"))
+                .isEqualTo("\u0160koda Rapid 1.2 TSi");
+        assertThat(repairMojibake("Mercedes-Benz T\u0139\u2122\u0102\u00ADda E 2.2 CDi E250 4Matic"))
+                .isEqualTo("Mercedes-Benz T\u0159\u00EDda E 2.2 CDi E250 4Matic");
+        assertThat(repairMojibake("Ford S-MAX 2.0 TDCi 7m\u0102\u00ADst"))
+                .isEqualTo("Ford S-MAX 2.0 TDCi 7m\u00EDst");
+        assertThat(repairMojibake("Renault Sc\u0102\u00A9nic 1.3 TCe BOSE Edition"))
+                .isEqualTo("Renault Sc\u00E9nic 1.3 TCe BOSE Edition");
         assertThat(repairMojibake("\u0139\u00A0koda Octavia IV 2.0 TDi Style 4x4"))
                 .isEqualTo("\u0160koda Octavia IV 2.0 TDi Style 4x4");
         assertThat(repairMojibake("Citro\u00C4\u201A\u00C2\u00ABn C3 Picasso 1.6i"))
