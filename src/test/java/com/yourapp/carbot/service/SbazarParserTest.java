@@ -500,6 +500,28 @@ class SbazarParserTest {
                 .isEqualTo("OPEL");
     }
 
+    @Test
+    void repairsCurrentSbazarMojibakeFromLogs() throws Exception {
+        assertThat(repairMojibake("v Doma\u0139\u013Elice"))
+                .isEqualTo("v Doma\u017Elice");
+        assertThat(repairMojibake("Opel Astra, 1.5CDTi 90kW NAVI \u00C4\u015AR NOV\u0102\u2030"))
+                .isEqualTo("Opel Astra, 1.5CDTi 90kW NAVI \u010CR NOV\u00C9");
+        assertThat(repairMojibake("v okres \u0102\u0161st\u0102\u00AD nad Labem"))
+                .isEqualTo("v okres \u00DAst\u00ED nad Labem");
+        assertThat(repairMojibake("FORD FOCUS 1,5TDCi / NAVI / V\u0102\u0165H\u0139\u0098EV / 2017"))
+                .isEqualTo("FORD FOCUS 1,5TDCi / NAVI / V\u00DDH\u0158EV / 2017");
+        assertThat(repairMojibake("Volkswagen Touran, 1.5TSI 110kW DSG 7.M\u0102\u0164ST EVO"))
+                .isEqualTo("Volkswagen Touran, 1.5TSI 110kW DSG 7.M\u00CDST EVO");
+        assertThat(repairMojibake("v B\u0139\u2122eclav"))
+                .isEqualTo("v B\u0159eclav");
+        assertThat(repairMojibake("v Plze\u0139\u0088"))
+                .isEqualTo("v Plze\u0148");
+        assertThat(repairMojibake("v D\u00C4\u203A\u00C4\u0164\u0102\u00ADn"))
+                .isEqualTo("v D\u011B\u010D\u00EDn");
+        assertThat(repairMojibake("Mercedes-Benz C300D 195 Kw,AMG Line,Night edi.360\u00C2\u00B0"))
+                .isEqualTo("Mercedes-Benz C300D 195 Kw,AMG Line,Night edi.360\u00B0");
+    }
+
     private String resolveFuelType(String identityText, String scopedText) throws Exception {
         Method method = SbazarParser.class.getDeclaredMethod("resolveFuelType", String.class, String.class);
         method.setAccessible(true);
