@@ -165,6 +165,14 @@ class ToyotaProvereneVozyParserTest {
 
     @Test
     void repairsCurrentToyotaProvereneMojibakeFromLogs() throws Exception {
+        assertThat(repairMojibake("PR\u0139\u00AEHONICE"))
+                .isEqualTo("PR\u016EHONICE");
+        assertThat(repairMojibake("Toyota Corolla 1.8HSD, \u00C4\u015AR, ComTech, z\u0102\u02C7ruka"))
+                .isEqualTo("Toyota Corolla 1.8HSD, \u010CR, ComTech, z\u00E1ruka");
+        assertThat(repairMojibake("Dol\u0102\u02C7k P\u0139\u2122\u0102\u00ADbram"))
+                .isEqualTo("Dol\u00E1k P\u0159\u00EDbram");
+        assertThat(repairMojibake("T Vyso\u00C4\u0164ina s.r.o. Toyota Havl\u0102\u00AD\u00C4\u0164k\u0139\u00AFv Brod"))
+                .isEqualTo("T Vyso\u010Dina s.r.o. Toyota Havl\u00ED\u010Dk\u016Fv Brod");
         assertThat(repairMojibake("Toyota Yaris Cross 1.5 Hybrid 130k - Style - PĹEDPRODEJ NOVINKY - PĹ™edĂˇnĂ­ ZĂˇĹ™Ă­ 2026"))
                 .isEqualTo("Toyota Yaris Cross 1.5 Hybrid 130k - Style - PŘEDPRODEJ NOVINKY - Předání Září 2026");
         assertThat(repairMojibake("Toyota PROACE VERSO 2.0 D-4D 130kW L1 Family TaĹľnĂ©"))
