@@ -439,6 +439,16 @@ class SbazarParserTest {
 
     @Test
     void repairsFreshSbazarMojibakeAndSignalsFromLogs() throws Exception {
+        assertThat(repairMojibake("v okres \u00C4\u015Aesk\u0102\u00A9 Bud\u00C4\u203Ajovice"))
+                .isEqualTo("v okres \u010Cesk\u00E9 Bud\u011Bjovice");
+        assertThat(repairMojibake("Prod\u0102\u02C7m VW Touran Style 2.0TDi - 103kw, r.v.2011."))
+                .isEqualTo("Prod\u00E1m VW Touran Style 2.0TDi - 103kw, r.v.2011.");
+        assertThat(repairMojibake("v Velk\u0102\u00A9 Ho\u0139\u02C7tice"))
+                .isEqualTo("v Velk\u00E9 Ho\u0161tice");
+        assertThat(repairMojibake("v Nov\u0102\u00A9 M\u00C4\u203Asto nad Metuj\u0102\u00AD, Vrchoviny"))
+                .isEqualTo("v Nov\u00E9 M\u011Bsto nad Metuj\u00ED, Vrchoviny");
+        assertThat(repairMojibake("BMW \u0139\u0098ada 2, 218d Gran LED ta\u0139\u013En\u0102\u00A9 Z\u0102\u0081RUKA DPH"))
+                .isEqualTo("BMW \u0158ada 2, 218d Gran LED ta\u017En\u00E9 Z\u00C1RUKA DPH");
         assertThat(repairMojibake("v okres Uhersk\u0102\u00A9 Hradi\u0139\u02C7t\u00C4\u203A"))
                 .isEqualTo("v okres Uhersk\u00E9 Hradi\u0161t\u011B");
         assertThat(repairMojibake("\u0139\u00A0koda Octavia Combi 1.9 TDI 96kw ASZ"))

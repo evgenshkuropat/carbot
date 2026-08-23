@@ -1208,9 +1208,9 @@ public class SbazarParser implements CarSourceParser {
             return value;
         }
 
-        String current = value;
+        String current = repairCommonMojibake(value);
         try {
-            for (int attempt = 0; attempt < 3; attempt++) {
+            for (int attempt = 0; attempt < 5; attempt++) {
                 if (!looksLikeMojibake(current) && mojibakeScore(current) == 0) {
                     break;
                 }
@@ -1223,17 +1223,74 @@ public class SbazarParser implements CarSourceParser {
                         .decode(ByteBuffer.wrap(bytes))
                         .toString();
 
-                if (mojibakeScore(repaired) < mojibakeScore(current)
-                        || (looksLikeMojibake(current) && !looksLikeMojibake(repaired))) {
-                    current = normalizeText(repaired);
+                String normalizedRepaired = normalizeText(repaired);
+                int currentScore = mojibakeScore(current);
+                int repairedScore = mojibakeScore(normalizedRepaired);
+
+                if (repairedScore < currentScore
+                        || (repairedScore <= currentScore && !normalizedRepaired.equals(current))
+                        || (looksLikeMojibake(current) && !looksLikeMojibake(normalizedRepaired))) {
+                    current = normalizedRepaired;
                 } else {
                     break;
                 }
             }
-            return current;
+            return repairFinalMojibake(current);
         } catch (Exception e) {
-            return current;
+            return repairFinalMojibake(current);
         }
+    }
+
+    private String repairCommonMojibake(String value) {
+        if (value == null || value.isBlank()) {
+            return value;
+        }
+
+        return value.replace("\u0139 ", "\u0139\u00A0");
+    }
+
+    private String repairFinalMojibake(String value) {
+        if (value == null || value.isBlank()) {
+            return value;
+        }
+
+        return value
+                .replace("\u00C4\u015A", "\u010C")
+                .replace("\u00C4\u0164", "\u010D")
+                .replace("\u00C4\u203A", "\u011B")
+                .replace("\u00C4\u010F", "\u010F")
+                .replace("\u00C4\u013E", "\u017E")
+                .replace("\u0139\u00A0", "\u0160")
+                .replace("\u0139?", "\u0158")
+                .replace("\u0139\uFFFD", "\u0158")
+                .replace("\u0139\u0098", "\u0158")
+                .replace("\u0139\u02DC", "\u0158")
+                .replace("\u0139\u2122", "\u0159")
+                .replace("\u0139\u00AE", "\u016E")
+                .replace("\u0139\u00AF", "\u016F")
+                .replace("\u0139\u013E", "\u017E")
+                .replace("\u0139\u02DD", "\u017D")
+                .replace("\u0139\u02C7", "\u0161")
+                .replace("\u0139\u017B", "\u016F")
+                .replace("\u0139\u0088", "\u0148")
+                .replace("\u0102\u0081", "\u00C1")
+                .replace("\u0102\u2030", "\u00C9")
+                .replace("\u0102\u00AB", "\u00EB")
+                .replace("\u00C3\u00AB", "\u00EB")
+                .replace("\u0102\u00A9", "\u00E9")
+                .replace("\u0102\u00AD", "\u00ED")
+                .replace("\u0102\u00BD", "\u00FD")
+                .replace("\u0102\u02C7", "\u00E1")
+                .replace("\u0102\u02DD", "\u00FD")
+                .replace("\u0102\u0164", "\u00CD")
+                .replace("\u0102\u0165", "\u00DD")
+                .replace("\u0102\u0161", "\u00DA")
+                .replace("\u0102\u017A", "\u00FA")
+                .replace("\u0102\u00A4", "\u00E4")
+                .replace("\u0102\u00B6", "\u00F6")
+                .replace("\u0102\u013D", "\u00FC")
+                .replace("\u0102\u2014", "\u00D7")
+                .replace("\u0102\u201E", "\u00C4");
     }
 
     private byte[] encodeMojibakeBytes(String value) throws Exception {
@@ -1248,6 +1305,12 @@ public class SbazarParser implements CarSourceParser {
                 out.write(0xC5);
                 out.write(0xA0);
                 offset += Character.charCount(codePoint) + 1;
+                continue;
+            }
+
+            if (codePoint == 0x02D8) {
+                out.write(0xA2);
+                offset += Character.charCount(codePoint);
                 continue;
             }
 
