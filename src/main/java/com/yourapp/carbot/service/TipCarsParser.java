@@ -255,8 +255,13 @@ public class TipCarsParser implements CarSourceParser {
 
         } catch (HttpStatusException e) {
             if (e.getStatusCode() == 403) {
-                log.warn("TIPCARS SKIP url={} reason=forbidden status=403", safe(url));
-                return new ParseResult(null, "forbidden");
+                ParseResult fallback = parseListListingFallback(url, listListing);
+                if (fallback.car() != null) {
+                    log.warn("TIPCARS detail forbidden url={} status=403 action=list_card_fallback", safe(url));
+                    return fallback;
+                }
+                log.warn("TIPCARS SKIP url={} reason=forbidden status=403 fallback=unavailable", safe(url));
+                return fallback;
             }
             log.warn("TIPCARS SKIP url={} reason=parse_exception status={} error={}",
                     safe(url), e.getStatusCode(), safe(e.getMessage()));
