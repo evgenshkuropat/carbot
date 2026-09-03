@@ -62,6 +62,8 @@ public class TipCarsParser implements CarSourceParser {
         int commercialVehicleCount = 0;
         int parseExceptionCount = 0;
         int forbiddenCount = 0;
+        int listFallbackCount = 0;
+        int listFallbackMissingCoreFieldsCount = 0;
         int consecutiveForbiddenCount = 0;
 
         try {
@@ -117,6 +119,12 @@ public class TipCarsParser implements CarSourceParser {
 
                 if (result.car() != null) {
                     cars.add(result.car());
+                    if ("list_card_fallback".equals(result.reason())) {
+                        listFallbackCount++;
+                        if (result.car().getYear() == null || result.car().getMileage() == null) {
+                            listFallbackMissingCoreFieldsCount++;
+                        }
+                    }
                     consecutiveForbiddenCount = 0;
                 } else {
                     switch (result.reason()) {
@@ -150,8 +158,8 @@ public class TipCarsParser implements CarSourceParser {
         }
 
         log.info("TIPCARS parsed {} cars", cars.size());
-        log.info("TIPCARS SUMMARY parsed={} broken_listing={} commercial_vehicle={} missing_price={} invalid_price={} parse_exception={} forbidden={}",
-                cars.size(), brokenCount, commercialVehicleCount, missingPriceCount, invalidPriceCount, parseExceptionCount, forbiddenCount);
+        log.info("TIPCARS SUMMARY parsed={} broken_listing={} commercial_vehicle={} missing_price={} invalid_price={} parse_exception={} forbidden={} list_card_fallback={} fallback_missing_core_fields={}",
+                cars.size(), brokenCount, commercialVehicleCount, missingPriceCount, invalidPriceCount, parseExceptionCount, forbiddenCount, listFallbackCount, listFallbackMissingCoreFieldsCount);
 
         return cars;
     }
@@ -333,7 +341,7 @@ public class TipCarsParser implements CarSourceParser {
                 safe(car.getBrand()),
                 safe(url));
 
-        return new ParseResult(car, "ok");
+        return new ParseResult(car, "list_card_fallback");
     }
 
     private Connection connect(String url, Map<String, String> cookies, String referrer) {
