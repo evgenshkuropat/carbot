@@ -116,12 +116,43 @@ public class CarParserService {
             List<CarEntity> savedCars = carStorageService.saveNewCars(cars);
 
             parserRunStatsService.setTotalSaved(savedCars.size());
+            parserRunStatsService.recordSavedBySource(countSavedBySource(savedCars));
+            logSavedBySource();
 
             log.info("Stored new cars={}", savedCars.size());
 
             return savedCars;
         } finally {
             parserRunStatsService.finish();
+        }
+    }
+
+    private Map<String, Integer> countSavedBySource(List<CarEntity> savedCars) {
+        Map<String, Integer> savedBySource = new LinkedHashMap<>();
+
+        for (CarEntity car : savedCars) {
+            if (car == null || car.getSource() == null || car.getSource().isBlank()) {
+                continue;
+            }
+
+            savedBySource.merge(car.getSource().trim(), 1, Integer::sum);
+        }
+
+        return savedBySource;
+    }
+
+    private void logSavedBySource() {
+        Map<String, ParserRunStatsService.ParserStats> stats = parserRunStatsService.getParserStats();
+
+        for (Map.Entry<String, ParserRunStatsService.ParserStats> entry : stats.entrySet()) {
+            ParserRunStatsService.ParserStats stat = entry.getValue();
+            log.info("Parser {} storage_summary returned={} parsed_unique={} saved={} duplicates_skipped={} invalid_skipped={}",
+                    entry.getKey(),
+                    stat.returned(),
+                    stat.added(),
+                    stat.saved(),
+                    stat.duplicatesSkipped(),
+                    stat.invalidSkipped());
         }
     }
 }

@@ -42,6 +42,7 @@ public class ParserRunStatsService {
                 new ParserStats(
                         returned,
                         added,
+                        0,
                         duplicatesSkipped,
                         invalidSkipped,
                         false
@@ -49,10 +50,37 @@ public class ParserRunStatsService {
         );
     }
 
+    public synchronized void recordSavedBySource(Map<String, Integer> savedBySource) {
+        if (savedBySource == null || savedBySource.isEmpty()) {
+            return;
+        }
+
+        for (Map.Entry<String, Integer> entry : savedBySource.entrySet()) {
+            String source = entry.getKey();
+            int saved = entry.getValue() == null ? 0 : entry.getValue();
+            ParserStats current = parserStats.get(source);
+
+            if (current == null) {
+                parserStats.put(source, new ParserStats(0, 0, saved, 0, 0, false));
+                continue;
+            }
+
+            parserStats.put(source, new ParserStats(
+                    current.returned(),
+                    current.added(),
+                    saved,
+                    current.duplicatesSkipped(),
+                    current.invalidSkipped(),
+                    current.failed()
+            ));
+        }
+    }
+
     public synchronized void recordParserFailed(String source) {
 
         parserStats.put(source,
                 new ParserStats(
+                        0,
                         0,
                         0,
                         0,
@@ -97,6 +125,7 @@ public class ParserRunStatsService {
     public record ParserStats(
             int returned,
             int added,
+            int saved,
             int duplicatesSkipped,
             int invalidSkipped,
             boolean failed
