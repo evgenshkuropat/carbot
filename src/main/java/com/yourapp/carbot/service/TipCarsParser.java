@@ -423,16 +423,17 @@ public class TipCarsParser implements CarSourceParser {
     private Element findListingCard(Element link) {
         String targetHref = normalizeDetailUrl(link.absUrl("href"));
         Element current = link;
+        Element candidate = null;
         for (int depth = 0; current != null && depth < 7; depth++, current = current.parent()) {
             String text = normalizeText(current.text());
             if (text.length() >= 30
                     && text.length() <= 2500
                     && extractFirstPrice(text) != null
                     && containsOnlyTargetDetailLink(current, targetHref)) {
-                return current;
+                candidate = current;
             }
         }
-        return null;
+        return candidate;
     }
 
     private boolean containsOnlyTargetDetailLink(Element element, String targetHref) {
@@ -712,6 +713,14 @@ public class TipCarsParser implements CarSourceParser {
             }
         }
 
+        Matcher monthYear = Pattern.compile("\\b(?:0?[1-9]|1[0-2])\\s*/\\s*(19\\d{2}|20\\d{2})\\b").matcher(combined);
+        if (monthYear.find()) {
+            Integer year = parseIntSafe(monthYear.group(1));
+            if (isValidYear(year)) {
+                return year;
+            }
+        }
+
         Matcher generic = Pattern.compile("\\b(19\\d{2}|20\\d{2})\\b").matcher(combined);
         while (generic.find()) {
             String rawYear = generic.group(1);
@@ -792,8 +801,19 @@ public class TipCarsParser implements CarSourceParser {
     }
 
     private String extractLocationFromText(String pageText) {
+        String normalized = normalizeText(pageText);
+
+        Matcher cardLocationMatcher = Pattern.compile("(?i)\\bCAR\\d+\\s+([\\p{L}][\\p{L} .\\-]{1,40}?)(?=\\s+(?:reklama|novinka|\\+\\d+|zavolat|kontaktovat)|$)")
+                .matcher(normalized);
+        if (cardLocationMatcher.find()) {
+            String location = cleanupLocation(cardLocationMatcher.group(1));
+            if (isMeaningfulLocation(location)) {
+                return location;
+            }
+        }
+
         Matcher cityMatcher = Pattern.compile("(?i)(praha|brno|ostrava|plzen|liberec|olomouc|pardubice|hradec kralove|ceske budejovice|usti nad labem|zlin|jihlava|karlovy vary|opava|kladno|mlada boleslav|teplice|most|cheb|trutnov|kolin|karvina|blansko)")
-                .matcher(normalizeText(pageText));
+                .matcher(normalized);
 
         if (cityMatcher.find()) {
             return cleanupLocation(cityMatcher.group(1));

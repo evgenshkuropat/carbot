@@ -362,6 +362,18 @@ class TipCarsParserTest {
     }
 
     @Test
+    void extractsListFallbackYearFromMonthYear() throws Exception {
+        assertThat(extractYear("09/2017 114 500 km CAR1 Vysokov", "Audi A4 Avant Quattro 40 TDI"))
+                .isEqualTo(2017);
+    }
+
+    @Test
+    void extractsListFallbackLocationFromCarMarker() throws Exception {
+        assertThat(extractLocationFromText("Audi A4 09/2017 114 500 km CAR1 Vysokov reklama"))
+                .isEqualTo("Vysokov");
+    }
+
+    @Test
     void rejectsInflatedListFallbackPrices() throws Exception {
         assertThat(isValidListFallbackPrice(1_499_000)).isTrue();
         assertThat(isValidListFallbackPrice(9_179_000)).isFalse();
@@ -693,6 +705,12 @@ class TipCarsParserTest {
         Method method = TipCarsParser.class.getDeclaredMethod("extractYear", String.class, String.class);
         method.setAccessible(true);
         return (Integer) method.invoke(parser, text, title);
+    }
+
+    private String extractLocationFromText(String text) throws Exception {
+        Method method = TipCarsParser.class.getDeclaredMethod("extractLocationFromText", String.class);
+        method.setAccessible(true);
+        return (String) method.invoke(parser, text);
     }
 
     private String repairMojibake(String value) throws Exception {
