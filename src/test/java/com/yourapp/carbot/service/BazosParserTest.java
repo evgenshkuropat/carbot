@@ -660,6 +660,10 @@ class BazosParserTest {
                 "Corolla 2,0 GR hybrid,lineassist,1.maj.cr,DPH",
                 "https://auto.bazos.cz/inzerat/220995255/transit-20tdci111tiskmwebasto7mistdilnadph1majcr.php"))
                 .isTrue();
+        assertThat(looksBrandMismatch(
+                "Citroen C3 AIRCROSS 1.2 benzin 60kw 10/2018, 112tkm",
+                "https://auto.bazos.cz/inzerat/222830607/octavia-iv-20-tdi-85kw-42022-76tkm-cr-1maj.php"))
+                .isTrue();
         assertThat(looksModelUrlMismatch(
                 "RENAULT TWINGO 1,2 16v CTYRVAL",
                 "https://auto.bazos.cz/inzerat/219681639/renault-clio-12-16v-ctyrval.php"))

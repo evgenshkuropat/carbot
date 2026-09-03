@@ -3125,24 +3125,32 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
 
         if (url.contains("-lancer-")) return "MITSUBISHI";
         if (url.contains("-skoda-")) return "SKODA";
+        if (containsAny(url, "-octavia-", "-fabia-", "-superb-", "-kodiaq-", "-karoq-", "-kamiq-", "-yeti-", "-scala-", "-rapid-", "-roomster-")) return "SKODA";
         if (url.contains("-volkswagen-") || url.contains("-vw-")) return "VOLKSWAGEN";
+        if (containsAny(url, "-golf-", "-passat-", "-tiguan-", "-touran-", "-sharan-", "-polo-", "-multivan-", "-transporter-")) return "VOLKSWAGEN";
         if (url.contains("-audi-")) return "AUDI";
         if (url.contains("-bmw-")) return "BMW";
         if (url.contains("-mercedes-") || url.contains("-mercedes-benz-")
                 || url.contains("-mrcedes-") || url.contains("-mrcedes-benz-") || url.contains("-mb-")) return "MERCEDES";
         if (url.contains("-volvo-")) return "VOLVO";
         if (url.contains("-toyota-")) return "TOYOTA";
+        if (containsAny(url, "-yaris-", "-corolla-", "-auris-", "-avensis-", "-rav4-", "-proace-")) return "TOYOTA";
         if (url.contains("-lexus-")) return "LEXUS";
         if (url.contains("-ford-") || url.contains("-transit-") || url.contains("-tourneo-")) return "FORD";
+        if (containsAny(url, "-focus-", "-mondeo-", "-kuga-", "-fiesta-", "-galaxy-", "-c-max-", "-s-max-")) return "FORD";
         if (url.contains("-renault-")) return "RENAULT";
+        if (containsAny(url, "-clio-", "-megane-", "-scenic-", "-twingo-", "-kangoo-", "-captur-", "-kadjar-")) return "RENAULT";
         if (url.contains("-seat-")) return "SEAT";
+        if (containsAny(url, "-ibiza-", "-leon-", "-alhambra-", "-ateca-", "-tarraco-", "-toledo-")) return "SEAT";
         if (url.contains("-peugeot-")) return "PEUGEOT";
         if (url.contains("-opel-")) return "OPEL";
+        if (containsAny(url, "-astra-", "-insignia-", "-zafira-", "-corsa-", "-meriva-", "-crossland-", "-grandland-")) return "OPEL";
         if (url.contains("-hyundai-")) return "HYUNDAI";
         if (url.contains("-kia-")
                 || containsAny(url, "-ceed-", "-proceed-", "-pro-ceed-", "-sportage-", "-sorento-", "-stonic-", "-xceed-", "-rio-", "-picanto-", "-carens-", "-soul-", "-niro-")) return "KIA";
         if (url.contains("-mazda-")) return "MAZDA";
         if (url.contains("-citroen-") || url.contains("-citreon-")) return "CITROEN";
+        if (containsAny(url, "-berlingo-", "-picasso-", "-spacetourer-")) return "CITROEN";
         if (url.contains("-fiat-")) return "FIAT";
         if (url.contains("-alfa-romeo-")) return "ALFA_ROMEO";
         if (url.contains("-nissan-")) return "NISSAN";
