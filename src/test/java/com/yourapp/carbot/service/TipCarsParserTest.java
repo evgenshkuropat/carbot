@@ -14,6 +14,16 @@ class TipCarsParserTest {
     private final TipCarsParser parser = new TipCarsParser();
 
     @Test
+    void recognizesKugaDespiteIncorrectHatchbackCategory() throws Exception {
+        assertThat(extractCarType("Ford Kuga Sound Edition 2.5 P-Hev", "",
+                "https://www.tipcars.com/ford-kuga/hatchback/hybridni-benzin/ford-kuga-sound-edition-2-5-p-hev-12937796.html"))
+                .isEqualTo("SUV");
+        assertThat(extractCarType("Ford Focus", "Ford Kuga Sound Edition",
+                "https://www.tipcars.com/ford-focus/hatchback/benzin/ford-focus.html"))
+                .isEqualTo("HATCHBACK");
+    }
+
+    @Test
     void resolvesBodyTypesFromTipCarsTitleAndUrl() throws Exception {
         assertThat(extractCarType(
                 "Hyundai i30 START PLUS 1.5i 80kW CZ DPH",
@@ -211,8 +221,8 @@ class TipCarsParserTest {
     @Test
     void buildsCurrentTipCarsPaginationUrls() throws Exception {
         assertThat(buildPageUrl(1)).isEqualTo("https://www.tipcars.com/osobni/");
-        assertThat(buildPageUrl(2)).isEqualTo("https://www.tipcars.com/?str=2-20");
-        assertThat(buildPageUrl(5)).isEqualTo("https://www.tipcars.com/?str=5-20");
+        assertThat(buildPageUrl(2)).isEqualTo("https://www.tipcars.com/osobni/?str=2-20");
+        assertThat(buildPageUrl(5)).isEqualTo("https://www.tipcars.com/osobni/?str=5-20");
         assertThat(extractYear("Zalozeno 2012", "Ford Mustang Rok vyroby 1966, Ford Mustang"))
                 .isEqualTo(1966);
         assertThat(extractYear("Prvni registrace 2017", "Peugeot 2008 1.2 PureTech"))

@@ -370,7 +370,7 @@ public class TipCarsParser implements CarSourceParser {
         if (page <= 1) {
             return BASE_LIST_URL;
         }
-        return BASE_URL + "?str=" + page + "-20";
+        return BASE_LIST_URL + "?str=" + page + "-20";
     }
 
     private Set<String> extractDetailLinks(Document listDoc) {
@@ -1259,7 +1259,7 @@ public class TipCarsParser implements CarSourceParser {
         String titleSource = " " + normalizeText(safe(title)).toLowerCase(Locale.ROOT) + " ";
 
         if (containsAny(titleSource,
-                " enyaq ", " karoq ", " duster ", " tiguan allspace ", " c3 aircross ", " peugeot 5008 ", " taigo ", " xceed ")) {
+                " enyaq ", " karoq ", " duster ", " tiguan allspace ", " c3 aircross ", " peugeot 5008 ", " taigo ", " xceed ", " ford kuga ")) {
             return "SUV";
         }
 
