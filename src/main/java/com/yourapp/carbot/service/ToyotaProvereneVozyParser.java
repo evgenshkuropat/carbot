@@ -240,7 +240,7 @@ public class ToyotaProvereneVozyParser implements CarSourceParser {
                 extractMainPrice(containerText)
         );
         Integer year = firstNonNull(
-                validYear(parseIntSafe(extractDetailValue(detailDoc, "productionDate"))),
+                extractYearFromTitle(extractDetailValue(detailDoc, "productionDate")),
                 extractYear(combinedText),
                 extractYearFromTitle(title)
         );
@@ -267,8 +267,8 @@ public class ToyotaProvereneVozyParser implements CarSourceParser {
                 "ELECTRIC".equals(fuelType) ? "AUTOMATIC" : null
         );
         carType = firstNonBlank(
-                extractCarType(title, ""),
                 mapCarType(extractDetailValue(detailDoc, "bodyType")),
+                extractCarType(title, ""),
                 extractCarType(title, containerText)
         );
         location = firstNonBlank(extractDetailLocation(detailDoc), location);
@@ -323,7 +323,7 @@ public class ToyotaProvereneVozyParser implements CarSourceParser {
             return null;
         }
 
-        String text = normalizeText(value.text());
+        String text = normalizeText(firstNonBlank(value.attr("content"), value.attr("datetime"), value.text()));
         return text.isBlank() ? null : text;
     }
 
@@ -694,8 +694,15 @@ public class ToyotaProvereneVozyParser implements CarSourceParser {
     }
 
     private String extractCarType(String title, String text) {
-        String source = " " + normalizeAscii(safe(title) + " " + safe(text)).toLowerCase(Locale.ROOT) + " ";
-        String titleSource = " " + normalizeAscii(safe(title)).toLowerCase(Locale.ROOT) + " ";
+        String source = " " + normalizeAscii(safe(title) + " " + safe(text)).toLowerCase(Locale.ROOT).replaceAll("[,;:/()]+", " ") + " ";
+        String titleSource = " " + normalizeAscii(safe(title)).toLowerCase(Locale.ROOT).replaceAll("[,;:/()]+", " ") + " ";
+
+        if (containsAny(titleSource, " proace ", " trafic ")
+                && !containsAny(titleSource, " crewcab ", " crew cab ", " proace max ")
+                && (containsAny(titleSource, " verso ", " family ", " bus ")
+                || Pattern.compile("\\b[7-9]\\s*(?:s|mist|mistny)\\b").matcher(titleSource).find())) {
+            return "MINIVAN";
+        }
 
         if (containsAny(source, " mercedes-benz gle ", " mercedes benz gle ", " skoda yeti ", " ford edge ", " jeep wrangler ", " wrangler ")) {
             return "SUV";

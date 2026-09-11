@@ -1,6 +1,10 @@
 package com.yourapp.carbot.service;
 
 import org.junit.jupiter.api.Test;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import com.yourapp.carbot.service.dto.CarDto;
 
 import java.lang.reflect.Method;
 
@@ -9,6 +13,44 @@ import static org.assertj.core.api.Assertions.assertThat;
 class ToyotaProvereneVozyParserTest {
 
     private final ToyotaProvereneVozyParser parser = new ToyotaProvereneVozyParser();
+
+    @Test
+    void resolvesBodyTypesFromSeptemberLogs() throws Exception {
+        assertThat(extractCarType("Toyota Corolla 2.0, HEV, TS, GR Sport, speciální lak", "")).isEqualTo("WAGON");
+        assertThat(extractCarType("Renault Trafic 1.6,dCi,Bus,8Míst,CZ", "")).isEqualTo("MINIVAN");
+        assertThat(extractCarType("Toyota PROACE 2.0 D 144 6 MT Family 8S L2", "")).isEqualTo("MINIVAN");
+        assertThat(extractCarType("Toyota PROACE CrewCab 2.2D-4D 150k 6MT L2 Active 6S", "")).isEqualTo("VAN");
+        assertThat(extractCarType("Toyota PROACE MAX Vůz s chladící přestavbou.", "")).isEqualTo("VAN");
+        assertThat(extractCarType("Toyota Corolla 1.8 TSI", "")).isEqualTo("HATCHBACK");
+    }
+
+    @Test
+    void usesStructuredBodyAndDateBeforeModelGuess() throws Exception {
+        CarDto car = parseFixture("Toyota Corolla 1.8 Hybrid", """
+                <meta itemprop="bodyType" content="kombi">
+                <time itemprop="productionDate" datetime="2025-09-11"></time>
+                <meta itemprop="mileageFromOdometer" content="7434">
+                """);
+        assertThat(car.getCarType()).isEqualTo("WAGON");
+        assertThat(car.getYear()).isEqualTo(2025);
+        assertThat(car.getMileage()).isEqualTo(7434);
+    }
+
+    @Test
+    void readsYearFromContentAndKeepsAbsentYearUnknown() throws Exception {
+        assertThat(parseFixture("MG S9 PREMIUM 1.5TGI PHEV", "<meta itemprop='productionDate' content='2026'>").getYear())
+                .isEqualTo(2026);
+        assertThat(parseFixture("MG S9 PREMIUM 1.5TGI PHEV", "").getYear()).isNull();
+    }
+
+    private CarDto parseFixture(String title, String details) throws Exception {
+        String url = "https://proverenevozy.toyota.cz/nabidka/test/1";
+        Element link = Jsoup.parse("<div><a href='" + url + "'>" + title + "</a></div>", url).selectFirst("a");
+        Document detail = Jsoup.parse("<h1>" + title + "</h1>" + details);
+        Method method = ToyotaProvereneVozyParser.class.getDeclaredMethod("parseListItem", Element.class, String.class, Document.class);
+        method.setAccessible(true);
+        return (CarDto) method.invoke(parser, link, url, detail);
+    }
 
     @Test
     void resolvesBodyTypesFromToyotaProvereneTitles() throws Exception {
