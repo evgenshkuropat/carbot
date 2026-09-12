@@ -57,6 +57,7 @@ public class CarStorageService {
         int alreadyExistingCount = existingByUrl.size();
         int invalidCount = 0;
         int updatedCount = 0;
+        Map<String, Integer> invalidBySource = new LinkedHashMap<>();
 
         List<CarEntity> savedNewCars = new ArrayList<>();
 
@@ -75,6 +76,7 @@ public class CarStorageService {
 
             if (!isValidForSave(car, priceValue)) {
                 invalidCount++;
+                invalidBySource.merge(safe(car.getSource()), 1, Integer::sum);
                 log.warn("STORAGE SKIP reason=invalid_car source={} title={} url={}",
                         safe(car.getSource()),
                         safe(car.getTitle()),
@@ -131,6 +133,8 @@ public class CarStorageService {
                 updatedCount,
                 savedNewCars.size()
         );
+        invalidBySource.forEach((source, count) ->
+                log.info("STORAGE source={} invalid_skipped={}", source, count));
 
         return savedNewCars;
     }
@@ -1005,12 +1009,21 @@ public class CarStorageService {
                 .replaceAll("\\p{M}", "");
 
         boolean passengerVanModel = containsAny(ascii,
+                "transit",
                 "vivaro",
                 "trafic",
                 "primastar");
 
         if (!passengerVanModel) {
             return false;
+        }
+
+        if (containsAny(ascii, "chlad", "furgon", "valnik", "plachta", "crewcab", "crew cab")) {
+            return false;
+        }
+
+        if (Pattern.compile("\\b[7-9]\\s*[.]?\\s*mist\\b").matcher(ascii).find()) {
+            return true;
         }
 
         return containsAny(ascii,

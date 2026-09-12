@@ -146,7 +146,7 @@ public class CarParserService {
 
         for (Map.Entry<String, ParserRunStatsService.ParserStats> entry : stats.entrySet()) {
             ParserRunStatsService.ParserStats stat = entry.getValue();
-            log.info("Parser {} storage_summary returned={} parsed_unique={} saved={} duplicates_skipped={} invalid_skipped={}",
+            log.info("Parser {} run_summary returned={} parsed_unique={} saved={} parse_duplicates_skipped={} parse_invalid_skipped={}",
                     entry.getKey(),
                     stat.returned(),
                     stat.added(),

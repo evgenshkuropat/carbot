@@ -679,7 +679,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
 
     private Integer extractPriceFromCenaLabel(String text) {
         Matcher matcher = Pattern.compile(
-                "(?i)\\bcena\\s*[:\\-]?\\s*([0-9]{2,3}(?:[\\s\\.][0-9]{3})+|[0-9]{5,7})\\s*(?:kč|kc|czk)?\\b"
+                "(?i)\\bcena\\s*[:\\-]?\\s*([0-9]{1,3}(?:[\\s\\.][0-9]{3})+|[0-9]{5,7})\\s*(?:kč|kc|czk)?\\b"
         ).matcher(text);
 
         while (matcher.find()) {
@@ -697,7 +697,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
 
     private Integer extractPriceFromKcPattern(String text) {
         Matcher matcher = Pattern.compile(
-                "(?i)\\b([0-9]{2,3}(?:[\\s\\.][0-9]{3})+|[0-9]{5,7})\\s*(?:kč|kc|czk)\\b"
+                "(?i)(?<![\\d.,])\\b([0-9]{1,3}(?:[\\s\\.][0-9]{3})+|[0-9]{5,7})\\s*(?:,-)?\\s*(?:kč|kc|czk)\\b"
         ).matcher(text);
 
         while (matcher.find()) {
@@ -888,12 +888,12 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         }
 
         Matcher matcher = Pattern.compile(
-                "(?i)(?:rok výroby|rok vyroby|r\\.v\\.?|r\\.|rv|první registrace|prvni registrace|do provozu|uvedení do provozu|uvedeni do provozu)\\s*[:\\-]?\\s*(?:\\d{1,2}\\s*/\\s*)?(19\\d{2}|20\\d{2})"
+                "(?i)(?:rok výroby|rok vyroby|r\\.v\\.?|r\\.|rv|první registrace|prvni registrace|do provozu|uvedení do provozu|uvedeni do provozu)\\s*[:\\-]?\\s*(?:\\d{1,2}\\s*[./]\\s*){0,2}(19\\d{2}|20\\d{2})"
         ).matcher(source);
 
         if (matcher.find()) {
             Integer year = parseYearCandidate(matcher.group(1));
-            if (year != null && !isBadYearContext(source, matcher.start(), matcher.end())) {
+            if (year != null) {
                 return year;
             }
         }
@@ -1040,6 +1040,8 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
 
     private Integer extractMileage(String title, String text) {
         String source = normalizeText(title + " " + text);
+        // Service intervals and mileage since repairs are not odometer readings.
+        source = source.replaceAll("(?i)(?:na olej|na rozvody|od vymeny|od výměny|po vymene|po výměně|rozvody a filtry)[^,;!?]{0,60}?\\d[\\d\\s.]*(?:tis\\S*\\s*)?(?:kilometr\\S*|km)\\b", " ");
 
         Matcher matcher = Pattern.compile(
                 "(?i)(?:najeto|najetých km|najetych km|stav tachometru|počet km|pocet km)\\s*[:\\-]?\\s*([0-9\\s\\.]{2,})\\s*km"
@@ -1266,7 +1268,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             return "DIESEL";
         }
 
-        if (containsAny(source, " jts ", " twinspark ", " twin spark ", " tbi ", " turbo ", " ts ", " sce ",
+        if (containsAny(source, " multiair ", " jts ", " twinspark ", " twin spark ", " tbi ", " turbo ", " ts ", " sce ",
                 " bmw m3 ", " m3 ", " civic type-r ", " civic type r ", " type-r ", " type r ", " typer ", " fn2 ", " ep2 ")
                 || compact.contains("typer")
                 || compact.contains("fn2")
@@ -1806,6 +1808,9 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
 
     private String extractTransmission(String text) {
         String repairedText = repairMojibake(text);
+        if (repairedText != null) {
+            repairedText = repairedText.replaceAll("(?i)\\b(?:automatická|automaticka|automatické|automaticke|aut\\.)\\s+(?:klimatizace|klima|svícení|sviceni|světla|svetla|brzda)\\b", " ");
+        }
         String source = " " + normalizeText(repairedText).toLowerCase(Locale.ROOT) + " ";
         String tokens = " " + normalizeText(repairedText).toLowerCase(Locale.ROOT)
                 .replaceAll("[^a-z0-9]+", " ")
@@ -1845,7 +1850,11 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             return "MANUAL";
         }
 
-        if (containsAny(tokens, " automat ", " auto ", " aut ", " at ", " a t ", " at8 ", " at6 ", " mta ", " selespeed ")) {
+        if (containsAny(tokens, " automat ", " aut ", " at ", " a t ", " at8 ", " at6 ", " mta ", " selespeed ")) {
+            return "AUTOMATIC";
+        }
+
+        if (source.stripLeading().startsWith("volvo v90 ") && tokens.contains(" auto ")) {
             return "AUTOMATIC";
         }
 

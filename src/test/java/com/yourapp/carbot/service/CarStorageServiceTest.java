@@ -195,6 +195,24 @@ class CarStorageServiceTest {
         assertThat(looksLikeBadTitle("Volkswagen T-Roc, 2.0 TDI 110 kW DSG SPORT")).isFalse();
     }
 
+    @Test
+    void keepsPassengerVansFromSeptemberStorageLog() throws Exception {
+        for (String title : new String[]{
+                "Renault Trafic 1.6,dCi,Bus,8Míst,CZ",
+                "Ford Transit Custom 2.0TDCi Trend L2H1 9míst",
+                "Ford Transit Custom 2.0TDCi L1H2 9míst"}) {
+            assertThat(isValidForSave(car(title), 279_000)).as(title).isTrue();
+        }
+        for (String title : new String[]{
+                "Ford Transit Custom Trend Van 320 L1",
+                "Ford Transit 2.2TDCi Trend L2H2 6míst",
+                "Renault Trafic, 1,6DCi 92KW L2H1 AC+WEBA NAVI",
+                "Mercedes-Benz Sprinter 220D 120Kw CHLAĎÁK-2018",
+                "Ford Transit CrewCab 9mist"}) {
+            assertThat(isValidForSave(car(title), 279_000)).as(title).isFalse();
+        }
+    }
+
     private String normalizeFuelType(String fuelType, String title) throws Exception {
         Method method = CarStorageService.class.getDeclaredMethod("normalizeFuelType", String.class, String.class);
         method.setAccessible(true);

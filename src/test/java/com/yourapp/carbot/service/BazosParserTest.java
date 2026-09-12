@@ -8,6 +8,38 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class BazosParserTest {
 
+    @Test
+    void parsesMillionPricesFromSeptemberListings() throws Exception {
+        Method method = BazosParser.class.getDeclaredMethod("extractPriceFromKcPattern", String.class);
+        method.setAccessible(true);
+        assertThat(method.invoke(new BazosParser(), "1 350 000 Kč")).isEqualTo(1_350_000);
+        assertThat(method.invoke(new BazosParser(), "Cena vč. DPH 1.350.000,- CZK")).isEqualTo(1_350_000);
+        assertThat(method.invoke(new BazosParser(), "Cena dohodou")).isNull();
+    }
+
+    @Test
+    void parsesRegistrationDatesNearInspectionDates() throws Exception {
+        assertThat(extractYear("Alfa Romeo Stelvio", "do provozu: 30.1.2023, najeto: 29228 km, STK do: 12/2027"))
+                .isEqualTo(2023);
+        assertThat(extractYear("Alfa Romeo Stelvio", "STK do: 12/2027")).isNull();
+    }
+
+    @Test
+    void doesNotConfuseServiceDistanceWithOdometer() throws Exception {
+        String service = "na olej najeto cca 2 tisice kilometru, na rozvody a filtry cca 20 tisic kilometru.";
+        assertThat(extractMileage("Alfa Romeo Giulietta 2010", service)).isNull();
+        assertThat(extractMileage("Alfa Romeo Giulietta", service + " Najeto 223 052 km.")).isEqualTo(223052);
+    }
+
+    @Test
+    void doesNotTreatWordAutoAsAutomaticTransmission() throws Exception {
+        assertThat(extractTransmission("Prodám auto v dobrém stavu")).isNull();
+        assertThat(extractTransmission("Android Auto, servisní historie")).isNull();
+        assertThat(extractTransmission("Automatická klimatizace, automatické svícení")).isNull();
+        assertThat(extractTransmission("Převodovka automat")).isEqualTo("AUTOMATIC");
+        assertThat(extractFuelType("Alfa Romeo Giulietta 1.4 multiair")).isEqualTo("PETROL");
+    }
+
     private final BazosParser parser = new BazosParser();
 
     @Test
