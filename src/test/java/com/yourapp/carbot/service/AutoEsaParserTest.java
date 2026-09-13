@@ -139,6 +139,13 @@ class AutoEsaParserTest {
                 .isEqualTo("HYBRID");
     }
 
+    @Test
+    void fixesBodyTypesAndTransmissionFromFreshAutoEsaLog() throws Exception {
+        assertThat(mapCarType("kombi", "Renault Koleos 2.0 dCi 4x4")).isEqualTo("SUV");
+        assertThat(mapCarType("hatchback", "Hyundai ix20 1.4 VVTi Trikolor")).isEqualTo("MINIVAN");
+        assertThat(mapTransmission("Maserati GranTurismo 4.7 V8 S Automatic")).isEqualTo("AUTOMATIC");
+    }
+
     private CarDto parseCard(Element card, String url) throws Exception {
         Method method = AutoEsaParser.class.getDeclaredMethod("parseCard", Element.class, String.class);
         method.setAccessible(true);
@@ -165,6 +172,18 @@ class AutoEsaParserTest {
 
     private String mapFuel(String value) throws Exception {
         Method method = AutoEsaParser.class.getDeclaredMethod("mapFuel", String.class);
+        method.setAccessible(true);
+        return (String) method.invoke(parser, value);
+    }
+
+    private String mapCarType(String value, String title) throws Exception {
+        Method method = AutoEsaParser.class.getDeclaredMethod("mapCarType", String.class, String.class);
+        method.setAccessible(true);
+        return (String) method.invoke(parser, value, title);
+    }
+
+    private String mapTransmission(String value) throws Exception {
+        Method method = AutoEsaParser.class.getDeclaredMethod("mapTransmission", String.class);
         method.setAccessible(true);
         return (String) method.invoke(parser, value);
     }
