@@ -1778,7 +1778,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
 
         return containsAny(source, " twin spark ", " twinspark ", " 6ti rychl ", " 6ti rychlost ", " 6 rychl ", " 6 rychlost ",
                 " alfa romeo 159 ", " alfa 159 ", " alfa romeo 147 ", " alfa 147 ", " giulietta ", " giuletta ", " guilietta ",
-                " gtv ", " brera ", " alfa romeo gt ", " gt coupe ", " alfa romeo sportwagon ",
+                " gtv ", " brera ", " alfa romeo gt ", " gt coupe ", " alfa romeo sportwagon ", " mito ", " alfa 33 ",
                 " accord ", " civic ", " crx ", " delsol ", " cr-v ", " cr v ", " crv ",
                 " peugeot 107 ", " peugeot 206 ", " peugeot 207 ", " peugeot 208 ", " peugeot 301 ",
                 " peugeot 2008 ", " peugeot 407 ", " partner tepee ",

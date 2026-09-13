@@ -514,6 +514,9 @@ class BazosParserTest {
         assertThat(looksLikelyFalseAutomatic("naftova Skoda Octavia 3 SCOUT 2.0 Tdi 135kW 136000km 4x4", "AUTOMATIC")).isTrue();
         assertThat(looksLikelyFalseAutomatic("Alfa Romeo GTV 2.0 V6 Turbo - vyjimecny stav", "AUTOMATIC")).isTrue();
         assertThat(looksLikelyFalseAutomatic("Alfa Romeo Brera 2.4jtd 147kw", "AUTOMATIC")).isTrue();
+        assertThat(looksLikelyFalseAutomatic("Alfa Romeo Mito r.v.2011 1.4i 77kw", "AUTOMATIC")).isTrue();
+        assertThat(looksLikelyFalseAutomatic("Alfa Romeo MiTo 1.4 Multiair TCT 140k Automat", "AUTOMATIC")).isFalse();
+        assertThat(looksLikelyFalseAutomatic("Alfa Romeo 33 QV 1.7 16V", "AUTOMATIC")).isTrue();
         assertThat(looksLikelyFalseAutomatic("Alfa Romeo GT Coupe 1.8 103kw,Rok 2007,176tkm,Klima,Nova STK", "AUTOMATIC")).isTrue();
         assertThat(looksLikelyFalseAutomatic("Alfa Romeo Giulia 2.2 jTDm Super Business plus Aut 8st.", "AUTOMATIC")).isFalse();
         assertThat(looksLikelyFalseAutomatic("Skoda Octavia IV 2.0TDI 110KW DSG•2021•STYLE", "AUTOMATIC")).isFalse();
