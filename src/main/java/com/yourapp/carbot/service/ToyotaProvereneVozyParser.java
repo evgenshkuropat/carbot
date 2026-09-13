@@ -266,6 +266,9 @@ public class ToyotaProvereneVozyParser implements CarSourceParser {
                 isAutomaticHybridTitle(title, fuelType) ? "AUTOMATIC" : null,
                 "ELECTRIC".equals(fuelType) ? "AUTOMATIC" : null
         );
+        if ("MANUAL".equals(transmission) && isToyotaOrLexusHybrid(title, fuelType)) {
+            transmission = "AUTOMATIC";
+        }
         carType = firstNonBlank(
                 mapCarType(extractDetailValue(detailDoc, "bodyType")),
                 extractCarType(title, ""),
@@ -691,6 +694,14 @@ public class ToyotaProvereneVozyParser implements CarSourceParser {
         }
         String source = " " + normalizeAscii(safe(title)).toLowerCase(Locale.ROOT) + " ";
         return containsAny(source, " hev ", " hybrid ", " e-cvt ", " ecvt ", " dct ", " dsg ", " e-dcs ", " edcs ");
+    }
+
+    private boolean isToyotaOrLexusHybrid(String title, String fuelType) {
+        if (!"HYBRID".equals(fuelType) && !"PLUGIN_HYBRID".equals(fuelType)) {
+            return false;
+        }
+        String source = " " + normalizeAscii(safe(title)).toLowerCase(Locale.ROOT) + " ";
+        return containsAny(source, " toyota ", " lexus ");
     }
 
     private String extractCarType(String title, String text) {

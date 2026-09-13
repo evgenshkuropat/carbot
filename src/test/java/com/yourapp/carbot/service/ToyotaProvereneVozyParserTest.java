@@ -158,6 +158,13 @@ class ToyotaProvereneVozyParserTest {
     }
 
     @Test
+    void correctsManualTransmissionOnToyotaHybrid() throws Exception {
+        assertThat(isToyotaOrLexusHybrid("Toyota Yaris Cross 1.5 Hybrid 130k FWD Style", "HYBRID"))
+                .isTrue();
+        assertThat(isToyotaOrLexusHybrid("Volvo XC40 B3", "HYBRID")).isFalse();
+    }
+
+    @Test
     void repairsToyotaProvereneMojibakeBeforeOutput() throws Exception {
         assertThat(repairMojibake("Ĺ koda Fabia 1.2 HTP / 51 kW"))
                 .isEqualTo("Škoda Fabia 1.2 HTP / 51 kW");
@@ -267,6 +274,12 @@ class ToyotaProvereneVozyParserTest {
         Method method = ToyotaProvereneVozyParser.class.getDeclaredMethod("mapElectrifiedFuel", String.class);
         method.setAccessible(true);
         return (String) method.invoke(parser, value);
+    }
+
+    private boolean isToyotaOrLexusHybrid(String title, String fuelType) throws Exception {
+        Method method = ToyotaProvereneVozyParser.class.getDeclaredMethod("isToyotaOrLexusHybrid", String.class, String.class);
+        method.setAccessible(true);
+        return (boolean) method.invoke(parser, title, fuelType);
     }
 
     private String repairMojibake(String value) throws Exception {
