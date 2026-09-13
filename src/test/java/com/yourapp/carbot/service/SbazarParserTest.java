@@ -189,6 +189,10 @@ class SbazarParserTest {
         assertThat(resolveCarType("volkswagen cc facelift passat 2.0tdi 103kw m2013", "")).isEqualTo("SEDAN");
         assertThat(resolveCarType("mercedes c220 w204 2.2cdi avantgarde", "")).isEqualTo("SEDAN");
         assertThat(resolveCarType("mercedes-benz tridy e 220cdi amg paket", "")).isEqualTo("SEDAN");
+        assertThat(resolveCarType("mercedes e 220cdi kom 2006", "")).isEqualTo("WAGON");
+        assertThat(resolveCarType("bmw m3 competition daytona violet", "")).isEqualTo("SEDAN");
+        assertThat(resolveCarType("alfa romeo giulia 2.0 turbo", "")).isEqualTo("SEDAN");
+        assertThat(resolveCarType("fiat linea 1.4t 88 kw", "")).isEqualTo("SEDAN");
         assertThat(resolveCarType("audi a8 3,0 50 tdi quattro laser dph", "")).isEqualTo("SEDAN");
         assertThat(resolveCarType("mercedes-benz tridy c 43 amg 4matic", "")).isEqualTo("SEDAN");
         assertThat(resolveCarType("volkswagen taigo 1,5 tsi dsg r-line led assist", "")).isEqualTo("SUV");
@@ -396,6 +400,7 @@ class SbazarParserTest {
         assertThat(looksNonCarListing("triumph america lt cr 2015")).isTrue();
         assertThat(looksNonCarListing("bmw i3 125 kw 120 ah tep.cerpadlo")).isFalse();
         assertThat(looksNonCarListing("posilovac krouticiho momentu")).isTrue();
+        assertThat(looksNonCarListing("repraky do auta")).isTrue();
         assertThat(looksNonCarListing("5x dv 9sed rozvody")).isTrue();
         assertThat(looksNonCarListing("toyota yaris 1.3benzin klima 5l/100km z+l pneu")).isFalse();
         assertThat(looksNonCarListing("renault megane 1,6 16v serviska 2 sada kol")).isFalse();

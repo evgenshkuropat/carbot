@@ -888,6 +888,12 @@ public class SbazarParser implements CarSourceParser {
         if (containsAny(searchable, "pickup", "pick-up", "ranger", "hilux", "navara", "l200", "amarok", "dodge ram", " ram ", "hcpu")) {
             return "PICKUP";
         }
+        if (containsAny(searchable, "bmw m3", " bmw m 3", "alfa romeo giulia", "fiat linea")) {
+            return "SEDAN";
+        }
+        if (containsAny(searchable, "e 220cdi kom", "e 220 cdi kom")) {
+            return "WAGON";
+        }
         if (containsAny(searchable, "volkswagen cc", "vw cc", "passat cc")) {
             return "SEDAN";
         }
@@ -1106,6 +1112,7 @@ public class SbazarParser implements CarSourceParser {
 
         return containsAny(searchable,
                 "nahradni dily", "nahradni dil", "dily na", "rozprodavam", "bouracka na dily",
+                "repraky do auta", "reproduktory do auta",
                 "nabourany", "nabourane", "havarovany", "havarovane", "palubni deska", "airbag",
                 "interierove plasty", "plasty smart", "chladic klimatizace", "prerusovac", "smerovych svetel",
                 "pneu", "pneumatik", "elektrony", "alu kola", "sada kol", "disky", "naraznik",
