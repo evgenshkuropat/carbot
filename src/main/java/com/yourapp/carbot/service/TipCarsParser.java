@@ -733,7 +733,7 @@ public class TipCarsParser implements CarSourceParser {
             }
 
             Integer year = parseIntSafe(rawYear);
-            if (isValidYear(year)) {
+            if (isValidYear(year) && !isImplausibleModelYear(title, year)) {
                 return year;
             }
         }
@@ -755,12 +755,18 @@ public class TipCarsParser implements CarSourceParser {
             }
 
             Integer year = parseIntSafe(rawYear);
-            if (year != null && year >= MIN_TITLE_YEAR && year <= CURRENT_YEAR + 1) {
+            if (year != null && year >= MIN_TITLE_YEAR && year <= CURRENT_YEAR + 1
+                    && !isImplausibleModelYear(title, year)) {
                 return year;
             }
         }
 
         return null;
+    }
+
+    private boolean isImplausibleModelYear(String title, Integer year) {
+        String source = " " + normalizeText(safe(title)).toLowerCase(Locale.ROOT) + " ";
+        return year != null && year < 2019 && source.contains(" skoda scala ");
     }
 
     private Integer extractMileage(String text) {
@@ -1081,7 +1087,7 @@ public class TipCarsParser implements CarSourceParser {
                 " e-cvt ",
                 " ecvt ")
                 || compact.contains("hybrid")
-                || compact.contains("400h")
+                || source.matches(".*\\b400h\\b.*")
                 || compact.contains("mhev")
                 || containsAny(tokens, " hev ")
                 || (compact.contains("etec") && !compact.contains("puretech"))
@@ -1223,6 +1229,7 @@ public class TipCarsParser implements CarSourceParser {
                 " automatic ",
                 " autom ",
                 " at ",
+                " a t ",
                 " at6 ",
                 " at7 ",
                 " at8 ",
@@ -1241,6 +1248,7 @@ public class TipCarsParser implements CarSourceParser {
                 " manualni ")
                 || containsAny(tokens,
                 " man ",
+                " m t ",
                 " mt ",
                 " 5mt ",
                 " 6mt ",
@@ -1313,7 +1321,7 @@ public class TipCarsParser implements CarSourceParser {
         }
 
         if (containsAny(titleSource,
-                " fiesta ", " ibiza ", " up! ", " up ", " golf ", " scala ", " fabia ", " i30 ", " zoe ")) {
+                " fiesta ", " ibiza ", " up! ", " up ", " golf ", " scala ", " fabia ", " i30 ", " zoe ", " splash ")) {
             return "HATCHBACK";
         }
 

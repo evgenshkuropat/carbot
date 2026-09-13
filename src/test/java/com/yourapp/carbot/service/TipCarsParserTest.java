@@ -391,6 +391,7 @@ class TipCarsParserTest {
     void extractsListFallbackYearFromMonthYear() throws Exception {
         assertThat(extractYear("09/2017 114 500 km CAR1 Vysokov", "Audi A4 Avant Quattro 40 TDI"))
                 .isEqualTo(2017);
+        assertThat(extractYear("2000 184 000 km", "Škoda Scala")).isNull();
     }
 
     @Test
@@ -461,6 +462,8 @@ class TipCarsParserTest {
                 .isEqualTo("PLUGIN_HYBRID");
         assertThat(extractFuelType("Lexus RX 400h 400 h, 4X4, Automat, CR,1.maj"))
                 .isEqualTo("HYBRID");
+        assertThat(extractFuelType("https://www.tipcars.com/ford-focus/hatchback/nafta/ford-focus-100170400.html"))
+                .isEqualTo("DIESEL");
     }
 
     @Test
@@ -731,6 +734,16 @@ class TipCarsParserTest {
         Method method = TipCarsParser.class.getDeclaredMethod("extractYear", String.class, String.class);
         method.setAccessible(true);
         return (Integer) method.invoke(parser, text, title);
+    }
+
+    @Test
+    void parsesListFallbackTransmissionAbbreviationsAndModelBodyType() throws Exception {
+        assertThat(extractTransmission("Toyota ProAce Verso 2.2D 180HP A/T L1 VIP 7S"))
+                .isEqualTo("AUTOMATIC");
+        assertThat(extractTransmission("Toyota ProAce Verso 2.2D 150HP M/T L2 Family"))
+                .isEqualTo("MANUAL");
+        assertThat(extractCarType("Suzuki Splash", "", "https://www.tipcars.com/suzuki-splash/kombi/benzin/example.html"))
+                .isEqualTo("HATCHBACK");
     }
 
     private String extractLocationFromText(String text) throws Exception {
