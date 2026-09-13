@@ -14,6 +14,22 @@ class TipCarsParserTest {
     private final TipCarsParser parser = new TipCarsParser();
 
     @Test
+    void separatesAlphanumericModelNamesFromPrices() throws Exception {
+        assertThat(extractFirstPrice("Audi Q3 223 000 Kč")).isEqualTo(223_000);
+        assertThat(extractFirstPrice("Audi A7 400 000 Kč")).isEqualTo(400_000);
+        assertThat(extractFirstPrice("BMW X5 1 350 000 Kč")).isEqualTo(1_350_000);
+        assertThat(extractFirstPrice("Audi Q3 3 223 000 Kč")).isEqualTo(3_223_000);
+    }
+
+    @Test
+    void preserves5008MpvCategory() throws Exception {
+        assertThat(extractCarType("Peugeot 5008 1.6 HDi, Serv.kniha, Tempomat", "",
+                "https://www.tipcars.com/peugeot-5008/mpv/nafta/peugeot-5008.html")).isEqualTo("MINIVAN");
+        assertThat(extractCarType("Peugeot 5008 1.2 PureTech", "",
+                "https://www.tipcars.com/peugeot-5008/suv/benzin/peugeot-5008.html")).isEqualTo("SUV");
+    }
+
+    @Test
     void recognizesKugaDespiteIncorrectHatchbackCategory() throws Exception {
         assertThat(extractCarType("Ford Kuga Sound Edition 2.5 P-Hev", "",
                 "https://www.tipcars.com/ford-kuga/hatchback/hybridni-benzin/ford-kuga-sound-edition-2-5-p-hev-12937796.html"))

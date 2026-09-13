@@ -368,7 +368,7 @@ public class SbazarParser implements CarSourceParser {
         for (String selector : selectors) {
             String value = textOf(doc, selector);
             if (value != null && !value.isBlank() && value.length() <= 80) {
-                return value;
+                return value.replaceFirst("(?i)^v\\s+", "").trim();
             }
         }
 
@@ -453,6 +453,7 @@ public class SbazarParser implements CarSourceParser {
     }
 
     private Integer extractMileage(String searchable) {
+        searchable = searchable.replaceAll("(?i)(?:zar\\.|zaruka|záruka|garance)[^,;]{0,40}?\\d[\\d\\s.]*(?:km)\\b", " ");
         Integer mileage = extractMileageValue(searchable, MILEAGE_NAJETO_PATTERN.matcher(searchable), false);
         if (mileage != null) {
             return mileage;
@@ -1017,6 +1018,12 @@ public class SbazarParser implements CarSourceParser {
     }
 
     private String resolveCarType(String identityText, String scopedText) {
+        if (containsAny(identityText, "suzuki jimny")) {
+            return "SUV";
+        }
+        if (containsAny(identityText, "kia carens")) {
+            return "MINIVAN";
+        }
         String identityType = detectCarType(identityText);
         if (!"-".equals(identityType)) {
             return identityType;

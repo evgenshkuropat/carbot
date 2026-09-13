@@ -656,7 +656,7 @@ public class TipCarsParser implements CarSourceParser {
             return null;
         }
 
-        Matcher matcher = Pattern.compile("(?<!\\d)(\\d{1,3}(?:[\\s\\u00A0]\\d{3})+|\\d{4,8})\\s*K(?![mw])\\p{L}{0,2}", Pattern.CASE_INSENSITIVE).matcher(text);
+        Matcher matcher = Pattern.compile("(?<![\\p{L}\\d])(\\d{1,3}(?:[\\s\\u00A0]\\d{3})+|\\d{4,8})\\s*K(?![mw])\\p{L}{0,2}", Pattern.CASE_INSENSITIVE).matcher(text);
         while (matcher.find()) {
             String rawPrice = matcher.group(1);
             if (startsWithModelSeriesNumber(text, matcher.start(), rawPrice)
@@ -1257,6 +1257,10 @@ public class TipCarsParser implements CarSourceParser {
         String normalizedUrl = url == null ? "" : url.toLowerCase(Locale.ROOT);
 
         String titleSource = " " + normalizeText(safe(title)).toLowerCase(Locale.ROOT) + " ";
+
+        if (titleSource.contains(" peugeot 5008 ") && normalizedUrl.contains("/mpv/")) {
+            return "MINIVAN";
+        }
 
         if (containsAny(titleSource,
                 " enyaq ", " karoq ", " duster ", " tiguan allspace ", " c3 aircross ", " peugeot 5008 ", " taigo ", " xceed ", " ford kuga ")) {

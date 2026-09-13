@@ -942,8 +942,18 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
     }
 
     private Integer extractYearFromTitle(String normalizedTitle) {
+        Matcher fullMonthYearMatcher = Pattern.compile(
+                "(?i)(?:r\\.v\\.?|rv|rok)?\\s*[:\\-\\.]?\\s*(?:0?[1-9]|1[0-2])\\s*/\\s*(19\\d{2}|20\\d{2})\\b"
+        ).matcher(normalizedTitle);
+        if (fullMonthYearMatcher.find()) {
+            Integer year = parseYearCandidate(fullMonthYearMatcher.group(1));
+            if (year != null) {
+                return year;
+            }
+        }
+
         Matcher monthYearMatcher = Pattern.compile(
-                "(?i)(?:r\\.v\\.?|rv|rok)?\\s*[:\\-\\.]?\\s*(?:0?[1-9]|1[0-2])\\s*/\\s*'?([0-9]{2})\\b"
+                "(?i)(?:r\\.v\\.?|rv|rok)?\\s*[:\\-\\.]?\\s*(?:0?[1-9]|1[0-2])\\s*/\\s*'?([0-9]{2})(?!\\d)\\b"
         ).matcher(normalizedTitle);
         if (monthYearMatcher.find()) {
             Integer year = parseShortYearCandidate(monthYearMatcher.group(1));
@@ -1780,7 +1790,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " octavia iii ", " octavia 3 ", " oktavia ", " fabia ", " fabia, ", " rapid ", " rapid, ", " yeti ", " roomster ",
                 " duster ", " sandero ", " stepway ", " logan ", " jogger ", " dokker ", " panda ", " berlingo ",
                 " avensis ", " auris ", " auris, ", " aoris ", " aoris, ", " golf ",
-                " vitara ", " sx4 ", " s-cross ", " s cross ", " samurai ");
+                " vitara ", " sx4 ", " s-cross ", " s cross ", " samurai ", " asx 1.6 mivec ");
     }
     private boolean looksLikelyFalseManual(String title, String transmission) {
         if (!"MANUAL".equals(transmission)) {
@@ -1816,6 +1826,10 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 .replaceAll("[^a-z0-9]+", " ")
                 .replaceAll("\\s+", " ")
                 .trim() + " ";
+
+        if (containsAny(tokens, " c63 ", " c 63 ", " c63s ", " c 63 s ")) {
+            return "AUTOMATIC";
+        }
 
         if (containsAny(source,
                 " manuální převodovka ",
@@ -2248,6 +2262,10 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         titleSource = titleSource + " " + asciiSearchText(safe(title));
         String textSource = " " + normalizeText(safe(text)).toLowerCase(Locale.ROOT) + " ";
         String urlSource = " " + normalizeText(safe(url)).toLowerCase(Locale.ROOT) + " ";
+
+        if (containsAny(titleSource, " marco polo ", " tridy v ", " třídy v ", " v klasse ", " v-klasse ")) {
+            return "MINIVAN";
+        }
 
         if (containsAny(titleSource, " c5 ", " citroen c5 ") && containsAny(titleSource, " break ")) {
             return "WAGON";
@@ -3343,6 +3361,11 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
 
         if (containsAny(wordSource, " proace verso ", " proace city verso ")) {
             return false;
+        }
+
+        if (containsAny(titleSource, " sprinter ")
+                && !containsAny(titleSource, " tourer ", " passenger ", " 7 mist ", " 8 mist ", " 9 mist ")) {
+            return true;
         }
 
         if (containsAny(titleSource, " transit custom ", " transit ")

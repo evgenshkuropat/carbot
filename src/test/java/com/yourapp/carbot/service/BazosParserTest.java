@@ -788,6 +788,22 @@ class BazosParserTest {
     }
 
     @Test
+    void fixesSeptemberMercedesAndAsxListings() throws Exception {
+        assertThat(extractYear("68.000Km Mitsubishi ASX 1.6 / 86kw MIVEC rok 05/2015", ""))
+                .isEqualTo(2015);
+        assertThat(extractTransmission("Mercedes-Benz C63 S AMG | 2021 | V8 375 kW (510 k)"))
+                .isEqualTo("AUTOMATIC");
+        assertThat(looksLikelyFalseAutomatic("MITSUBISHI ASX 1.6 MIVEC 86 kW / 2011", "AUTOMATIC"))
+                .isTrue();
+        assertThat(extractCarType("Mercedes Benz - Marco Polo", "", "")).isEqualTo("MINIVAN");
+        assertThat(extractCarType("MERCEDES BENZ TŘÍDY V - KLASSE 4X4", "", "")).isEqualTo("MINIVAN");
+        assertThat(looksCommercialVehicle("Mercedes-Benz Sprinter 220D 120Kw CHLAĎÁK-2018", "", ""))
+                .isTrue();
+        assertThat(looksCommercialVehicle("Mercedes-Benz Sprinter Tourer 9 mist", "", ""))
+                .isFalse();
+    }
+
+    @Test
     void keepsCommercialTransitCustomOutOfPassengerResults() throws Exception {
         assertThat(looksCommercialVehicle(
                 "FORD Transit CUSTOM 2,2 tdci 114kw L1 H1 Navigace",

@@ -11,6 +11,30 @@ class SbazarParserTest {
     private final SbazarParser parser = new SbazarParser();
 
     @Test
+    void ignoresWarrantyMileageFromSeptemberLog() throws Exception {
+        assertThat(extractMileage("skoda karoq 1.5 tsi zar. 5 let/100000 km")).isNull();
+        assertThat(extractMileage("zaruka 5 let/100000 km, najeto 24421 km")).isEqualTo(24421);
+        assertThat(extractMileage("najeto 100000 km")).isEqualTo(100000);
+    }
+
+    @Test
+    void resolvesSeptemberBodyTypes() throws Exception {
+        assertThat(resolveCarType("suzuki jimny 1.3 allgrip comfort ranger", "")).isEqualTo("SUV");
+        assertThat(resolveCarType("ford ranger", "")).isEqualTo("PICKUP");
+        assertThat(resolveCarType("kia carens", "")).isEqualTo("MINIVAN");
+    }
+
+    @Test
+    void removesLocationPreposition() throws Exception {
+        Method method = SbazarParser.class.getDeclaredMethod("extractLocation", org.jsoup.nodes.Document.class);
+        method.setAccessible(true);
+        assertThat(method.invoke(parser, org.jsoup.Jsoup.parse("<div data-testid='locality'>v Praha 13</div>")))
+                .isEqualTo("Praha 13");
+        assertThat(method.invoke(parser, org.jsoup.Jsoup.parse("<div data-testid='locality'>Vysokov</div>")))
+                .isEqualTo("Vysokov");
+    }
+
+    @Test
     void resolvesFuelFromTrustedListingIdentity() throws Exception {
         assertThat(resolveFuelType("vw id 3 pro performance rv.2024", "")).isEqualTo("ELECTRIC");
         assertThat(resolveTransmission("vw id 3 pro performance rv.2024", "", "ELECTRIC")).isEqualTo("AUTOMATIC");
