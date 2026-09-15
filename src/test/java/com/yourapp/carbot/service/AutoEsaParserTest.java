@@ -137,12 +137,15 @@ class AutoEsaParserTest {
     void detectsHybridFuelFromAutoEsaUrl() throws Exception {
         assertThat(mapFuel("https://www.autoesa.cz/toyota/corolla/kombi/hybridni/656457957"))
                 .isEqualTo("HYBRID");
+        assertThat(mapFuel("Volvo V60 2.4 D6 PHEV 4x4"))
+                .isEqualTo("PLUGIN_HYBRID");
     }
 
     @Test
     void fixesBodyTypesAndTransmissionFromFreshAutoEsaLog() throws Exception {
         assertThat(mapCarType("kombi", "Renault Koleos 2.0 dCi 4x4")).isEqualTo("SUV");
         assertThat(mapCarType("hatchback", "Hyundai ix20 1.4 VVTi Trikolor")).isEqualTo("MINIVAN");
+        assertThat(mapCarType("kabriolet", "Fiat 500 1.0i Lounge C")).isEqualTo("CABRIO");
         assertThat(mapTransmission("Maserati GranTurismo 4.7 V8 S Automatic")).isEqualTo("AUTOMATIC");
     }
 

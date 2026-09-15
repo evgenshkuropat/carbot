@@ -221,7 +221,10 @@ public class AutoEsaParser extends AbstractJsoupParser implements CarSourceParse
 
             car.setTransmission(firstNonBlank(car.getTransmission(), mapTransmission(detailTitle), mapTransmission(extractDetailValue(doc, "Prevodovka"))));
             car.setCarType(firstNonBlank(car.getCarType(), mapCarType(extractDetailValue(doc, "Karoserie"), car.getTitle())));
-            car.setFuelType(firstNonBlank(car.getFuelType(), mapFuel(extractDetailValue(doc, "Palivo"))));
+            String titleFuelType = mapFuel(car.getTitle());
+            car.setFuelType("PLUGIN_HYBRID".equals(titleFuelType)
+                    ? titleFuelType
+                    : firstNonBlank(car.getFuelType(), mapFuel(extractDetailValue(doc, "Palivo"))));
             car.setMileage(firstNonNull(car.getMileage(), parseIntSafe(extractDetailValue(doc, "Stav tachometru"))));
             car.setYear(firstNonNull(car.getYear(), validYear(parseIntSafe(extractDetailValue(doc, "Rok")))));
             car.setImageUrl(firstNonBlank(extractMetaContent(doc, "meta[property=og:image]"), car.getImageUrl()));
@@ -402,7 +405,7 @@ public class AutoEsaParser extends AbstractJsoupParser implements CarSourceParse
         if (containsAny(source, " liftback ", " sedan ", " limousine ")) return "SEDAN";
         if (containsAny(source, " hatchback ", " hb ")) return "HATCHBACK";
         if (containsAny(source, " coupe ", " kupe ")) return "COUPE";
-        if (containsAny(source, " cabrio ", " kabrio ", " convertible ")) return "CABRIO";
+        if (containsAny(source, " cabrio ", " kabrio ", " kabriolet ", " convertible ")) return "CABRIO";
         if (containsAny(source, " pickup ", " pick-up ")) return "PICKUP";
         if (containsAny(source, " van ", " dodavka ", " uzitkove ")) return "VAN";
 
