@@ -74,6 +74,8 @@ class SautoParserTest {
                 .isEqualTo("HATCHBACK");
         assertThat(extractCarType("Citroen C3 Picasso 1.6 HDI 68kw 2011 r.", "", "https://www.sauto.cz/osobni/detail/citroen/c3-picasso/210520973"))
                 .isEqualTo("MINIVAN");
+        assertThat(extractCarType("Citroën Grand C4 Picasso 1.6 HDi, 7 míst", "", "https://www.sauto.cz/osobni/detail/citroen/c4/211053588"))
+                .isEqualTo("MINIVAN");
         assertThat(extractCarType("Skoda Octavia SKODA octavia 1.9tdi 66KW Komb", "", "https://www.sauto.cz/osobni/detail/skoda/octavia/210793799"))
                 .isEqualTo("WAGON");
         assertThat(extractCarType("Citroen C8 Citroen C8 2.0 HDI 16V", "", "https://www.sauto.cz/osobni/detail/citroen/c8/209864712"))
@@ -120,6 +122,12 @@ class SautoParserTest {
                 .isEqualTo("AUTOMATIC");
         assertThat(extractTransmission("Ford Focus Ford Focus 1.6i AT Combi, BRNO"))
                 .isEqualTo("AUTOMATIC");
+    }
+
+    @Test
+    void rejectsNonCarEquipmentFromSautoListings() throws Exception {
+        assertThat(looksBrokenListing("Ostatní HECHT COCIS MAX ELEKTRO", "", ""))
+                .isTrue();
     }
 
     @Test

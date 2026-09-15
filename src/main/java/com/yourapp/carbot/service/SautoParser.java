@@ -791,7 +791,8 @@ public class SautoParser implements CarSourceParser {
                 " vadný pohon ",
                 " vadny pohon ",
                 " poškozený pohon ",
-                " poskozeny pohon "
+                " poskozeny pohon ",
+                " hecht cocis "
         );
     }
 
@@ -1703,10 +1704,6 @@ public class SautoParser implements CarSourceParser {
             return "MINIVAN";
         }
 
-        if (containsAny(titleSource, " citroen c4 ", " citroĂ«n c4 ", " citroën c4 ", " c4 ")) {
-            return "HATCHBACK";
-        }
-
         if (containsAny(titleSource,
                 " komb ", " kombi ", " combi ", " wagon ", " estate ", " touring ", " avant ", " variant ",
                 " caravan ", " sw ", " shooting brake ", " sport tourer ", " sports tourer ",
@@ -1762,6 +1759,10 @@ public class SautoParser implements CarSourceParser {
 
         if (containsAny(titleSource, " ford fusion ", " peugeot 807 ", " citroen c8 ", " citroën c8 ", " c3 picasso ", " c4 picasso ", " picasso ")) {
             return "MINIVAN";
+        }
+
+        if (containsAny(titleSource, " citroen c4 ", " citroĂ«n c4 ", " citroën c4 ", " c4 ")) {
+            return "HATCHBACK";
         }
 
         if (containsAny(titleSource, " accent ", " mondeo ", " nubira ", " voyah passion ", " passion phev ")) {
