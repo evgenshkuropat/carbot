@@ -1118,6 +1118,10 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         source = source + " " + ascii + " " + repairedAscii;
         String compact = source.replaceAll("[^a-z0-9]", "");
 
+        if (containsAny(source, " c43 amg ", " c 43 amg ")) {
+            return "PETROL";
+        }
+
         // LPG / CNG first
         if (containsAny(source, " lpg ", " plyn ") || compact.contains("lpg")) {
             return "LPG";
@@ -1966,6 +1970,8 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         if (containsAny(titleSource, " id.3 ", " id3 ", " id.4 ", " id4 ", " id.5 ", " id5 ")) return "VOLKSWAGEN";
         if (containsAny(titleSource, " audi ", " s4 quattro ")) return "AUDI";
         if (containsAny(titleSource, " bmw ")) return "BMW";
+        if (containsAny(titleSource, " smart ", " fortwo ", " forfour ")) return "SMART";
+        if (containsAny(titleSource, " glc ")) return "MERCEDES";
         if (containsAny(titleSource, " mercedes ", " mercedes-benz ", " mercedes-amg ",
                 " mrcedes ", " mrcedes-benz ")) return "MERCEDES";
         if (containsAny(titleSource, " lexus ")) return "LEXUS";
@@ -2262,6 +2268,9 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         titleSource = titleSource + " " + asciiSearchText(safe(title));
         String textSource = " " + normalizeText(safe(text)).toLowerCase(Locale.ROOT) + " ";
         String urlSource = " " + normalizeText(safe(url)).toLowerCase(Locale.ROOT) + " ";
+
+        if (containsAny(titleSource, " c43 amg ", " c 43 amg ")) return "SEDAN";
+        if (containsAny(titleSource, " smart fortwo ", " fortwo ")) return "HATCHBACK";
 
         if (containsAny(titleSource, " marco polo ", " tridy v ", " třídy v ", " v klasse ", " v-klasse ")) {
             return "MINIVAN";
