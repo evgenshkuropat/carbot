@@ -131,6 +131,8 @@ class AutoEsaParserTest {
         assertThat(normalizeBrand("ssangyong", "SsangYong Korando 1.5T-GDi 4x4")).isEqualTo("SSANGYONG");
         assertThat(normalizeBrand("maserati", "Maserati GranTurismo 4.7 V8 S Automatic")).isEqualTo("MASERATI");
         assertThat(normalizeBrand("jaguar", "Jaguar F-Type 3.0 V6 V6 S AWD Coupe")).isEqualTo("JAGUAR");
+        assertThat(normalizeBrand("baic", "BAIC X55 1.5T")).isEqualTo("BAIC");
+        assertThat(normalizeBrand("dongfeng", "Dongfeng T5 Evo 1.5T")).isEqualTo("DONGFENG");
     }
 
     @Test

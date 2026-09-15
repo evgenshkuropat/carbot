@@ -448,6 +448,8 @@ public class AutoEsaParser extends AbstractJsoupParser implements CarSourceParse
         if (containsAny(source, " ssangyong ", " ssang yong ", " korando ")) return "SSANGYONG";
         if (containsAny(source, " maserati ")) return "MASERATI";
         if (containsAny(source, " jaguar ")) return "JAGUAR";
+        if (containsAny(source, " baic ")) return "BAIC";
+        if (containsAny(source, " dongfeng ")) return "DONGFENG";
 
         return null;
     }
