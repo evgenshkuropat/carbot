@@ -539,7 +539,8 @@ public class SbazarParser implements CarSourceParser {
                 {"VOLKSWAGEN", "volkswagen", "wolkswagen", "vw", "passat", "golf", "tiguan", "touran", "touareg", "sharan", "california", "t-cross"},
                 {"SKODA", "skoda", "fabia", "octavia", "superb", "kodiaq", "karoq"},
                 {"CHEVROLET", "chevrolet", "corvette", "camaro", "captiva"},
-                {"DODGE", "dodge", "challenger"},
+                {"DODGE", "dodge", "challenger", "durango"},
+                {"CHERY", "chery", "tiggo 9"},
                 {"SAAB", "saab"},
                 {"KTM", "ktm", "x-bow", "x bow"},
                 {"CHRYSLER", "chrysler", "pacifica"},
@@ -651,7 +652,7 @@ public class SbazarParser implements CarSourceParser {
 
         if (containsAny(searchable,
                 "diesel", "nafta", "tdi", "tdci", "cdi", "crdi", "hdi", "dci",
-                "jtd", "jtdm", "multijet", "bluehdi", "cdti", "d4d", "d-4d", "tid",
+                "jtd", "jtdm", "multijet", "bluehdi", "cdti", "d4d", "d-4d", "tid", "i-dtec", "idtec",
                 "did", "di-d", "di d", "td4", " td ", " td,", "ecoblue", "crd",
                 " d3 ", " d4 ", " d5 ", "20d", "24d5", "25d", "40d", "30sd", "3 0sd", "xdrive25d", "xdrive40d",
                 "skyactiv-d", "skyactiv d", "skyactive d",
@@ -766,7 +767,7 @@ public class SbazarParser implements CarSourceParser {
                 "tesla", "model 3", "model y", "model s", "model x",
                 "bmw i3", " i3 ", "bmw i4", " i4 edrive", "bmw i5", "bmw ix1", " ix1 ", " inster ", " id 3 ", "id.3", " id3 ",
                 " e-2008 ", " e 2008 ", "e-up", " e up ", " id 4 ", "id.4", " id4 ", " id 5 ", "id.5", " id5 ",
-                "eq comfort", " smart eq", "b-class 250 edrive", "b 250 edrive", "ioniq 5", "elektro", "electric", "bev",
+                "eq comfort", " mercedes eqs ", " eqs ", "b-class 250 edrive", "b 250 edrive", "ioniq 5", "elektro", "electric", "bev",
                 "enyaq", "cupra born", "e-tron", "etron")
                 || searchable.matches(".*\\b[0-9]{2,3}(?:[.,][0-9])?\\s*kwh\\b.*");
     }
@@ -888,7 +889,7 @@ public class SbazarParser implements CarSourceParser {
         if (containsAny(searchable, "pickup", "pick-up", "ranger", "hilux", "navara", "l200", "amarok", "dodge ram", " ram ", "hcpu")) {
             return "PICKUP";
         }
-        if (containsAny(searchable, "bmw m3", " bmw m 3", "alfa romeo giulia", "fiat linea")) {
+        if (containsAny(searchable, "bmw m3", " bmw m 3", "alfa romeo giulia", "fiat linea", "mercedes eqs", " eqs ")) {
             return "SEDAN";
         }
         if (containsAny(searchable, "e 220cdi kom", "e 220 cdi kom")) {
@@ -897,7 +898,7 @@ public class SbazarParser implements CarSourceParser {
         if (containsAny(searchable, "volkswagen cc", "vw cc", "passat cc")) {
             return "SEDAN";
         }
-        if (containsAny(searchable, "model y", "renegade", "stelvio", "santafe", "santa fe", "hummer h2", " h2 ", "id.4", " id 4 ", " id4 ")) {
+        if (containsAny(searchable, "model y", "renegade", "stelvio", "santafe", "santa fe", "hummer h2", " h2 ", "id.4", " id 4 ", " id4 ", "dodge durango", " durango ", "chery tiggo 9", "tiggo 9")) {
             return "SUV";
         }
         if (containsAny(searchable, "toyota highlander", "highlander", "toyota lc 120", " lc 120 ", "lc120",

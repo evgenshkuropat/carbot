@@ -151,6 +151,9 @@ class SbazarParserTest {
         assertThat(resolveTransmission("toyota camry 2.5 hybrid executive 169kw", "", "HYBRID")).isEqualTo("AUTOMATIC");
         assertThat(resolveTransmission("seat leon, 1,4 tsi e-hybrid fr line led", "", "HYBRID")).isEqualTo("AUTOMATIC");
         assertThat(resolveTransmission("tesla model 3 long range dual motor soh 92", "", "ELECTRIC")).isEqualTo("AUTOMATIC");
+        assertThat(resolveFuelType("mercedes-benz eqs 580 4matic amg hyperscreen", "")).isEqualTo("ELECTRIC");
+        assertThat(resolveTransmission("mercedes-benz eqs 580 4matic amg hyperscreen", "", "ELECTRIC")).isEqualTo("AUTOMATIC");
+        assertThat(resolveFuelType("honda cr-v iii executive 2.2 i-dtec 110 kw 4x4", "")).isEqualTo("DIESEL");
     }
 
     @Test
@@ -178,6 +181,7 @@ class SbazarParserTest {
         assertThat(detectBrand("opel tigra roadster 1.4 16v benzin")).isEqualTo("OPEL");
         assertThat(detectBrand("hyudai i10 1.0 49 kw hatchback")).isEqualTo("HYUNDAI");
         assertThat(detectBrand("xc70 2,4d 120kw crosscountry awd gps xenon 2013")).isEqualTo("VOLVO");
+        assertThat(detectBrand("chery tiggo 9 phev 1.5 t-gdi dhe")).isEqualTo("CHERY");
     }
 
     @Test
@@ -193,6 +197,9 @@ class SbazarParserTest {
         assertThat(resolveCarType("bmw m3 competition daytona violet", "")).isEqualTo("SEDAN");
         assertThat(resolveCarType("alfa romeo giulia 2.0 turbo", "")).isEqualTo("SEDAN");
         assertThat(resolveCarType("fiat linea 1.4t 88 kw", "")).isEqualTo("SEDAN");
+        assertThat(resolveCarType("mercedes-benz eqs 580 4matic amg hyperscreen", "")).isEqualTo("SEDAN");
+        assertThat(resolveCarType("dodge durango awd v6 7 mist", "")).isEqualTo("SUV");
+        assertThat(resolveCarType("chery tiggo 9 phev 1.5 t-gdi dhe", "")).isEqualTo("SUV");
         assertThat(resolveCarType("audi a8 3,0 50 tdi quattro laser dph", "")).isEqualTo("SEDAN");
         assertThat(resolveCarType("mercedes-benz tridy c 43 amg 4matic", "")).isEqualTo("SEDAN");
         assertThat(resolveCarType("volkswagen taigo 1,5 tsi dsg r-line led assist", "")).isEqualTo("SUV");
