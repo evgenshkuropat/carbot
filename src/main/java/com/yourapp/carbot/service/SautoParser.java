@@ -1692,6 +1692,10 @@ public class SautoParser implements CarSourceParser {
         String urlSource = " " + normalizeText(safe(url)).toLowerCase(Locale.ROOT) + " ";
         String titleCompact = titleSource.replaceAll("[^a-z0-9]+", "");
 
+        if (containsAny(titleSource, " thalia ")) {
+            return "SEDAN";
+        }
+
         if (containsAny(titleSource, " corolla sedan ", " corolla sd ")) {
             return "SEDAN";
         }

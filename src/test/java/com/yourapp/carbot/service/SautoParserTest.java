@@ -22,6 +22,8 @@ class SautoParserTest {
                 .isEqualTo("CABRIO");
         assertThat(extractCarType("Renault Thalia Thalia 1,4 , 55 kW, garazovany", "", "https://www.sauto.cz/osobni/detail/renault/thalia/210498536"))
                 .isEqualTo("SEDAN");
+        assertThat(extractCarType("Renault Thalia 1,2 rok 2008", "suv", "https://www.sauto.cz/osobni/detail/renault/thalia/211054242"))
+                .isEqualTo("SEDAN");
         assertThat(extractCarType("Peugeot Partner 1.9 D", "kombi", "https://www.sauto.cz/osobni/detail/peugeot/partner/209441238"))
                 .isEqualTo("MINIVAN");
         assertThat(extractCarType("Chrysler Grand Voyager 2,4 LPG", "kombi", "https://www.sauto.cz/osobni/detail/chrysler/grand-voyager/210405968"))
