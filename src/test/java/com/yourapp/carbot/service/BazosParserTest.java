@@ -301,6 +301,8 @@ class BazosParserTest {
         assertThat(extractCarType("S4 Quattro BSR 402PS 1.majitel koupeno v CR full servis -DPH", "", ""))
                 .isEqualTo("SEDAN");
         assertThat(extractCarType("Audi S6 Quattro UVEDENA CENA BEZ DPH", "", "")).isEqualTo("SEDAN");
+        assertThat(extractCarType("Audi S7 3.0TDi 257kW quattro", "", "")).isEqualTo("SEDAN");
+        assertThat(extractCarType("BMW M2 G87 2026", "", "")).isEqualTo("COUPE");
         assertThat(extractCarType("AUDI 100 C3 QUATTRO 2.2 100KW 2X UZAVERKA RENOVACE", "", "")).isEqualTo("SEDAN");
         assertThat(extractCarType("Audi S6 Avant 55 TDI Nelakovano Nebourano Servis Audi", "", "")).isEqualTo("WAGON");
         assertThat(extractCarType("Audi A3 / 2018 / 1,6 / 85 kw", "", "")).isEqualTo("HATCHBACK");

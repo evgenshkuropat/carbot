@@ -2368,7 +2368,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             return "HATCHBACK";
         }
 
-        if (containsAny(titleSource, " cr-z ", " cr z ", " scirocco ", " rcz ", " peugeot rcz ")) {
+        if (containsAny(titleSource, " cr-z ", " cr z ", " scirocco ", " rcz ", " peugeot rcz ", " bmw m2 ", " m2 g87 ")) {
             return "COUPE";
         }
 
@@ -2611,7 +2611,6 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " c5 aircross ",
                 " q4 ",
                 " sq8 ",
-                " s7 ",
                 " rs3 ")) {
             return "SUV";
         }
