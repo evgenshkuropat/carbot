@@ -37,6 +37,14 @@ class ToyotaProvereneVozyParserTest {
     }
 
     @Test
+    void keepsPassengerProaceVersoAsMinivanWhenStructuredBodySaysCombi() throws Exception {
+        CarDto car = parseFixture("Toyota PROACE VERSO 2,0D AT Shuttle Business Premium", """
+                <meta itemprop="bodyType" content="kombi">
+                """);
+        assertThat(car.getCarType()).isEqualTo("MINIVAN");
+    }
+
+    @Test
     void readsYearFromContentAndKeepsAbsentYearUnknown() throws Exception {
         assertThat(parseFixture("MG S9 PREMIUM 1.5TGI PHEV", "<meta itemprop='productionDate' content='2026'>").getYear())
                 .isEqualTo(2026);

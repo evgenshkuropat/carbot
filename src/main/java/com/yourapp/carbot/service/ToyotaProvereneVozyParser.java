@@ -274,6 +274,9 @@ public class ToyotaProvereneVozyParser implements CarSourceParser {
                 extractCarType(title, ""),
                 extractCarType(title, containerText)
         );
+        if (isPassengerProaceVerso(title)) {
+            carType = "MINIVAN";
+        }
         location = firstNonBlank(extractDetailLocation(detailDoc), location);
         imageUrl = firstNonBlank(extractMetaContent(detailDoc, "meta[property=og:image]"), imageUrl);
 
@@ -702,6 +705,11 @@ public class ToyotaProvereneVozyParser implements CarSourceParser {
         }
         String source = " " + normalizeAscii(safe(title)).toLowerCase(Locale.ROOT) + " ";
         return containsAny(source, " toyota ", " lexus ");
+    }
+
+    private boolean isPassengerProaceVerso(String title) {
+        String source = " " + normalizeAscii(safe(title)).toLowerCase(Locale.ROOT) + " ";
+        return containsAny(source, " proace verso ", " proace city verso ");
     }
 
     private String extractCarType(String title, String text) {
