@@ -1195,6 +1195,10 @@ public class TipCarsParser implements CarSourceParser {
         String normalized = " " + normalizeText(text).toLowerCase(Locale.ROOT) + " ";
         String tokens = " " + normalized.replaceAll("[^a-z0-9]+", " ").replaceAll("\\s+", " ").trim() + " ";
 
+        if (containsAny(tokens, " man6 ", " man5 ")) {
+            return "MANUAL";
+        }
+
         if (containsAny(normalized,
                 " automat ",
                 " automatic ",
@@ -1271,7 +1275,7 @@ public class TipCarsParser implements CarSourceParser {
         }
 
         if (containsAny(titleSource,
-                " enyaq ", " karoq ", " duster ", " tiguan allspace ", " c3 aircross ", " peugeot 5008 ", " taigo ", " xceed ", " ford kuga ")) {
+                " enyaq ", " karoq ", " duster ", " tiguan allspace ", " c3 aircross ", " peugeot 5008 ", " taigo ", " xceed ", " ford kuga ", " arona ", " bayon ")) {
             return "SUV";
         }
 
@@ -1307,7 +1311,7 @@ public class TipCarsParser implements CarSourceParser {
                 " c-max ", " c max ", " galaxy ", " berlingo ", " caddy ", " roomster ", " sportsvan ", " scudo ",
                 " ix20 ", " ix 20 ", " rifter ",
                 " tridy v ", " třídy v ", " tĹ™Ă­dy v ", " vito ", " viano ",
-                " scenic ", " zafira ", " meriva ", " touran ", " sharan ", " s-max ", " s max ",
+                " scenic ", " scénic ", " zafira ", " meriva ", " touran ", " sharan ", " s-max ", " s max ",
                 " c4 picasso ", " picasso ")) {
             return "MINIVAN";
         }
