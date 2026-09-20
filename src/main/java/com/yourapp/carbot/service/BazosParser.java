@@ -1614,6 +1614,11 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             return fuelType;
         }
 
+        if (containsAny(source, " mercedes ", " mercedes-benz ", " benz ")
+                && containsAny(source, " a180 ", " a 180 ", " a200 ", " a 200 ", " a35 ")) {
+            return extractFuelType(title);
+        }
+
         if (containsAny(source, " corolla ", " auris ", " avensis ", " camry ", " yaris ", " rav4 ", " prius ", " c-hr ")
                 && !containsAny(source, " hybrid ", " hev ", " phev ", " plug-in ", " plugin ", " mirai ")) {
             return extractFuelType(title);
@@ -3640,6 +3645,10 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         }
 
         if (containsAny(asciiTitleValue, " honda cbx ", " cbx 1000 ")) {
+            return true;
+        }
+
+        if (containsAny(asciiTitleValue, " mitsubishi mt240 ")) {
             return true;
         }
 

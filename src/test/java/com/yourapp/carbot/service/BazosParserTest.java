@@ -567,6 +567,7 @@ class BazosParserTest {
         assertThat(correctLikelyFalseElectricFuel("TOYOTA COROLLA 2022", "ELECTRIC")).isNull();
         assertThat(correctLikelyFalseElectricFuel("Toyota Mirai Executive", "ELECTRIC")).isEqualTo("ELECTRIC");
         assertThat(correctLikelyFalseElectricFuel("TOYOTA RAV4,Hybrid,Selection,4x4,Tazne", "ELECTRIC")).isEqualTo("HYBRID");
+        assertThat(correctLikelyFalseElectricFuel("Mercedes-Benz A-Class, A180 Original Service Book", "ELECTRIC")).isNull();
 
         assertThat(looksNonCarListing("Alfa Romeo 156 blatniky", "", "", "")).isTrue();
         assertThat(looksNonCarListing("Novy motor Alfa Romeo 2.5 V6 Busso ( rarita )", "", "", "")).isTrue();
@@ -589,6 +590,7 @@ class BazosParserTest {
         assertThat(looksNonCarListing("Strecha Toyota MR2, pasy, plasty do masky", "", "", "")).isTrue();
         assertThat(looksNonCarListing("Auto pro vozickare/ZTP/auto s rampou", "", "", "")).isTrue();
         assertThat(looksNonCarListing("Honda CBX 1000", "", "https://auto.bazos.cz/inzerat/218943387/elektricke-auto.php", "")).isTrue();
+        assertThat(looksNonCarListing("Mitsubishi MT240", "", "", "")).isTrue();
         assertThat(looksNonCarListing(
                 "S4 Quattro BSR 402PS 1.majitel koupeno v CR full servis -DPH",
                 "",
