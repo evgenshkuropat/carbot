@@ -1696,6 +1696,14 @@ public class SautoParser implements CarSourceParser {
             return "SEDAN";
         }
 
+        if (containsAny(titleSource, " alfa romeo 147 ", " alfa 147 ")) {
+            return "HATCHBACK";
+        }
+
+        if (containsAny(titleSource, " nissan note ", " note ")) {
+            return "MINIVAN";
+        }
+
         if (containsAny(titleSource, " corolla sedan ", " corolla sd ")) {
             return "SEDAN";
         }
