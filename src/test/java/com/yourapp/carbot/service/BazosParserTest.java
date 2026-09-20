@@ -74,6 +74,7 @@ class BazosParserTest {
                 .isEqualTo("PEUGEOT");
         assertThat(extractBrand("Nissan Pulsar 1.2 85kW 2015 CZ", ""))
                 .isEqualTo("NISSAN");
+        assertThat(extractBrand("Murano 2006 Z50", "")).isEqualTo("NISSAN");
         assertThat(extractBrand("508 1.6HDI 82kw", "")).isEqualTo("PEUGEOT");
         assertThat(extractBrand("Prodam Hondu HRV, nejvyssi vybava Advance,2022", ""))
                 .isEqualTo("HONDA");
@@ -249,6 +250,11 @@ class BazosParserTest {
     void resolvesCarTypesFromBazosTitles() throws Exception {
         assertThat(extractCarType("Opel Insignia Country Tourer 4x4 tazne manual", "", "")).isEqualTo("WAGON");
         assertThat(extractCarType("Opel Antara", "", "")).isEqualTo("SUV");
+        assertThat(extractCarType("Murano 2006 Z50", "", "")).isEqualTo("SUV");
+        assertThat(extractCarType("JDM Nissan Cedric Y34 Turbo", "", "")).isEqualTo("SEDAN");
+        assertThat(extractCarType("Opel Signum 2.2i 114kW", "", "")).isEqualTo("SEDAN");
+        assertThat(extractCarType("Opel Campo 2.5 TD 56 kW", "", "")).isEqualTo("PICKUP");
+        assertThat(extractCarType("Peugeot 206 SW1.4i 55kw", "", "")).isEqualTo("WAGON");
         assertThat(extractCarType("Seat Leon Cupra 300 ST ACC DCC", "", "")).isEqualTo("WAGON");
         assertThat(extractCarType("Seat Leon1.5 TSi 96kW 1majitel CR Xcellence", "", "")).isEqualTo("HATCHBACK");
         assertThat(extractCarType("Seat Leon ST 1.2 TSI, 81kW, r2017", "", "")).isEqualTo("WAGON");

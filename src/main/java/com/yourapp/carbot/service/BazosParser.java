@@ -1990,7 +1990,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         if (containsAny(titleSource, " fiat ")) return "FIAT";
         if (containsAny(titleSource, " dodge ")) return "DODGE";
         if (containsAny(titleSource, " nissan ")) return "NISSAN";
-        if (containsAny(titleSource, " qashqai ", " juke ", " x-trail ", " x trail ", " navara ", " micra ", " leaf ", " primera ", " terrano ", " pixo ", " pulsar ")) return "NISSAN";
+        if (containsAny(titleSource, " qashqai ", " juke ", " x-trail ", " x trail ", " navara ", " micra ", " leaf ", " primera ", " terrano ", " pixo ", " pulsar ", " murano ")) return "NISSAN";
         if (containsAny(titleSource, " honda ", " hondu ", " acura ", " insight ")) return "HONDA";
         if (containsAny(titleSource, " suzuki ")) return "SUZUKI";
         if (containsAny(titleSource,
@@ -2051,7 +2051,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         if (containsAny(source, " fiat ")) return "FIAT";
         if (containsAny(source, " dodge ")) return "DODGE";
         if (containsAny(source, " nissan ")) return "NISSAN";
-        if (containsAny(source, " qashqai ", " juke ", " x-trail ", " x trail ", " navara ", " micra ", " leaf ", " primera ", " terrano ", " pixo ", " pulsar ")) return "NISSAN";
+        if (containsAny(source, " qashqai ", " juke ", " x-trail ", " x trail ", " navara ", " micra ", " leaf ", " primera ", " terrano ", " pixo ", " pulsar ", " murano ")) return "NISSAN";
         if (containsAny(source, " honda ", " acura ", " insight ")) return "HONDA";
         if (containsAny(source, " suzuki ")) return "SUZUKI";
         if (containsAny(source, " dacia ", " dacie ", " duster ", " sandero ", " logan ", " dokker ", " lodgy ", " jogger ", " bigster ")) return "DACIA";
@@ -2273,6 +2273,10 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         if (containsAny(titleSource, " smart fortwo ", " fortwo ")) return "HATCHBACK";
         if (containsAny(titleSource, " peugeot 807 ", " 807 ")) return "MINIVAN";
         if (containsAny(titleSource, " calibra ")) return "COUPE";
+        if (containsAny(titleSource, " murano ")) return "SUV";
+        if (containsAny(titleSource, " cedric ", " signum ")) return "SEDAN";
+        if (containsAny(titleSource, " campo ")) return "PICKUP";
+        if (titleSource.contains("206sw")) return "WAGON";
 
         if (containsAny(titleSource, " marco polo ", " tridy v ", " třídy v ", " v klasse ", " v-klasse ")) {
             return "MINIVAN";
