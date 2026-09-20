@@ -1979,6 +1979,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         if (containsAny(titleSource, " glc ")) return "MERCEDES";
         if (containsAny(titleSource, " mercedes ", " mercedes-benz ", " mercedes-amg ",
                 " mrcedes ", " mrcedes-benz ")) return "MERCEDES";
+        if (containsAny(titleSource, " infiniti ", " fx35 ", " fx-35 ", " fx37 ", " fx-37 ")) return "INFINITI";
         if (containsAny(titleSource, " lexus ")) return "LEXUS";
         if (containsAny(titleSource, " toyota ", " toyata ", " c-hr ", " c hr ", " ch-r ", " chr ", " hilux ")
                 || containsAny(compactTitleSource, " hilux ")) return "TOYOTA";
@@ -2041,6 +2042,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         if (containsAny(source, " bmw ")) return "BMW";
         if (containsAny(source, " mercedes ", " mercedes-benz ", " mercedes-amg ",
                 " mrcedes ", " mrcedes-benz ")) return "MERCEDES";
+        if (containsAny(source, " infiniti ", " fx35 ", " fx-35 ", " fx37 ", " fx-37 ")) return "INFINITI";
         if (containsAny(source, " lexus ")) return "LEXUS";
         if (containsAny(source, " toyota ", " toyata ", " c-hr ", " c hr ", " ch-r ", " chr ", " hilux ")) return "TOYOTA";
         if (containsAny(source, " ford ")) return "FORD";
@@ -2278,6 +2280,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         if (containsAny(titleSource, " smart fortwo ", " fortwo ")) return "HATCHBACK";
         if (containsAny(titleSource, " peugeot 807 ", " 807 ")) return "MINIVAN";
         if (containsAny(titleSource, " calibra ")) return "COUPE";
+        if (containsAny(titleSource, " infiniti fx ", " fx35 ", " fx-35 ", " fx37 ", " fx-37 ")) return "SUV";
         if (containsAny(titleSource, " murano ")) return "SUV";
         if (containsAny(titleSource, " cedric ", " signum ")) return "SEDAN";
         if (containsAny(titleSource, " campo ")) return "PICKUP";
