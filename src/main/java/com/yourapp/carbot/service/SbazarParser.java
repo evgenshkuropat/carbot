@@ -537,7 +537,7 @@ public class SbazarParser implements CarSourceParser {
                 {"JEEP", "jeep", "wrangler", "cherokee"},
                 {"MERCEDES", "mercedes", "benz", "amg", "glc", "gle", "gls", "slk", "e270", "g320"},
                 {"VOLKSWAGEN", "volkswagen", "wolkswagen", "vw", "passat", "golf", "tiguan", "touran", "touareg", "sharan", "california", "t-cross"},
-                {"SKODA", "skoda", "fabia", "octavia", "superb", "kodiaq", "karoq"},
+                {"SKODA", "skoda", "fabia", "octavia", "octavie", "superb", "kodiaq", "karoq"},
                 {"CHEVROLET", "chevrolet", "corvette", "camaro", "captiva"},
                 {"DODGE", "dodge", "challenger", "durango"},
                 {"CHERY", "chery", "tiggo 9"},
@@ -1025,6 +1025,18 @@ public class SbazarParser implements CarSourceParser {
     }
 
     private String resolveCarType(String identityText, String scopedText) {
+        if (containsAny(identityText, "mustang mach-e", "mustang mach e")) {
+            return "SUV";
+        }
+        if (containsAny(identityText, "renault rafale")) {
+            return "SUV";
+        }
+        if (containsAny(identityText, "chevrolet orlando")) {
+            return "MINIVAN";
+        }
+        if (containsAny(identityText, "honda crv", "crv3")) {
+            return "SUV";
+        }
         if (containsAny(identityText, "suzuki jimny")) {
             return "SUV";
         }
@@ -1088,6 +1100,11 @@ public class SbazarParser implements CarSourceParser {
 
         if (looksPartsListing(searchable)) {
             return true;
+        }
+
+        if (containsAny(searchable, "manualni prevodovka", "manualni prevodovku")
+                && !"-".equals(detectCarType(searchable))) {
+            return false;
         }
 
         if (containsAny(searchable, "nehavarovane", "nebourane")

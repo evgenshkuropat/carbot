@@ -22,6 +22,10 @@ class SbazarParserTest {
         assertThat(resolveCarType("suzuki jimny 1.3 allgrip comfort ranger", "")).isEqualTo("SUV");
         assertThat(resolveCarType("ford ranger", "")).isEqualTo("PICKUP");
         assertThat(resolveCarType("kia carens", "")).isEqualTo("MINIVAN");
+        assertThat(resolveCarType("ford mustang mach-e rwd standard range", "")).isEqualTo("SUV");
+        assertThat(resolveCarType("renault rafale esprit alpine hyper hybrid 4x4", "")).isEqualTo("SUV");
+        assertThat(resolveCarType("chevrolet orlando lpg", "")).isEqualTo("MINIVAN");
+        assertThat(resolveCarType("honda crv3 2,2ctdi", "")).isEqualTo("SUV");
     }
 
     @Test
@@ -416,6 +420,7 @@ class SbazarParserTest {
         assertThat(looksNonCarListing("fornal nosic kontejneru 6 tun")).isTrue();
         assertThat(looksNonCarListing("skoda octavia scout na nd")).isTrue();
         assertThat(looksNonCarListing("skoda octavia 2.0tdi style nehavarovane")).isFalse();
+        assertThat(looksNonCarListing("skoda kodiaq 2.0tdi 110kw 4x4 manualni prevodovka")).isFalse();
         assertThat(looksCommercialVehicle("opel vivaro r.v. 2010 https www sbazar cz inzerat 231253178 opel vivaro rv 2010")).isTrue();
         assertThat(looksCommercialVehicle("peugeot expert 2.0 hdi")).isTrue();
     }
