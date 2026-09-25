@@ -1761,6 +1761,10 @@ public class SautoParser implements CarSourceParser {
             return "CABRIO";
         }
 
+        if (containsAny(titleSource, " mustang mach-e ", " mustang mach e ")) {
+            return "SUV";
+        }
+
         if (containsAny(titleSource, " mustang ")) {
             return "COUPE";
         }

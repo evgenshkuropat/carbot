@@ -52,6 +52,8 @@ class SautoParserTest {
                 .isEqualTo("HATCHBACK");
         assertThat(extractCarType("Ford Mustang 5.0 GT 328 kW Mustang V8", "", "https://www.sauto.cz/osobni/detail/ford/mustang/210028392"))
                 .isEqualTo("COUPE");
+        assertThat(extractCarType("Ford Mustang Mach-E 73 kWh DOJEZD", "", "https://www.sauto.cz/osobni/detail/ford/mustang-mach-e/210708704"))
+                .isEqualTo("SUV");
         assertThat(extractCarType("Voyah PASSION PHEV PHEV 4x4", "", "https://www.sauto.cz/osobni/detail/voyah/passion-phev/209956629"))
                 .isEqualTo("SEDAN");
         assertThat(extractCarType("Kia EV3 EARTH 81,4 kWh, ADAS + V2L", "", "https://www.sauto.cz/osobni/detail/kia/ev3/209195907"))
