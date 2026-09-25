@@ -399,6 +399,8 @@ public class AutoEsaParser extends AbstractJsoupParser implements CarSourceParse
 
         if (containsAny(source, " koleos ")) return "SUV";
         if (containsAny(source, " ix20 ", " ix 20 ")) return "MINIVAN";
+        if (containsAny(source, " carens ")) return "MINIVAN";
+        if (containsAny(source, " ford transit ", " minibus ")) return "VAN";
         if (containsAny(source, " suv ", " crossover ", " duster ", " kuga ", " tiguan ", " kodiaq ", " karoq ", " sportage ")) return "SUV";
         if (containsAny(source, " mpv ", " minivan ", " galaxy ", " s-max ", " b-max ", " c-max ", " touran ", " sharan ")) return "MINIVAN";
         if (containsAny(source, " kombi ", " combi ", " wagon ", " variant ", " sw ")) return "WAGON";
