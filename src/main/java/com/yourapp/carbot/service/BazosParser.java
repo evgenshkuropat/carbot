@@ -70,7 +70,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             Pattern.compile("\\b\\d{3}/\\d{2}/[rR]?\\d{2}\\b");
 
     private static final Pattern RIM_SPEC_PATTERN =
-            Pattern.compile("\\b\\d{1,2}[jJ]x\\d{2}\\b|\\bET\\s?\\d{2,3}\\b|\\b[45]x\\d{3}\\b");
+            Pattern.compile("\\b\\d{1,2}[jJ]x\\d{2}\\b|\\bET\\s?\\d{2,3}\\b|\\b[45]x\\d{3}\\b|\\b\\d{2}\\s*[\\\"″]");
 
     private static final Set<String> TYRE_BRANDS = Set.of(
             "hankook", "michelin", "continental", "goodyear", "barum",
@@ -1908,6 +1908,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
 
         if (containsAny(source,
                 " automatická převodovka ",
+                " automatická prevodovka ",
                 " automaticka prevodovka ",
                 " automatická ",
                 " automaticka ",
@@ -3553,6 +3554,12 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " corsa ", " e-corsa ", " e corsa ", " astra ", " insignia ",
                 " 208 ", " 5008 ")) {
             return false;
+        }
+
+        if (titleHasRimSpec
+                && titleSource.contains(" tpms ")
+                && TYRE_BRANDS.stream().anyMatch(brand -> titleSource.contains(" " + brand + " "))) {
+            return true;
         }
 
         if (looksLikeRealCar(title, analysisText)) {

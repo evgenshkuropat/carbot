@@ -37,6 +37,7 @@ class BazosParserTest {
         assertThat(extractTransmission("Android Auto, servisní historie")).isNull();
         assertThat(extractTransmission("Automatická klimatizace, automatické svícení")).isNull();
         assertThat(extractTransmission("Převodovka automat")).isEqualTo("AUTOMATIC");
+        assertThat(extractTransmission("Suzuki Vitara automatická prevodovka")).isEqualTo("AUTOMATIC");
         assertThat(extractFuelType("Alfa Romeo Giulietta 1.4 multiair")).isEqualTo("PETROL");
     }
 
@@ -593,6 +594,7 @@ class BazosParserTest {
         assertThat(looksNonCarListing("Auto pro vozickare/ZTP/auto s rampou", "", "", "")).isTrue();
         assertThat(looksNonCarListing("Honda CBX 1000", "", "https://auto.bazos.cz/inzerat/218943387/elektricke-auto.php", "")).isTrue();
         assertThat(looksNonCarListing("Mitsubishi MT240", "", "", "")).isTrue();
+        assertThat(looksTyreOrWheelListing("18\" ORIGINÁL TOYOTA RAV4 – ZIMNÍ BRIDGESTONE + TPMS", "", "")).isTrue();
         assertThat(looksNonCarListing(
                 "S4 Quattro BSR 402PS 1.majitel koupeno v CR full servis -DPH",
                 "",
@@ -1293,6 +1295,12 @@ class BazosParserTest {
         Method method = BazosParser.class.getDeclaredMethod("looksNonCarListing", String.class, String.class, String.class, String.class);
         method.setAccessible(true);
         return (boolean) method.invoke(parser, title, text, url, analysisText);
+    }
+
+    private boolean looksTyreOrWheelListing(String title, String text, String analysisText) throws Exception {
+        Method method = BazosParser.class.getDeclaredMethod("looksTyreOrWheelListing", String.class, String.class, String.class);
+        method.setAccessible(true);
+        return (boolean) method.invoke(parser, title, text, analysisText);
     }
 
     private boolean looksTitleUrlMismatch(String title, String url) throws Exception {
