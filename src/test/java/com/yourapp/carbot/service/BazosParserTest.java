@@ -348,6 +348,8 @@ class BazosParserTest {
         assertThat(extractCarType("Dacia Bigster journey hybrid 155", "", "")).isEqualTo("SUV");
         assertThat(extractCarType("HONDA ACCORD TOURER VII EXECUTIVE 2.0 i-VTEC", "", "")).isEqualTo("WAGON");
         assertThat(extractCarType("Honda Accord kombi 2,0i-Vtec slusny stav servis STK", "", "")).isEqualTo("WAGON");
+        assertThat(extractCarType("Seat Leon Sportstourer FR 1.5TSI 110kW DSG", "", "")).isEqualTo("WAGON");
+        assertThat(extractCarType("2017 Seat Leon 1,2 TSi Kombi STYLE", "", "")).isEqualTo("WAGON");
         assertThat(extractCarType("Honda Accord coupe", "", "")).isEqualTo("COUPE");
         assertThat(extractCarType("Honda Acoord 8G 2.0 I-VTEC", "", "")).isEqualTo("SEDAN");
         assertThat(extractCarType("Prodam Honda City 1,4 73 kw", "", "")).isEqualTo("SEDAN");

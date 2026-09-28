@@ -2367,7 +2367,9 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             return "MINIVAN";
         }
 
-        if (containsAny(titleSource, " leon st ", " seat leon st ", " ibiza combi ", " ibiza kombi ",
+        if (containsAny(titleSource, " leon st ", " seat leon st ", " leon sportstourer ", " seat leon sportstourer ",
+                " leon sport tourer ", " seat leon sport tourer ", " leon kombi ", " seat leon kombi ",
+                " leon combi ", " seat leon combi ", " ibiza combi ", " ibiza kombi ",
                 " ibiza st ", " ibiza sportstourer ", " ibiza sport tourer ")
                 || (containsAny(titleSource, " leon ") && Pattern.compile("\\bst\\b").matcher(titleSource).find())
                 || (titleSource.contains(" seat leon ") && Pattern.compile("\\bst\\b").matcher(titleSource).find())
