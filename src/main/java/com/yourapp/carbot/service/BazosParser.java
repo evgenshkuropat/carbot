@@ -2714,7 +2714,8 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             return "SEDAN";
         }
 
-        if (containsAny(titleSource, " i30 wg ", " i30 wagon ", " i30 kombi ", " i30 combi ")) {
+        if (containsAny(titleSource, " i30 wg ", " i30 wagon ", " i30 kombi ", " i30 combi ")
+                || Pattern.compile("\\bkom\\.?\\s+i30\\b").matcher(titleSource).find()) {
             return "WAGON";
         }
 

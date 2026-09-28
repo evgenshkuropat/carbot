@@ -355,6 +355,7 @@ class BazosParserTest {
         assertThat(extractCarType("Opel Vectra C 1.9 CDTI combi", "", "")).isEqualTo("WAGON");
         assertThat(extractCarType("Nissan Tiida 1.8 benzin", "", "")).isEqualTo("HATCHBACK");
         assertThat(extractCarType("Skoda Octavia 3 combi1.6TDi 81kw GreenLine", "", "")).isEqualTo("WAGON");
+        assertThat(extractCarType("Hyundai kom. i30 1.6 benzin", "", "")).isEqualTo("WAGON");
         assertThat(extractCarType("Honda Accord coupe", "", "")).isEqualTo("COUPE");
         assertThat(extractCarType("Honda Acoord 8G 2.0 I-VTEC", "", "")).isEqualTo("SEDAN");
         assertThat(extractCarType("Prodam Honda City 1,4 73 kw", "", "")).isEqualTo("SEDAN");
