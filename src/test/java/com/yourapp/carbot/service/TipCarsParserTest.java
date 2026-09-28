@@ -464,6 +464,8 @@ class TipCarsParserTest {
                 .isEqualTo("HYBRID");
         assertThat(extractFuelType("https://www.tipcars.com/ford-focus/hatchback/nafta/ford-focus-100170400.html"))
                 .isEqualTo("DIESEL");
+        assertThat(extractFuelType("https://www.tipcars.com/volkswagen-up/hatchback/lpg/volkswagen-up-1-0-mpi-6616536.html"))
+                .isEqualTo("LPG");
     }
 
     @Test

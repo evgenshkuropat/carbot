@@ -302,11 +302,16 @@ public class TipCarsParser implements CarSourceParser {
             return new ParseResult(null, "forbidden");
         }
 
+        String titleFuelType = extractFuelType(title);
+        String urlFuelType = extractFuelType(url);
         String fuelType = firstNonBlank(
-                extractFuelType(title),
-                extractFuelType(url),
+                titleFuelType,
+                urlFuelType,
                 extractFuelType(listText)
         );
+        if ("PETROL".equals(titleFuelType) && isGaseousFuel(urlFuelType)) {
+            fuelType = urlFuelType;
+        }
         String transmission = firstNonBlank(
                 extractTransmission(title),
                 extractTransmission(url),
@@ -364,6 +369,10 @@ public class TipCarsParser implements CarSourceParser {
         }
 
         return connection;
+    }
+
+    private boolean isGaseousFuel(String fuelType) {
+        return "LPG".equals(fuelType) || "CNG".equals(fuelType);
     }
 
     private String buildPageUrl(int page) {
