@@ -269,11 +269,15 @@ public class ToyotaProvereneVozyParser implements CarSourceParser {
         if ("MANUAL".equals(transmission) && isToyotaOrLexusHybrid(title, fuelType)) {
             transmission = "AUTOMATIC";
         }
+        String titleCarType = extractCarType(title, "");
         carType = firstNonBlank(
                 mapCarType(extractDetailValue(detailDoc, "bodyType")),
-                extractCarType(title, ""),
+                titleCarType,
                 extractCarType(title, containerText)
         );
+        if (shouldPreferTitleCarType(title) && titleCarType != null) {
+            carType = titleCarType;
+        }
         if (isPassengerProaceVerso(title)) {
             carType = "MINIVAN";
         }
@@ -712,6 +716,11 @@ public class ToyotaProvereneVozyParser implements CarSourceParser {
         return containsAny(source, " proace verso ", " proace city verso ");
     }
 
+    private boolean shouldPreferTitleCarType(String title) {
+        String source = " " + normalizeAscii(safe(title)).toLowerCase(Locale.ROOT) + " ";
+        return containsAny(source, " bz4x ", " lexus lbx ", " lbx ", " fiat punto ", " punto ", " toyota aygo ", " aygo ");
+    }
+
     private String extractCarType(String title, String text) {
         String source = " " + normalizeAscii(safe(title) + " " + safe(text)).toLowerCase(Locale.ROOT).replaceAll("[,;:/()]+", " ") + " ";
         String titleSource = " " + normalizeAscii(safe(title)).toLowerCase(Locale.ROOT).replaceAll("[,;:/()]+", " ") + " ";
@@ -791,7 +800,7 @@ public class ToyotaProvereneVozyParser implements CarSourceParser {
         if (containsAny(source, " corolla sd ", " sedan ", " liftback ", " toledo ", " insignia ", " stinger ", " octavia ", " avensis ")) {
             return "SEDAN";
         }
-        if (containsAny(source, " yaris ", " aygo ", " fabia ", " ceed ", " mg3 ", " ds 4 ", " auris ", " focus ", " insight ", " 307 ")) {
+        if (containsAny(source, " yaris ", " aygo ", " punto ", " fabia ", " ceed ", " mg3 ", " ds 4 ", " auris ", " focus ", " insight ", " 307 ")) {
             return "HATCHBACK";
         }
         if (containsAny(source, " suv ", " crossover ", " rav4 ", " c-hr ", " chr ", " bz4x ", " kuga ", " tiguan ", " kodiaq ", " karoq ", " kamiq ")) {

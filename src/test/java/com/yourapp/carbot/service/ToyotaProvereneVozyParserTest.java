@@ -80,6 +80,14 @@ class ToyotaProvereneVozyParserTest {
                 .isEqualTo("WAGON");
         assertThat(extractCarType("Toyota Aygo X 1.5 Hybrid 116k", ""))
                 .isEqualTo("SUV");
+        assertThat(extractCarType("Toyota Aygo 1.5 Hybrid automat Style Smart", ""))
+                .isEqualTo("HATCHBACK");
+        assertThat(extractCarType("Toyota bZ4X BEV Style 73.1 kWh", ""))
+                .isEqualTo("SUV");
+        assertThat(extractCarType("Lexus LBX 1,5 Elegant Tech", ""))
+                .isEqualTo("SUV");
+        assertThat(extractCarType("Fiat Punto 1.2", ""))
+                .isEqualTo("HATCHBACK");
         assertThat(extractCarType("Toyota Avensis", ""))
                 .isEqualTo("SEDAN");
         assertThat(extractCarType("Toyota Corolla 1,8 HEV Executive záruka 3+2 roky", ""))
