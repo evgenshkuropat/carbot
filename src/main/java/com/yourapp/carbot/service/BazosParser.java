@@ -1132,6 +1132,10 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             return "CNG";
         }
 
+        if (containsAny(source, " e-tec ", " e tec ", " etec ") || compact.contains("etec")) {
+            return "HYBRID";
+        }
+
         if (containsAny(source,
                 " plug-in hybrid ", " plugin hybrid ", " plug in hybrid ",
                 " plug-in ", " plug in ", " phev ",
@@ -2850,7 +2854,9 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " v40 ", " v50 ", " v60 ", " v70 ", " v 70 ", " v90 ", " v 90 ",
                 " g31 ", " tipo sw ", " 206sw ", " 207sw ", " 307sw ", " 308sw ", " 407sw ", " 508sw ",
                 " i40 wg ", " i40 wagon ", " i40 kombi ",
-                " fiat croma ", " croma ")) {
+                " fiat croma ", " croma ")
+                || Pattern.compile("\\bcombi\\d").matcher(titleSource).find()
+                || Pattern.compile("\\bkombi\\d").matcher(titleSource).find()) {
             return "WAGON";
         }
 

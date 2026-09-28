@@ -195,6 +195,7 @@ class BazosParserTest {
         assertThat(extractFuelType("Skoda Octavia IV 2.0TDI 110KW DSG 2021 STYLE")).isEqualTo("DIESEL");
         assertThat(extractFuelType("Skoda Superb IV 2.0TDI L&K 110kW CZ 2025")).isEqualTo("DIESEL");
         assertThat(extractFuelType("Skoda Octavia 4 1.4TSI iV 150kW DSG Sport")).isEqualTo("PLUGIN_HYBRID");
+        assertThat(extractFuelType("Skoda Octavia IV 1.5TSi E-TEC 110kW Style DSG")).isEqualTo("HYBRID");
         assertThat(extractFuelType("Skoda Enyaq iV 80 150 kW 45tkm SOH 96,4%")).isEqualTo("ELECTRIC");
         assertThat(extractFuelType("Dacia Lodgy MPV r.2022 1,3benz 96kw 1.majitel")).isEqualTo("PETROL");
         assertThat(extractFuelType("Pekna Dacia Logan MCV 1.2...16V")).isEqualTo("PETROL");
@@ -353,6 +354,7 @@ class BazosParserTest {
         assertThat(extractCarType("Opel Astra Tourer 1,6 CDTi", "", "")).isEqualTo("WAGON");
         assertThat(extractCarType("Opel Vectra C 1.9 CDTI combi", "", "")).isEqualTo("WAGON");
         assertThat(extractCarType("Nissan Tiida 1.8 benzin", "", "")).isEqualTo("HATCHBACK");
+        assertThat(extractCarType("Skoda Octavia 3 combi1.6TDi 81kw GreenLine", "", "")).isEqualTo("WAGON");
         assertThat(extractCarType("Honda Accord coupe", "", "")).isEqualTo("COUPE");
         assertThat(extractCarType("Honda Acoord 8G 2.0 I-VTEC", "", "")).isEqualTo("SEDAN");
         assertThat(extractCarType("Prodam Honda City 1,4 73 kw", "", "")).isEqualTo("SEDAN");
