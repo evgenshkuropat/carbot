@@ -2459,7 +2459,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " accord tourer ", " accord kombi ", " accord combi ", " accord wagon ",
                 " civic tourer ", " focus tunier ", " focus turnier ",
                 " insignia st ", " insignia sports tourer ", " insignia sport tourer ", " insignia sport taurer ",
-                " astra sports tourer ", " astra sport tourer ", " astra sportstourer ", " astra sports touer ", " astra sport touer ", " astra j sports tourer ", " astra k sports tourer ",
+                " astra tourer ", " astra sports tourer ", " astra sport tourer ", " astra sportstourer ", " astra sports touer ", " astra sport touer ", " astra j sports tourer ", " astra k sports tourer ",
                 " astra j sport tourer ", " astra k sport tourer ", " astra st ", " opel astra st ", " astra j combi ", " astra k combi ", " astra sw ", " astra combi ", " astra kombi ", " 308 sw ", " peugeot 308 sw ")) {
             return "WAGON";
         }
@@ -2476,11 +2476,15 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             return "SEDAN";
         }
 
+        if (containsAny(titleSource, " vectra ") && containsAny(titleSource, " combi ", " kombi ", " wagon ", " caravan ")) {
+            return "WAGON";
+        }
+
         if (containsAny(titleSource, " insignia ", " insignie ", " vectra ")) {
             return "SEDAN";
         }
 
-        if (containsAny(titleSource, " astra k ", " astra j ", " opel astra ", " astra hatchback ", " opel karl ")) {
+        if (containsAny(titleSource, " astra k ", " astra j ", " opel astra ", " astra hatchback ", " opel karl ", " tiida ")) {
             return "HATCHBACK";
         }
 
