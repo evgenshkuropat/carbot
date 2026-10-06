@@ -141,6 +141,10 @@ class AutoEsaParserTest {
                 .isEqualTo("HYBRID");
         assertThat(mapFuel("Volvo V60 2.4 D6 PHEV 4x4"))
                 .isEqualTo("PLUGIN_HYBRID");
+        assertThat(mapFuel("Škoda Octavia IV 1.0 TSi Ambition e-TEC"))
+                .isEqualTo("HYBRID");
+        assertThat(mapFuel("Ford Puma 1.0 EcoBoost MHEV"))
+                .isEqualTo("HYBRID");
     }
 
     @Test
@@ -148,6 +152,7 @@ class AutoEsaParserTest {
         assertThat(mapCarType("kombi", "Renault Koleos 2.0 dCi 4x4")).isEqualTo("SUV");
         assertThat(mapCarType("hatchback", "Hyundai ix20 1.4 VVTi Trikolor")).isEqualTo("MINIVAN");
         assertThat(mapCarType("kombi", "Kia Carens 1.7 CRDi")).isEqualTo("MINIVAN");
+        assertThat(mapCarType("hatchback", "Volkswagen Sportsvan 1.6 TDi")).isEqualTo("MINIVAN");
         assertThat(mapCarType("minibus", "Ford Transit 2.2TDCi Trend L3 9míst")).isEqualTo("VAN");
         assertThat(mapCarType("kabriolet", "Fiat 500 1.0i Lounge C")).isEqualTo("CABRIO");
         assertThat(mapTransmission("Maserati GranTurismo 4.7 V8 S Automatic")).isEqualTo("AUTOMATIC");

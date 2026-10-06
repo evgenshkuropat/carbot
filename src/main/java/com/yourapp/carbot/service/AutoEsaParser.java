@@ -378,7 +378,7 @@ public class AutoEsaParser extends AbstractJsoupParser implements CarSourceParse
         if (containsAny(source, " cng ")) return "CNG";
         if (containsAny(source, " elektro ", " electric ", " kwh ")) return "ELECTRIC";
         if (containsAny(source, " plug-in ", " plugin ", " phev ")) return "PLUGIN_HYBRID";
-        if (containsAny(source, " hybrid ", " hybridni ", " hev ")) return "HYBRID";
+        if (containsAny(source, " hybrid ", " hybridni ", " hev ", " mhev ", " e-tec ", " e tec ", " etec ")) return "HYBRID";
         if (containsAny(source, " nafta ", " diesel ", " tdi ", " dci ", " hdi ", " cdti ")) return "DIESEL";
         if (containsAny(source, " benzin ", " petrol ", " tsi ", " tfsi ", " tce ", " mpi ")) return "PETROL";
 
@@ -402,7 +402,7 @@ public class AutoEsaParser extends AbstractJsoupParser implements CarSourceParse
         if (containsAny(source, " carens ")) return "MINIVAN";
         if (containsAny(source, " ford transit ", " minibus ")) return "VAN";
         if (containsAny(source, " suv ", " crossover ", " duster ", " kuga ", " tiguan ", " kodiaq ", " karoq ", " sportage ")) return "SUV";
-        if (containsAny(source, " mpv ", " minivan ", " galaxy ", " s-max ", " b-max ", " c-max ", " touran ", " sharan ")) return "MINIVAN";
+        if (containsAny(source, " mpv ", " minivan ", " galaxy ", " s-max ", " b-max ", " c-max ", " sportsvan ", " touran ", " sharan ")) return "MINIVAN";
         if (containsAny(source, " kombi ", " combi ", " wagon ", " variant ", " sw ")) return "WAGON";
         if (containsAny(source, " liftback ", " sedan ", " limousine ")) return "SEDAN";
         if (containsAny(source, " hatchback ", " hb ")) return "HATCHBACK";
