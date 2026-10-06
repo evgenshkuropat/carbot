@@ -24,6 +24,8 @@ class SautoParserTest {
                 .isEqualTo("SEDAN");
         assertThat(extractCarType("Renault Thalia 1,2 rok 2008", "suv", "https://www.sauto.cz/osobni/detail/renault/thalia/211054242"))
                 .isEqualTo("SEDAN");
+        assertThat(extractCarType("Dacia Logan 1.4, Tazne", "", "https://www.sauto.cz/osobni/detail/dacia/logan/210956931"))
+                .isEqualTo("SEDAN");
         assertThat(extractCarType("Alfa Romeo 147 1.6 TS 2008 - Servisováno", "suv", "https://www.sauto.cz/osobni/detail/alfa-romeo/147/211121997"))
                 .isEqualTo("HATCHBACK");
         assertThat(extractCarType("Nissan Note 1.4i - 65kW Koupeno nové v ČR", "kombi", "https://www.sauto.cz/osobni/detail/nissan/note/211041918"))
@@ -130,6 +132,8 @@ class SautoParserTest {
                 .isEqualTo("AUTOMATIC");
         assertThat(extractTransmission("Ford Focus Ford Focus 1.6i AT Combi, BRNO"))
                 .isEqualTo("AUTOMATIC");
+        assertThat(isKnownAutomaticModel("Land Rover Defender 110 V8 P540 OCTA SATIN"))
+                .isTrue();
     }
 
     @Test
@@ -300,6 +304,12 @@ class SautoParserTest {
         Method method = SautoParser.class.getDeclaredMethod("extractTransmission", String.class);
         method.setAccessible(true);
         return (String) method.invoke(parser, text);
+    }
+
+    private boolean isKnownAutomaticModel(String title) throws Exception {
+        Method method = SautoParser.class.getDeclaredMethod("isKnownAutomaticModel", String.class);
+        method.setAccessible(true);
+        return (boolean) method.invoke(parser, title);
     }
 
     private Integer extractYearSafely(String title, String description, String analysisText) throws Exception {

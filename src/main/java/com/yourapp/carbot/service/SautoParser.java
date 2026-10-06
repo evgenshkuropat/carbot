@@ -188,7 +188,7 @@ public class SautoParser implements CarSourceParser {
                     extractTransmission(analysisText)
             );
 
-            if ("ELECTRIC".equals(fuelType) || isAutomaticHybridTitle(title, fuelType)) {
+            if ("ELECTRIC".equals(fuelType) || isAutomaticHybridTitle(title, fuelType) || isKnownAutomaticModel(title)) {
                 transmission = "AUTOMATIC";
             }
 
@@ -1686,13 +1686,20 @@ public class SautoParser implements CarSourceParser {
         return null;
     }
 
+    private boolean isKnownAutomaticModel(String title) {
+        String source = " " + normalizeText(safe(title)).toLowerCase(Locale.ROOT) + " ";
+        return containsAny(source, " defender ") && containsAny(source, " p460 ", " p540 ");
+    }
+
     private String extractCarType(String title, String text, String url) {
         String titleSource = " " + normalizeText(safe(title)).toLowerCase(Locale.ROOT) + " ";
         String textSource = " " + normalizeText(safe(text)).toLowerCase(Locale.ROOT) + " ";
         String urlSource = " " + normalizeText(safe(url)).toLowerCase(Locale.ROOT) + " ";
         String titleCompact = titleSource.replaceAll("[^a-z0-9]+", "");
 
-        if (containsAny(titleSource, " thalia ")) {
+        if (containsAny(titleSource, " thalia ")
+                || (containsAny(titleSource, " dacia logan ", " logan ")
+                && !containsAny(titleSource, " mcv ", " kombi ", " combi ", " wagon "))) {
             return "SEDAN";
         }
 
