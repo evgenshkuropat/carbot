@@ -2377,6 +2377,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " ibiza st ", " ibiza sportstourer ", " ibiza sport tourer ")
                 || (containsAny(titleSource, " leon ") && Pattern.compile("\\bst\\b").matcher(titleSource).find())
                 || (titleSource.contains(" seat leon ") && Pattern.compile("\\bst\\b").matcher(titleSource).find())
+                || (containsAny(titleSource, " leon ") && containsAny(titleSource, " kombi ", " combi "))
                 || (containsAny(titleSource, " ibiza ") && containsAny(titleSource, " combi ", " kombi "))) {
             return "WAGON";
         }
@@ -2390,7 +2391,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             return "SEDAN";
         }
 
-        if (containsAny(titleSource, " ibiza ", " alto ", " splash ", " twingo ", " tvingo ")) {
+        if (containsAny(titleSource, " ibiza ", " alto ", " splash ", " spasch ", " twingo ", " tvingo ")) {
             return "HATCHBACK";
         }
 

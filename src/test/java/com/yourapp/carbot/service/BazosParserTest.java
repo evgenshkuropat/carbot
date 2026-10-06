@@ -263,6 +263,7 @@ class BazosParserTest {
         assertThat(extractCarType("Seat Leon1.5 TSi 96kW 1majitel CR Xcellence", "", "")).isEqualTo("HATCHBACK");
         assertThat(extractCarType("Seat Leon ST 1.2 TSI, 81kW, r2017", "", "")).isEqualTo("WAGON");
         assertThat(extractCarType("Leon 1,4TSi 92KW ST FR 111tkm NAVI KUZE TEMPOMAT STK", "", "")).isEqualTo("WAGON");
+        assertThat(extractCarType("Benzínový Seat Leon 1,2 TSi STYLE Kombi, LED, ANDROID 2017", "", "")).isEqualTo("WAGON");
         assertThat(extractCarType("Seat Altea XL 1.6 TDI 77 kW Automat", "", "")).isEqualTo("MINIVAN");
         assertThat(extractCarType("Seat ibiza", "", "")).isEqualTo("HATCHBACK");
         assertThat(extractCarType("Seat Toledo 1.2 TSI 66 kW, 2016, 111 tis. km", "", "")).isEqualTo("SEDAN");
@@ -274,6 +275,7 @@ class BazosParserTest {
         assertThat(extractCarType("Suzuki samuraj 1.3", "", "")).isEqualTo("SUV");
         assertThat(extractCarType("Suzuki Ignis 1.2 Spajacie z. za karavan, Bluetooth", "", "")).isEqualTo("SUV");
         assertThat(extractCarType("SUZUKI SPLASH 1,2 AUTOMAT NOVA STK", "", "")).isEqualTo("HATCHBACK");
+        assertThat(extractCarType("Suzuki Spasch 1.0 benzin", "", "")).isEqualTo("HATCHBACK");
         assertThat(extractCarType("Prodam Suzuki sx4,1.6", "", "")).isEqualTo("SUV");
         assertThat(extractCarType("Prodam Suzuki S X4 1.6", "", "")).isEqualTo("SUV");
         assertThat(extractCarType("Suzuki Virara 1.6 Ddis", "", "")).isEqualTo("SUV");
@@ -516,6 +518,8 @@ class BazosParserTest {
         assertThat(extractTransmission("Ford Kuga ST Line 1,5 110 kW benzin 6-ti st.mech.")).isEqualTo("MANUAL");
         assertThat(extractTransmission("Citroen Berlingo 1.5 BlueHDi 130S&S MAN 6 SHINE")).isEqualTo("MANUAL");
         assertThat(extractTransmission("Citroen Berlingo 1.6 BlueHDI XTR 100 MAN")).isEqualTo("MANUAL");
+        assertThat(extractTransmission("SEAT LEON 2.0TDi Xcellence-AUT-NAVI-LED-COCKPIT-ACC-TAŽNÉ"))
+                .isEqualTo("AUTOMATIC");
         assertThat(extractTransmission("Hyundai i30 Kombi 1.6 CRDi 85kW DCT (2018)")).isEqualTo("AUTOMATIC");
         assertThat(extractTransmission("BMW 750 XDRIVE 400 PS LASER LIGHT M-PACK")).isEqualTo("AUTOMATIC");
         assertThat(extractTransmission("Dacia Duster TCe 150 EDC, TOP, DPH")).isEqualTo("AUTOMATIC");
