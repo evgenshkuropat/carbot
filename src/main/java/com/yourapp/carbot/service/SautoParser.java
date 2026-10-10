@@ -1715,6 +1715,10 @@ public class SautoParser implements CarSourceParser {
             return "SEDAN";
         }
 
+        if (containsAny(titleSource, " fabia ") && titleSource.contains(" sedan ")) {
+            return "SEDAN";
+        }
+
         if (titleSource.contains(" a3 ") && titleSource.contains(" sportback ")) {
             return "HATCHBACK";
         }

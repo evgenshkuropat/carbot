@@ -26,6 +26,8 @@ class SautoParserTest {
                 .isEqualTo("SEDAN");
         assertThat(extractCarType("Dacia Logan 1.4, Tazne", "", "https://www.sauto.cz/osobni/detail/dacia/logan/210956931"))
                 .isEqualTo("SEDAN");
+        assertThat(extractCarType("Škoda Fabia 1.2 12V Sedan,2.maj,ČR,AC", "", "https://www.sauto.cz/osobni/detail/skoda/fabia/211250856"))
+                .isEqualTo("SEDAN");
         assertThat(extractCarType("Alfa Romeo 147 1.6 TS 2008 - Servisováno", "suv", "https://www.sauto.cz/osobni/detail/alfa-romeo/147/211121997"))
                 .isEqualTo("HATCHBACK");
         assertThat(extractCarType("Nissan Note 1.4i - 65kW Koupeno nové v ČR", "kombi", "https://www.sauto.cz/osobni/detail/nissan/note/211041918"))
