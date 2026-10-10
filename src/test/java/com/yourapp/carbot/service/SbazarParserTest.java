@@ -30,6 +30,8 @@ class SbazarParserTest {
         assertThat(resolveCarType("bmw gran tourer 216d", "")).isEqualTo("MINIVAN");
         assertThat(resolveCarType("volvo v 70 ii generace", "")).isEqualTo("WAGON");
         assertThat(resolveCarType("honda crv3 2,2ctdi", "")).isEqualTo("SUV");
+        assertThat(resolveCarType("hodna crv", "")).isEqualTo("SUV");
+        assertThat(resolveCarType("renaul trafic 2.5 dci", "")).isEqualTo("MINIVAN");
         assertThat(resolveCarType("skoda octavia 2.0tdi scout dsg 4x4", "")).isEqualTo("WAGON");
         assertThat(resolveCarType("mercedes benz ml 280 cdi 4-matic", "")).isEqualTo("SUV");
         assertThat(resolveCarType("toyota rav 4 2.0 vvt-i 4wd", "")).isEqualTo("SUV");
@@ -181,6 +183,8 @@ class SbazarParserTest {
     void detectsBrandsPresentInSbazarLogs() throws Exception {
         assertThat(detectBrand("bentley continental gt v12 434 kw breitling masaze")).isEqualTo("BENTLEY");
         assertThat(detectBrand("hyundai ioniq 5 style 77,4 kwh")).isEqualTo("HYUNDAI");
+        assertThat(detectBrand("hodna crv")).isEqualTo("HONDA");
+        assertThat(detectBrand("renaul trafic 2.5 dci")).isEqualTo("RENAULT");
         assertThat(detectBrand("smart forfour eq comfort 60 kw")).isEqualTo("SMART");
         assertThat(detectBrand("jaecoo 7 jaecoo 4x4 exclusive")).isEqualTo("JAECOO");
         assertThat(detectBrand("tesla model 3 performance")).isEqualTo("TESLA");

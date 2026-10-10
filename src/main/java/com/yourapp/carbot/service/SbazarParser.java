@@ -559,14 +559,14 @@ public class SbazarParser implements CarSourceParser {
                 {"SMART", "smart", "fortwo", "forfour"},
                 {"PEUGEOT", "peugeot", "rifter", "partner"},
                 {"CITROEN", "citroen", "berlingo", "picasso"},
-                {"RENAULT", "renault", "clio", "megane", "scenic"},
+                {"RENAULT", "renault", "renaul", "clio", "megane", "scenic"},
                 {"TOYOTA", "toyota", "yaris", "corolla", "rav4"},
                 {"NISSAN", "nissan", "qashqai", "x-trail", "micra"},
                 {"SUZUKI", "suzuki", "vitara", "sx4", "ignis"},
                 {"DACIA", "dacia", "duster", "logan", "dokker", "lodgy", "sandero"},
                 {"VOLVO", "volvo", "xc40", "xc60", "xc70", "xc90", "v50", "v60", "v90", "s40"},
                 {"MAZDA", "mazda", "cx-3", "cx3", "cx-5", "cx5", "mazda 5"},
-                {"HONDA", "honda", "civic", "accord", "cr-v", "hr-v"},
+                {"HONDA", "honda", "hodna", "civic", "accord", "cr-v", "crv", "hr-v"},
                 {"FORD", "ford", "focus", "mondeo", "kuga", "s-max", "galaxy", "ranger"},
                 {"SUBARU", "subaru", "legacy", "forester", "outback", "xv"},
                 {"AUDI", "audi", "a3", "a4", "a5", "a6", "s5", "q3", "q5", "q7", "q8"},
@@ -1052,7 +1052,7 @@ public class SbazarParser implements CarSourceParser {
         if (containsAny(identityText, "volvo v 70", "volvo v70")) {
             return "WAGON";
         }
-        if (containsAny(identityText, "honda crv", "crv3")) {
+        if (containsAny(identityText, "honda crv", "crv3", "crv")) {
             return "SUV";
         }
         if (containsAny(identityText, "suzuki jimny")) {
