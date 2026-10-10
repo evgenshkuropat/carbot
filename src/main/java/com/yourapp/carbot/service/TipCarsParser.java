@@ -1054,7 +1054,8 @@ public class TipCarsParser implements CarSourceParser {
                 || compact.contains("350de")
                 || compact.contains("300de")
                 || compact.contains("30e")
-                || compact.contains("e300e")) {
+                || compact.contains("e300e")
+                || (containsAny(tokens, " volvo ") && containsAny(tokens, " v60 ", " v90 ") && tokens.contains(" recharge "))) {
             return "PLUGIN_HYBRID";
         }
 
@@ -1235,7 +1236,9 @@ public class TipCarsParser implements CarSourceParser {
                 " xtronic ",
                 " cvt ",
                 " e-cvt ",
-                " ecvt ")
+                " ecvt ",
+                " e:hev ",
+                " e hev ")
                 || containsAny(tokens,
                 " aut ",
                 " automat ",
@@ -1296,6 +1299,10 @@ public class TipCarsParser implements CarSourceParser {
             return "SEDAN";
         }
 
+        if (titleSource.contains(" peugeot 508 ")) {
+            return "SEDAN";
+        }
+
         if (containsAny(titleSource, " model 3 ", " tesla model 3 ")) {
             return "SEDAN";
         }
@@ -1317,7 +1324,7 @@ public class TipCarsParser implements CarSourceParser {
         }
 
         if (containsAny(titleSource,
-                " c-max ", " c max ", " galaxy ", " berlingo ", " caddy ", " roomster ", " sportsvan ", " scudo ",
+                " c-max ", " c max ", " galaxy ", " berlingo ", " caddy ", " vaneo ", " roomster ", " sportsvan ", " scudo ",
                 " ix20 ", " ix 20 ", " rifter ",
                 " tridy v ", " třídy v ", " tĹ™Ă­dy v ", " vito ", " viano ",
                 " scenic ", " scénic ", " zafira ", " meriva ", " touran ", " sharan ", " s-max ", " s max ",

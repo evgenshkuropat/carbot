@@ -1040,6 +1040,18 @@ public class SbazarParser implements CarSourceParser {
         if (containsAny(identityText, "chevrolet orlando")) {
             return "MINIVAN";
         }
+        if (containsAny(identityText, "citroen c3 aircross", "citroen c 3 aircross")) {
+            return "SUV";
+        }
+        if (containsAny(identityText, "grand c4 spacetourer", "grand c4 space tourer", "grand c 4 spacetourer", "grand c 4 space tourer")) {
+            return "MINIVAN";
+        }
+        if (containsAny(identityText, "bmw gran tourer")) {
+            return "MINIVAN";
+        }
+        if (containsAny(identityText, "volvo v 70", "volvo v70")) {
+            return "WAGON";
+        }
         if (containsAny(identityText, "honda crv", "crv3")) {
             return "SUV";
         }

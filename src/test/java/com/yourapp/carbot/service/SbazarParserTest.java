@@ -25,6 +25,10 @@ class SbazarParserTest {
         assertThat(resolveCarType("ford mustang mach-e rwd standard range", "")).isEqualTo("SUV");
         assertThat(resolveCarType("renault rafale esprit alpine hyper hybrid 4x4", "")).isEqualTo("SUV");
         assertThat(resolveCarType("chevrolet orlando lpg", "")).isEqualTo("MINIVAN");
+        assertThat(resolveCarType("citroen c3 aircross 1.2 puretech", "")).isEqualTo("SUV");
+        assertThat(resolveCarType("citroen grand c4 spacetourer 1.5 hdi", "")).isEqualTo("MINIVAN");
+        assertThat(resolveCarType("bmw gran tourer 216d", "")).isEqualTo("MINIVAN");
+        assertThat(resolveCarType("volvo v 70 ii generace", "")).isEqualTo("WAGON");
         assertThat(resolveCarType("honda crv3 2,2ctdi", "")).isEqualTo("SUV");
         assertThat(resolveCarType("skoda octavia 2.0tdi scout dsg 4x4", "")).isEqualTo("WAGON");
         assertThat(resolveCarType("mercedes benz ml 280 cdi 4-matic", "")).isEqualTo("SUV");

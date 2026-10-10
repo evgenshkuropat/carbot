@@ -160,6 +160,16 @@ class TipCarsParserTest {
                 "",
                 "https://www.tipcars.com/volkswagen-golf-sportsvan/mpv/nafta/volkswagen-golf-sportsvan-1-6-tdi-bmt-webasto.html"))
                 .isEqualTo("MINIVAN");
+        assertThat(extractCarType(
+                "Mercedes-Benz Vaneo 1.7CDi 67kW Ambiente",
+                "",
+                "https://www.tipcars.com/mercedes-benz-vaneo/kombi/nafta/mercedes-benz-vaneo.html"))
+                .isEqualTo("MINIVAN");
+        assertThat(extractCarType(
+                "Peugeot 508 Gt-line",
+                "",
+                "https://www.tipcars.com/peugeot-508/benzin/peugeot-508-gt-line.html"))
+                .isEqualTo("SEDAN");
 
         assertThat(extractCarType(
                 "Fiat Scudo 2,0 JTD 110CV L",
@@ -434,6 +444,8 @@ class TipCarsParserTest {
                 .isEqualTo("HYBRID");
         assertThat(extractFuelType("Volvo V60 0,0 B4 Plus Dark Plus Dark"))
                 .isEqualTo("HYBRID");
+        assertThat(extractFuelType("Volvo V90 2.0 Recharge 4x4 Inscription"))
+                .isEqualTo("PLUGIN_HYBRID");
         assertThat(extractFuelType("Skoda Octavia 1.5 TSI e-tec"))
                 .isEqualTo("HYBRID");
         assertThat(extractFuelType("Citroen C8 2.0, LPG, 8 mist, Tazne, Klima"))
@@ -475,6 +487,8 @@ class TipCarsParserTest {
         assertThat(extractTransmission("BMW X3 xDrive30d, 4X4, Automat, Kuze"))
                 .isEqualTo("AUTOMATIC");
         assertThat(extractTransmission("Skoda Scala 1.0 TSI, Automat, CR"))
+                .isEqualTo("AUTOMATIC");
+        assertThat(extractTransmission("Honda CR-V 2.0 e:HEV Advance"))
                 .isEqualTo("AUTOMATIC");
     }
 
