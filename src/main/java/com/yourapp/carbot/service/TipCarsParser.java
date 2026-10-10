@@ -1287,8 +1287,12 @@ public class TipCarsParser implements CarSourceParser {
         }
 
         if (containsAny(titleSource,
-                " enyaq ", " karoq ", " duster ", " tiguan allspace ", " c3 aircross ", " peugeot 5008 ", " taigo ", " xceed ", " ford kuga ", " arona ", " bayon ")) {
+                " enyaq ", " karoq ", " duster ", " tiguan allspace ", " c3 aircross ", " peugeot 5008 ", " taigo ", " xceed ", " cx-5 ", " ford kuga ", " arona ", " bayon ")) {
             return "SUV";
+        }
+
+        if (titleSource.contains(" kia ceed ") && !titleSource.contains(" ceed sw ")) {
+            return "HATCHBACK";
         }
 
         if (containsAny(titleSource, " multivan ", " marco polo ", " proace verso ", " proace city verso ", " vivaro ")) {

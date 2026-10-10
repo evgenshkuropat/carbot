@@ -193,6 +193,16 @@ class TipCarsParserTest {
                 "https://www.tipcars.com/kia-xceed/cuv/benzin/kia-xceed.html"))
                 .isEqualTo("SUV");
         assertThat(extractCarType(
+                "Kia Ceed CRDi 100KW 7DCT EXECUTIVE, LED",
+                "",
+                "https://www.tipcars.com/kia-ceed/suv/nafta/kia-ceed.html"))
+                .isEqualTo("HATCHBACK");
+        assertThat(extractCarType(
+                "Mazda CX-5 Homura AWD MY26",
+                "",
+                "https://www.tipcars.com/mazda-cx-5/kupe/benzin/mazda-cx-5.html"))
+                .isEqualTo("SUV");
+        assertThat(extractCarType(
                 "Citroen C3 Aircross 1.2i",
                 "",
                 "https://www.tipcars.com/citroen-c3-aircross/hatchback/benzin/citroen-c3-aircross.html"))
