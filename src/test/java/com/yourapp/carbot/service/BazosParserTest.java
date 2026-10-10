@@ -741,6 +741,8 @@ class BazosParserTest {
 
     @Test
     void rejectsExplicitMotorFailureFromFreshLogs() throws Exception {
+        assertThat(looksBrokenOrForPartsListing("Ochranný rám Toyota Hilux", ""))
+                .isTrue();
         assertThat(looksBrokenOrForPartsListing("Opel Astra SW 1.5CDTI DPH CR Motor k.o", ""))
                 .isTrue();
         assertThat(looksBrokenOrForPartsListing(

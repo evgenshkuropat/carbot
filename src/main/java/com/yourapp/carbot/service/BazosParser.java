@@ -4025,6 +4025,10 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         String titleSource = " " + normalizeText(title).toLowerCase(Locale.ROOT) + " ";
         String source = " " + normalizeText(title + " " + shortenForCheck(text, 500)).toLowerCase(Locale.ROOT) + " ";
 
+        if (containsAny(titleSource, " ochranný rám ", " ochranny ram ")) {
+            return true;
+        }
+
         if (containsAny(titleSource, " mustang ", " civic type r ", " cr-v ", " cr v ", " crv ", " duster ", " stelvio ",
                 " chevrolet ssr ", " spark ", " stonic ", " camaro ", " cruze ", " malibu ",
                 " ceed ", " seed ", " xceed ",
