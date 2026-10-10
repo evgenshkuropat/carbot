@@ -146,6 +146,10 @@ class ToyotaProvereneVozyParserTest {
                 .isEqualTo("HATCHBACK");
         assertThat(extractCarType("Hyundai Kona 1,6 Premium AUT.", ""))
                 .isEqualTo("SUV");
+        assertThat(extractCarType("Volvo XC 60 T5 AT AWD Inscription", ""))
+                .isEqualTo("SUV");
+        assertThat(extractCarType("Lexus ES 500e BEV PRESTIGE", ""))
+                .isEqualTo("SEDAN");
     }
 
     @Test
@@ -170,6 +174,8 @@ class ToyotaProvereneVozyParserTest {
         assertThat(mapElectrifiedFuel("Skoda Octavia 1.4,TSI,iV,150kW,DSG,Style,CZ"))
                 .isEqualTo("PLUGIN_HYBRID");
         assertThat(mapElectrifiedFuel("Volvo XC 40 B3 Plus Bright DCT"))
+                .isEqualTo("HYBRID");
+        assertThat(mapElectrifiedFuel("Subaru Forester 2.0 e-Boxer 4x4"))
                 .isEqualTo("HYBRID");
     }
 

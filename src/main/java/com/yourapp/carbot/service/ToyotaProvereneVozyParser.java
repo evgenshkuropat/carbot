@@ -402,6 +402,9 @@ public class ToyotaProvereneVozyParser implements CarSourceParser {
                 && containsAny(tokens, " b3 ", " b4 ", " b5 ", " b6 ")) {
             return "HYBRID";
         }
+        if (tokens.contains(" subaru ") && containsAny(tokens, " e boxer ", " eboxer ")) {
+            return "HYBRID";
+        }
         if (containsAny(tokens, " c hr ", " chr ")
                 && containsAny(tokens, " 1 8 ", " 2 0 ")) {
             return "HYBRID";
@@ -718,7 +721,8 @@ public class ToyotaProvereneVozyParser implements CarSourceParser {
 
     private boolean shouldPreferTitleCarType(String title) {
         String source = " " + normalizeAscii(safe(title)).toLowerCase(Locale.ROOT) + " ";
-        return containsAny(source, " bz4x ", " lexus lbx ", " lbx ", " fiat punto ", " punto ", " toyota aygo ", " aygo ");
+        return containsAny(source, " bz4x ", " lexus lbx ", " lbx ", " lexus es ", " volvo xc60 ", " volvo xc 60 ",
+                " fiat punto ", " punto ", " toyota aygo ", " aygo ");
     }
 
     private String extractCarType(String title, String text) {
@@ -734,6 +738,12 @@ public class ToyotaProvereneVozyParser implements CarSourceParser {
 
         if (containsAny(source, " mercedes-benz gle ", " mercedes benz gle ", " skoda yeti ", " ford edge ", " jeep wrangler ", " wrangler ")) {
             return "SUV";
+        }
+        if (containsAny(source, " volvo xc60 ", " volvo xc 60 ")) {
+            return "SUV";
+        }
+        if (containsAny(source, " lexus es ")) {
+            return "SEDAN";
         }
         if (containsAny(source, " proace verso ", " proace city verso ", " tourneo custom ", " jumpy combi ", " citroen jumpy ",
                 " peugeot partner ", " partner ", " ix20 ", " ix 20 ", " c-max ", " c max ", " grand c-max ", " grand c max ")) {
