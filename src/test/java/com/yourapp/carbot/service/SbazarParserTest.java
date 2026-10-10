@@ -36,6 +36,12 @@ class SbazarParserTest {
         assertThat(resolveCarType("mercedes benz ml 280 cdi 4-matic", "")).isEqualTo("SUV");
         assertThat(resolveCarType("toyota rav 4 2.0 vvt-i 4wd", "")).isEqualTo("SUV");
         assertThat(resolveCarType("mazda cx5 2.5 awd", "")).isEqualTo("SUV");
+        assertThat(resolveCarType("kia sedona carnival 3.3v6", "")).isEqualTo("MINIVAN");
+        assertThat(resolveCarType("toyota tundra sr5 5.7v8 4wd", "")).isEqualTo("PICKUP");
+        assertThat(resolveCarType("omoda 7 premium 1.6 tgdi", "")).isEqualTo("SUV");
+        assertThat(resolveCarType("lexus lc 500h 3.5l v6", "")).isEqualTo("COUPE");
+        assertThat(resolveCarType("peugeot 207 1.6 hdi 80 kw", "")).isEqualTo("HATCHBACK");
+        assertThat(resolveCarType("kia cee d 1.6 crdi", "")).isEqualTo("HATCHBACK");
         assertThat(detectBrand("oktavian 3")).isEqualTo("SKODA");
     }
 
@@ -162,6 +168,7 @@ class SbazarParserTest {
         assertThat(resolveFuelType("seat mii 1.0 44kw 5dveri", "")).isEqualTo("PETROL");
         assertThat(resolveFuelType("porsche cayman gt4 wrap od koenigsegg znama historie", "")).isEqualTo("PETROL");
         assertThat(resolveFuelType("skoda octavia iv 2.0 tdi dsg 4x4 150 ps", "")).isEqualTo("DIESEL");
+        assertThat(resolveFuelType("skoda octavia iv 1.5 tsi 110kw", "")).isEqualTo("PETROL");
         assertThat(resolveTransmission("honda crv 2020 hybrid benzin 72tis.km", "", "HYBRID")).isEqualTo("AUTOMATIC");
         assertThat(resolveTransmission("toyota camry 2.5 hybrid executive 169kw", "", "HYBRID")).isEqualTo("AUTOMATIC");
         assertThat(resolveTransmission("seat leon, 1,4 tsi e-hybrid fr line led", "", "HYBRID")).isEqualTo("AUTOMATIC");
