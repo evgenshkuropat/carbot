@@ -245,6 +245,8 @@ class BazosParserTest {
         assertThat(extractFuelType("Civic 1.8l 103kw GT")).isEqualTo("PETROL");
         assertThat(extractFuelType("Mazda MX-5 NC 1.8 2006 93kW")).isEqualTo("PETROL");
         assertThat(extractFuelType("Mazda MX-5 NC 2.0")).isEqualTo("PETROL");
+        assertThat(extractFuelType("Mitsubishi Lancer Evolution VII - závodní speciál")).isEqualTo("PETROL");
+        assertThat(extractFuelType("Opel Frontera 2.2DTI 85kW")).isEqualTo("DIESEL");
         assertThat(extractFuelType("MAZDA 6 2.5 141KW AUTOMAT-KUZE-BOSE-LED-TAZNE-HEAD UP-KAMERA"))
                 .isEqualTo("PETROL");
     }
@@ -253,6 +255,7 @@ class BazosParserTest {
     void resolvesCarTypesFromBazosTitles() throws Exception {
         assertThat(extractCarType("Opel Insignia Country Tourer 4x4 tazne manual", "", "")).isEqualTo("WAGON");
         assertThat(extractCarType("Opel Antara", "", "")).isEqualTo("SUV");
+        assertThat(extractCarType("Opel Frontera 2.2DTI 85kW", "", "")).isEqualTo("SUV");
         assertThat(extractCarType("Infiniti FX 37 S Premium 4x4", "", "")).isEqualTo("SUV");
         assertThat(extractCarType("Murano 2006 Z50", "", "")).isEqualTo("SUV");
         assertThat(extractCarType("JDM Nissan Cedric Y34 Turbo", "", "")).isEqualTo("SEDAN");

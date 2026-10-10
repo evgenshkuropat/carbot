@@ -1121,6 +1121,12 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         if (containsAny(source, " c43 amg ", " c 43 amg ")) {
             return "PETROL";
         }
+        if (containsAny(source, "lancer evolution")) {
+            return "PETROL";
+        }
+        if (containsAny(source, "opel frontera", "frontera") && containsAny(source, "dti")) {
+            return "DIESEL";
+        }
 
         // LPG / CNG first
         if (containsAny(source, " lpg ", " plyn ") || compact.contains("lpg")) {
@@ -2288,6 +2294,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         if (containsAny(titleSource, " infiniti fx ", " fx35 ", " fx-35 ", " fx37 ", " fx-37 ")) return "SUV";
         if (containsAny(titleSource, " murano ")) return "SUV";
         if (containsAny(titleSource, " cedric ", " signum ")) return "SEDAN";
+        if (containsAny(titleSource, " frontera ")) return "SUV";
         if (containsAny(titleSource, " campo ")) return "PICKUP";
         if (titleSource.contains("206sw")) return "WAGON";
 
@@ -3664,6 +3671,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
 
         if (startsWithAny(asciiTitleValue, "strecha ", "novy motor ", "novy motor alfa ", "novy motor bmw ",
                 "novy motor audi ", "novy motor mercedes ", "novy motor skoda ")
+                || startsWithAny(asciiTitleValue, "kompletni motor ")
                 || containsAny(asciiTitleValue, " auto pro vozickare ", " auto s rampou ", " ztp ", " plasty do masky ")) {
             return true;
         }
