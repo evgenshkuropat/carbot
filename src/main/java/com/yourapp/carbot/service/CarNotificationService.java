@@ -313,7 +313,7 @@ public class CarNotificationService {
                     chatId, safe(car.getSource()), safe(car.getTitle()));
 
             if (hasUsableImage(car.getImageUrl())) {
-                if (sendPhotoByUrl(chatId, car, caption, keyboard)) {
+                if (!requiresImageDownload(car) && sendPhotoByUrl(chatId, car, caption, keyboard)) {
                     return true;
                 }
 
@@ -622,7 +622,16 @@ public class CarNotificationService {
             return "https://www.sauto.cz/";
         }
 
+        if (source.contains("TIPCARS") || source.contains("TIP_CARS")) {
+            return "https://www.tipcars.com/";
+        }
+
         return "https://www.google.com/";
+    }
+
+    private boolean requiresImageDownload(CarEntity car) {
+        String source = safe(car.getSource()).toUpperCase(Locale.ROOT);
+        return source.contains("TIPCARS") || source.contains("TIP_CARS");
     }
 
     private String guessExtension(String imageUrl) {
