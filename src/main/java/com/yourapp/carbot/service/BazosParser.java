@@ -1130,6 +1130,22 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         if (containsAny(source, "opel frontera", "frontera") && containsAny(source, "dti")) {
             return "DIESEL";
         }
+        if (containsAny(source, " glk 220 ")) {
+            return "DIESEL";
+        }
+        if (containsAny(source, " b 180 85kw ", " b180 85kw ", " b 180 85 kw ")) {
+            return "PETROL";
+        }
+        if (containsAny(source, " cle 53 ")) {
+            return "PETROL";
+        }
+        if (containsAny(source, " e-power ", " e power ")) {
+            return "HYBRID";
+        }
+        if (containsAny(source, " pulsar ")
+                && Pattern.compile("(?i)\\b1[\\.,]6\\b").matcher(source).find()) {
+            return "PETROL";
+        }
 
         // LPG / CNG first
         if (containsAny(source, " lpg ", " plyn ") || compact.contains("lpg")) {
@@ -1854,6 +1870,10 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 .replaceAll("\\s+", " ")
                 .trim() + " ";
 
+        if (containsAny(tokens, " 9g ", " 9g tronic ", " 9gtronic ")) {
+            return "AUTOMATIC";
+        }
+
         if (containsAny(tokens, " c63 ", " c 63 ", " c63s ", " c 63 s ")) {
             return "AUTOMATIC";
         }
@@ -1998,7 +2018,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         if (containsAny(titleSource, " glc ")) return "MERCEDES";
         if (containsAny(titleSource, " mercedes ", " mercedes-benz ", " mercedes-amg ",
                 " mrcedes ", " mrcedes-benz ")) return "MERCEDES";
-        if (containsAny(titleSource, " infiniti ", " fx35 ", " fx-35 ", " fx37 ", " fx-37 ")) return "INFINITI";
+        if (containsAny(titleSource, " infiniti ", " infinity ", " fx35 ", " fx-35 ", " fx37 ", " fx-37 ")) return "INFINITI";
         if (containsAny(titleSource, " lexus ")) return "LEXUS";
         if (containsAny(titleSource, " toyota ", " toyata ", " c-hr ", " c hr ", " ch-r ", " chr ", " hilux ")
                 || containsAny(compactTitleSource, " hilux ")) return "TOYOTA";
@@ -2061,7 +2081,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         if (containsAny(source, " bmw ")) return "BMW";
         if (containsAny(source, " mercedes ", " mercedes-benz ", " mercedes-amg ",
                 " mrcedes ", " mrcedes-benz ")) return "MERCEDES";
-        if (containsAny(source, " infiniti ", " fx35 ", " fx-35 ", " fx37 ", " fx-37 ")) return "INFINITI";
+        if (containsAny(source, " infiniti ", " infinity ", " fx35 ", " fx-35 ", " fx37 ", " fx-37 ")) return "INFINITI";
         if (containsAny(source, " lexus ")) return "LEXUS";
         if (containsAny(source, " toyota ", " toyata ", " c-hr ", " c hr ", " ch-r ", " chr ", " hilux ")) return "TOYOTA";
         if (containsAny(source, " ford ")) return "FORD";
@@ -2305,6 +2325,10 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         if (containsAny(titleSource, "bmw 530i", " 530i ")) return "SEDAN";
         if (containsAny(titleSource, " frontera ")) return "SUV";
         if (containsAny(titleSource, " campo ")) return "PICKUP";
+        if (containsAny(titleSource, " w204 c350 ", " c350 w204 ")) return "SEDAN";
+        if (containsAny(titleSource, " e220cdi ", " e 220cdi ")
+                && !containsAny(titleSource, " wagon ", " kombi ", " combi ", " estate ", " t-modell ")) return "SEDAN";
+        if (containsAny(titleSource, " cle 53 ")) return "COUPE";
         if (containsAny(titleSource, " tonale ")) return "SUV";
         if (containsAny(titleSource, " a6 c7 allroad ")) return "WAGON";
         if (containsAny(titleSource, " a8l ")) return "SEDAN";

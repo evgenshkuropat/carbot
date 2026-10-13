@@ -251,6 +251,11 @@ class BazosParserTest {
         assertThat(extractFuelType("MAZDA 6 2.5 141KW AUTOMAT-KUZE-BOSE-LED-TAZNE-HEAD UP-KAMERA"))
                 .isEqualTo("PETROL");
         assertThat(extractFuelType("ALFA ROMEO MITO 1.4 EDICE SUPER 70KW")).isEqualTo("PETROL");
+        assertThat(extractFuelType("Mercedes GLK 220")).isEqualTo("DIESEL");
+        assertThat(extractFuelType("Mercedes Benz B 180 85kW")).isEqualTo("PETROL");
+        assertThat(extractFuelType("Prodám Mercedes Benz CLE 53 AMG")).isEqualTo("PETROL");
+        assertThat(extractFuelType("Nissan Qashqai e-POWER 1.5")).isEqualTo("HYBRID");
+        assertThat(extractFuelType("Nissan Pulsar 1.6 l Tekna")).isEqualTo("PETROL");
     }
 
     @Test
@@ -258,6 +263,9 @@ class BazosParserTest {
         assertThat(extractCarType("Opel Insignia Country Tourer 4x4 tazne manual", "", "")).isEqualTo("WAGON");
         assertThat(extractCarType("Opel Antara", "", "")).isEqualTo("SUV");
         assertThat(extractCarType("Opel Frontera 2.2DTI 85kW", "", "")).isEqualTo("SUV");
+        assertThat(extractCarType("Mercedes W204 C350 200kW AMG line", "", "")).isEqualTo("SEDAN");
+        assertThat(extractCarType("Mercedes E220cdi 4matic", "", "")).isEqualTo("SEDAN");
+        assertThat(extractCarType("Prodám Mercedes Benz CLE 53 AMG", "", "")).isEqualTo("COUPE");
         assertThat(extractCarType("Infiniti FX 37 S Premium 4x4", "", "")).isEqualTo("SUV");
         assertThat(extractCarType("Murano 2006 Z50", "", "")).isEqualTo("SUV");
         assertThat(extractCarType("JDM Nissan Cedric Y34 Turbo", "", "")).isEqualTo("SEDAN");
@@ -320,6 +328,7 @@ class BazosParserTest {
         assertThat(extractCarType("Audi A6 C7 Allroad 3.0 BiTDI 235kW", "", "")).isEqualTo("WAGON");
         assertThat(extractCarType("A6C7 avant", "", "")).isEqualTo("WAGON");
         assertThat(extractCarType("Audi A7 Sportback S-Line 3.0 TDI 180 kW Quattro", "", "")).isEqualTo("SEDAN");
+        assertThat(extractTransmission("Mercedes C220d 143kW 2021 w205 9G Tažné")).isEqualTo("AUTOMATIC");
         assertThat(extractCarType("Audi a4b6 2.5tdi V6 120kw", "", "")).isEqualTo("SEDAN");
         assertThat(extractCarType("S4 Quattro BSR 402PS 1.majitel koupeno v CR full servis -DPH", "", ""))
                 .isEqualTo("SEDAN");
