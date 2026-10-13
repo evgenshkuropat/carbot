@@ -247,6 +247,7 @@ class BazosParserTest {
         assertThat(extractFuelType("Mazda MX-5 NC 2.0")).isEqualTo("PETROL");
         assertThat(extractFuelType("Mitsubishi Lancer Evolution VII - závodní speciál")).isEqualTo("PETROL");
         assertThat(extractFuelType("Opel Frontera 2.2DTI 85kW")).isEqualTo("DIESEL");
+        assertThat(extractFuelType("BMW M2 F87 DCT 460HP")).isEqualTo("PETROL");
         assertThat(extractFuelType("MAZDA 6 2.5 141KW AUTOMAT-KUZE-BOSE-LED-TAZNE-HEAD UP-KAMERA"))
                 .isEqualTo("PETROL");
     }
@@ -305,6 +306,8 @@ class BazosParserTest {
         assertThat(extractCarType("BMW F10 523i, 185tis, 3.0, 150kW, automat", "", "")).isEqualTo("SEDAN");
         assertThat(extractCarType("BMW 530D XDRIVE 210kW FACELIFT 2021 AUTOMAT / HEADup VIRTUAL", "", "")).isEqualTo("SEDAN");
         assertThat(extractCarType("BMW 530d UVEDENA CENA BEZ DPH", "", "")).isEqualTo("SEDAN");
+        assertThat(extractCarType("BMW 530i xDrive G30 Facelift", "", "")).isEqualTo("SEDAN");
+        assertThat(extractCarType("BMW 420d GranCoupé", "", "")).isEqualTo("SEDAN");
         assertThat(extractCarType("BMW 750 XDRIVE 400 PS LASER LIGHT M-PACK", "", "")).isEqualTo("SEDAN");
         assertThat(extractCarType("BMW M340D DPH", "", "")).isEqualTo("SEDAN");
         assertThat(extractCarType("X5 M50D, 2018 1majitel", "", "")).isEqualTo("SUV");
