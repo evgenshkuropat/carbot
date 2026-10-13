@@ -150,6 +150,8 @@ class AutoEsaParserTest {
     @Test
     void fixesBodyTypesAndTransmissionFromFreshAutoEsaLog() throws Exception {
         assertThat(mapCarType("kombi", "Renault Koleos 2.0 dCi 4x4")).isEqualTo("SUV");
+        assertThat(mapCarType("hatchback", "Škoda Kamiq 1.5TSi Style")).isEqualTo("SUV");
+        assertThat(mapCarType("hatchback", "Mini Countryman 1.6D")).isEqualTo("SUV");
         assertThat(mapCarType("hatchback", "Hyundai ix20 1.4 VVTi Trikolor")).isEqualTo("MINIVAN");
         assertThat(mapCarType("kombi", "Kia Carens 1.7 CRDi")).isEqualTo("MINIVAN");
         assertThat(mapCarType("hatchback", "Volkswagen Sportsvan 1.6 TDi")).isEqualTo("MINIVAN");
