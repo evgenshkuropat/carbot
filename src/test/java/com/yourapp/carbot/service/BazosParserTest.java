@@ -250,6 +250,7 @@ class BazosParserTest {
         assertThat(extractFuelType("BMW M2 F87 DCT 460HP")).isEqualTo("PETROL");
         assertThat(extractFuelType("MAZDA 6 2.5 141KW AUTOMAT-KUZE-BOSE-LED-TAZNE-HEAD UP-KAMERA"))
                 .isEqualTo("PETROL");
+        assertThat(extractFuelType("ALFA ROMEO MITO 1.4 EDICE SUPER 70KW")).isEqualTo("PETROL");
     }
 
     @Test
@@ -291,6 +292,8 @@ class BazosParserTest {
         assertThat(extractCarType("Alfa Romeo 75 2.0 Twinspark", "", "")).isEqualTo("SEDAN");
         assertThat(extractCarType("AR 159 1.75TBi", "", "")).isEqualTo("SEDAN");
         assertThat(extractCarType("Alfa 159Ti 2.4 JTDm 154kw", "", "")).isEqualTo("SEDAN");
+        assertThat(extractCarType("159 1.9 JTDM 110 KW", "", "")).isEqualTo("SEDAN");
+        assertThat(extractCarType("Alfa Romeo Tonale 1.6 Mjet FWD / 96kW / A6", "", "")).isEqualTo("SUV");
         assertThat(extractCarType("Alfa Romeo 156 SW 2.4 JTD 20v TI", "", "")).isEqualTo("WAGON");
         assertThat(extractCarType("Prodam Alfa Romeo 159 1,9 JTDM 110KW Combi", "", "")).isEqualTo("WAGON");
         assertThat(extractCarType("Alfa Romeo Guilietta", "", "")).isEqualTo("HATCHBACK");
@@ -313,6 +316,8 @@ class BazosParserTest {
         assertThat(extractCarType("X5 M50D, 2018 1majitel", "", "")).isEqualTo("SUV");
         assertThat(extractCarType("BMW i3 REx Hybrid 75 kW, 2016", "", "")).isEqualTo("HATCHBACK");
         assertThat(extractCarType("Audi A6 2.0 TDI AVANT Ultra S-tronic 2015", "", "")).isEqualTo("WAGON");
+        assertThat(extractCarType("AUDI A8L 50TDI 210kW", "", "")).isEqualTo("SEDAN");
+        assertThat(extractCarType("Audi A6 C7 Allroad 3.0 BiTDI 235kW", "", "")).isEqualTo("WAGON");
         assertThat(extractCarType("A6C7 avant", "", "")).isEqualTo("WAGON");
         assertThat(extractCarType("Audi A7 Sportback S-Line 3.0 TDI 180 kW Quattro", "", "")).isEqualTo("SEDAN");
         assertThat(extractCarType("Audi a4b6 2.5tdi V6 120kw", "", "")).isEqualTo("SEDAN");
