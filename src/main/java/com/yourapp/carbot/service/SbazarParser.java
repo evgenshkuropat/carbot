@@ -651,6 +651,15 @@ public class SbazarParser implements CarSourceParser {
             return "PETROL";
         }
 
+        if (containsAny(searchable, "mazda 5") && containsAny(searchable, "mzr-cd", "mzr cd")) {
+            return "DIESEL";
+        }
+
+        if (containsAny(searchable, "nissan micra", " micra ")
+                && searchable.matches(".*\\b1[\\.,]2\\b.*")) {
+            return "PETROL";
+        }
+
         if (containsAny(searchable,
                 "diesel", "nafta", "tdi", "tdci", "cdi", "crdi", "hdi", "dci",
                 "jtd", "jtdm", "multijet", "bluehdi", "cdti", "d4d", "d-4d", "tid", "i-dtec", "idtec",
@@ -912,6 +921,13 @@ public class SbazarParser implements CarSourceParser {
         }
         if (containsAny(searchable, "bmw compact", "325ti compact", "325 ti compact")) {
             return "HATCHBACK";
+        }
+        if ((containsAny(searchable, "astra ") && containsAny(searchable, "sports tourer", "sport tourer", "sportstourer"))
+                || (containsAny(searchable, "golf ") && containsAny(searchable, "alltrack"))) {
+            return "WAGON";
+        }
+        if (containsAny(searchable, "suzuki kizashi", " kizashi ")) {
+            return "SEDAN";
         }
         if (containsAny(searchable, "mazda 6", "mazda6")
                 && containsAny(searchable, " sw ", "kombi", "combi", "wagon", "estate")) {

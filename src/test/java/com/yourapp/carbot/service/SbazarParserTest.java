@@ -176,6 +176,8 @@ class SbazarParserTest {
         assertThat(resolveFuelType("mercedes-benz eqs 580 4matic amg hyperscreen", "")).isEqualTo("ELECTRIC");
         assertThat(resolveTransmission("mercedes-benz eqs 580 4matic amg hyperscreen", "", "ELECTRIC")).isEqualTo("AUTOMATIC");
         assertThat(resolveFuelType("honda cr-v iii executive 2.2 i-dtec 110 kw 4x4", "")).isEqualTo("DIESEL");
+        assertThat(resolveFuelType("Mazda 5, 1,6 MZR-CD 85kW 7MÍST", "")).isEqualTo("DIESEL");
+        assertThat(resolveFuelType("Nissan Micra, 1.2 ACENTA", "")).isEqualTo("PETROL");
     }
 
     @Test
@@ -217,6 +219,9 @@ class SbazarParserTest {
         assertThat(resolveCarType("volkswagen cc facelift passat 2.0tdi 103kw m2013", "")).isEqualTo("SEDAN");
         assertThat(resolveCarType("mercedes c220 w204 2.2cdi avantgarde", "")).isEqualTo("SEDAN");
         assertThat(resolveCarType("mercedes-benz tridy e 220cdi amg paket", "")).isEqualTo("SEDAN");
+        assertThat(resolveCarType("OPEL Astra 1.7 CDTI 81 Kw Sports Tourer Active", "")).isEqualTo("WAGON");
+        assertThat(resolveCarType("Volkswagen Golf, 2.0TDI ALLTRACK", "")).isEqualTo("WAGON");
+        assertThat(resolveCarType("Suzuki Kizashi, 2,4 i 4x4 XENON", "")).isEqualTo("SEDAN");
         assertThat(resolveCarType("mercedes e 220cdi kom 2006", "")).isEqualTo("WAGON");
         assertThat(resolveCarType("bmw m3 competition daytona violet", "")).isEqualTo("SEDAN");
         assertThat(resolveCarType("alfa romeo giulia 2.0 turbo", "")).isEqualTo("SEDAN");
