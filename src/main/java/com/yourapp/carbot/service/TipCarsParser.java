@@ -1287,7 +1287,7 @@ public class TipCarsParser implements CarSourceParser {
         }
 
         if (containsAny(titleSource,
-                " enyaq ", " karoq ", " duster ", " tiguan allspace ", " c3 aircross ", " peugeot 5008 ", " taigo ", " xceed ", " cx-5 ", " ford kuga ", " arona ", " bayon ")) {
+                " enyaq ", " karoq ", " kodiaq ", " duster ", " tiguan allspace ", " c3 aircross ", " peugeot 5008 ", " taigo ", " xceed ", " cx-5 ", " ford kuga ", " arona ", " bayon ")) {
             return "SUV";
         }
 

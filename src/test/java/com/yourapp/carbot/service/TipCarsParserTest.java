@@ -238,6 +238,11 @@ class TipCarsParserTest {
                 "https://www.tipcars.com/skoda-karoq/kombi/nafta/skoda-karoq-2-0-tdi-110-kw-dsg-4x4-top-sel-9521099.html"))
                 .isEqualTo("SUV");
         assertThat(extractCarType(
+                "Škoda Kodiaq Style 2,0 TDI 110 kW DSG 4x4",
+                "",
+                "https://www.tipcars.com/skoda-kodiaq/kombi/nafta/skoda-kodiaq-style-2-0-tdi-110-kw-dsg-4x4-14135561.html"))
+                .isEqualTo("SUV");
+        assertThat(extractCarType(
                 "Dacia Duster Journey hybrid 155",
                 "",
                 "https://www.tipcars.com/dacia-duster/hatchback/hybridni-benzin/dacia-duster-journey-hybrid-155-59181955.html"))
