@@ -22,6 +22,9 @@ class ToyotaProvereneVozyParserTest {
         assertThat(extractCarType("Toyota PROACE CrewCab 2.2D-4D 150k 6MT L2 Active 6S", "")).isEqualTo("VAN");
         assertThat(extractCarType("Toyota PROACE MAX Vůz s chladící přestavbou.", "")).isEqualTo("VAN");
         assertThat(extractCarType("Toyota Corolla 1.8 TSI", "")).isEqualTo("HATCHBACK");
+        assertThat(extractCarType("Kia Ceed 1.4CVVT,73KW,Manuál,CZ", "kombi wagon")).isEqualTo("HATCHBACK");
+        assertThat(extractCarType("Škoda Fabia 1.2TSi, ČR, STYLE, klima", "variant wagon")).isEqualTo("HATCHBACK");
+        assertThat(extractCarType("Hyundai i30 1,4 Trikolor", "estate wagon")).isEqualTo("HATCHBACK");
     }
 
     @Test

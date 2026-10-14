@@ -765,6 +765,10 @@ public class ToyotaProvereneVozyParser implements CarSourceParser {
                 " ts ", " touring ", " kombi ", " combi ", " wagon ", " sedan ")) {
             return "HATCHBACK";
         }
+        if (containsAny(titleSource, " fabia ", " ceed ", " i30 ")
+                && !containsAny(titleSource, " combi ", " kombi ", " wagon ", " estate ", " sw ", " cw ", " variant ")) {
+            return "HATCHBACK";
+        }
         if (containsAny(source, " kombi ", " combi ", " wagon ", " variant ", " sports tourer ", " sw ",
                 " grandtour ", " grand tour ")) {
             return "WAGON";
