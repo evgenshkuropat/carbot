@@ -1127,6 +1127,14 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         if (containsAny(source, "lancer evolution")) {
             return "PETROL";
         }
+        if (containsAny(source, " infiniti g35 ", " infinity g35 ")) {
+            return "PETROL";
+        }
+        if (containsAny(source, " peugeot 208 ")
+                && containsAny(source, " puretech ")
+                && !containsAny(source, " hybrid ", " mhev ", " hev ")) {
+            return "PETROL";
+        }
         if (containsAny(source, "opel frontera", "frontera") && containsAny(source, "dti")) {
             return "DIESEL";
         }
@@ -2531,6 +2539,10 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             return "SEDAN";
         }
 
+        if (containsAny(titleSource, " astra ") && containsAny(titleSource, " kombi ", " combi ")) {
+            return "WAGON";
+        }
+
         if (containsAny(titleSource, " vectra ") && containsAny(titleSource, " combi ", " kombi ", " wagon ", " caravan ")) {
             return "WAGON";
         }
@@ -2570,7 +2582,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             return "MINIVAN";
         }
 
-        if (containsAny(titleSource, " glk ", " pathfinder ", " x-trail ", " x trail ", " grandland ", " grandal ", " crossland ")) {
+        if (containsAny(titleSource, " glk ", " pathfinder ", " x-trail ", " x trail ", " grandland ", " grandal ", " crossland ", " crosland ")) {
             return "SUV";
         }
 

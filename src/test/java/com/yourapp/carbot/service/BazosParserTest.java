@@ -163,6 +163,7 @@ class BazosParserTest {
         assertThat(extractFuelType("Fiat 500 / 0.9 TwinAir / SPORT / 77kW / NAVI")).isEqualTo("PETROL");
         assertThat(extractFuelType("Toyota Yaris Cross, 1.5HEV, Adventure, 4x4")).isEqualTo("HYBRID");
         assertThat(extractFuelType("Peugeot 308 SW 1.2 PT 96 kW 130 Allure CZ DPH")).isEqualTo("PETROL");
+        assertThat(extractFuelType("Peugeot 208, 1.2 PureTech, Allure, TOP stav")).isEqualTo("PETROL");
         assertThat(extractFuelType("Peugeot 508 PSE GT / Odpocet DPH")).isEqualTo("PLUGIN_HYBRID");
         assertThat(extractFuelType("PEUGEOT 301 1.2 60kW rok 2016")).isEqualTo("PETROL");
         assertThat(extractFuelType("Prodám Peugeot 301,R.v.2013, 1,6 Nafta.")).isEqualTo("DIESEL");
@@ -175,6 +176,7 @@ class BazosParserTest {
         assertThat(extractFuelType("MITSUBISHI ECLIPSE CROSS 2.4 PHEV 138kW 4x4-12/2022-49.949KM")).isEqualTo("PLUGIN_HYBRID");
         assertThat(extractFuelType("Ford Kuga 2,5PHEV 165KW TitaniumX, Model 023, LED,B&O,vč.DPH")).isEqualTo("PLUGIN_HYBRID");
         assertThat(extractFuelType("Mitsubishi lancer evo")).isEqualTo("PETROL");
+        assertThat(extractFuelType("Infinity g35 Drift")).isEqualTo("PETROL");
         assertThat(extractFuelType("Nissan Primera 1.8 16V 2006")).isEqualTo("PETROL");
         assertThat(extractFuelType("Nissan Micra 1.0 IG-T LED KLIMA")).isEqualTo("PETROL");
         assertThat(extractFuelType("Nissan Micra 1.2 59kw r.v.2011")).isEqualTo("PETROL");
@@ -410,6 +412,7 @@ class BazosParserTest {
         assertThat(extractCarType("Opel Astra J combi 1,7 CDTi 92kW", "", "")).isEqualTo("WAGON");
         assertThat(extractCarType("Opel Astra K 1,6 CDTI 81kw sport Tourer, Innovation", "", "")).isEqualTo("WAGON");
         assertThat(extractCarType("Opel Astra K 1,6 CDTI 81kw 2016 ST, Innovation", "", "")).isEqualTo("WAGON");
+        assertThat(extractCarType("Opel Astra K Elegance kombi, 1.2 96 kW", "", "")).isEqualTo("WAGON");
         assertThat(extractCarType("Prodam Opel Astra ST 1.6 CDTI - rok 2017 - servisovana", "", "")).isEqualTo("WAGON");
         assertThat(extractCarType("Opel Insignia 2,0d Sports Tourer 125kw rok 2020, odp. DPH", "", "")).isEqualTo("WAGON");
         assertThat(extractCarType("Opel Insignia Sport Taurer", "", "")).isEqualTo("WAGON");
@@ -423,6 +426,7 @@ class BazosParserTest {
         assertThat(extractCarType("Nissan Titan 2017", "", "")).isEqualTo("PICKUP");
         assertThat(extractCarType("OPEL AMPERA PLUGIN-HYBRID ELEKTRO", "", "")).isEqualTo("HATCHBACK");
         assertThat(extractCarType("Opel Crossland X 1.2i 81kw Inovation", "", "")).isEqualTo("SUV");
+        assertThat(extractCarType("Crosland X turbo", "", "")).isEqualTo("SUV");
         assertThat(extractCarType("OPEL VECTRA C 2.2i 16V EDICE", "", "")).isEqualTo("SEDAN");
         assertThat(extractCarType("Prodame Peugeot Travaller", "", "")).isEqualTo("MINIVAN");
         assertThat(extractCarType("Peugeot Traveler DPH", "", "")).isEqualTo("MINIVAN");
