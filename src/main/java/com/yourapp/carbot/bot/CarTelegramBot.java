@@ -7,6 +7,7 @@ import com.yourapp.carbot.i18n.MessageService;
 import com.yourapp.carbot.repository.CarRepository;
 import com.yourapp.carbot.service.CarFilterMatcher;
 import com.yourapp.carbot.service.CarCardFormatter;
+import com.yourapp.carbot.service.AdminDashboardService;
 import com.yourapp.carbot.service.FavoriteCarService;
 import com.yourapp.carbot.service.FilterWorkflowService;
 import com.yourapp.carbot.service.ParserRunStatsService;
@@ -54,6 +55,7 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
     private final UserFilterService userFilterService;
     private final FilterWorkflowService filterWorkflowService;
     private final CarRepository carRepository;
+    private final AdminDashboardService adminDashboardService;
     private final CarFilterMatcher carFilterMatcher;
     private final CarCardFormatter carCardFormatter;
     private final FavoriteCarService favoriteCarService;
@@ -75,6 +77,7 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
             UserFilterService userFilterService,
             FilterWorkflowService filterWorkflowService,
             CarRepository carRepository,
+            AdminDashboardService adminDashboardService,
             CarFilterMatcher carFilterMatcher,
             CarCardFormatter carCardFormatter,
             FavoriteCarService favoriteCarService,
@@ -94,6 +97,7 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
         this.userFilterService = userFilterService;
         this.filterWorkflowService = filterWorkflowService;
         this.carRepository = carRepository;
+        this.adminDashboardService = adminDashboardService;
         this.carFilterMatcher = carFilterMatcher;
         this.carCardFormatter = carCardFormatter;
         this.favoriteCarService = favoriteCarService;
@@ -3153,21 +3157,14 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
         }
 
         LocalDateTime last24h = LocalDateTime.now().minusHours(24);
+        AdminDashboardService.DashboardData dashboard = adminDashboardService.dashboard(last24h);
 
-        long totalCars = carRepository.count();
-        long newLast24h = carRepository.countByCreatedAtAfter(last24h);
-        long pendingUserListings = carRepository.countByListingStatus("PENDING");
-
-        String sourcesTotal = formatSourceStats(carRepository.countCarsBySource());
-        String sourcesLast24h = formatSourceStats(carRepository.countCarsBySourceAfter(last24h));
+        String sourcesTotal = formatSourceStats(dashboard.sourcesTotal());
+        String sourcesLast24h = formatSourceStats(dashboard.sourcesLast24h());
         String parserDiagnostics = buildParserDiagnostics();
         String filterDiagnostics = buildAdminFilterDiagnostics(chatId, last24h);
 
-        long usersTotal = subscriberService.countAllSubscribers();
-        long usersActive = subscriberService.countActiveSubscribers();
-        long favoritesTotal = favoriteCarService.countAllFavorites();
-
-        List<CarEntity> latestCars = carRepository.findTop5ByOrderByCreatedAtDesc();
+        List<CarEntity> latestCars = dashboard.latestCars();
 
         StringBuilder latest = new StringBuilder();
 
@@ -3205,12 +3202,12 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
         🧾 Останні авто:
         %s
         """.formatted(
-                usersTotal,
-                usersActive,
-                favoritesTotal,
-                totalCars,
-                newLast24h,
-                pendingUserListings,
+                dashboard.usersTotal(),
+                dashboard.usersActive(),
+                dashboard.favoritesTotal(),
+                dashboard.totalCars(),
+                dashboard.newLast24h(),
+                dashboard.pendingUserListings(),
                 sourcesTotal,
                 sourcesLast24h,
                 latest.toString().trim()
@@ -3234,32 +3231,20 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
             return;
         }
 
-        List<CarEntity> cars = carRepository.findTop50BySourceOrderByCreatedAtDesc("USER");
+        AdminDashboardService.OwnerListings ownerListings = adminDashboardService.ownerListings();
+        List<CarEntity> cars = ownerListings.cars();
         if (cars.isEmpty()) {
             sendMessage(chatId, "Оголошень користувачів не знайдено.");
             return;
         }
-
-        long total = carRepository.countBySource("USER");
-        long pending = cars.stream()
-                .filter(car -> "PENDING".equalsIgnoreCase(car.getListingStatus()))
-                .count();
-        long active = cars.stream()
-                .filter(car -> "ACTIVE".equalsIgnoreCase(car.getListingStatus()))
-                .count();
-        long rejected = cars.stream()
-                .filter(car -> "REJECTED".equalsIgnoreCase(car.getListingStatus()))
-                .count();
-        long inactive = cars.stream()
-                .filter(car -> "INACTIVE".equalsIgnoreCase(car.getListingStatus()))
-                .count();
 
         sendMessage(chatId, """
                 Оголошення користувачів:
                 - усього: %d
                 - показано останніх: %d
                 - у списку: на перевірці=%d, активні=%d, відхилені=%d, неактивні=%d
-                """.formatted(total, cars.size(), pending, active, rejected, inactive).trim());
+                """.formatted(ownerListings.total(), cars.size(), ownerListings.pending(), ownerListings.active(),
+                ownerListings.rejected(), ownerListings.inactive()).trim());
 
         for (CarEntity car : cars) {
             InlineKeyboardMarkup keyboard = "PENDING".equalsIgnoreCase(car.getListingStatus())
@@ -3350,7 +3335,7 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
     }
 
     private void sendPendingUserListings(Long adminChatId) {
-        List<CarEntity> pendingCars = carRepository.findTop10ByListingStatusOrderByCreatedAtDesc("PENDING");
+        List<CarEntity> pendingCars = adminDashboardService.pendingListings();
         if (pendingCars.isEmpty()) {
             return;
         }
