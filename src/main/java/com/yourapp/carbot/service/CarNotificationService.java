@@ -23,7 +23,6 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.text.Normalizer;
-import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -42,6 +41,7 @@ public class CarNotificationService {
     private final UserFilterRepository userFilterRepository;
     private final CarFilterMatcher carFilterMatcher;
     private final CarImageDownloadService carImageDownloadService;
+    private final CarCardFormatter carCardFormatter;
     private final TelegramClient telegramClient;
     private final MessageService messages;
 
@@ -50,6 +50,7 @@ public class CarNotificationService {
             UserFilterRepository userFilterRepository,
             CarFilterMatcher carFilterMatcher,
             CarImageDownloadService carImageDownloadService,
+            CarCardFormatter carCardFormatter,
             TelegramClient telegramClient,
             MessageService messages
     ) {
@@ -57,6 +58,7 @@ public class CarNotificationService {
         this.userFilterRepository = userFilterRepository;
         this.carFilterMatcher = carFilterMatcher;
         this.carImageDownloadService = carImageDownloadService;
+        this.carCardFormatter = carCardFormatter;
         this.telegramClient = telegramClient;
         this.messages = messages;
     }
@@ -703,29 +705,7 @@ public class CarNotificationService {
     }
 
     private String formatTitle(String rawTitle) {
-        if (rawTitle == null || rawTitle.isBlank()) {
-            return "-";
-        }
-
-        String cleaned = rawTitle.replaceAll("\\s+", " ").trim();
-
-        if (cleaned.length() <= 55) {
-            return cleaned;
-        }
-
-        int splitIndex = cleaned.lastIndexOf(" ", 55);
-        if (splitIndex < 30) {
-            splitIndex = 55;
-        }
-
-        String first = cleaned.substring(0, splitIndex).trim();
-        String second = cleaned.substring(splitIndex).trim();
-
-        if (second.length() > 45) {
-            second = second.substring(0, 42).trim() + "...";
-        }
-
-        return first + "\n" + second;
+        return carCardFormatter.formatTitle(rawTitle);
     }
 
     private String removeLeadingDuplicatedBrand(String title) {
@@ -793,77 +773,15 @@ public class CarNotificationService {
     }
 
     private String formatPrice(CarEntity car) {
-        if (car == null) {
-            return null;
-        }
-
-        if (car.getPrice() != null && !car.getPrice().isBlank()) {
-            return car.getPrice().trim();
-        }
-
-        if (car.getPriceValue() != null && car.getPriceValue() > 0) {
-            return String.format(Locale.US, "%,d Kč", car.getPriceValue()).replace(",", " ");
-        }
-
-        return null;
+        return carCardFormatter.formatPrice(car);
     }
 
     private String formatSource(String source) {
-        if (source == null || source.isBlank()) {
-            return null;
-        }
-
-        return switch (source.trim().toUpperCase(Locale.ROOT)) {
-            case "SAUTO" -> "Sauto.cz";
-            case "USER" -> "AutoCZ users";
-            case "BAZOS" -> "Bazoš.cz";
-            case "AUTOESA" -> "Auto ESA";
-            default -> source.trim();
-        };
+        return carCardFormatter.formatSource(source);
     }
 
     private String formatFreshness(String lang, LocalDateTime createdAt) {
-        if (createdAt == null) {
-            return null;
-        }
-
-        long minutes = Duration.between(createdAt, LocalDateTime.now()).toMinutes();
-
-        if (minutes < 1) {
-            return switch (lang) {
-                case "ru" -> "только что";
-                case "uk" -> "щойно";
-                case "cs" -> "právě teď";
-                default -> "just now";
-            };
-        }
-
-        if (minutes < 60) {
-            return switch (lang) {
-                case "ru" -> minutes + " мин назад";
-                case "uk" -> minutes + " хв тому";
-                case "cs" -> "před " + minutes + " min";
-                default -> minutes + " min ago";
-            };
-        }
-
-        long hours = minutes / 60;
-        if (hours < 24) {
-            return switch (lang) {
-                case "ru" -> hours + " ч назад";
-                case "uk" -> hours + " год тому";
-                case "cs" -> "před " + hours + " h";
-                default -> hours + " h ago";
-            };
-        }
-
-        long days = hours / 24;
-        return switch (lang) {
-            case "ru" -> days + " дн назад";
-            case "uk" -> days + " дн тому";
-            case "cs" -> "před " + days + " d";
-            default -> days + " d ago";
-        };
+        return carCardFormatter.formatFreshness(lang, createdAt);
     }
 
     private String safeYear(Integer year) {

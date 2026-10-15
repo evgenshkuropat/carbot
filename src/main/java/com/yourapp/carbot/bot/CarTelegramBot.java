@@ -6,6 +6,7 @@ import com.yourapp.carbot.entity.UserFilterEntity;
 import com.yourapp.carbot.i18n.MessageService;
 import com.yourapp.carbot.repository.CarRepository;
 import com.yourapp.carbot.service.CarFilterMatcher;
+import com.yourapp.carbot.service.CarCardFormatter;
 import com.yourapp.carbot.service.CarImageDownloadService;
 import com.yourapp.carbot.service.FavoriteCarService;
 import com.yourapp.carbot.service.FilterWorkflowService;
@@ -37,7 +38,6 @@ import org.telegram.telegrambots.meta.generics.TelegramClient;
 import java.io.File;
 import java.nio.file.Files;
 import java.text.Normalizer;
-import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.LinkedHashSet;
@@ -58,6 +58,7 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
     private final FilterWorkflowService filterWorkflowService;
     private final CarRepository carRepository;
     private final CarFilterMatcher carFilterMatcher;
+    private final CarCardFormatter carCardFormatter;
     private final CarImageDownloadService carImageDownloadService;
     private final FavoriteCarService favoriteCarService;
     private final ParserRunStatsService parserRunStatsService;
@@ -78,6 +79,7 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
             FilterWorkflowService filterWorkflowService,
             CarRepository carRepository,
             CarFilterMatcher carFilterMatcher,
+            CarCardFormatter carCardFormatter,
             CarImageDownloadService carImageDownloadService,
             FavoriteCarService favoriteCarService,
             ParserRunStatsService parserRunStatsService,
@@ -96,6 +98,7 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
         this.filterWorkflowService = filterWorkflowService;
         this.carRepository = carRepository;
         this.carFilterMatcher = carFilterMatcher;
+        this.carCardFormatter = carCardFormatter;
         this.carImageDownloadService = carImageDownloadService;
         this.favoriteCarService = favoriteCarService;
         this.parserRunStatsService = parserRunStatsService;
@@ -3047,29 +3050,8 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
     }
 
     private String formatTitle(String rawTitle) {
-        if (rawTitle == null || rawTitle.isBlank()) {
-            return "-";
-        }
-
-        String cleaned = removeLeadingDuplicatedBrand(rawTitle.replaceAll("\\s+", " ").trim());
-
-        if (cleaned.length() <= 55) {
-            return cleaned;
-        }
-
-        int splitIndex = cleaned.lastIndexOf(" ", 55);
-        if (splitIndex < 30) {
-            splitIndex = 55;
-        }
-
-        String first = cleaned.substring(0, splitIndex).trim();
-        String second = cleaned.substring(splitIndex).trim();
-
-        if (second.length() > 45) {
-            second = second.substring(0, 42).trim() + "...";
-        }
-
-        return first + "\n" + second;
+        String normalized = rawTitle == null ? null : removeLeadingDuplicatedBrand(rawTitle);
+        return carCardFormatter.formatTitle(normalized);
     }
 
     private boolean titleStartsWithBrand(String title, String brand) {
@@ -3146,57 +3128,11 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
     }
 
     private String formatPrice(CarEntity car) {
-        if (car == null) {
-            return null;
-        }
-
-        if (car.getPrice() != null && !car.getPrice().isBlank()) {
-            return car.getPrice().trim();
-        }
-
-        if (car.getPriceValue() != null && car.getPriceValue() > 0) {
-            return String.format("%,d Kč", car.getPriceValue()).replace(",", " ");
-        }
-
-        return null;
+        return carCardFormatter.formatPrice(car);
     }
 
     private String formatSource(String source) {
-        if (source == null || source.isBlank()) {
-            return null;
-        }
-
-        String normalized = source.trim().toUpperCase();
-
-        if (normalized.contains("SAUTO")) {
-            return "Sauto.cz";
-        }
-
-        if (normalized.contains("BAZOS")) {
-            return "Bazoš.cz";
-        }
-
-        if (normalized.contains("SBAZAR")) {
-            return "Sbazar.cz";
-        }
-
-        if (normalized.contains("TIPCARS") || normalized.contains("TIP_CARS")) {
-            return "TipCars.cz";
-        }
-
-        if (normalized.contains("TOYOTA_PROVERENE")) {
-            return "Toyota prověřené vozy";
-        }
-
-        if (normalized.contains("AUTOESA")) {
-            return "Auto ESA";
-        }
-
-        if (normalized.contains("USER")) {
-            return "AutoCZ users";
-        }
-
-        return source.trim();
+        return carCardFormatter.formatSource(source);
     }
 
     private String formatAdminSource(String source) {
@@ -3208,71 +3144,7 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
     }
 
     private String formatFreshness(String lang, LocalDateTime createdAt) {
-        if (createdAt == null) {
-            return null;
-        }
-
-        long minutes = Duration.between(createdAt, LocalDateTime.now()).toMinutes();
-
-        if (minutes < 1) {
-            return switch (lang) {
-                case "ru" -> "только что";
-                case "uk" -> "щойно";
-                case "cs" -> "právě teď";
-                default -> "just now";
-            };
-        }
-
-        if (minutes < 60) {
-            return switch (lang) {
-                case "ru" -> minutes + " мин назад";
-                case "uk" -> minutes + " хв тому";
-                case "cs" -> "před " + minutes + " min";
-                default -> minutes + " min ago";
-            };
-        }
-
-        long hours = minutes / 60;
-
-        if (hours < 24) {
-            return switch (lang) {
-                case "ru" -> hours + " ч назад";
-                case "uk" -> hours + " год тому";
-                case "cs" -> "před " + hours + " h";
-                default -> hours + " h ago";
-            };
-        }
-
-        long days = hours / 24;
-
-        if (days < 30) {
-            return switch (lang) {
-                case "ru" -> days + " дн назад";
-                case "uk" -> days + " дн тому";
-                case "cs" -> "před " + days + " d";
-                default -> days + " d ago";
-            };
-        }
-
-        long months = days / 30;
-
-        if (months < 12) {
-            return switch (lang) {
-                case "ru" -> months + " мес назад";
-                case "uk" -> months + " міс тому";
-                case "cs" -> "před " + months + " měs.";
-                default -> months + " mo ago";
-            };
-        }
-
-        long years = days / 365;
-
-        return switch (lang) {
-            case "ru" -> years + " г назад";
-            case "uk" -> years + " р тому";
-            case "cs" -> "před " + years + " r.";
-            default -> years + " y ago";
-        };
+        return carCardFormatter.formatFreshness(lang, createdAt);
     }
 
     private String safeYear(Integer year) {
