@@ -21,8 +21,6 @@ import org.telegram.telegrambots.meta.generics.TelegramClient;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
-import java.net.URL;
-import java.net.URLConnection;
 import java.nio.file.Files;
 import java.text.Normalizer;
 import java.time.Duration;
@@ -39,11 +37,11 @@ public class CarNotificationService {
     private static final String PLACEHOLDER_IMAGE_PATH = "static/images/no-car-photo.jpg";
     private static final int MAX_CAPTION_LENGTH = 900;
     private static final int MAX_MESSAGE_LENGTH = 3500;
-    private static final long MAX_IMAGE_DOWNLOAD_BYTES = 8L * 1024 * 1024;
 
     private final TelegramSubscriberRepository subscriberRepository;
     private final UserFilterRepository userFilterRepository;
     private final CarFilterMatcher carFilterMatcher;
+    private final CarImageDownloadService carImageDownloadService;
     private final TelegramClient telegramClient;
     private final MessageService messages;
 
@@ -51,12 +49,14 @@ public class CarNotificationService {
             TelegramSubscriberRepository subscriberRepository,
             UserFilterRepository userFilterRepository,
             CarFilterMatcher carFilterMatcher,
+            CarImageDownloadService carImageDownloadService,
             TelegramClient telegramClient,
             MessageService messages
     ) {
         this.subscriberRepository = subscriberRepository;
         this.userFilterRepository = userFilterRepository;
         this.carFilterMatcher = carFilterMatcher;
+        this.carImageDownloadService = carImageDownloadService;
         this.telegramClient = telegramClient;
         this.messages = messages;
     }
@@ -313,7 +313,7 @@ public class CarNotificationService {
                     chatId, safe(car.getSource()), safe(car.getTitle()));
 
             if (hasUsableImage(car.getImageUrl())) {
-                if (!requiresImageDownload(car) && sendPhotoByUrl(chatId, car, caption, keyboard)) {
+                if (!carImageDownloadService.requiresDownload(car) && sendPhotoByUrl(chatId, car, caption, keyboard)) {
                     return true;
                 }
 
@@ -481,7 +481,7 @@ public class CarNotificationService {
         File tempFile = null;
 
         try {
-            tempFile = downloadImageToTempFile(car);
+            tempFile = carImageDownloadService.downloadToTempFile(car);
 
             if (tempFile == null || !tempFile.exists() || tempFile.length() == 0) {
                 log.warn("Downloaded image file is empty or missing. source={} title='{}' imageUrl={}",
@@ -571,95 +571,6 @@ public class CarNotificationService {
                 } catch (Exception ignored) {
                 }
             }
-        }
-    }
-
-    private File downloadImageToTempFile(CarEntity car) throws Exception {
-        String imageUrl = normalizeImageUrl(car.getImageUrl());
-
-        if (imageUrl == null) {
-            return null;
-        }
-
-        URLConnection connection = new URL(imageUrl).openConnection();
-
-        connection.setRequestProperty(
-                "User-Agent",
-                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 " +
-                        "(KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
-        );
-        connection.setRequestProperty("Accept", "image/avif,image/webp,image/apng,image/*,*/*;q=0.8");
-        connection.setRequestProperty("Referer", resolveReferer(car));
-        connection.setConnectTimeout(10000);
-        connection.setReadTimeout(15000);
-
-        String extension = guessExtension(imageUrl);
-
-        File tempFile = File.createTempFile("car-photo-" + UUID.randomUUID(), extension);
-
-        try (InputStream inputStream = connection.getInputStream();
-             FileOutputStream outputStream = new FileOutputStream(tempFile)) {
-
-            copyWithLimit(inputStream, outputStream, MAX_IMAGE_DOWNLOAD_BYTES);
-        }
-
-        if (tempFile.length() == 0) {
-            Files.deleteIfExists(tempFile.toPath());
-            return null;
-        }
-
-        return tempFile;
-    }
-
-    private String resolveReferer(CarEntity car) {
-        String source = safe(car.getSource()).toUpperCase(Locale.ROOT);
-
-        if (source.contains("BAZOS")) {
-            return "https://auto.bazos.cz/";
-        }
-
-        if (source.contains("SAUTO")) {
-            return "https://www.sauto.cz/";
-        }
-
-        if (source.contains("TIPCARS") || source.contains("TIP_CARS")) {
-            return "https://www.tipcars.com/";
-        }
-
-        return "https://www.google.com/";
-    }
-
-    private boolean requiresImageDownload(CarEntity car) {
-        String source = safe(car.getSource()).toUpperCase(Locale.ROOT);
-        return source.contains("TIPCARS") || source.contains("TIP_CARS");
-    }
-
-    private String guessExtension(String imageUrl) {
-        String lower = imageUrl.toLowerCase(Locale.ROOT);
-
-        if (lower.contains(".png")) {
-            return ".png";
-        }
-        if (lower.contains(".jpeg")) {
-            return ".jpeg";
-        }
-        if (lower.contains(".webp")) {
-            return ".webp";
-        }
-        return ".jpg";
-    }
-
-    private void copyWithLimit(InputStream inputStream, FileOutputStream outputStream, long maxBytes) throws Exception {
-        byte[] buffer = new byte[8192];
-        long total = 0;
-        int read;
-
-        while ((read = inputStream.read(buffer)) != -1) {
-            total += read;
-            if (total > maxBytes) {
-                throw new IllegalStateException("Image is too large");
-            }
-            outputStream.write(buffer, 0, read);
         }
     }
 

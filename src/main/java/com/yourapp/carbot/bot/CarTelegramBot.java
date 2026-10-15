@@ -6,6 +6,7 @@ import com.yourapp.carbot.entity.UserFilterEntity;
 import com.yourapp.carbot.i18n.MessageService;
 import com.yourapp.carbot.repository.CarRepository;
 import com.yourapp.carbot.service.CarFilterMatcher;
+import com.yourapp.carbot.service.CarImageDownloadService;
 import com.yourapp.carbot.service.CarSearchService;
 import com.yourapp.carbot.service.FavoriteCarService;
 import com.yourapp.carbot.service.ParserRunStatsService;
@@ -32,9 +33,6 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboard;
 import org.telegram.telegrambots.meta.generics.TelegramClient;
 
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.net.URLConnection;
 import java.nio.file.Files;
 import java.text.Normalizer;
 import java.time.Duration;
@@ -52,8 +50,6 @@ import java.util.concurrent.ConcurrentHashMap;
 public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleThreadUpdateConsumer {
 
     private static final Logger log = LoggerFactory.getLogger(CarTelegramBot.class);
-    private static final long MAX_IMAGE_DOWNLOAD_BYTES = 8L * 1024 * 1024;
-
     private final TelegramClient telegramClient;
     private final String botToken;
 
@@ -63,6 +59,7 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
     private final CarRepository carRepository;
     private final CarSearchService carSearchService;
     private final CarFilterMatcher carFilterMatcher;
+    private final CarImageDownloadService carImageDownloadService;
     private final FavoriteCarService favoriteCarService;
     private final ParserRunStatsService parserRunStatsService;
     private final CarBotKeyboardFactory keyboardFactory;
@@ -84,6 +81,7 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
             CarRepository carRepository,
             CarSearchService carSearchService,
             CarFilterMatcher carFilterMatcher,
+            CarImageDownloadService carImageDownloadService,
             FavoriteCarService favoriteCarService,
             ParserRunStatsService parserRunStatsService,
             CarBotKeyboardFactory keyboardFactory,
@@ -99,6 +97,7 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
         this.carRepository = carRepository;
         this.carSearchService = carSearchService;
         this.carFilterMatcher = carFilterMatcher;
+        this.carImageDownloadService = carImageDownloadService;
         this.favoriteCarService = favoriteCarService;
         this.parserRunStatsService = parserRunStatsService;
         this.keyboardFactory = keyboardFactory;
@@ -3059,7 +3058,7 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
         File tempFile = null;
 
         try {
-            tempFile = downloadImageToTempFile(car);
+            tempFile = carImageDownloadService.downloadToTempFile(car);
 
             if (tempFile == null || !tempFile.exists() || tempFile.length() == 0) {
                 return false;
@@ -3085,94 +3084,6 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
                 } catch (Exception ignored) {
                 }
             }
-        }
-    }
-
-    private File downloadImageToTempFile(CarEntity car) throws Exception {
-        String imageUrl = car.getImageUrl();
-
-        if (imageUrl == null || imageUrl.isBlank()) {
-            return null;
-        }
-
-        URLConnection connection = new java.net.URL(imageUrl).openConnection();
-
-        connection.setRequestProperty(
-                "User-Agent",
-                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 " +
-                        "(KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
-        );
-        connection.setRequestProperty("Accept", "image/avif,image/webp,image/apng,image/*,*/*;q=0.8");
-        connection.setRequestProperty("Referer", resolveReferer(car));
-        connection.setConnectTimeout(10000);
-        connection.setReadTimeout(15000);
-
-        String extension = guessExtension(imageUrl);
-
-        File tempFile = File.createTempFile("car-photo-" + UUID.randomUUID(), extension);
-
-        try (InputStream inputStream = connection.getInputStream();
-             FileOutputStream outputStream = new FileOutputStream(tempFile)) {
-
-            copyWithLimit(inputStream, outputStream, MAX_IMAGE_DOWNLOAD_BYTES);
-        }
-
-        if (tempFile.length() == 0) {
-            Files.deleteIfExists(tempFile.toPath());
-            return null;
-        }
-
-        return tempFile;
-    }
-
-    private String resolveReferer(CarEntity car) {
-        String source = safe(car.getSource()).toUpperCase();
-
-        if (source.contains("BAZOS")) {
-            return "https://auto.bazos.cz/";
-        }
-
-        if (source.contains("SAUTO")) {
-            return "https://www.sauto.cz/";
-        }
-
-        if (source.contains("TIPCARS") || source.contains("TIP_CARS")) {
-            return "https://www.tipcars.com/";
-        }
-
-        if (source.contains("AUTOESA")) {
-            return "https://www.autoesa.cz/";
-        }
-
-        return "https://www.google.com/";
-    }
-
-    private String guessExtension(String imageUrl) {
-        String lower = imageUrl.toLowerCase();
-
-        if (lower.contains(".png")) {
-            return ".png";
-        }
-        if (lower.contains(".jpeg")) {
-            return ".jpeg";
-        }
-        if (lower.contains(".webp")) {
-            return ".webp";
-        }
-        return ".jpg";
-    }
-
-    private void copyWithLimit(InputStream inputStream, FileOutputStream outputStream, long maxBytes) throws Exception {
-        byte[] buffer = new byte[8192];
-        long total = 0;
-        int read;
-
-        while ((read = inputStream.read(buffer)) != -1) {
-            total += read;
-            if (total > maxBytes) {
-                throw new IllegalStateException("Image is too large");
-            }
-            outputStream.write(buffer, 0, read);
         }
     }
 
