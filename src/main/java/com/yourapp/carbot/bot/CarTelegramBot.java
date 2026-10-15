@@ -14,6 +14,7 @@ import com.yourapp.carbot.service.ParserRunStatsService;
 import com.yourapp.carbot.service.SearchWorkflowService;
 import com.yourapp.carbot.service.TelegramSubscriberService;
 import com.yourapp.carbot.service.TelegramDeliveryService;
+import com.yourapp.carbot.service.NotificationSettingsService;
 import com.yourapp.carbot.service.UserFilterService;
 import com.yourapp.carbot.service.UserListingService;
 import com.yourapp.carbot.service.UserStateService;
@@ -50,6 +51,7 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
     private final String botToken;
 
     private final TelegramSubscriberService subscriberService;
+    private final NotificationSettingsService notificationSettingsService;
     private final TelegramDeliveryService telegramDeliveryService;
     private final UserStateService userStateService;
     private final UserFilterService userFilterService;
@@ -72,6 +74,7 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
             @Value("${telegram.bot.token}") String botToken,
             TelegramClient telegramClient,
             TelegramSubscriberService subscriberService,
+            NotificationSettingsService notificationSettingsService,
             TelegramDeliveryService telegramDeliveryService,
             UserStateService userStateService,
             UserFilterService userFilterService,
@@ -92,6 +95,7 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
         this.botToken = botToken;
         this.telegramClient = telegramClient;
         this.subscriberService = subscriberService;
+        this.notificationSettingsService = notificationSettingsService;
         this.telegramDeliveryService = telegramDeliveryService;
         this.userStateService = userStateService;
         this.userFilterService = userFilterService;
@@ -513,19 +517,19 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
         }
 
         if ("notif_pause_toggle".equals(data)) {
-            subscriberService.toggleNotificationsPaused(chatId);
+            notificationSettingsService.togglePause(chatId);
             showNotificationSettings(chatId);
             return;
         }
 
         if (data.startsWith("notif_mode:")) {
-            subscriberService.setNotificationMode(chatId, data.substring("notif_mode:".length()));
+            notificationSettingsService.setMode(chatId, data.substring("notif_mode:".length()));
             showNotificationSettings(chatId);
             return;
         }
 
         if (data.startsWith("notif_limit:")) {
-            subscriberService.setDailyNotificationLimit(chatId, Integer.parseInt(data.substring("notif_limit:".length())));
+            notificationSettingsService.setDailyLimit(chatId, Integer.parseInt(data.substring("notif_limit:".length())));
             showNotificationSettings(chatId);
             return;
         }
@@ -2497,7 +2501,7 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
     }
 
     private void showNotificationSettings(Long chatId) {
-        TelegramSubscriberEntity subscriber = subscriberService.getOrCreate(chatId);
+        TelegramSubscriberEntity subscriber = notificationSettingsService.settings(chatId);
         String lang = lang(chatId);
 
         sendMessage(
