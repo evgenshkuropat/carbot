@@ -2008,6 +2008,8 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         if (containsAny(titleSource,
                 " alfa romeo ", " alfa ", " alfu ", " romeo ",
                 " stelvio ", " giulia ", " giulietta ", " mito ", " alfetta ")) return "ALFA_ROMEO";
+        if (containsAny(titleSource, " fiat 500 c ", " fiat 500c ")
+                && !containsAny(titleSource, " 500 abarth ")) return "FIAT";
         if (containsAny(titleSource, " abarth ")) return "ABARTH";
         if (containsAny(titleSource, " škoda ", " skoda ")) return "SKODA";
         if (containsAny(titleSource, " volkswagen ", " vw ", " scirocco ")) return "VOLKSWAGEN";
@@ -2454,7 +2456,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             return "COUPE";
         }
 
-        if (containsAny(titleSource, " 500c ", " fiat 500c ")) {
+        if (containsAny(titleSource, " 500c ", " fiat 500c ", " 500 c ", " fiat 500 c ")) {
             return "CABRIO";
         }
 
@@ -3485,6 +3487,10 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
 
         if (containsAny(titleSource, " vivaro ")
                 && containsAny(titleSource, " l2 ", " h1 ", " 3 mista ", " 3 místa ")) {
+            return true;
+        }
+
+        if (looksClearlyCommercialBody(source)) {
             return true;
         }
 
