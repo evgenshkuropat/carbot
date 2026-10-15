@@ -48,6 +48,7 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
 
     private static final Logger log = LoggerFactory.getLogger(CarTelegramBot.class);
     private final TelegramClient telegramClient;
+    private final BotInputParser botInputParser;
     private final String botToken;
 
     private final TelegramSubscriberService subscriberService;
@@ -73,6 +74,7 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
     public CarTelegramBot(
             @Value("${telegram.bot.token}") String botToken,
             TelegramClient telegramClient,
+            BotInputParser botInputParser,
             TelegramSubscriberService subscriberService,
             NotificationSettingsService notificationSettingsService,
             TelegramDeliveryService telegramDeliveryService,
@@ -94,6 +96,7 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
     ) {
         this.botToken = botToken;
         this.telegramClient = telegramClient;
+        this.botInputParser = botInputParser;
         this.subscriberService = subscriberService;
         this.notificationSettingsService = notificationSettingsService;
         this.telegramDeliveryService = telegramDeliveryService;
@@ -275,7 +278,7 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
     }
 
     private void handleCommand(Long chatId, String username, String telegramLanguageCode, String text) {
-        switch (text.split("\\s+")[0].toLowerCase()) {
+        switch (botInputParser.command(text)) {
             case "/start" -> {
                 resetActiveInputFlows(chatId);
                 handleStart(chatId, username, telegramLanguageCode);
@@ -449,8 +452,7 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
     }
 
     private void handleCallback(Update update) throws Exception {
-        String data = update.getCallbackQuery().getData();
-        data = data == null ? "" : data.trim();
+        String data = botInputParser.callbackData(update.getCallbackQuery().getData());
         Long chatId = update.getCallbackQuery().getMessage().getChatId();
         log.info("BOT CALLBACK chatId={} data={}", chatId, data);
         String callbackId = update.getCallbackQuery().getId();
@@ -714,7 +716,7 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
             return;
         }
 
-        String legacyEditField = legacyEditField(data);
+        String legacyEditField = botInputParser.legacyEditField(data);
         if (legacyEditField != null) {
             handleEditFieldSafely(chatId, legacyEditField);
             return;
@@ -724,20 +726,6 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
         showCurrentFilter(chatId);
     }
 
-    private String legacyEditField(String data) {
-        return switch (data) {
-            case "edit_car_type", "edit:car_type", "filter_edit:car_type" -> "car_type";
-            case "edit_brand", "edit:brand", "filter_edit:brand" -> "brand";
-            case "edit_model", "edit:model", "edit_model_query", "edit:model_query", "filter_edit:model" -> "model_query";
-            case "edit_max_price", "edit:price", "edit:max_price", "filter_edit:max_price" -> "max_price";
-            case "edit_location", "edit:location", "filter_edit:location" -> "location";
-            case "edit_max_mileage", "edit:mileage", "edit:max_mileage", "filter_edit:max_mileage" -> "max_mileage";
-            case "edit_transmission", "edit:transmission", "filter_edit:transmission" -> "transmission";
-            case "edit_fuel_type", "edit:fuel_type", "filter_edit:fuel_type" -> "fuel_type";
-            case "edit_year_from", "edit:year_from", "filter_edit:year_from" -> "year_from";
-            default -> null;
-        };
-    }
     private void handleWizardBack(Long chatId, String targetStep) {
         UserFilterEntity filter = userFilterService.getOrCreate(chatId);
         String lang = lang(chatId);
