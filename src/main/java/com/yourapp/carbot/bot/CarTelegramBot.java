@@ -8,6 +8,7 @@ import com.yourapp.carbot.repository.CarRepository;
 import com.yourapp.carbot.service.CarFilterMatcher;
 import com.yourapp.carbot.service.CarImageDownloadService;
 import com.yourapp.carbot.service.FavoriteCarService;
+import com.yourapp.carbot.service.FilterWorkflowService;
 import com.yourapp.carbot.service.ParserRunStatsService;
 import com.yourapp.carbot.service.SearchWorkflowService;
 import com.yourapp.carbot.service.TelegramSubscriberService;
@@ -43,7 +44,6 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 
 @Component
 public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleThreadUpdateConsumer {
@@ -55,6 +55,7 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
     private final TelegramSubscriberService subscriberService;
     private final UserStateService userStateService;
     private final UserFilterService userFilterService;
+    private final FilterWorkflowService filterWorkflowService;
     private final CarRepository carRepository;
     private final CarFilterMatcher carFilterMatcher;
     private final CarImageDownloadService carImageDownloadService;
@@ -66,7 +67,6 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
     private final MessageService messages;
     private final String supportRaiffeisenAccount;
 
-    private final Set<Long> editingFilterSessions = ConcurrentHashMap.newKeySet();
     private final Set<Long> adminChatIds;
 
     public CarTelegramBot(
@@ -75,6 +75,7 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
             TelegramSubscriberService subscriberService,
             UserStateService userStateService,
             UserFilterService userFilterService,
+            FilterWorkflowService filterWorkflowService,
             CarRepository carRepository,
             CarFilterMatcher carFilterMatcher,
             CarImageDownloadService carImageDownloadService,
@@ -92,6 +93,7 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
         this.subscriberService = subscriberService;
         this.userStateService = userStateService;
         this.userFilterService = userFilterService;
+        this.filterWorkflowService = filterWorkflowService;
         this.carRepository = carRepository;
         this.carFilterMatcher = carFilterMatcher;
         this.carImageDownloadService = carImageDownloadService;
@@ -261,7 +263,7 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
         searchWorkflowService.stop(chatId);
         userListingService.clearDraft(chatId);
         userListingService.clearEditSession(chatId);
-        editingFilterSessions.remove(chatId);
+        filterWorkflowService.finishEditing(chatId);
         userStateService.reset(chatId);
     }
 
@@ -382,15 +384,13 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
                 || step == BotStep.EDITING_YEAR_FROM;
     }
     private boolean isFilterEditFlow(Long chatId) {
-        return editingFilterSessions.contains(chatId) || isEditingStep(userStateService.getStep(chatId));
+        return filterWorkflowService.isEditing(chatId) || isEditingStep(userStateService.getStep(chatId));
     }
 
     private void startNewFilterSetup(Long chatId) {
         String currentLang = lang(chatId);
 
-        UserFilterEntity filter = userFilterService.getOrCreate(chatId);
-        filter.setLanguageCode(currentLang);
-        userFilterService.save(filter);
+        UserFilterEntity filter = filterWorkflowService.beginSetup(chatId, currentLang);
 
         userStateService.setStep(chatId, BotStep.WAITING_CAR_TYPE);
 
@@ -402,7 +402,7 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
     }
 
     private void editFilterSetup(Long chatId) {
-        UserFilterEntity filter = userFilterService.getOrCreate(chatId);
+        UserFilterEntity filter = filterWorkflowService.getOrCreate(chatId);
 
         userStateService.setStep(chatId, BotStep.WAITING_CAR_TYPE);
 
@@ -421,7 +421,7 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
             return;
         }
 
-        editingFilterSessions.add(chatId);
+        filterWorkflowService.beginEditing(chatId);
         sendFilterEditFieldsMenu(chatId);
     }
 
@@ -437,7 +437,7 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
 
     private void finishEditField(Long chatId) {
         userStateService.setStep(chatId, BotStep.NONE);
-        editingFilterSessions.remove(chatId);
+        filterWorkflowService.finishEditing(chatId);
         sendFilterEditFieldsMenu(chatId);
     }
 
@@ -847,9 +847,9 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
         }
     }
     private void handleEditField(Long chatId, String field) {
-        UserFilterEntity filter = userFilterService.getOrCreate(chatId);
+        UserFilterEntity filter = filterWorkflowService.getOrCreate(chatId);
         String lang = lang(chatId);
-        editingFilterSessions.add(chatId);
+        filterWorkflowService.beginEditing(chatId);
 
         switch (field) {
             case "car_type" -> {
@@ -921,11 +921,8 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
     }
 
     private void handleModelQueryText(Long chatId, String text) {
-        UserFilterEntity filter = userFilterService.getOrCreate(chatId);
         String value = limitText(text, 120);
-
-        filter.setModelQuery(value.isBlank() ? null : value);
-        userFilterService.save(filter);
+        UserFilterEntity filter = filterWorkflowService.updateModelQuery(chatId, value);
 
         if (isFilterEditFlow(chatId)) {
             sendMessage(chatId, messages.get(lang(chatId), "filter.model.saved"));
@@ -937,9 +934,7 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
     }
 
     private void clearModelQuery(Long chatId) {
-        UserFilterEntity filter = userFilterService.getOrCreate(chatId);
-        filter.setModelQuery(null);
-        userFilterService.save(filter);
+        UserFilterEntity filter = filterWorkflowService.clearModelQuery(chatId);
 
         if (isFilterEditFlow(chatId)) {
             sendMessage(chatId, messages.get(lang(chatId), "filter.model.cleared"));
@@ -986,31 +981,16 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
     }
 
     private void handleCarTypeToggle(Update update, Long chatId, String carTypeValue) {
-        UserFilterEntity filter = userFilterService.getOrCreate(chatId);
-
-        Set<String> selected = parseValues(filter.getCarType());
-
-        if (selected.contains(carTypeValue)) {
-            selected.remove(carTypeValue);
-        } else {
-            selected.add(carTypeValue);
-        }
-
-        filter.setCarType(joinValues(selected));
-        userFilterService.save(filter);
+        UserFilterEntity filter = filterWorkflowService.toggleCarType(chatId, carTypeValue);
 
         refreshCarTypeSelectionMessage(update, chatId, filter);
     }
 
     private void handleCarTypeAny(Long chatId) {
-        UserFilterEntity filter = userFilterService.getOrCreate(chatId);
-        filter.setCarType(null);
-        if (!isFilterEditFlow(chatId)) {
-            filter.setBrand(null);
-        }
-        userFilterService.save(filter);
+        boolean editing = isFilterEditFlow(chatId);
+        UserFilterEntity filter = filterWorkflowService.clearCarTypes(chatId, !editing);
 
-        if (isFilterEditFlow(chatId)) {
+        if (editing) {
             finishEditField(chatId);
             return;
         }
@@ -1029,7 +1009,7 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
     }
 
     private void handleCarTypeDone(Update update, Long chatId) {
-        UserFilterEntity filter = userFilterService.getOrCreate(chatId);
+        UserFilterEntity filter = filterWorkflowService.getOrCreate(chatId);
 
         if (filter.getCarType() == null || filter.getCarType().isBlank()) {
             editMessageTextAndKeyboard(
@@ -1041,12 +1021,10 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
             return;
         }
 
-        if (!isFilterEditFlow(chatId)) {
-            filter.setBrand(null);
-        }
-        userFilterService.save(filter);
+        boolean editing = isFilterEditFlow(chatId);
+        filter = filterWorkflowService.finishCarTypes(chatId, !editing);
 
-        if (isFilterEditFlow(chatId)) {
+        if (editing) {
             finishEditField(chatId);
             return;
         }
@@ -1076,18 +1054,8 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
     }
 
     private void handleBrandToggle(Update update, Long chatId, String brandValue, boolean otherPage) {
-        UserFilterEntity filter = userFilterService.getOrCreate(chatId);
-
+        UserFilterEntity filter = filterWorkflowService.toggleBrand(chatId, brandValue);
         Set<String> selected = parseValues(filter.getBrand());
-
-        if (selected.contains(brandValue)) {
-            selected.remove(brandValue);
-        } else {
-            selected.add(brandValue);
-        }
-
-        filter.setBrand(joinValues(selected));
-        userFilterService.save(filter);
 
         int messageId = update.getCallbackQuery().getMessage().getMessageId();
 
@@ -1116,14 +1084,10 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
     }
 
     private void handleBrandAny(Long chatId) {
-        UserFilterEntity filter = userFilterService.getOrCreate(chatId);
-        filter.setBrand(null);
-        if (!isFilterEditFlow(chatId)) {
-            filter.setModelQuery(null);
-        }
-        userFilterService.save(filter);
+        boolean editing = isFilterEditFlow(chatId);
+        UserFilterEntity filter = filterWorkflowService.clearBrands(chatId, !editing);
 
-        if (isFilterEditFlow(chatId)) {
+        if (editing) {
             finishEditField(chatId);
             return;
         }
@@ -1132,7 +1096,7 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
     }
 
     private void handleBrandDone(Long chatId) {
-        UserFilterEntity filter = userFilterService.getOrCreate(chatId);
+        UserFilterEntity filter = filterWorkflowService.getOrCreate(chatId);
 
         if (filter.getBrand() == null || filter.getBrand().isBlank()) {
             sendMessage(
@@ -1143,12 +1107,10 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
             return;
         }
 
-        if (!isFilterEditFlow(chatId)) {
-            filter.setModelQuery(null);
-        }
-        userFilterService.save(filter);
+        boolean editing = isFilterEditFlow(chatId);
+        filter = filterWorkflowService.finishBrands(chatId, !editing);
 
-        if (isFilterEditFlow(chatId)) {
+        if (editing) {
             finishEditField(chatId);
             return;
         }
@@ -1158,10 +1120,7 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
 
     private void handleMaxPriceCallback(Long chatId, String value) {
         Integer maxPrice = Integer.parseInt(value);
-
-        UserFilterEntity filter = userFilterService.getOrCreate(chatId);
-        filter.setMaxPrice(maxPrice == 0 ? null : maxPrice);
-        userFilterService.save(filter);
+        UserFilterEntity filter = filterWorkflowService.setMaxPrice(chatId, maxPrice);
 
         if (isFilterEditFlow(chatId)) {
             finishEditField(chatId);
@@ -1182,9 +1141,7 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
     }
 
     private void handleLocationCallback(Long chatId, String value) {
-        UserFilterEntity filter = userFilterService.getOrCreate(chatId);
-        filter.setLocation("ANY".equals(value) ? null : value);
-        userFilterService.save(filter);
+        UserFilterEntity filter = filterWorkflowService.setLocation(chatId, value);
 
         if (isFilterEditFlow(chatId)) {
             finishEditField(chatId);
@@ -1206,10 +1163,7 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
 
     private void handleMileageCallback(Long chatId, String value) {
         Integer maxMileage = Integer.parseInt(value);
-
-        UserFilterEntity filter = userFilterService.getOrCreate(chatId);
-        filter.setMaxMileage(maxMileage == 0 ? null : maxMileage);
-        userFilterService.save(filter);
+        UserFilterEntity filter = filterWorkflowService.setMaxMileage(chatId, maxMileage);
 
         if (isFilterEditFlow(chatId)) {
             finishEditField(chatId);
@@ -1230,9 +1184,7 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
     }
 
     private void handleTransmissionCallback(Long chatId, String value) {
-        UserFilterEntity filter = userFilterService.getOrCreate(chatId);
-        filter.setTransmission("ANY".equals(value) ? null : value);
-        userFilterService.save(filter);
+        UserFilterEntity filter = filterWorkflowService.setTransmission(chatId, value);
 
         if (isFilterEditFlow(chatId)) {
             finishEditField(chatId);
@@ -1253,9 +1205,7 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
     }
 
     private void handleFuelTypeCallback(Long chatId, String value) {
-        UserFilterEntity filter = userFilterService.getOrCreate(chatId);
-        filter.setFuelType("ANY".equals(value) ? null : value);
-        userFilterService.save(filter);
+        UserFilterEntity filter = filterWorkflowService.setFuelType(chatId, value);
 
         if (isFilterEditFlow(chatId)) {
             finishEditField(chatId);
@@ -1277,10 +1227,7 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
 
     private void handleYearFromCallback(Long chatId, String value) {
         Integer yearFrom = Integer.parseInt(value);
-
-        UserFilterEntity filter = userFilterService.getOrCreate(chatId);
-        filter.setYearFrom(yearFrom == 0 ? null : yearFrom);
-        userFilterService.save(filter);
+        UserFilterEntity filter = filterWorkflowService.setYearFrom(chatId, yearFrom);
 
         if (isFilterEditFlow(chatId)) {
             finishEditField(chatId);
@@ -2478,7 +2425,7 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
     }
 
     private void showCurrentFilter(Long chatId) {
-        editingFilterSessions.remove(chatId);
+        filterWorkflowService.finishEditing(chatId);
         UserFilterEntity filter = userFilterService.findByChatId(chatId).orElse(null);
 
         if (!userFilterService.isConfigured(filter)) {
