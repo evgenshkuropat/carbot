@@ -39,6 +39,14 @@ public class UserFilterService {
         return repository.findByChatId(chatId);
     }
 
+    public boolean isConfigured(UserFilterEntity filter) {
+        return filter != null && (
+                hasText(filter.getCarType()) || hasText(filter.getBrand()) || hasText(filter.getModelQuery())
+                        || filter.getMaxPrice() != null || filter.getMaxMileage() != null || hasText(filter.getLocation())
+                        || hasText(filter.getFuelType()) || hasText(filter.getTransmission()) || filter.getYearFrom() != null
+        );
+    }
+
     public void clearFilter(Long chatId) {
         Optional<UserFilterEntity> existing = repository.findByChatId(chatId);
         if (existing.isEmpty()) {
@@ -58,5 +66,9 @@ public class UserFilterService {
         filter.setUpdatedAt(LocalDateTime.now());
 
         repository.save(filter);
+    }
+
+    private boolean hasText(String value) {
+        return value != null && !value.isBlank();
     }
 }
