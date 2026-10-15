@@ -12,6 +12,7 @@ import com.yourapp.carbot.service.FavoriteCarService;
 import com.yourapp.carbot.service.ParserRunStatsService;
 import com.yourapp.carbot.service.TelegramSubscriberService;
 import com.yourapp.carbot.service.UserFilterService;
+import com.yourapp.carbot.service.UserListingService;
 import com.yourapp.carbot.service.UserStateService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,9 +42,7 @@ import java.util.Comparator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
-import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Component
@@ -62,13 +61,12 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
     private final CarImageDownloadService carImageDownloadService;
     private final FavoriteCarService favoriteCarService;
     private final ParserRunStatsService parserRunStatsService;
+    private final UserListingService userListingService;
     private final CarBotKeyboardFactory keyboardFactory;
     private final MessageService messages;
     private final String supportRaiffeisenAccount;
 
     private final Map<Long, SearchSession> searchSessions = new ConcurrentHashMap<>();
-    private final Map<Long, SellDraft> sellDrafts = new ConcurrentHashMap<>();
-    private final Map<Long, ListingEditSession> listingEditSessions = new ConcurrentHashMap<>();
     private final Set<Long> editingFilterSessions = ConcurrentHashMap.newKeySet();
     private final Set<Long> adminChatIds;
 
@@ -84,6 +82,7 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
             CarImageDownloadService carImageDownloadService,
             FavoriteCarService favoriteCarService,
             ParserRunStatsService parserRunStatsService,
+            UserListingService userListingService,
             CarBotKeyboardFactory keyboardFactory,
             MessageService messages,
             @Value("${support.raiffeisen-account:}") String supportRaiffeisenAccount,
@@ -100,6 +99,7 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
         this.carImageDownloadService = carImageDownloadService;
         this.favoriteCarService = favoriteCarService;
         this.parserRunStatsService = parserRunStatsService;
+        this.userListingService = userListingService;
         this.keyboardFactory = keyboardFactory;
         this.messages = messages;
         this.supportRaiffeisenAccount = supportRaiffeisenAccount;
@@ -259,8 +259,8 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
     }
 
     private void resetActiveInputFlows(Long chatId) {
-        sellDrafts.remove(chatId);
-        listingEditSessions.remove(chatId);
+        userListingService.clearDraft(chatId);
+        userListingService.clearEditSession(chatId);
         editingFilterSessions.remove(chatId);
         userStateService.reset(chatId);
     }
@@ -315,7 +315,7 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
                 } else if (isSellStep(userStateService.getStep(chatId))) {
                     cancelSellFlow(chatId);
                 } else if (userStateService.getStep(chatId) == BotStep.SELL_EDIT_VALUE) {
-                    listingEditSessions.remove(chatId);
+                    userListingService.clearEditSession(chatId);
                     userStateService.reset(chatId);
                     sendMessage(chatId, sellCancelledText(chatId), keyboardFactory.mainMenuKeyboard(lang(chatId)));
                 } else {
@@ -1676,9 +1676,7 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
     }
 
     private void startSellFlow(Long chatId) {
-        SellDraft draft = new SellDraft();
-        draft.ownerChatId = chatId;
-        sellDrafts.put(chatId, draft);
+        userListingService.startDraft(chatId);
         userStateService.setStep(chatId, BotStep.SELL_BRAND);
 
         sendMessage(chatId, sellPrompt(chatId, "brand"), keyboardFactory.mainMenuKeyboard(lang(chatId)));
@@ -1704,11 +1702,7 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
             return;
         }
 
-        SellDraft draft = sellDrafts.computeIfAbsent(chatId, key -> {
-            SellDraft created = new SellDraft();
-            created.ownerChatId = chatId;
-            return created;
-        });
+        UserListingService.Draft draft = userListingService.getOrCreateDraft(chatId);
         draft.sellerUsername = username;
 
         BotStep step = userStateService.getStep(chatId);
@@ -1815,17 +1809,13 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
             }
             default -> {
                 userStateService.reset(chatId);
-                sellDrafts.remove(chatId);
+                userListingService.clearDraft(chatId);
             }
         }
     }
 
     private void handleSellPhoto(Long chatId, String username, List<PhotoSize> photos) {
-        SellDraft draft = sellDrafts.computeIfAbsent(chatId, key -> {
-            SellDraft created = new SellDraft();
-            created.ownerChatId = chatId;
-            return created;
-        });
+        UserListingService.Draft draft = userListingService.getOrCreateDraft(chatId);
         draft.sellerUsername = username;
 
         PhotoSize bestPhoto = photos == null ? null : photos.stream()
@@ -1843,35 +1833,12 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
     }
 
     private void submitSellDraft(Long chatId) {
-        SellDraft draft = sellDrafts.get(chatId);
+        UserListingService.Draft draft = userListingService.findDraft(chatId).orElse(null);
         if (draft == null || !draft.isComplete()) {
             startSellFlow(chatId);
             return;
         }
-
-        CarEntity car = new CarEntity();
-        car.setSource("USER");
-        car.setTitle(buildUserListingTitle(draft));
-        car.setPrice(formatCzk(draft.priceValue));
-        car.setPriceValue(draft.priceValue);
-        car.setLocation(draft.location);
-        car.setUrl("user://" + chatId + "/" + UUID.randomUUID());
-        car.setBrand(draft.brand);
-        car.setYear(draft.year);
-        car.setMileage(draft.mileage);
-        car.setFuelType(draft.fuelType);
-        car.setTransmission(draft.transmission);
-        car.setCarType(draft.carType);
-        car.setOwnerChatId(chatId);
-        car.setSellerUsername(draft.sellerUsername);
-        car.setSellerContact(draft.sellerContact);
-        car.setImageUrl(draft.imageUrl);
-        car.setListingStatus("PENDING");
-        car.setDescription(draft.description);
-        car.setCreatedAt(LocalDateTime.now());
-
-        CarEntity saved = carRepository.save(car);
-        sellDrafts.remove(chatId);
+        CarEntity saved = userListingService.submitDraft(chatId, buildUserListingTitle(draft)).orElseThrow();
         userStateService.reset(chatId);
 
         sendMessage(chatId, sellSubmittedText(chatId), keyboardFactory.mainMenuKeyboard(lang(chatId)));
@@ -1879,13 +1846,13 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
     }
 
     private void cancelSellFlow(Long chatId) {
-        sellDrafts.remove(chatId);
+        userListingService.clearDraft(chatId);
         userStateService.reset(chatId);
         sendMessage(chatId, sellCancelledText(chatId), keyboardFactory.mainMenuKeyboard(lang(chatId)));
     }
 
     private void handleMyCars(Long chatId) {
-        List<CarEntity> cars = carRepository.findTop50ByOwnerChatIdOrderByCreatedAtDesc(chatId);
+        List<CarEntity> cars = userListingService.findListings(chatId);
         if (cars.isEmpty()) {
             sendMessage(chatId, myCarsEmptyText(chatId), keyboardFactory.mainMenuKeyboard(lang(chatId)));
             return;
@@ -1907,16 +1874,12 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
             return;
         }
 
-        carRepository.findById(carId).ifPresent(car -> {
-            if (!Objects.equals(car.getOwnerChatId(), chatId)) {
-                sendMessage(chatId, listingOwnershipDeniedText(chatId));
-                return;
-            }
-
-            car.setListingStatus("INACTIVE");
-            carRepository.save(car);
+        UserListingService.OwnershipResult result = userListingService.deactivate(chatId, carId);
+        if (result == UserListingService.OwnershipResult.NOT_OWNER) {
+            sendMessage(chatId, listingOwnershipDeniedText(chatId));
+        } else if (result == UserListingService.OwnershipResult.UPDATED) {
             sendMessage(chatId, listingRemovedText(chatId), keyboardFactory.mainMenuKeyboard(lang(chatId)));
-        });
+        }
     }
 
     private void handleDeleteUserListing(Long chatId, String carIdValue) {
@@ -1925,15 +1888,12 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
             return;
         }
 
-        carRepository.findById(carId).ifPresent(car -> {
-            if (!Objects.equals(car.getOwnerChatId(), chatId)) {
-                sendMessage(chatId, listingOwnershipDeniedText(chatId));
-                return;
-            }
-
-            carRepository.delete(car);
+        UserListingService.OwnershipResult result = userListingService.delete(chatId, carId);
+        if (result == UserListingService.OwnershipResult.NOT_OWNER) {
+            sendMessage(chatId, listingOwnershipDeniedText(chatId));
+        } else if (result == UserListingService.OwnershipResult.UPDATED) {
             sendMessage(chatId, listingDeletedText(chatId), keyboardFactory.mainMenuKeyboard(lang(chatId)));
-        });
+        }
     }
 
     private void handleListingEditMenu(Long chatId, String carIdValue) {
@@ -1942,14 +1902,11 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
             return;
         }
 
-        carRepository.findById(carId).ifPresent(car -> {
-            if (!Objects.equals(car.getOwnerChatId(), chatId)) {
-                sendMessage(chatId, listingOwnershipDeniedText(chatId));
-                return;
-            }
-
+        if (userListingService.findOwned(chatId, carId).isPresent()) {
             sendMessage(chatId, editListingMenuText(chatId), keyboardFactory.userListingEditKeyboard(lang(chatId), carId));
-        });
+        } else {
+            sendMessage(chatId, listingOwnershipDeniedText(chatId));
+        }
     }
 
     private void handleListingEditStart(Long chatId, String value) {
@@ -1960,31 +1917,26 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
 
         Long carId = parseLong(parts[0]);
         String field = parts[1];
-        if (carId == null || !isEditableListingField(field)) {
+        if (carId == null || !UserListingService.isEditableField(field)) {
             return;
         }
-
-        carRepository.findById(carId).ifPresent(car -> {
-            if (!Objects.equals(car.getOwnerChatId(), chatId)) {
-                sendMessage(chatId, listingOwnershipDeniedText(chatId));
-                return;
-            }
-
-            listingEditSessions.put(chatId, new ListingEditSession(carId, field));
+        if (userListingService.startEditing(chatId, carId, field)) {
             userStateService.setStep(chatId, BotStep.SELL_EDIT_VALUE);
             sendMessage(chatId, editListingPrompt(chatId, field));
-        });
+        } else {
+            sendMessage(chatId, listingOwnershipDeniedText(chatId));
+        }
     }
 
     private void handleListingEditText(Long chatId, String text) {
-        ListingEditSession session = listingEditSessions.get(chatId);
+        UserListingService.EditSession session = userListingService.findEditSession(chatId).orElse(null);
         if (session == null) {
             userStateService.reset(chatId);
             return;
         }
 
         if ("/cancel".equalsIgnoreCase(text)) {
-            listingEditSessions.remove(chatId);
+            userListingService.clearEditSession(chatId);
             userStateService.reset(chatId);
             sendMessage(chatId, sellCancelledText(chatId), keyboardFactory.mainMenuKeyboard(lang(chatId)));
             return;
@@ -2003,7 +1955,7 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
     }
 
     private void handleListingEditPhoto(Long chatId, List<PhotoSize> photos) {
-        ListingEditSession session = listingEditSessions.get(chatId);
+        UserListingService.EditSession session = userListingService.findEditSession(chatId).orElse(null);
         if (session == null || !"photo".equals(session.field())) {
             sendMessage(chatId, sellInvalid(chatId, "photo"));
             return;
@@ -2021,33 +1973,26 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
         applyListingEdit(chatId, session, bestPhoto.getFileId());
     }
 
-    private void applyListingEdit(Long chatId, ListingEditSession session, String value) {
-        carRepository.findById(session.carId()).ifPresent(car -> {
-            if (!Objects.equals(car.getOwnerChatId(), chatId)) {
-                sendMessage(chatId, listingOwnershipDeniedText(chatId));
-                return;
-            }
+    private void applyListingEdit(Long chatId, UserListingService.EditSession session, String value) {
+        UserListingService.UpdateResult result = userListingService.applyEdit(chatId, session, value);
+        if (result.status() == UserListingService.UpdateResult.Status.NOT_OWNER) {
+            sendMessage(chatId, listingOwnershipDeniedText(chatId));
+            return;
+        }
+        if (result.status() == UserListingService.UpdateResult.Status.INVALID_VALUE) {
+            sendMessage(chatId, sellInvalid(chatId, session.field()));
+            return;
+        }
+        if (result.status() != UserListingService.UpdateResult.Status.UPDATED) {
+            return;
+        }
+        CarEntity car = result.car();
+        userStateService.reset(chatId);
 
-            boolean updated = updateListingField(chatId, car, session.field(), value);
-            if (!updated) {
-                return;
-            }
-
-            car.setListingStatus("PENDING");
-            car.setCreatedAt(LocalDateTime.now());
-            carRepository.save(car);
-            listingEditSessions.remove(chatId);
-            userStateService.reset(chatId);
-
-            sendMessage(chatId, listingUpdatedText(chatId));
-            sendCarMessage(
-                    chatId,
-                    car,
-                    formatUserListing(chatId, car),
-                    keyboardFactory.userListingKeyboard(lang(chatId), car.getId(), car.getListingStatus())
-            );
-            notifyAdminsAboutUserListing(car);
-        });
+        sendMessage(chatId, listingUpdatedText(chatId));
+        sendCarMessage(chatId, car, formatUserListing(chatId, car),
+                keyboardFactory.userListingKeyboard(lang(chatId), car.getId(), car.getListingStatus()));
+        notifyAdminsAboutUserListing(car);
     }
 
     private void handleAdminReview(Long adminChatId, String carIdValue, boolean approve) {
@@ -2061,25 +2006,21 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
             return;
         }
 
-        carRepository.findById(carId).ifPresent(car -> {
-            if (!"PENDING".equalsIgnoreCase(car.getListingStatus())) {
-                sendMessage(adminChatId, "Оголошення вже перевірено: " + formatListingStatus("uk", car.getListingStatus()));
-                return;
-            }
-
-            car.setListingStatus(approve ? "ACTIVE" : "REJECTED");
-            if (approve) {
-                car.setCreatedAt(LocalDateTime.now());
-            }
-            carRepository.save(car);
-
-            sendMessage(adminChatId, approve ? "Схвалено." : "Відхилено.");
-            if (car.getOwnerChatId() != null) {
-                log.info("USER LISTING notifying ownerChatId={} carId={} status={}",
-                        car.getOwnerChatId(), car.getId(), car.getListingStatus());
-                sendMessage(car.getOwnerChatId(), approve ? listingApprovedText(car.getOwnerChatId()) : listingRejectedText(car.getOwnerChatId()));
-            }
-        });
+        UserListingService.ReviewResult result = userListingService.review(carId, approve);
+        if (result.status() == UserListingService.ReviewResult.Status.NOT_FOUND) {
+            return;
+        }
+        CarEntity car = result.car();
+        if (result.status() == UserListingService.ReviewResult.Status.ALREADY_REVIEWED) {
+            sendMessage(adminChatId, "Оголошення вже перевірено: " + formatListingStatus("uk", car.getListingStatus()));
+            return;
+        }
+        sendMessage(adminChatId, approve ? "Схвалено." : "Відхилено.");
+        if (car.getOwnerChatId() != null) {
+            log.info("USER LISTING notifying ownerChatId={} carId={} status={}",
+                    car.getOwnerChatId(), car.getId(), car.getListingStatus());
+            sendMessage(car.getOwnerChatId(), approve ? listingApprovedText(car.getOwnerChatId()) : listingRejectedText(car.getOwnerChatId()));
+        }
     }
 
     private void notifyAdminsAboutUserListing(CarEntity car) {
@@ -2351,7 +2292,7 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
         };
     }
 
-    private String buildSellPreview(Long chatId, SellDraft draft) {
+    private String buildSellPreview(Long chatId, UserListingService.Draft draft) {
         return switch (lang(chatId)) {
             case "ru" -> "Проверьте объявление:\n\n" + formatSellDraft(chatId, draft);
             case "uk" -> "Перевірте оголошення:\n\n" + formatSellDraft(chatId, draft);
@@ -2360,7 +2301,7 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
         };
     }
 
-    private String formatSellDraft(Long chatId, SellDraft draft) {
+    private String formatSellDraft(Long chatId, UserListingService.Draft draft) {
         String lang = lang(chatId);
         return """
                 🚗 %s
@@ -2477,97 +2418,13 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
         return limitText(value.replaceAll("\\s+", " ").trim(), 350);
     }
 
-    private String buildUserListingTitle(SellDraft draft) {
+    private String buildUserListingTitle(UserListingService.Draft draft) {
         String brand = draft.brand == null ? "" : draft.brand.trim();
         String title = draft.title == null ? "" : draft.title.trim();
         if (titleStartsWithBrand(title, brand)) {
             return limitText(removeLeadingDuplicatedBrand((formatBrandForTitle(brand) + " " + title).trim()), 240);
         }
         return limitText((formatBrandForTitle(brand) + " " + title).trim(), 240);
-    }
-
-    private boolean isEditableListingField(String field) {
-        return "title".equals(field)
-                || "price".equals(field)
-                || "year".equals(field)
-                || "mileage".equals(field)
-                || "location".equals(field)
-                || "contact".equals(field)
-                || "description".equals(field)
-                || "fuel".equals(field)
-                || "transmission".equals(field)
-                || "carType".equals(field)
-                || "photo".equals(field);
-    }
-
-    private boolean updateListingField(Long chatId, CarEntity car, String field, String value) {
-        switch (field) {
-            case "title" -> car.setTitle(limitText(value, 220));
-            case "price" -> {
-                Integer price = parsePositiveInt(value);
-                if (price == null || price < 1000 || price > 20_000_000) {
-                    sendMessage(chatId, sellInvalid(chatId, "price"));
-                    return false;
-                }
-                car.setPriceValue(price);
-                car.setPrice(formatCzk(price));
-            }
-            case "year" -> {
-                Integer year = parsePositiveInt(value);
-                int currentYear = LocalDateTime.now().getYear() + 1;
-                if (year == null || year < 1980 || year > currentYear) {
-                    sendMessage(chatId, sellInvalid(chatId, "year"));
-                    return false;
-                }
-                car.setYear(year);
-            }
-            case "mileage" -> {
-                Integer mileage = parsePositiveInt(value);
-                if (mileage == null || mileage < 0 || mileage > 1_000_000) {
-                    sendMessage(chatId, sellInvalid(chatId, "mileage"));
-                    return false;
-                }
-                car.setMileage(mileage);
-            }
-            case "location" -> car.setLocation(limitText(value, 120));
-            case "contact" -> car.setSellerContact(limitText(value, 180));
-            case "description" -> {
-                if (value == null || "/skip".equalsIgnoreCase(value) || "skip".equalsIgnoreCase(value)) {
-                    car.setDescription(null);
-                } else {
-                    car.setDescription(limitText(value, 1000));
-                }
-            }
-            case "fuel" -> {
-                String fuel = normalizeSellFuel(value);
-                if (fuel == null) {
-                    sendMessage(chatId, sellInvalid(chatId, "fuel"));
-                    return false;
-                }
-                car.setFuelType(fuel);
-            }
-            case "transmission" -> {
-                String transmission = normalizeSellTransmission(value);
-                if (transmission == null) {
-                    sendMessage(chatId, sellInvalid(chatId, "transmission"));
-                    return false;
-                }
-                car.setTransmission(transmission);
-            }
-            case "carType" -> {
-                String carType = normalizeSellCarType(value);
-                if (carType == null) {
-                    sendMessage(chatId, sellInvalid(chatId, "carType"));
-                    return false;
-                }
-                car.setCarType(carType);
-            }
-            case "photo" -> car.setImageUrl(value);
-            default -> {
-                return false;
-            }
-        }
-        return true;
     }
 
     private String normalizeSellBrand(String value) {
@@ -3902,37 +3759,4 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
         return cleaned.substring(0, 42).trim() + "...";
     }
 
-    private static class SellDraft {
-        private Long ownerChatId;
-        private String sellerUsername;
-        private String brand;
-        private String title;
-        private Integer priceValue;
-        private Integer year;
-        private Integer mileage;
-        private String location;
-        private String fuelType;
-        private String transmission;
-        private String carType;
-        private String sellerContact;
-        private String imageUrl;
-        private String description;
-
-        private boolean isComplete() {
-            return ownerChatId != null
-                    && brand != null && !brand.isBlank()
-                    && title != null && !title.isBlank()
-                    && priceValue != null
-                    && year != null
-                    && mileage != null
-                    && location != null && !location.isBlank()
-                    && fuelType != null && !fuelType.isBlank()
-                    && transmission != null && !transmission.isBlank()
-                    && carType != null && !carType.isBlank()
-                    && sellerContact != null && !sellerContact.isBlank();
-        }
-    }
-
-    private record ListingEditSession(Long carId, String field) {
-    }
 }
