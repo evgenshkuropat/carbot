@@ -16,7 +16,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import org.telegram.telegrambots.client.okhttp.OkHttpTelegramClient;
 import org.telegram.telegrambots.longpolling.interfaces.LongPollingUpdateConsumer;
 import org.telegram.telegrambots.longpolling.starter.SpringLongPollingBot;
 import org.telegram.telegrambots.longpolling.util.LongPollingSingleThreadUpdateConsumer;
@@ -78,6 +77,7 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
 
     public CarTelegramBot(
             @Value("${telegram.bot.token}") String botToken,
+            TelegramClient telegramClient,
             TelegramSubscriberService subscriberService,
             UserStateService userStateService,
             UserFilterService userFilterService,
@@ -92,7 +92,7 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
             @Value("${telegram.bot.admin-chat-ids:}") String adminChatIdsRaw
     ) {
         this.botToken = botToken;
-        this.telegramClient = new OkHttpTelegramClient(botToken);
+        this.telegramClient = telegramClient;
         this.subscriberService = subscriberService;
         this.userStateService = userStateService;
         this.userFilterService = userFilterService;
@@ -189,7 +189,7 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
             );
 
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("Failed to process Telegram update updateId={}", update.getUpdateId(), e);
         }
     }
 
@@ -3026,7 +3026,8 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
             sendMessage(chatId, text, keyboard);
 
         } catch (Exception e) {
-            e.printStackTrace();
+            log.warn("Could not send car with image, sending text instead. chatId={} title='{}'",
+                    chatId, car.getTitle(), e);
             sendMessage(chatId, text, keyboard);
         }
     }
@@ -3257,7 +3258,7 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
         try {
             telegramClient.execute(answer);
         } catch (Exception e) {
-            e.printStackTrace();
+            log.warn("Could not acknowledge Telegram callback callbackId={}", callbackId, e);
         }
     }
 
