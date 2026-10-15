@@ -18,15 +18,18 @@ public class CarSchedulerService {
     private final CarParserService carParserService;
     private final CarNotificationService carNotificationService;
     private final ParserRunStatsService parserRunStatsService;
+    private final SchedulerDatabaseLock schedulerDatabaseLock;
 
     private final AtomicBoolean running = new AtomicBoolean(false);
 
     public CarSchedulerService(CarParserService carParserService,
                                CarNotificationService carNotificationService,
-                               ParserRunStatsService parserRunStatsService) {
+                               ParserRunStatsService parserRunStatsService,
+                               SchedulerDatabaseLock schedulerDatabaseLock) {
         this.carParserService = carParserService;
         this.carNotificationService = carNotificationService;
         this.parserRunStatsService = parserRunStatsService;
+        this.schedulerDatabaseLock = schedulerDatabaseLock;
     }
 
     @Scheduled(initialDelay = 30_000, fixedDelay = 30 * 60 * 1000)
@@ -41,7 +44,15 @@ public class CarSchedulerService {
 
         log.info("[{}] Scheduler started", runId);
 
+        SchedulerDatabaseLock.LockHandle databaseLock = null;
+
         try {
+            databaseLock = schedulerDatabaseLock.tryAcquire();
+
+            if (databaseLock == null) {
+                log.info("[{}] Scheduler skipped: another application instance is running", runId);
+                return;
+            }
 
             List<CarEntity> newCars = carParserService.fetchAndStoreCars();
 
@@ -72,6 +83,10 @@ public class CarSchedulerService {
             log.error("[{}] Scheduler failed", runId, e);
 
         } finally {
+
+            if (databaseLock != null) {
+                databaseLock.close();
+            }
 
             running.set(false);
 
