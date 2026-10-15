@@ -10,7 +10,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
-import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
 import org.telegram.telegrambots.meta.api.objects.InputFile;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
@@ -42,6 +41,7 @@ public class CarNotificationService {
     private final CarFilterMatcher carFilterMatcher;
     private final CarImageDownloadService carImageDownloadService;
     private final CarCardFormatter carCardFormatter;
+    private final TelegramDeliveryService telegramDeliveryService;
     private final TelegramClient telegramClient;
     private final MessageService messages;
 
@@ -51,6 +51,7 @@ public class CarNotificationService {
             CarFilterMatcher carFilterMatcher,
             CarImageDownloadService carImageDownloadService,
             CarCardFormatter carCardFormatter,
+            TelegramDeliveryService telegramDeliveryService,
             TelegramClient telegramClient,
             MessageService messages
     ) {
@@ -59,6 +60,7 @@ public class CarNotificationService {
         this.carFilterMatcher = carFilterMatcher;
         this.carImageDownloadService = carImageDownloadService;
         this.carCardFormatter = carCardFormatter;
+        this.telegramDeliveryService = telegramDeliveryService;
         this.telegramClient = telegramClient;
         this.messages = messages;
     }
@@ -331,13 +333,7 @@ public class CarNotificationService {
                 return true;
             }
 
-            SendMessage message = SendMessage.builder()
-                    .chatId(chatId.toString())
-                    .text(textMessage)
-                    .replyMarkup(keyboard)
-                    .build();
-
-            telegramClient.execute(message);
+            telegramDeliveryService.sendTextOrThrow(chatId, textMessage, keyboard);
 
             log.info("Sent as text message. source={} chatId={} title='{}'",
                     safe(car.getSource()), chatId, safe(car.getTitle()));
@@ -362,12 +358,11 @@ public class CarNotificationService {
         }
 
         try {
-            SendMessage message = SendMessage.builder()
-                    .chatId(chatId.toString())
-                    .text(limitLength(buildDigestText(cars, lang), MAX_MESSAGE_LENGTH))
-                    .build();
-
-            telegramClient.execute(message);
+            telegramDeliveryService.sendTextOrThrow(
+                    chatId,
+                    limitLength(buildDigestText(cars, lang), MAX_MESSAGE_LENGTH),
+                    null
+            );
 
             log.info("Sent digest notification. chatId={} cars={}", chatId, cars.size());
             return true;

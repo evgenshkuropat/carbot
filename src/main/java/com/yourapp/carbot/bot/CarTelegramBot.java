@@ -7,12 +7,12 @@ import com.yourapp.carbot.i18n.MessageService;
 import com.yourapp.carbot.repository.CarRepository;
 import com.yourapp.carbot.service.CarFilterMatcher;
 import com.yourapp.carbot.service.CarCardFormatter;
-import com.yourapp.carbot.service.CarImageDownloadService;
 import com.yourapp.carbot.service.FavoriteCarService;
 import com.yourapp.carbot.service.FilterWorkflowService;
 import com.yourapp.carbot.service.ParserRunStatsService;
 import com.yourapp.carbot.service.SearchWorkflowService;
 import com.yourapp.carbot.service.TelegramSubscriberService;
+import com.yourapp.carbot.service.TelegramDeliveryService;
 import com.yourapp.carbot.service.UserFilterService;
 import com.yourapp.carbot.service.UserListingService;
 import com.yourapp.carbot.service.UserStateService;
@@ -24,8 +24,6 @@ import org.telegram.telegrambots.longpolling.interfaces.LongPollingUpdateConsume
 import org.telegram.telegrambots.longpolling.starter.SpringLongPollingBot;
 import org.telegram.telegrambots.longpolling.util.LongPollingSingleThreadUpdateConsumer;
 import org.telegram.telegrambots.meta.api.methods.AnswerCallbackQuery;
-import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
-import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageReplyMarkup;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.InputFile;
@@ -35,8 +33,6 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMa
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboard;
 import org.telegram.telegrambots.meta.generics.TelegramClient;
 
-import java.io.File;
-import java.nio.file.Files;
 import java.text.Normalizer;
 import java.time.LocalDateTime;
 import java.util.Comparator;
@@ -53,13 +49,13 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
     private final String botToken;
 
     private final TelegramSubscriberService subscriberService;
+    private final TelegramDeliveryService telegramDeliveryService;
     private final UserStateService userStateService;
     private final UserFilterService userFilterService;
     private final FilterWorkflowService filterWorkflowService;
     private final CarRepository carRepository;
     private final CarFilterMatcher carFilterMatcher;
     private final CarCardFormatter carCardFormatter;
-    private final CarImageDownloadService carImageDownloadService;
     private final FavoriteCarService favoriteCarService;
     private final ParserRunStatsService parserRunStatsService;
     private final SearchWorkflowService searchWorkflowService;
@@ -74,13 +70,13 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
             @Value("${telegram.bot.token}") String botToken,
             TelegramClient telegramClient,
             TelegramSubscriberService subscriberService,
+            TelegramDeliveryService telegramDeliveryService,
             UserStateService userStateService,
             UserFilterService userFilterService,
             FilterWorkflowService filterWorkflowService,
             CarRepository carRepository,
             CarFilterMatcher carFilterMatcher,
             CarCardFormatter carCardFormatter,
-            CarImageDownloadService carImageDownloadService,
             FavoriteCarService favoriteCarService,
             ParserRunStatsService parserRunStatsService,
             SearchWorkflowService searchWorkflowService,
@@ -93,13 +89,13 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
         this.botToken = botToken;
         this.telegramClient = telegramClient;
         this.subscriberService = subscriberService;
+        this.telegramDeliveryService = telegramDeliveryService;
         this.userStateService = userStateService;
         this.userFilterService = userFilterService;
         this.filterWorkflowService = filterWorkflowService;
         this.carRepository = carRepository;
         this.carFilterMatcher = carFilterMatcher;
         this.carCardFormatter = carCardFormatter;
-        this.carImageDownloadService = carImageDownloadService;
         this.favoriteCarService = favoriteCarService;
         this.parserRunStatsService = parserRunStatsService;
         this.searchWorkflowService = searchWorkflowService;
@@ -2790,127 +2786,19 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
     }
 
     private void sendCarMessage(Long chatId, CarEntity car, String text, InlineKeyboardMarkup keyboard) {
-        try {
-            if (hasImage(car.getImageUrl())) {
-                if (sendPhotoByUrl(chatId, car.getImageUrl(), text, keyboard)) {
-                    return;
-                }
-
-                if (sendPhotoByDownload(chatId, car, text, keyboard)) {
-                    return;
-                }
-            }
-
-            sendMessage(chatId, text, keyboard);
-
-        } catch (Exception e) {
-            log.warn("Could not send car with image, sending text instead. chatId={} title='{}'",
-                    chatId, car.getTitle(), e);
-            sendMessage(chatId, text, keyboard);
-        }
-    }
-
-    private boolean sendPhotoByUrl(Long chatId,
-                                   String imageUrl,
-                                   String caption,
-                                   InlineKeyboardMarkup keyboard) {
-        try {
-            SendPhoto photo = SendPhoto.builder()
-                    .chatId(chatId.toString())
-                    .photo(new InputFile(imageUrl))
-                    .caption(caption)
-                    .replyMarkup(keyboard)
-                    .build();
-
-            telegramClient.execute(photo);
-            return true;
-
-        } catch (Exception e) {
-            return false;
-        }
-    }
-
-    private boolean sendPhotoByDownload(Long chatId,
-                                        CarEntity car,
-                                        String caption,
-                                        InlineKeyboardMarkup keyboard) {
-        File tempFile = null;
-
-        try {
-            tempFile = carImageDownloadService.downloadToTempFile(car);
-
-            if (tempFile == null || !tempFile.exists() || tempFile.length() == 0) {
-                return false;
-            }
-
-            SendPhoto photo = SendPhoto.builder()
-                    .chatId(chatId.toString())
-                    .photo(new InputFile(tempFile))
-                    .caption(caption)
-                    .replyMarkup(keyboard)
-                    .build();
-
-            telegramClient.execute(photo);
-            return true;
-
-        } catch (Exception e) {
-            return false;
-
-        } finally {
-            if (tempFile != null && tempFile.exists()) {
-                try {
-                    Files.deleteIfExists(tempFile.toPath());
-                } catch (Exception ignored) {
-                }
-            }
-        }
-    }
-
-    private boolean hasImage(String imageUrl) {
-        return imageUrl != null
-                && !imageUrl.isBlank()
-                && !imageUrl.toLowerCase().contains("empty.gif");
+        telegramDeliveryService.sendCarCard(chatId, car, text, keyboard);
     }
 
     private void sendMessage(Long chatId, String text) {
-        SendMessage message = SendMessage.builder()
-                .chatId(chatId.toString())
-                .text(text)
-                .build();
-
-        try {
-            telegramClient.execute(message);
-        } catch (Exception e) {
-            log.warn("BOT SEND MESSAGE failed chatId={}", chatId, e);
-        }
+        telegramDeliveryService.sendText(chatId, text, null);
     }
 
     private void sendMessage(Long chatId, String text, InlineKeyboardMarkup keyboard) {
-        SendMessage message = SendMessage.builder()
-                .chatId(chatId.toString())
-                .text(text)
-                .replyMarkup(keyboard)
-                .build();
-
-        try {
-            telegramClient.execute(message);
-        } catch (Exception e) {
-            log.warn("BOT SEND MESSAGE failed chatId={} withInlineKeyboard=true", chatId, e);
-        }
+        telegramDeliveryService.sendText(chatId, text, keyboard);
     }
 
     private void sendMessage(Long chatId, String text, ReplyKeyboard keyboard) {
-        SendMessage message = SendMessage.builder()
-                .chatId(chatId.toString())
-                .text(text)
-                .replyMarkup(keyboard)
-                .build();
-
-        try {
-            telegramClient.execute(message);
-        } catch (Exception e) {
-            log.warn("BOT SEND MESSAGE failed chatId={} withReplyKeyboard=true", chatId, e);
-        }
+        telegramDeliveryService.sendText(chatId, text, keyboard);
     }
 
     private void editMessageTextAndKeyboard(Long chatId,
