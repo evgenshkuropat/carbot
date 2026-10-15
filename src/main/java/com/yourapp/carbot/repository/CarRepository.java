@@ -4,6 +4,8 @@ import com.yourapp.carbot.entity.CarEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
@@ -45,6 +47,22 @@ public interface CarRepository extends JpaRepository<CarEntity, Long> {
     List<CarEntity> findTop50ByTitleContainingIgnoreCaseOrderByCreatedAtDesc(String title);
 
     List<CarEntity> findTop200ByOrderByCreatedAtDesc();
+
+    @Query("""
+            select c
+            from CarEntity c
+            where (:source is null or lower(c.source) = lower(:source))
+              and (:location is null or lower(c.location) like lower(concat('%', :location, '%')))
+              and (:maxPrice is null or c.priceValue <= :maxPrice)
+              and (:query is null or lower(c.title) like lower(concat('%', :query, '%')))
+            """)
+    Page<CarEntity> findFiltered(
+            @Param("source") String source,
+            @Param("location") String location,
+            @Param("maxPrice") Integer maxPrice,
+            @Param("query") String query,
+            Pageable pageable
+    );
 
     long countBySource(String source);
 

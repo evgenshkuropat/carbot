@@ -3,12 +3,15 @@ package com.yourapp.carbot.controller;
 import com.yourapp.carbot.entity.CarEntity;
 import com.yourapp.carbot.repository.CarRepository;
 import com.yourapp.carbot.service.CarParserService;
-import com.yourapp.carbot.service.dto.CarDto;
 import com.yourapp.carbot.service.dto.CarResponseDto;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -31,12 +34,29 @@ public class CarController {
         this.apiAdminToken = apiAdminToken;
     }
 
-    @GetMapping("/api/cars")
-    public List<CarDto> getCars() {
-        return carParserService.findCars();
+    @GetMapping({"/api/cars", "/api/cars/db/filter"})
+    public Page<CarResponseDto> getCars(
+            @RequestParam(required = false) String source,
+            @RequestParam(required = false) String location,
+            @RequestParam(required = false) Integer maxPrice,
+            @RequestParam(required = false) String query,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "50") int size
+    ) {
+        int safePage = Math.max(0, page);
+        int safeSize = Math.min(100, Math.max(1, size));
+
+        return carRepository.findFiltered(
+                        blankToNull(source),
+                        blankToNull(location),
+                        maxPrice,
+                        blankToNull(query),
+                        PageRequest.of(safePage, safeSize, Sort.by(Sort.Direction.DESC, "createdAt"))
+                )
+                .map(this::toDto);
     }
 
-    @GetMapping("/api/cars/save")
+    @PostMapping("/api/cars/sync")
     public String saveCars(@RequestHeader(value = "X-API-ADMIN-TOKEN", required = false) String adminToken) {
         requireAdminToken(adminToken);
         return "Saved new cars: " + carParserService.fetchAndStoreCars().size();
@@ -106,27 +126,6 @@ public class CarController {
                 .toList();
     }
 
-    @GetMapping("/api/cars/db/filter")
-    public List<CarResponseDto> filterCars(
-            @RequestParam(required = false) String source,
-            @RequestParam(required = false) String location,
-            @RequestParam(required = false) Integer maxPrice,
-            @RequestParam(required = false) String query
-    ) {
-        return carRepository.findTop200ByOrderByCreatedAtDesc()
-                .stream()
-                .filter(car -> source == null || source.isBlank() ||
-                        (car.getSource() != null && car.getSource().equalsIgnoreCase(source)))
-                .filter(car -> location == null || location.isBlank() ||
-                        (car.getLocation() != null && car.getLocation().toLowerCase().contains(location.toLowerCase())))
-                .filter(car -> maxPrice == null ||
-                        (car.getPriceValue() != null && car.getPriceValue() <= maxPrice))
-                .filter(car -> query == null || query.isBlank() ||
-                        (car.getTitle() != null && car.getTitle().toLowerCase().contains(query.toLowerCase())))
-                .map(this::toDto)
-                .toList();
-    }
-
     private void requireAdminToken(String token) {
         if (apiAdminToken == null || apiAdminToken.isBlank()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
@@ -155,5 +154,9 @@ public class CarController {
                 car.getCarType(),
                 car.getCreatedAt()
         );
+    }
+
+    private String blankToNull(String value) {
+        return value == null || value.isBlank() ? null : value.trim();
     }
 }
