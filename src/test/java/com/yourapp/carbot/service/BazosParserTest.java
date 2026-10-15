@@ -148,6 +148,7 @@ class BazosParserTest {
         assertThat(extractFuelType("Alfa Romeo GTV 2.0 TS 114 kW 1999")).isEqualTo("PETROL");
         assertThat(extractFuelType("Alfa Romeo Giulia VELOCE Q4 280PS, 2.0T, ZF8")).isEqualTo("PETROL");
         assertThat(extractFuelType("Alfa Romeo Giulia 2.0 Veloce 206kW 2023")).isEqualTo("PETROL");
+        assertThat(extractFuelType("Alfa Romeo Giulietta 1.4 TB")).isEqualTo("PETROL");
         assertThat(extractFuelType("Audi A6 Avant 2.0 45 eTFSI 195kW S-tronic")).isEqualTo("PLUGIN_HYBRID");
         assertThat(extractFuelType("Audi S6 7.2020 257kw, vybava, krasny stav")).isEqualTo("DIESEL");
         assertThat(extractFuelType("Honda HR-V 1.5 benzin hybrid")).isEqualTo("HYBRID");
@@ -272,6 +273,7 @@ class BazosParserTest {
         assertThat(extractCarType("JDM Nissan Cedric Y34 Turbo", "", "")).isEqualTo("SEDAN");
         assertThat(extractCarType("Opel Signum 2.2i 114kW", "", "")).isEqualTo("SEDAN");
         assertThat(extractCarType("Opel Campo 2.5 TD 56 kW", "", "")).isEqualTo("PICKUP");
+        assertThat(extractCarType("AUDI RS6 C8 441KW", "", "")).isEqualTo("WAGON");
         assertThat(extractCarType("Peugeot 206 SW1.4i 55kw", "", "")).isEqualTo("WAGON");
         assertThat(extractCarType("Seat Leon Cupra 300 ST ACC DCC", "", "")).isEqualTo("WAGON");
         assertThat(extractCarType("Seat Leon1.5 TSi 96kW 1majitel CR Xcellence", "", "")).isEqualTo("HATCHBACK");

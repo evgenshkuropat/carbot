@@ -1130,6 +1130,10 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         if (containsAny(source, "opel frontera", "frontera") && containsAny(source, "dti")) {
             return "DIESEL";
         }
+        if (containsAny(source, " giulietta ")
+                && containsAny(source, " 1.4 tb ", " 1,4 tb ", " 1.4 t ", " 1,4 t ", " t-jet ", " tjet ")) {
+            return "PETROL";
+        }
         if (containsAny(source, " glk 220 ")) {
             return "DIESEL";
         }
@@ -2327,6 +2331,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         if (containsAny(titleSource, "bmw 530i", " 530i ")) return "SEDAN";
         if (containsAny(titleSource, " frontera ")) return "SUV";
         if (containsAny(titleSource, " campo ")) return "PICKUP";
+        if (containsAny(titleSource, " rs6 ", " rs 6 ")) return "WAGON";
         if (containsAny(titleSource, " w204 c350 ", " c350 w204 ")) return "SEDAN";
         if (containsAny(titleSource, " e220cdi ", " e 220cdi ")
                 && !containsAny(titleSource, " wagon ", " kombi ", " combi ", " estate ", " t-modell ")) return "SEDAN";
