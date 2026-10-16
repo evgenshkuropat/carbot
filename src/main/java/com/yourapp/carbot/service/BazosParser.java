@@ -113,7 +113,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
 
                         Set<String> pageUrls = extractDetailUrls(listDoc);
 
-                        log.info(
+                        log.debug(
                                 "BAZOS page={} url={} detail links found={}",
                                 page + 1,
                                 pageUrl,
