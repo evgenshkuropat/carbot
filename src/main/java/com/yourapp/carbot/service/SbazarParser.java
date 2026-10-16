@@ -71,20 +71,20 @@ public class SbazarParser implements CarSourceParser {
                 detailUrls.addAll(pageLinks);
                 int newLinks = detailUrls.size() - before;
 
-                log.info("SBAZAR list page={} url={} links={} new_links={} total_unique={}",
+                log.debug("SBAZAR list page={} url={} links={} new_links={} total_unique={}",
                         page, pageUrl, pageLinks.size(), newLinks, detailUrls.size());
 
                 if (pageLinks.isEmpty()) {
-                    log.info("SBAZAR list page={} no detail links sample_hrefs={}", page, sampleHrefs(doc));
+                    log.debug("SBAZAR list page={} no detail links sample_hrefs={}", page, sampleHrefs(doc));
                 }
 
                 if (page > 1 && (pageLinks.isEmpty() || newLinks == 0)) {
-                    log.info("SBAZAR list page={} produced no new links, stopping pagination", page);
+                    log.debug("SBAZAR list page={} produced no new links, stopping pagination", page);
                     break;
                 }
             } catch (Exception e) {
                 stats.listFetchFailed++;
-                log.warn("SBAZAR list page={} url={} fetch_failed={}", page, pageUrl, e.toString());
+                log.debug("SBAZAR list page={} url={} fetch_failed={}", page, pageUrl, e.toString());
             }
         }
 
@@ -96,7 +96,7 @@ public class SbazarParser implements CarSourceParser {
 
                 if (result.car() == null) {
                     stats.countSkip(result.reason());
-                    log.info("SBAZAR SKIP url={} reason={} title={}", url, result.reason(), safeLog(result.title()));
+                    log.debug("SBAZAR SKIP url={} reason={} title={}", url, result.reason(), safeLog(result.title()));
                     continue;
                 }
 
@@ -104,7 +104,7 @@ public class SbazarParser implements CarSourceParser {
                 stats.parsed++;
 
                 CarDto car = result.car();
-                log.info("SBAZAR CAR title='{}' price={} location={} year={} mileage={} fuelType={} transmission={} carType={} brand={} url={}",
+                log.debug("SBAZAR CAR title='{}' price={} location={} year={} mileage={} fuelType={} transmission={} carType={} brand={} url={}",
                         safeLog(car.getTitle()),
                         car.getPriceValue(),
                         safeLog(car.getLocation()),
@@ -117,7 +117,7 @@ public class SbazarParser implements CarSourceParser {
                         car.getUrl());
             } catch (Exception e) {
                 stats.parseException++;
-                log.warn("SBAZAR SKIP url={} reason=parse_exception error={}", url, e.toString());
+                log.debug("SBAZAR SKIP url={} reason=parse_exception error={}", url, e.toString());
             }
 
             sleepQuietly(DETAIL_DELAY_MS);
@@ -171,7 +171,7 @@ public class SbazarParser implements CarSourceParser {
 
         Integer priceValue = extractPriceValue(doc, pageText);
         if (priceValue == null) {
-            log.info("SBAZAR PRICE NOT FOUND url={} title={}", url, safeLog(title));
+            log.debug("SBAZAR PRICE NOT FOUND url={} title={}", url, safeLog(title));
             return ParseResult.skip("missing_price", title);
         }
 

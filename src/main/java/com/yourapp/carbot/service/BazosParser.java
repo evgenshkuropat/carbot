@@ -129,7 +129,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                         int added = allDetailUrls.size() - before;
 
                         if (added == 0) {
-                            log.info("BAZOS pagination stopped page={} reason=no_new_links", page + 1);
+                            log.debug("BAZOS pagination stopped page={} reason=no_new_links", page + 1);
                             break;
                         }
 
@@ -144,7 +144,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 }
             }
 
-            log.info("BAZOS total detail links collected={}", allDetailUrls.size());
+            log.debug("BAZOS total detail links collected={}", allDetailUrls.size());
 
             int count = 0;
 
@@ -175,7 +175,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
 
                 } catch (Exception e) {
                     parseErrorCount++;
-                    log.warn("BAZOS SKIP url={} reason=parse_error", safe(url));
+                    log.debug("BAZOS SKIP url={} reason=parse_error", safe(url));
                 }
 
                 sleepBetweenDetailRequests();
@@ -283,69 +283,69 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             }
 
             if (title.isBlank()) {
-                log.info("BAZOS SKIP url={} reason=empty_title title={}", safe(url), safe(title));
+                log.debug("BAZOS SKIP url={} reason=empty_title title={}", safe(url), safe(title));
                 return ParseResult.skip("empty_title");
             }
 
             if (looksDemandListing(title, listingText, url)) {
-                log.info("BAZOS SKIP url={} reason=demand_listing title={}", safe(url), safe(title));
+                log.debug("BAZOS SKIP url={} reason=demand_listing title={}", safe(url), safe(title));
                 return ParseResult.skip("demand_listing");
             }
 
             if (looksCommercialVehicle(title, listingText, url)) {
-                log.info("BAZOS SKIP url={} reason=commercial_vehicle title={}", safe(url), safe(title));
+                log.debug("BAZOS SKIP url={} reason=commercial_vehicle title={}", safe(url), safe(title));
                 return ParseResult.skip("commercial_vehicle");
             }
 
             if (looksTyreOrWheelListing(title, preview, analysisText)) {
-                log.info("BAZOS SKIP url={} reason=tyre_or_wheel_listing title={}", safe(url), safe(title));
+                log.debug("BAZOS SKIP url={} reason=tyre_or_wheel_listing title={}", safe(url), safe(title));
                 return ParseResult.skip("tyre_or_wheel_listing");
             }
 
             if (extractBrand(title, analysisText) == null
                     && containsNonCarBrand(title, listingText)
                     && !looksLikeRealCar(title, analysisText)) {
-                log.info("BAZOS SKIP url={} reason=non_car_brand title={}", safe(url), safe(title));
+                log.debug("BAZOS SKIP url={} reason=non_car_brand title={}", safe(url), safe(title));
                 return ParseResult.skip("non_car_listing");
             }
 
             if (looksNonCarListing(title, listingText, url, analysisText)) {
-                log.info("BAZOS SKIP url={} reason=non_car_listing title={}", safe(url), safe(title));
+                log.debug("BAZOS SKIP url={} reason=non_car_listing title={}", safe(url), safe(title));
                 return ParseResult.skip("non_car_listing");
             }
 
             if (looksBrokenOrForPartsListing(title, analysisText)) {
-                log.info("BAZOS SKIP url={} reason=broken_or_for_parts title={}", safe(url), safe(title));
+                log.debug("BAZOS SKIP url={} reason=broken_or_for_parts title={}", safe(url), safe(title));
                 return ParseResult.skip("broken_or_for_parts");
             }
 
             if (looksSuspiciousListing(title, listingText)) {
-                log.info("BAZOS SKIP url={} reason=suspicious_listing title={}", safe(url), safe(title));
+                log.debug("BAZOS SKIP url={} reason=suspicious_listing title={}", safe(url), safe(title));
                 return ParseResult.skip("suspicious_listing");
             }
 
             boolean titleUrlMismatch = looksTitleUrlMismatch(title, url);
             if (titleUrlMismatch) {
-                log.info("BAZOS WARN url={} reason=title_url_mismatch title={}", safe(url), safe(title));
+                log.debug("BAZOS WARN url={} reason=title_url_mismatch title={}", safe(url), safe(title));
             }
 
             if (looksBrandMismatch(title, url)) {
-                log.info("BAZOS SKIP url={} reason=brand_url_mismatch title={}", safe(url), safe(title));
+                log.debug("BAZOS SKIP url={} reason=brand_url_mismatch title={}", safe(url), safe(title));
                 return ParseResult.skip("non_car_listing");
             }
 
             if (titleUrlMismatch || looksModelUrlMismatch(title, url)) {
-                log.info("BAZOS SKIP url={} reason=model_url_mismatch title={}", safe(url), safe(title));
+                log.debug("BAZOS SKIP url={} reason=model_url_mismatch title={}", safe(url), safe(title));
                 return ParseResult.skip("non_car_listing");
             }
 
             Integer priceValue = extractPrice(doc, priceText);
             if (priceValue == null) {
-                log.info("BAZOS SKIP url={} reason=missing_price title={}", safe(url), safe(title));
+                log.debug("BAZOS SKIP url={} reason=missing_price title={}", safe(url), safe(title));
                 return ParseResult.skip("missing_price");
             }
             if (!isValidBazosPrice(priceValue)) {
-                log.info("BAZOS SKIP url={} reason=invalid_price title={}", safe(url), safe(title));
+                log.debug("BAZOS SKIP url={} reason=invalid_price title={}", safe(url), safe(title));
                 return ParseResult.skip("invalid_price");
             }
 
@@ -393,13 +393,13 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             String imageUrl = extractImageUrl(doc);
 
             if (brand == null && carType == null && !looksLikeRealCar(title, analysisText)) {
-                log.info("BAZOS SKIP url={} reason=not_enough_car_signals title={}",
+                log.debug("BAZOS SKIP url={} reason=not_enough_car_signals title={}",
                         safe(url), safe(title));
                 return ParseResult.skip("non_car_listing");
             }
 
             if (isSuspiciousCheapCar(title, analysisText, priceValue, year, mileage, brand, carType)) {
-                log.info(
+                log.debug(
                         "BAZOS SKIP url={} reason=suspicious_cheap_car title={} price={} year={} brand={} carType={}",
                         safe(url),
                         safe(title),
@@ -413,7 +413,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
 
             String suspiciousFactsReason = suspiciousModelFactsReason(title, analysisText, priceValue, year);
             if (suspiciousFactsReason != null) {
-                log.info(
+                log.debug(
                         "BAZOS SKIP url={} reason={} title={} price={} year={} brand={} carType={}",
                         safe(url),
                         suspiciousFactsReason,
@@ -444,7 +444,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             car.setTransmission(transmission);
             car.setCarType(carType);
 
-            log.info("BAZOS CAR title='{}' price={} location={} year={} mileage={} fuelType={} transmission={} carType={} brand={} url={}",
+            log.debug("BAZOS CAR title='{}' price={} location={} year={} mileage={} fuelType={} transmission={} carType={} brand={} url={}",
                     safe(outputTitle),
                     priceValue,
                     safe(outputLocation),
@@ -459,7 +459,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             return ParseResult.ok(car);
 
         } catch (Exception e) {
-            log.warn("BAZOS SKIP url={} reason=parse_error", safe(url));
+            log.debug("BAZOS SKIP url={} reason=parse_error", safe(url));
             return ParseResult.skip("parse_error");
         }
     }
@@ -649,7 +649,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             return fromKcPattern;
         }
 
-        log.info("BAZOS PRICE NOT FOUND");
+        log.debug("BAZOS PRICE NOT FOUND");
         return null;
     }
 

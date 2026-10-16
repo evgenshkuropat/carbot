@@ -64,13 +64,13 @@ public class ToyotaProvereneVozyParser implements CarSourceParser {
                 Document doc = loadDocument(pageUrl);
                 List<CarDto> pageCars = parseListPage(doc, seenUrls);
 
-                log.info("TOYOTA_PROVERENE list page={} url={} parsed={} total_unique={}",
+                log.debug("TOYOTA_PROVERENE list page={} url={} parsed={} total_unique={}",
                         page, pageUrl, pageCars.size(), seenUrls.size());
 
                 cars.addAll(pageCars);
 
                 if (page > 1 && pageCars.isEmpty()) {
-                    log.info("TOYOTA_PROVERENE pagination stopped page={} reason=no_new_cars", page);
+                    log.debug("TOYOTA_PROVERENE pagination stopped page={} reason=no_new_cars", page);
                     break;
                 }
 
@@ -92,26 +92,26 @@ public class ToyotaProvereneVozyParser implements CarSourceParser {
 
             if (car.getPriceValue() == null) {
                 missingPriceCount++;
-                log.warn("TOYOTA_PROVERENE SKIP url={} reason=missing_price title={}",
+                log.debug("TOYOTA_PROVERENE SKIP url={} reason=missing_price title={}",
                         safe(car.getUrl()), safe(car.getTitle()));
                 continue;
             }
 
             if (car.getPriceValue() < MIN_VALID_PRICE || car.getPriceValue() > MAX_REASONABLE_PRICE) {
                 invalidPriceCount++;
-                log.warn("TOYOTA_PROVERENE SKIP url={} reason=invalid_price title={} price={}",
+                log.debug("TOYOTA_PROVERENE SKIP url={} reason=invalid_price title={} price={}",
                         safe(car.getUrl()), safe(car.getTitle()), car.getPriceValue());
                 continue;
             }
 
             if ("VAN".equals(car.getCarType())) {
                 commercialVehicleCount++;
-                log.info("TOYOTA_PROVERENE SKIP url={} reason=commercial_vehicle title={}",
+                log.debug("TOYOTA_PROVERENE SKIP url={} reason=commercial_vehicle title={}",
                         safe(car.getUrl()), safe(car.getTitle()));
                 continue;
             }
 
-            log.info("TOYOTA_PROVERENE CAR title='{}' price={} location={} year={} mileage={} fuelType={} transmission={} carType={} brand={} url={}",
+            log.debug("TOYOTA_PROVERENE CAR title='{}' price={} location={} year={} mileage={} fuelType={} transmission={} carType={} brand={} url={}",
                     safe(car.getTitle()),
                     car.getPriceValue(),
                     safe(car.getLocation()),

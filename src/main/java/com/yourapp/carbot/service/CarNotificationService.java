@@ -91,7 +91,7 @@ public class CarNotificationService {
             resetDailyCounterIfNeeded(subscriber);
 
             if (subscriber.isNotificationsPaused()) {
-                log.info("Subscriber {} notifications paused", chatId);
+                log.debug("Subscriber {} notifications paused", chatId);
                 continue;
             }
 
@@ -103,13 +103,13 @@ public class CarNotificationService {
             int sentToSubscriber = 0;
 
             if (!hasActiveNotificationFilter(filter)) {
-                log.info("Subscriber {} notifications skipped reason=empty_filter", chatId);
+                log.debug("Subscriber {} notifications skipped reason=empty_filter", chatId);
                 continue;
             }
             int remainingToday = remainingNotificationsToday(subscriber);
 
             if (remainingToday <= 0) {
-                log.info("Subscriber {} daily notification limit reached", chatId);
+                log.debug("Subscriber {} daily notification limit reached", chatId);
                 continue;
             }
 
@@ -152,7 +152,7 @@ public class CarNotificationService {
                 }
             }
 
-            log.info("Subscriber {} received {} notifications",
+            log.debug("Subscriber {} received {} notifications",
                     chatId, sentToSubscriber);
         }
 
@@ -313,7 +313,7 @@ public class CarNotificationService {
             String caption = limitLength(formatted, MAX_CAPTION_LENGTH);
             String textMessage = limitLength(formatted, MAX_MESSAGE_LENGTH);
 
-            log.info("Sending notification. chatId={} source={} title='{}'",
+            log.debug("Sending notification. chatId={} source={} title='{}'",
                     chatId, safe(car.getSource()), safe(car.getTitle()));
 
             if (hasUsableImage(car.getImageUrl())) {
@@ -335,7 +335,7 @@ public class CarNotificationService {
 
             telegramDeliveryService.sendTextOrThrow(chatId, textMessage, keyboard);
 
-            log.info("Sent as text message. source={} chatId={} title='{}'",
+            log.debug("Sent as text message. source={} chatId={} title='{}'",
                     safe(car.getSource()), chatId, safe(car.getTitle()));
 
             return true;
@@ -364,7 +364,7 @@ public class CarNotificationService {
                     null
             );
 
-            log.info("Sent digest notification. chatId={} cars={}", chatId, cars.size());
+            log.debug("Sent digest notification. chatId={} cars={}", chatId, cars.size());
             return true;
 
         } catch (BotBlockedException e) {
@@ -456,7 +456,7 @@ public class CarNotificationService {
 
             telegramClient.execute(photo);
 
-            log.info("Photo sent by URL. source={} chatId={} title='{}'",
+            log.debug("Photo sent by URL. source={} chatId={} title='{}'",
                     safe(car.getSource()), chatId, safe(car.getTitle()));
 
             return true;
@@ -495,7 +495,7 @@ public class CarNotificationService {
 
             telegramClient.execute(photo);
 
-            log.info("Photo sent by download. source={} chatId={} title='{}'",
+            log.debug("Photo sent by download. source={} chatId={} title='{}'",
                     safe(car.getSource()), chatId, safe(car.getTitle()));
 
             return true;
@@ -548,7 +548,7 @@ public class CarNotificationService {
 
             telegramClient.execute(photo);
 
-            log.info("Placeholder photo sent. source={} chatId={} title='{}'",
+            log.debug("Placeholder photo sent. source={} chatId={} title='{}'",
                     safe(car.getSource()), chatId, safe(car.getTitle()));
 
             return true;

@@ -68,7 +68,7 @@ public class SautoParser implements CarSourceParser {
                     Set<String> pageLinks = extractDetailLinks(listDoc);
                     detailLinks.addAll(pageLinks);
 
-                    log.info("SAUTO list page={} url={} detail_links_found={} total_unique_links={}",
+                    log.debug("SAUTO list page={} url={} detail_links_found={} total_unique_links={}",
                             page, pageUrl, pageLinks.size(), detailLinks.size());
 
                     sleepQuietly(300);
@@ -78,7 +78,7 @@ public class SautoParser implements CarSourceParser {
                 }
             }
 
-            log.info("SAUTO total unique detail links found={}", detailLinks.size());
+            log.debug("SAUTO total unique detail links found={}", detailLinks.size());
 
             for (String url : detailLinks) {
                 try {
@@ -129,28 +129,28 @@ public class SautoParser implements CarSourceParser {
             String analysisText = normalizeText(title + " " + description + " " + pageText);
 
             if (looksBrokenListing(title, listingText, analysisText)) {
-                log.warn("SAUTO SKIP url={} reason=broken_listing title={}", safe(url), safe(title));
+                log.debug("SAUTO SKIP url={} reason=broken_listing title={}", safe(url), safe(title));
                 return new ParseResult(null, "broken_listing");
             }
 
             if (looksCommercialVehicle(title, listingText, url)) {
-                log.warn("SAUTO SKIP url={} reason=commercial_vehicle title={}", safe(url), safe(title));
+                log.debug("SAUTO SKIP url={} reason=commercial_vehicle title={}", safe(url), safe(title));
                 return new ParseResult(null, "commercial_vehicle");
             }
 
             Integer priceValue = extractPriceValueDirect(doc, title, listingText);
             if (priceValue == null) {
-                log.warn("SAUTO SKIP url={} reason=missing_price title={}", safe(url), safe(title));
+                log.debug("SAUTO SKIP url={} reason=missing_price title={}", safe(url), safe(title));
                 return new ParseResult(null, "missing_price");
             }
 
             if (priceValue <= 0 || priceValue > MAX_REASONABLE_PRICE) {
-                log.warn("SAUTO SKIP url={} reason=invalid_price title={} price={}", safe(url), safe(title), priceValue);
+                log.debug("SAUTO SKIP url={} reason=invalid_price title={} price={}", safe(url), safe(title), priceValue);
                 return new ParseResult(null, "invalid_price");
             }
 
             if (priceValue < MIN_VALID_PRICE) {
-                log.info("SAUTO SKIP url={} reason=cheap_low_quality_listing title={} price={}",
+                log.debug("SAUTO SKIP url={} reason=cheap_low_quality_listing title={} price={}",
                         safe(url), safe(title), priceValue);
                 return new ParseResult(null, "cheap_low_quality_listing");
             }
@@ -160,13 +160,13 @@ public class SautoParser implements CarSourceParser {
 
             Integer correctedInflatedPrice = correctLikelyInflatedOldCarPrice(priceValue, title, analysisText, analysisText);
             if (correctedInflatedPrice != null) {
-                log.info("SAUTO PRICE CORRECTED title='{}' rawPrice={} correctedPrice={} year={} mileage={} reason=inflated_old_car_price",
+                log.debug("SAUTO PRICE CORRECTED title='{}' rawPrice={} correctedPrice={} year={} mileage={} reason=inflated_old_car_price",
                         safe(title), priceValue, correctedInflatedPrice, year, mileage);
                 priceValue = correctedInflatedPrice;
             }
 
             if (isClearlyFakeModernCarPrice(priceValue, year, mileage, title, analysisText)) {
-                log.warn("SAUTO SKIP url={} reason=invalid_price title={} price={} year={} mileage={}",
+                log.debug("SAUTO SKIP url={} reason=invalid_price title={} price={} year={} mileage={}",
                         safe(url), safe(title), priceValue, year, mileage);
                 return new ParseResult(null, "invalid_price");
             }
@@ -197,12 +197,12 @@ public class SautoParser implements CarSourceParser {
             String outputLocation = repairMojibake(location);
 
             if (looksCheapLowQualityListing(title, listingText, analysisText, priceValue, year, mileage)) {
-                log.info("SAUTO SKIP url={} reason=cheap_low_quality_listing title={} price={} year={} mileage={} fuelType={} transmission={} location={}",
+                log.debug("SAUTO SKIP url={} reason=cheap_low_quality_listing title={} price={} year={} mileage={} fuelType={} transmission={} location={}",
                         safe(url), safe(outputTitle), priceValue, year, mileage, safe(fuelType), safe(transmission), safe(outputLocation));
                 return new ParseResult(null, "cheap_low_quality_listing");
             }
 
-            log.info("SAUTO CAR title='{}' price={} location={} year={} mileage={} fuelType={} transmission={} carType={} brand={} url={}",
+            log.debug("SAUTO CAR title='{}' price={} location={} year={} mileage={} fuelType={} transmission={} carType={} brand={} url={}",
                     safe(outputTitle),
                     priceValue,
                     safe(outputLocation),
@@ -232,7 +232,7 @@ public class SautoParser implements CarSourceParser {
             return new ParseResult(car, "ok");
 
         } catch (Exception e) {
-            log.warn("SAUTO SKIP url={} reason=parse_exception error={}", safe(url), safe(e.getMessage()));
+            log.debug("SAUTO SKIP url={} reason=parse_exception error={}", safe(url), safe(e.getMessage()));
             return new ParseResult(null, "parse_exception");
         }
     }
@@ -341,7 +341,7 @@ public class SautoParser implements CarSourceParser {
                 safe(selectorRaw));
 
         if (looksLikeLeaseTransferOrDeposit(title, listingText, selectorRaw)) {
-            log.info("SAUTO PRICE REJECTED title='{}' reason=lease_transfer_or_deposit rawSelector={}",
+            log.debug("SAUTO PRICE REJECTED title='{}' reason=lease_transfer_or_deposit rawSelector={}",
                     safe(title), safe(selectorRaw));
             return null;
         }
@@ -487,7 +487,7 @@ public class SautoParser implements CarSourceParser {
 
         Integer correctedInflatedPrice = correctLikelyInflatedOldCarPrice(priceValue, title, listingText, text);
         if (correctedInflatedPrice != null) {
-            log.info("SAUTO PRICE CORRECTED title='{}' rawPrice={} correctedPrice={} reason=inflated_old_car_price",
+            log.debug("SAUTO PRICE CORRECTED title='{}' rawPrice={} correctedPrice={} reason=inflated_old_car_price",
                     safe(title), priceValue, correctedInflatedPrice);
             return correctedInflatedPrice;
         }

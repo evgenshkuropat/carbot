@@ -93,27 +93,27 @@ public class AutoEsaParser extends AbstractJsoupParser implements CarSourceParse
 
                         if (car.getPriceValue() == null) {
                             missingPriceCount++;
-                            log.warn("AUTOESA SKIP url={} reason=missing_price title={}", safe(url), safe(car.getTitle()));
+                            log.debug("AUTOESA SKIP url={} reason=missing_price title={}", safe(url), safe(car.getTitle()));
                             continue;
                         }
 
                         if (car.getPriceValue() < MIN_VALID_PRICE || car.getPriceValue() > MAX_REASONABLE_PRICE) {
                             invalidPriceCount++;
-                            log.warn("AUTOESA SKIP url={} reason=invalid_price title={} price={}",
+                            log.debug("AUTOESA SKIP url={} reason=invalid_price title={} price={}",
                                     safe(url), safe(car.getTitle()), car.getPriceValue());
                             continue;
                         }
 
                         if ("VAN".equals(car.getCarType())) {
                             commercialVehicleCount++;
-                            log.info("AUTOESA SKIP url={} reason=commercial_vehicle title={}", safe(url), safe(car.getTitle()));
+                            log.debug("AUTOESA SKIP url={} reason=commercial_vehicle title={}", safe(url), safe(car.getTitle()));
                             continue;
                         }
 
                         enrichFromDetailQuietly(car);
                         normalizeParsedText(car);
 
-                        log.info("AUTOESA CAR title='{}' price={} location={} year={} mileage={} fuelType={} transmission={} carType={} brand={} url={}",
+                        log.debug("AUTOESA CAR title='{}' price={} location={} year={} mileage={} fuelType={} transmission={} carType={} brand={} url={}",
                                 safe(car.getTitle()),
                                 car.getPriceValue(),
                                 safe(car.getLocation()),
@@ -129,15 +129,15 @@ public class AutoEsaParser extends AbstractJsoupParser implements CarSourceParse
                         pageNewCars++;
                     } catch (Exception e) {
                         parseExceptionCount++;
-                        log.warn("AUTOESA SKIP url={} reason=parse_exception error={}", safe(url), safe(e.getMessage()));
+                        log.debug("AUTOESA SKIP url={} reason=parse_exception error={}", safe(url), safe(e.getMessage()));
                     }
                 }
 
-                log.info("AUTOESA list page={} url={} cards={} new_cars={} total_unique={}",
+                log.debug("AUTOESA list page={} url={} cards={} new_cars={} total_unique={}",
                         page, pageUrl, pageCards, pageNewCars, seenUrls.size());
 
                 if (page > 1 && pageNewCars == 0) {
-                    log.info("AUTOESA pagination stopped page={} reason=no_new_cars", page);
+                    log.debug("AUTOESA pagination stopped page={} reason=no_new_cars", page);
                     break;
                 }
 

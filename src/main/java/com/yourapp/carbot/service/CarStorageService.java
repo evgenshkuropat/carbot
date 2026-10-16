@@ -94,7 +94,7 @@ public class CarStorageService {
                         CarEntity updated = carRepository.save(existing);
                         updatedCount++;
 
-                        log.info("STORAGE UPDATED source={} title={} url={}",
+                        log.debug("STORAGE UPDATED source={} title={} url={}",
                                 safe(updated.getSource()),
                                 safe(updated.getTitle()),
                                 safe(updated.getUrl()));
@@ -113,7 +113,7 @@ public class CarStorageService {
                 savedNewCars.add(saved);
                 existingByUrl.put(url, saved);
 
-                log.info("STORAGE SAVED source={} title={} url={}",
+                log.debug("STORAGE SAVED source={} title={} url={}",
                         safe(saved.getSource()),
                         safe(saved.getTitle()),
                         safe(saved.getUrl()));

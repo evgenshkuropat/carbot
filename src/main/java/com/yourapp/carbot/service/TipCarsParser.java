@@ -84,11 +84,11 @@ public class TipCarsParser implements CarSourceParser {
 
                     int addedOnPage = detailLinks.size() - before;
 
-                    log.info("TIPCARS list page={} url={} detail_links_found={} new_links={} total_unique_links={}",
+                    log.debug("TIPCARS list page={} url={} detail_links_found={} new_links={} total_unique_links={}",
                             page, pageUrl, pageLinks.size(), addedOnPage, detailLinks.size());
 
                     if (page > 1 && addedOnPage == 0) {
-                        log.info("TIPCARS pagination stopped page={} reason=no_new_links", page);
+                        log.debug("TIPCARS pagination stopped page={} reason=no_new_links", page);
                         break;
                     }
 
@@ -99,7 +99,7 @@ public class TipCarsParser implements CarSourceParser {
                 }
             }
 
-            log.info("TIPCARS total unique detail links found={}", detailLinks.size());
+            log.debug("TIPCARS total unique detail links found={}", detailLinks.size());
             Set<String> ambiguousDetailIds = findAmbiguousDetailIds(detailLinks);
             if (!ambiguousDetailIds.isEmpty()) {
                 log.warn("TIPCARS found ambiguous detail ids count={} ids={}",
@@ -110,7 +110,7 @@ public class TipCarsParser implements CarSourceParser {
                 String detailId = extractDetailId(url);
                 if (detailId != null && ambiguousDetailIds.contains(detailId)) {
                     brokenCount++;
-                    log.warn("TIPCARS SKIP url={} reason=ambiguous_detail_id detail_id={}",
+                    log.debug("TIPCARS SKIP url={} reason=ambiguous_detail_id detail_id={}",
                             safe(url), safe(detailId));
                     continue;
                 }
@@ -170,7 +170,7 @@ public class TipCarsParser implements CarSourceParser {
             cookies.putAll(detailResponse.cookies());
             String finalUrl = normalizeDetailUrl(detailResponse.url() == null ? null : detailResponse.url().toString());
             if (!isValidDetailLink(finalUrl)) {
-                log.warn("TIPCARS SKIP url={} reason=detail_redirected_to_non_detail final_url={}",
+                log.debug("TIPCARS SKIP url={} reason=detail_redirected_to_non_detail final_url={}",
                         safe(url), safe(finalUrl));
                 return new ParseResult(null, "broken_listing");
             }
@@ -184,28 +184,28 @@ public class TipCarsParser implements CarSourceParser {
                     || isJunkTitle(title)
                     || isJunkUrl(finalUrl)
                     || isJunkText(pageText)) {
-                log.warn("TIPCARS SKIP url={} reason=broken_listing title={}", safe(finalUrl), safe(title));
+                log.debug("TIPCARS SKIP url={} reason=broken_listing title={}", safe(finalUrl), safe(title));
                 return new ParseResult(null, "broken_listing");
             }
 
             if (looksTitleUrlBrandMismatch(title, finalUrl)) {
-                log.warn("TIPCARS SKIP url={} reason=title_url_brand_mismatch title={}", safe(finalUrl), safe(title));
+                log.debug("TIPCARS SKIP url={} reason=title_url_brand_mismatch title={}", safe(finalUrl), safe(title));
                 return new ParseResult(null, "broken_listing");
             }
 
             if (looksCommercialOrCamperListing(title, finalUrl, pageText)) {
-                log.info("TIPCARS SKIP url={} reason=commercial_vehicle title={}", safe(finalUrl), safe(title));
+                log.debug("TIPCARS SKIP url={} reason=commercial_vehicle title={}", safe(finalUrl), safe(title));
                 return new ParseResult(null, "commercial_vehicle");
             }
 
             Integer priceValue = extractPriceValue(doc, pageText);
             if (priceValue == null) {
-                log.warn("TIPCARS SKIP url={} reason=missing_price title={}", safe(url), safe(title));
+                log.debug("TIPCARS SKIP url={} reason=missing_price title={}", safe(url), safe(title));
                 return new ParseResult(null, "missing_price");
             }
 
             if (priceValue <= 0 || priceValue > MAX_REASONABLE_PRICE) {
-                log.warn("TIPCARS SKIP url={} reason=invalid_price title={} price={}",
+                log.debug("TIPCARS SKIP url={} reason=invalid_price title={} price={}",
                         safe(url), safe(title), priceValue);
                 return new ParseResult(null, "invalid_price");
             }
@@ -247,7 +247,7 @@ public class TipCarsParser implements CarSourceParser {
             car.setTransmission(transmission);
             car.setCarType(carType);
 
-            log.info("TIPCARS CAR title='{}' price={} location={} year={} mileage={} fuelType={} transmission={} carType={} brand={} url={}",
+            log.debug("TIPCARS CAR title='{}' price={} location={} year={} mileage={} fuelType={} transmission={} carType={} brand={} url={}",
                     safe(outputTitle),
                     priceValue,
                     safe(outputLocation),
@@ -268,14 +268,14 @@ public class TipCarsParser implements CarSourceParser {
                     log.warn("TIPCARS detail forbidden url={} status=403 action=list_card_fallback", safe(url));
                     return fallback;
                 }
-                log.warn("TIPCARS SKIP url={} reason=forbidden status=403 fallback=unavailable", safe(url));
+                log.debug("TIPCARS SKIP url={} reason=forbidden status=403 fallback=unavailable", safe(url));
                 return fallback;
             }
-            log.warn("TIPCARS SKIP url={} reason=parse_exception status={} error={}",
+            log.debug("TIPCARS SKIP url={} reason=parse_exception status={} error={}",
                     safe(url), e.getStatusCode(), safe(e.getMessage()));
             return new ParseResult(null, "parse_exception");
         } catch (Exception e) {
-            log.warn("TIPCARS SKIP url={} reason=parse_exception error={}", safe(url), safe(e.getMessage()));
+            log.debug("TIPCARS SKIP url={} reason=parse_exception error={}", safe(url), safe(e.getMessage()));
             return new ParseResult(null, "parse_exception");
         }
     }
@@ -334,7 +334,7 @@ public class TipCarsParser implements CarSourceParser {
         car.setTransmission(transmission);
         car.setCarType(extractCarType(title, listText, url));
 
-        log.info("TIPCARS CAR title='{}' price={} location={} year={} mileage={} fuelType={} transmission={} carType={} brand={} url={} source=list_card_fallback",
+        log.debug("TIPCARS CAR title='{}' price={} location={} year={} mileage={} fuelType={} transmission={} carType={} brand={} url={} source=list_card_fallback",
                 safe(car.getTitle()),
                 priceValue,
                 safe(car.getLocation()),
