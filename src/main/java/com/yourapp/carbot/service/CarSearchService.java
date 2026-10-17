@@ -75,8 +75,9 @@ public class CarSearchService {
             if (check.result()) finalPassed++;
         }
 
-        log.debug(
-                "Search diagnostics: allCars={} searchableCars={} filter=[carType={}, brand={}, modelQuery={}, maxPrice={}, location={}, maxMileage={}, fuelType={}, transmission={}, yearFrom={}] passed=[carType={}, brand={}, model={}, price={}, location={}, mileage={}, fuelType={}, transmission={}, year={}, final={}]",
+        String diagnostics =
+                "Search diagnostics: allCars={} searchableCars={} filter=[carType={}, brand={}, modelQuery={}, maxPrice={}, location={}, maxMileage={}, fuelType={}, transmission={}, yearFrom={}] passed=[carType={}, brand={}, model={}, price={}, location={}, mileage={}, fuelType={}, transmission={}, year={}, final={}]";
+        Object[] diagnosticValues = {
                 allCars.size(),
                 searchableCars.size(),
                 filter.getCarType(),
@@ -98,7 +99,13 @@ public class CarSearchService {
                 transmissionPassed,
                 yearPassed,
                 finalPassed
-        );
+        };
+
+        if (finalPassed == 0) {
+            log.info(diagnostics, diagnosticValues);
+        } else {
+            log.debug(diagnostics, diagnosticValues);
+        }
 
         List<CarEntity> sortedMatched = searchableCars.stream()
                 .filter(car -> carFilterMatcher.matches(car, filter))
