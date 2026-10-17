@@ -93,6 +93,14 @@ public class TipCarsParser implements CarSourceParser {
                     }
 
                     sleepQuietly(300);
+                } catch (HttpStatusException e) {
+                    if (e.getStatusCode() == 403) {
+                        log.warn("TIPCARS list access blocked page={} url={} status=403 action=stopping_source_for_this_run",
+                                page, pageUrl);
+                        break;
+                    }
+                    log.warn("TIPCARS list page failed page={} url={} status={} error={}",
+                            page, pageUrl, e.getStatusCode(), safe(e.getMessage()));
                 } catch (Exception e) {
                     log.warn("TIPCARS list page failed page={} url={} error={}",
                             page, pageUrl, safe(e.getMessage()));
