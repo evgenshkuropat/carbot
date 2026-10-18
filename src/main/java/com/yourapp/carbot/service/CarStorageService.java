@@ -24,6 +24,7 @@ import java.util.regex.Pattern;
 public class CarStorageService {
 
     private static final Logger log = LoggerFactory.getLogger(CarStorageService.class);
+    private static final int INCOMPLETE_FILTER_DATA_LOG_LIMIT = 12;
 
     private final CarRepository carRepository;
 
@@ -135,8 +136,56 @@ public class CarStorageService {
         );
         invalidBySource.forEach((source, count) ->
                 log.info("STORAGE source={} invalid_skipped={}", source, count));
+        logIncompleteFilterData(savedNewCars);
 
         return savedNewCars;
+    }
+
+    private void logIncompleteFilterData(List<CarEntity> savedCars) {
+        List<CarEntity> incompleteCars = savedCars.stream()
+                .filter(this::hasIncompleteFilterData)
+                .toList();
+
+        if (incompleteCars.isEmpty()) {
+            return;
+        }
+
+        log.info("STORAGE incomplete_filter_data count={} sampled={}",
+                incompleteCars.size(), Math.min(incompleteCars.size(), INCOMPLETE_FILTER_DATA_LOG_LIMIT));
+
+        incompleteCars.stream()
+                .limit(INCOMPLETE_FILTER_DATA_LOG_LIMIT)
+                .forEach(car -> log.info(
+                        "STORAGE incomplete_filter_data source={} missing={} title={} brand={} carType={} fuelType={} transmission={} year={} mileage={} location={} url={}",
+                        safe(car.getSource()),
+                        missingFilterFields(car),
+                        safe(car.getTitle()),
+                        safe(car.getBrand()),
+                        safe(car.getCarType()),
+                        safe(car.getFuelType()),
+                        safe(car.getTransmission()),
+                        car.getYear(),
+                        car.getMileage(),
+                        safe(car.getLocation()),
+                        safe(car.getUrl())));
+    }
+
+    private boolean hasIncompleteFilterData(CarEntity car) {
+        return !missingFilterFields(car).isEmpty();
+    }
+
+    private List<String> missingFilterFields(CarEntity car) {
+        List<String> missing = new ArrayList<>();
+
+        if (clean(car.getBrand()) == null) missing.add("brand");
+        if (clean(car.getCarType()) == null) missing.add("carType");
+        if (clean(car.getFuelType()) == null) missing.add("fuelType");
+        if (clean(car.getTransmission()) == null) missing.add("transmission");
+        if (car.getYear() == null) missing.add("year");
+        if (car.getMileage() == null) missing.add("mileage");
+        if (clean(car.getLocation()) == null) missing.add("location");
+
+        return missing;
     }
 
     private void normalizeIncoming(CarDto car) {
