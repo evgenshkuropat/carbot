@@ -157,6 +157,23 @@ class SautoParserTest {
     }
 
     @Test
+    void extractsNewCarDetailsFromCurrentSautoFormat() throws Exception {
+        String details = "Najeto: | 1 km Vyrobeno: | 2026";
+
+        assertThat(extractMileage(details)).isEqualTo(1);
+        assertThat(extractYearSafely("Citroën C3 MAX Turbo 100k Manual", "", details + " © 1996–2026 Seznam.cz"))
+                .isEqualTo(2026);
+    }
+
+    @Test
+    void ignoresFooterLinksWhenExtractingLocation() throws Exception {
+        Document doc = Jsoup.parse("<div class='location'>Kam na houby v Praze</div>");
+
+        assertThat(extractLocation(doc, "", "Milady Horákové 3291, 272 01 Kladno Kam na houby v Praze"))
+                .isEqualTo("Kladno");
+    }
+
+    @Test
     void correctsFalseElectricFuelFromSautoEquipmentText() throws Exception {
         assertThat(correctLikelyFalseElectricFuel(
                 "Volkswagen Golf 1.6 74kW, CLIMAtronic, el.okna",
@@ -318,6 +335,18 @@ class SautoParserTest {
         Method method = SautoParser.class.getDeclaredMethod("extractYearSafely", String.class, String.class, String.class);
         method.setAccessible(true);
         return (Integer) method.invoke(parser, title, description, analysisText);
+    }
+
+    private Integer extractMileage(String text) throws Exception {
+        Method method = SautoParser.class.getDeclaredMethod("extractMileage", String.class);
+        method.setAccessible(true);
+        return (Integer) method.invoke(parser, text);
+    }
+
+    private String extractLocation(Document doc, String jsonLd, String text) throws Exception {
+        Method method = SautoParser.class.getDeclaredMethod("extractLocation", Document.class, String.class, String.class);
+        method.setAccessible(true);
+        return (String) method.invoke(parser, doc, jsonLd, text);
     }
 
     private String correctLikelyFalseElectricFuel(String title, String fuelType) throws Exception {

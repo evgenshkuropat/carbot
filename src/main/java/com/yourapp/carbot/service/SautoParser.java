@@ -890,7 +890,8 @@ public class SautoParser implements CarSourceParser {
         return !containsAny(lower,
                 "zobrazit", "kontakt", "prodejce", "telefon", "email", "www.", "http",
                 "kč", "leasing", "měsíčně", "mesicne",
-                "prověřit", "proverit", "technikem", "vůz", "vuz");
+                "prověřit", "proverit", "technikem", "vůz", "vuz",
+                "kam na houby", "houby");
     }
 
     private String normalizeLocation(String value) {
@@ -1335,7 +1336,7 @@ public class SautoParser implements CarSourceParser {
         }
 
         Matcher m = Pattern.compile(
-                "(?i)(rok výroby|rok vyroby|r\\.v\\.?|rv|první registrace|prvni registrace|uvedení do provozu|uvedeni do provozu|do provozu|modelový rok|modelovy rok)\\s*[:\\- ]\\s*(19\\d{2}|20\\d{2})"
+                "(?i)(rok výroby|rok vyroby|r\\.v\\.?|rv|první registrace|prvni registrace|uvedení do provozu|uvedeni do provozu|do provozu|modelový rok|modelovy rok)\\s*(?:[:|\\-]\\s*)?(19\\d{2}|20\\d{2})"
         ).matcher(text);
 
         if (m.find()) {
@@ -1354,7 +1355,7 @@ public class SautoParser implements CarSourceParser {
         }
 
         Matcher m3 = Pattern.compile(
-                "(?i)(vyrobeno|registrace|uvedeno do provozu|datum registrace|rok)\\s*[:\\- ]\\s*(19\\d{2}|20\\d{2})"
+                "(?i)(vyrobeno|registrace|uvedeno do provozu|datum registrace|rok)\\s*(?:[:|\\-]\\s*)?(19\\d{2}|20\\d{2})"
         ).matcher(text);
 
         if (m3.find()) {
@@ -1462,13 +1463,13 @@ public class SautoParser implements CarSourceParser {
         String normalized = normalizeText(text);
 
         Matcher labeledKmMatcher = Pattern.compile(
-                "(tachometr|najeto|najetých km|najetych km|stav tachometru)\\s*[:\\- ]*([0-9]{1,3}(?:[ \\u00A0][0-9]{3})+|[0-9]{4,7})\\s*km",
+                "(tachometr|najeto|najetých km|najetych km|stav tachometru)\\s*(?:[:|\\-]\\s*)?([0-9]{1,3}(?:[ \\u00A0][0-9]{3})+|[0-9]{1,7})\\s*km",
                 Pattern.CASE_INSENSITIVE
         ).matcher(normalized);
 
         while (labeledKmMatcher.find()) {
             Integer km = parseIntSafe(labeledKmMatcher.group(2));
-            if (km != null && km >= 1000 && km <= 1_500_000) {
+            if (km != null && km >= 0 && km <= 1_500_000) {
                 return km;
             }
         }
