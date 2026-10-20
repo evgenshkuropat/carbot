@@ -563,6 +563,10 @@ public class CarStorageService {
                 return "DIESEL";
             }
 
+            if ("HYBRID".equals(upper) && containsAny(titleLower, "corvette", "camaro")) {
+                return "PETROL";
+            }
+
             if (("ELECTRIC".equals(upper) || "DIESEL".equals(upper))
                     && containsAny(titleLower, "twinspark", "twin spark", "1.8tbi", "1,8tbi", " tbi", "jts", "giulietta sprint")) {
                 return "PETROL";
@@ -705,6 +709,12 @@ public class CarStorageService {
 
     private String normalizeCarType(String carType, String title) {
         String lower = safe(title).toLowerCase(Locale.ROOT);
+
+        if (containsAny(lower, "corvette", "camaro")) {
+            return containsAny(lower, "cabrio", "cabriolet", "convertible", "targa")
+                    ? "CABRIO"
+                    : "COUPE";
+        }
 
         if (containsAny(lower, "picasso", "roomster", "citroen c8", "citroën c8", " c8 ")) {
             return "MINIVAN";

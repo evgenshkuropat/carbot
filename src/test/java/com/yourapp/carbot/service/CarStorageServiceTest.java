@@ -39,6 +39,7 @@ class CarStorageServiceTest {
         assertThat(normalizeFuelType(null, "Ford Fiesta ST atmosfera 150PS")).isEqualTo("PETROL");
         assertThat(normalizeFuelType(null, "Suzuki SX4 S-Cross 1,4 BoosterJet Premium")).isEqualTo("PETROL");
         assertThat(normalizeFuelType(null, "Dongfeng U-Tour 1,5 T 130 kW ExclusiveFR")).isEqualTo("PETROL");
+        assertThat(normalizeFuelType("HYBRID", "Chevrolet Corvette C8 Cabriolet Stingray 2021")).isEqualTo("PETROL");
     }
 
     @Test
@@ -93,6 +94,7 @@ class CarStorageServiceTest {
         assertThat(normalizeCarType("WAGON", "Citroen Berlingo 1,6HDi 2xSOUPACKY")).isEqualTo("MINIVAN");
         assertThat(normalizeCarType("WAGON", "Peugeot Partner 1,6HDi 2xSOUPACKY")).isEqualTo("MINIVAN");
         assertThat(normalizeCarType("WAGON", "Renault Twingo 1.2 Dynamique PANORAMA")).isEqualTo("HATCHBACK");
+        assertThat(normalizeCarType("MINIVAN", "Chevrolet Corvette C8 Cabriolet Stingray 2021")).isEqualTo("CABRIO");
     }
 
     @Test
