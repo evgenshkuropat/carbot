@@ -282,6 +282,27 @@ public class AutoEsaParser extends AbstractJsoupParser implements CarSourceParse
             return text.isBlank() ? null : text;
         }
 
+        // Auto ESA has used more than one layout for the specification block.
+        // Keep the original selector above, then read the same label/value pairs
+        // from the newer, class-less markup as well.
+        for (Element labelElement : doc.getAllElements()) {
+            String elementLabel = normalizeAscii(normalizeText(labelElement.ownText()))
+                    .toLowerCase(Locale.ROOT);
+            if (!elementLabel.equals(normalizedLabel)) {
+                continue;
+            }
+
+            Element valueElement = labelElement.nextElementSibling();
+            if (valueElement == null) {
+                continue;
+            }
+
+            String value = normalizeText(valueElement.text());
+            if (!value.isBlank()) {
+                return value;
+            }
+        }
+
         return null;
     }
 

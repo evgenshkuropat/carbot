@@ -87,6 +87,23 @@ class AutoEsaParserTest {
     }
 
     @Test
+    void parsesDetailAttributesFromNewAutoEsaMarkup() throws Exception {
+        Document doc = Jsoup.parse("""
+                <html>
+                <body>
+                <section class="vehicle-parameters">
+                    <div><span>Převodovka</span><span>automat</span></div>
+                    <div><span>Stav tachometru</span><span>67 864 km</span></div>
+                </section>
+                </body>
+                </html>
+                """);
+
+        assertThat(extractDetailValue(doc, "Prevodovka")).isEqualTo("automat");
+        assertThat(extractDetailValue(doc, "Stav tachometru")).isEqualTo("67 864 km");
+    }
+
+    @Test
     void repairsAutoEsaMojibakeTitles() throws Exception {
         assertThat(repairMojibake("Citro\u0102\u00ABn C3 Aircross 1.2PT"))
                 .isEqualTo("Citro\u00EBn C3 Aircross 1.2PT");
