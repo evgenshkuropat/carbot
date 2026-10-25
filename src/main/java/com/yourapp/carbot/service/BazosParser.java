@@ -1080,7 +1080,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             }
         }
 
-        matcher = Pattern.compile("(?i)\\b([0-9]{1,3})\\s*(?:tis(?:\\.|ic|Ă­c|\\s)|t\\s*km|tkm)\\b").matcher(source);
+        matcher = Pattern.compile("(?i)\\b([0-9]{1,3})\\s*(?:tis(?:\\.|ic|Ă­c)?|t\\s*km|tkm)\\b").matcher(source);
         while (matcher.find()) {
             Integer value = parseMileageCandidate(matcher.group(1) + "000");
             if (value != null) {

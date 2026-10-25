@@ -1006,6 +1006,7 @@ class BazosParserTest {
     void resolvesApproximateMileageFromBazosTitles() throws Exception {
         assertThat(extractMileage("Citroen C5 combi diesel 124 xxx km", "")).isEqualTo(124000);
         assertThat(extractMileage("Honda CR-V 2.0 e:HEV Advance AWD, r. 2024, najeto cca 15100", "")).isEqualTo(15100);
+        assertThat(extractMileage("Chevrolet Express 5.3 V8 LPG najeto:63tis•2005", "")).isEqualTo(63000);
     }
 
     @Test
