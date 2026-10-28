@@ -175,6 +175,8 @@ class AutoEsaParserTest {
         assertThat(mapCarType("minibus", "Ford Transit 2.2TDCi Trend L3 9míst")).isEqualTo("VAN");
         assertThat(mapCarType("kabriolet", "Fiat 500 1.0i Lounge C")).isEqualTo("CABRIO");
         assertThat(mapTransmission("Maserati GranTurismo 4.7 V8 S Automatic")).isEqualTo("AUTOMATIC");
+        assertThat(mapTransmission("Manuální 6st.")).isEqualTo("MANUAL");
+        assertThat(mapTransmission("Automatická 8st.")).isEqualTo("AUTOMATIC");
     }
 
     private CarDto parseCard(Element card, String url) throws Exception {

@@ -409,8 +409,8 @@ public class AutoEsaParser extends AbstractJsoupParser implements CarSourceParse
     private String mapTransmission(String value) {
         String source = " " + normalizeAscii(value).toLowerCase(Locale.ROOT) + " ";
 
-        if (containsAny(source, " automat ", " automatic ", " dsg ", " dct ", " e-cvt ", " ecvt ")) return "AUTOMATIC";
-        if (containsAny(source, " manual ", " manual/")) return "MANUAL";
+        if (containsAny(source, " automat ", " automaticka ", " automatic ", " dsg ", " dct ", " e-cvt ", " ecvt ")) return "AUTOMATIC";
+        if (containsAny(source, " manual ", " manual/", " manualni ", " mechanicka ")) return "MANUAL";
 
         return null;
     }
