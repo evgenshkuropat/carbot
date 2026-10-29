@@ -710,7 +710,7 @@ class TipCarsParserTest {
         List<CarDto> cars = parseXmlExport(xml);
 
         assertThat(cars).hasSize(1);
-        CarDto car = cars.getFirst();
+        CarDto car = cars.get(0);
         assertThat(car.getTitle()).isEqualTo("Mercedes-Benz Třídy S 450d,4Matic,Záruka,AMG");
         assertThat(car.getPriceValue()).isEqualTo(2_350_000);
         assertThat(car.getUrl()).isEqualTo("https://www.tipcars.com/mercedes-benz-tridy-s/sedan/nafta/mercedes-benz-tridy-s-450d-4matic-zaruka-amg-14544045.html");

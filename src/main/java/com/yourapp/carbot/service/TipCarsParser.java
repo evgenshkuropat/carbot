@@ -18,6 +18,7 @@ import java.nio.CharBuffer;
 import java.nio.charset.Charset;
 import java.nio.charset.CodingErrorAction;
 import java.nio.charset.StandardCharsets;
+import java.text.Normalizer;
 import java.time.Year;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -331,6 +332,23 @@ public class TipCarsParser implements CarSourceParser {
                 .replaceAll("[^a-z0-9]+", "-")
                 .replaceAll("(^-|-$)", "");
         return normalized.isBlank() ? null : normalized;
+    }
+
+    private String normalizeAscii(String value) {
+        if (value == null) {
+            return "";
+        }
+        return Normalizer.normalize(value, Normalizer.Form.NFD)
+                .replaceAll("\\p{M}+", "");
+    }
+
+    private Integer firstNonNull(Integer... values) {
+        for (Integer value : values) {
+            if (value != null) {
+                return value;
+            }
+        }
+        return null;
     }
 
     private ParseResult parseDetail(String url, Map<String, String> cookies, ListListing listListing) {
