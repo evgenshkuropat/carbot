@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Supplier;
 import java.util.UUID;
 
 @Service
@@ -34,7 +35,15 @@ public class CarSchedulerService {
 
     @Scheduled(initialDelay = 30_000, fixedDelay = 30 * 60 * 1000)
     public void fetchAndStoreCarsScheduled() {
+        runScheduled("regular", carParserService::fetchAndStoreCars);
+    }
 
+    @Scheduled(cron = "0 0 9,21 * * *", zone = "Europe/Prague")
+    public void fetchAndStoreTipCarsScheduled() {
+        runScheduled("tipcars_xml", carParserService::fetchAndStoreTipCars);
+    }
+
+    private void runScheduled(String jobName, Supplier<List<CarEntity>> fetchCars) {
         String runId = UUID.randomUUID().toString().substring(0, 8);
 
         if (!running.compareAndSet(false, true)) {
@@ -42,7 +51,7 @@ public class CarSchedulerService {
             return;
         }
 
-        log.info("[{}] Scheduler started", runId);
+        log.info("[{}] Scheduler started job={}", runId, jobName);
 
         SchedulerDatabaseLock.LockHandle databaseLock = null;
 
@@ -54,7 +63,7 @@ public class CarSchedulerService {
                 return;
             }
 
-            List<CarEntity> newCars = carParserService.fetchAndStoreCars();
+            List<CarEntity> newCars = fetchCars.get();
 
             int newCarsCount = newCars == null ? 0 : newCars.size();
 

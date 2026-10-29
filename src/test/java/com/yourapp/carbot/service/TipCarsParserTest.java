@@ -1,9 +1,13 @@
 package com.yourapp.carbot.service;
 
+import com.yourapp.carbot.service.dto.CarDto;
 import org.jsoup.Jsoup;
+import org.jsoup.parser.Parser;
 import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.Method;
+import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -682,6 +686,41 @@ class TipCarsParserTest {
                 .isEqualTo("Hyundai Tucson Nový Comfort 1,6 T-GDi");
     }
 
+    @Test
+    void parsesOfficialXmlExportAndSkipsNonPassengerVehicles() throws Exception {
+        String xml = """
+                <ebm>
+                  <firma>
+                    <firma_udaje><client>1454</client><obec>Praha 8 - Libeň</obec></firma_udaje>
+                    <cars>
+                      <car>
+                        <custom_car_id>14544045</custom_car_id><vyrazeny>N</vyrazeny><kind_text>Osobní</kind_text>
+                        <manufacturer_text>Mercedes-Benz</manufacturer_text><model_text>Třídy S</model_text>
+                        <type_info>450d,4Matic,Záruka,AMG</type_info><body_text>sedan</body_text>
+                        <fuel_text>nafta</fuel_text><tachometr>27129</tachometr><made_date>202411</made_date>
+                        <price>1942149</price><price_end>1942149</price_end><price_2>2350000</price_2><price_end_2>2350000</price_end_2>
+                        <equipment>Automatická převodovka</equipment>
+                      </car>
+                      <car><custom_car_id>1</custom_car_id><vyrazeny>N</vyrazeny><kind_text>Motorky</kind_text></car>
+                    </cars>
+                  </firma>
+                </ebm>
+                """;
+
+        List<CarDto> cars = parseXmlExport(xml);
+
+        assertThat(cars).hasSize(1);
+        CarDto car = cars.getFirst();
+        assertThat(car.getTitle()).isEqualTo("Mercedes-Benz Třídy S 450d,4Matic,Záruka,AMG");
+        assertThat(car.getPriceValue()).isEqualTo(2_350_000);
+        assertThat(car.getUrl()).isEqualTo("https://www.tipcars.com/mercedes-benz-tridy-s/sedan/nafta/mercedes-benz-tridy-s-450d-4matic-zaruka-amg-14544045.html");
+        assertThat(car.getYear()).isEqualTo(2024);
+        assertThat(car.getMileage()).isEqualTo(27_129);
+        assertThat(car.getFuelType()).isEqualTo("DIESEL");
+        assertThat(car.getTransmission()).isEqualTo("AUTOMATIC");
+        assertThat(car.getCarType()).isEqualTo("SEDAN");
+    }
+
     private String extractCarType(String title, String text, String url) throws Exception {
         Method method = TipCarsParser.class.getDeclaredMethod("extractCarType", String.class, String.class, String.class);
         method.setAccessible(true);
@@ -787,5 +826,12 @@ class TipCarsParserTest {
         Method method = TipCarsParser.class.getDeclaredMethod("repairMojibake", String.class);
         method.setAccessible(true);
         return (String) method.invoke(parser, value);
+    }
+
+    @SuppressWarnings("unchecked")
+    private List<CarDto> parseXmlExport(String xml) throws Exception {
+        Method method = TipCarsParser.class.getDeclaredMethod("parseXmlExport", org.jsoup.nodes.Document.class, Set.class);
+        method.setAccessible(true);
+        return (List<CarDto>) method.invoke(parser, Jsoup.parse(xml, "", Parser.xmlParser()), new LinkedHashSet<String>());
     }
 }

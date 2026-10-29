@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.function.Predicate;
 
 @Service
 public class CarParserService {
@@ -30,16 +31,23 @@ public class CarParserService {
     }
 
     public List<CarDto> findCars() {
+        return findCars(parser -> !"TIPCARS".equals(parser.getSourceName()));
+    }
+
+    private List<CarDto> findCars(Predicate<CarSourceParser> includeParser) {
         List<CarDto> allCars = new ArrayList<>();
         Set<String> seenUrls = new HashSet<>();
+        List<CarSourceParser> selectedParsers = parsers.stream()
+                .filter(includeParser)
+                .toList();
 
         parserRunStatsService.reset();
 
-        log.info("Starting parser run parsers={}", parsers.stream()
+        log.info("Starting parser run parsers={}", selectedParsers.stream()
                 .map(CarSourceParser::getSourceName)
                 .toList());
 
-        for (CarSourceParser parser : parsers) {
+        for (CarSourceParser parser : selectedParsers) {
             String sourceName = parser.getSourceName();
 
             log.info("Starting parser {}", sourceName);
@@ -104,8 +112,16 @@ public class CarParserService {
     }
 
     public List<CarEntity> fetchAndStoreCars() {
+        return fetchAndStoreCars(parser -> !"TIPCARS".equals(parser.getSourceName()));
+    }
+
+    public List<CarEntity> fetchAndStoreTipCars() {
+        return fetchAndStoreCars(parser -> "TIPCARS".equals(parser.getSourceName()));
+    }
+
+    private List<CarEntity> fetchAndStoreCars(Predicate<CarSourceParser> includeParser) {
         try {
-            List<CarDto> cars = findCars();
+            List<CarDto> cars = findCars(includeParser);
 
             if (cars.isEmpty()) {
                 log.info("No cars parsed, nothing to store");

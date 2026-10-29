@@ -6,8 +6,10 @@ import org.jsoup.HttpStatusException;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+import org.jsoup.parser.Parser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayOutputStream;
@@ -44,6 +46,12 @@ public class TipCarsParser implements CarSourceParser {
     private static final int MAX_REASONABLE_PRICE = 10_000_000;
     private static final int MAX_LIST_FALLBACK_PRICE = 5_000_000;
 
+    @Value("${TIPCARS_XML_ACCESS_KEY:}")
+    private String xmlAccessKey = "";
+
+    @Value("${TIPCARS_XML_COMPANY_IDS:}")
+    private String xmlCompanyIds = "";
+
     @Override
     public String getSourceName() {
         return "TIPCARS";
@@ -51,6 +59,16 @@ public class TipCarsParser implements CarSourceParser {
 
     @Override
     public List<CarDto> fetchCars() {
+        if (!isXmlExportConfigured()) {
+            log.warn("TIPCARS skipped: official XML export is not configured");
+            return List.of();
+        }
+
+        return fetchCarsFromXmlExport();
+    }
+
+    @SuppressWarnings("unused")
+    private List<CarDto> fetchCarsFromWebsite() {
         List<CarDto> cars = new ArrayList<>();
         Set<String> detailLinks = new LinkedHashSet<>();
         Map<String, ListListing> listListings = new HashMap<>();
@@ -170,6 +188,149 @@ public class TipCarsParser implements CarSourceParser {
                 cars.size(), brokenCount, commercialVehicleCount, missingPriceCount, invalidPriceCount, parseExceptionCount, forbiddenCount, listFallbackCount, listFallbackMissingCoreFieldsCount);
 
         return cars;
+    }
+
+    private List<CarDto> fetchCarsFromXmlExport() {
+        List<CarDto> cars = new ArrayList<>();
+        Set<String> seenIds = new LinkedHashSet<>();
+
+        for (String companyId : xmlCompanyIds.split(",")) {
+            String normalizedCompanyId = companyId.trim();
+            if (normalizedCompanyId.isBlank()) {
+                continue;
+            }
+
+            try {
+                String url = "http://export.tipcars.com/inzerce_xml.php?R=" + xmlAccessKey
+                        + "&F=" + normalizedCompanyId + "&T=N&Z=N&V=N";
+                Connection.Response response = Jsoup.connect(url)
+                        .ignoreContentType(true)
+                        .timeout(REQUEST_TIMEOUT_MS)
+                        .execute();
+                Document document = Jsoup.parse(response.body(), "", Parser.xmlParser());
+                List<CarDto> companyCars = parseXmlExport(document, seenIds);
+                cars.addAll(companyCars);
+                log.info("TIPCARS XML company={} parsed={}", normalizedCompanyId, companyCars.size());
+            } catch (Exception e) {
+                log.warn("TIPCARS XML export failed company={} error_type={}",
+                        normalizedCompanyId, e.getClass().getSimpleName());
+            }
+        }
+
+        log.info("TIPCARS XML parsed {} cars", cars.size());
+        return cars;
+    }
+
+    private List<CarDto> parseXmlExport(Document document, Set<String> seenIds) {
+        List<CarDto> cars = new ArrayList<>();
+        if (document == null) {
+            return cars;
+        }
+
+        for (Element company : document.select("firma")) {
+            String companyId = xmlText(company, "firma_udaje > client");
+            String location = xmlText(company, "firma_udaje > obec");
+
+            for (Element item : company.select("cars > car")) {
+                if (!"N".equalsIgnoreCase(xmlText(item, "vyrazeny"))
+                        || !"Osobní".equalsIgnoreCase(xmlText(item, "kind_text"))) {
+                    continue;
+                }
+
+                String id = xmlText(item, "custom_car_id");
+                if (id == null || !seenIds.add(id)) {
+                    continue;
+                }
+
+                String manufacturer = xmlText(item, "manufacturer_text");
+                String model = xmlText(item, "model_text");
+                String typeInfo = xmlText(item, "type_info");
+                String title = normalizeText(String.join(" ", safe(manufacturer), safe(model), safe(typeInfo)));
+                Integer priceValue = firstNonNull(
+                        parseIntSafe(xmlText(item, "price_end_2")),
+                        parseIntSafe(xmlText(item, "price_2")),
+                        parseIntSafe(xmlText(item, "price_end")),
+                        parseIntSafe(xmlText(item, "price"))
+                );
+                if (title.isBlank() || priceValue == null || priceValue <= 0 || priceValue > MAX_REASONABLE_PRICE) {
+                    continue;
+                }
+
+                String fuelText = xmlText(item, "fuel_text");
+                String note = xmlText(item, "note");
+                String body = xmlText(item, "body_text");
+                String equipment = xmlText(item, "equipment");
+                String publicUrl = buildXmlListingUrl(manufacturer, model, body, fuelText, title, id);
+                String fuelType = firstNonBlank(extractFuelType(fuelText), extractFuelType(title), extractFuelType(note));
+                String transmission = firstNonBlank(
+                        extractTransmission(title),
+                        extractTransmission(equipment),
+                        extractTransmission(note),
+                        "ELECTRIC".equals(fuelType) ? "AUTOMATIC" : null
+                );
+
+                CarDto car = new CarDto();
+                car.setSource(getSourceName());
+                car.setTitle(repairMojibake(title));
+                car.setPrice(formatPrice(priceValue));
+                car.setPriceValue(priceValue);
+                car.setLocation(repairMojibake(location));
+                car.setUrl(publicUrl);
+                car.setBrand(extractBrand(title, publicUrl));
+                car.setYear(extractXmlYear(xmlText(item, "made_date")));
+                car.setMileage(parseIntSafe(xmlText(item, "tachometr")));
+                car.setFuelType(fuelType);
+                car.setTransmission(transmission);
+                car.setCarType(extractCarType(title, body, publicUrl));
+                cars.add(car);
+            }
+        }
+
+        return cars;
+    }
+
+    private boolean isXmlExportConfigured() {
+        return xmlAccessKey != null && !xmlAccessKey.isBlank()
+                && xmlCompanyIds != null && !xmlCompanyIds.isBlank();
+    }
+
+    private String xmlText(Element parent, String selector) {
+        if (parent == null || selector == null) {
+            return null;
+        }
+        Element element = parent.selectFirst(selector);
+        if (element == null) {
+            return null;
+        }
+        String value = normalizeText(element.text());
+        return value.isBlank() ? null : value;
+    }
+
+    private Integer extractXmlYear(String madeDate) {
+        if (madeDate == null || madeDate.length() < 4) {
+            return null;
+        }
+        return isValidYear(parseIntSafe(madeDate.substring(0, 4)))
+                ? parseIntSafe(madeDate.substring(0, 4))
+                : null;
+    }
+
+    private String buildXmlListingUrl(String manufacturer, String model, String body, String fuel, String title, String id) {
+        String brandSlug = slug(manufacturer + " " + model);
+        String bodySlug = slug(body);
+        String fuelSlug = slug(fuel);
+        String listingSlug = slug(title);
+        return BASE_URL + firstNonBlank(brandSlug, "osobni") + "/"
+                + firstNonBlank(bodySlug, "osobni") + "/"
+                + firstNonBlank(fuelSlug, "benzin") + "/"
+                + firstNonBlank(listingSlug, "nabidka") + "-" + id + ".html";
+    }
+
+    private String slug(String value) {
+        String normalized = normalizeAscii(normalizeText(value)).toLowerCase(Locale.ROOT)
+                .replaceAll("[^a-z0-9]+", "-")
+                .replaceAll("(^-|-$)", "");
+        return normalized.isBlank() ? null : normalized;
     }
 
     private ParseResult parseDetail(String url, Map<String, String> cookies, ListListing listListing) {
