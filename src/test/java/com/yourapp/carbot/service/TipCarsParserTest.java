@@ -197,6 +197,11 @@ class TipCarsParserTest {
                 "https://www.tipcars.com/kia-xceed/cuv/benzin/kia-xceed.html"))
                 .isEqualTo("SUV");
         assertThat(extractCarType(
+                "Kia K4 CL4 1,0 T-GDi GPF EXCLUSIVE",
+                "cuv",
+                "https://www.tipcars.com/kia-k4/cuv/benzin/kia-k4-cl4-1-0-t-gdi-gpf-exclusive-00197883.html"))
+                .isEqualTo("SUV");
+        assertThat(extractCarType(
                 "Kia Ceed CRDi 100KW 7DCT EXECUTIVE, LED",
                 "",
                 "https://www.tipcars.com/kia-ceed/suv/nafta/kia-ceed.html"))

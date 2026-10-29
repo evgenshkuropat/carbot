@@ -1537,7 +1537,8 @@ public class TipCarsParser implements CarSourceParser {
         }
 
         // URL от TipCars самый надежный — проверяем первым
-        if (normalizedUrl.contains("/suv/") || normalizedUrl.contains("/terenni/") || normalizedUrl.contains("/off-road/")) {
+        if (normalizedUrl.contains("/suv/") || normalizedUrl.contains("/cuv/")
+                || normalizedUrl.contains("/terenni/") || normalizedUrl.contains("/off-road/")) {
             return "SUV";
         }
 
