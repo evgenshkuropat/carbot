@@ -53,9 +53,9 @@ public class AdminDashboardService {
         );
     }
 
-    public IncompleteCars incompleteFilterCars() {
-        List<CarEntity> cars = carRepository.findIncompleteFilterCars(PageRequest.of(0, 30));
-        return new IncompleteCars(carRepository.countIncompleteFilterCars(), cars);
+    public IncompleteCars incompleteFilterCars(LocalDateTime since) {
+        List<CarEntity> cars = carRepository.findIncompleteFilterCars(since, PageRequest.of(0, 30));
+        return new IncompleteCars(carRepository.countIncompleteFilterCars(since), cars);
     }
 
     private long countStatus(List<CarEntity> cars, String status) {

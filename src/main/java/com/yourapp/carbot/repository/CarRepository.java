@@ -52,6 +52,7 @@ public interface CarRepository extends JpaRepository<CarEntity, Long> {
             select c
             from CarEntity c
             where c.listingStatus = 'ACTIVE'
+              and c.createdAt >= :since
               and (c.brand is null or c.brand = ''
                    or c.carType is null or c.carType = ''
                    or c.fuelType is null or c.fuelType = ''
@@ -61,12 +62,13 @@ public interface CarRepository extends JpaRepository<CarEntity, Long> {
                    or c.location is null or c.location = '')
             order by c.createdAt desc
             """)
-    List<CarEntity> findIncompleteFilterCars(Pageable pageable);
+    List<CarEntity> findIncompleteFilterCars(@Param("since") LocalDateTime since, Pageable pageable);
 
     @Query("""
             select count(c)
             from CarEntity c
             where c.listingStatus = 'ACTIVE'
+              and c.createdAt >= :since
               and (c.brand is null or c.brand = ''
                    or c.carType is null or c.carType = ''
                    or c.fuelType is null or c.fuelType = ''
@@ -75,7 +77,7 @@ public interface CarRepository extends JpaRepository<CarEntity, Long> {
                    or c.mileage is null
                    or c.location is null or c.location = '')
             """)
-    long countIncompleteFilterCars();
+    long countIncompleteFilterCars(@Param("since") LocalDateTime since);
 
     @Query("""
             select c

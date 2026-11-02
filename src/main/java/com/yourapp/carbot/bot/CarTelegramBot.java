@@ -3255,14 +3255,14 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
             return;
         }
 
-        AdminDashboardService.IncompleteCars incomplete = adminDashboardService.incompleteFilterCars();
+        AdminDashboardService.IncompleteCars incomplete = adminDashboardService.incompleteFilterCars(LocalDateTime.now().minusHours(24));
         if (incomplete.cars().isEmpty()) {
             sendMessage(chatId, "✅ Авто з неповними даними фільтрів не знайдено.");
             return;
         }
 
         StringBuilder text = new StringBuilder("🧩 Авто з неповними даними фільтрів\n")
-                .append("Усього: ").append(incomplete.total())
+                .append("За останні 24 год: ").append(incomplete.total())
                 .append(" · показано останні авто (до 30):\n\n");
 
         for (CarEntity car : incomplete.cars()) {
