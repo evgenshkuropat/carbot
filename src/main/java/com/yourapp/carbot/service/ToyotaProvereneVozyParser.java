@@ -145,7 +145,9 @@ public class ToyotaProvereneVozyParser implements CarSourceParser {
 
     private Document loadDocument(String url) throws IOException {
         Connection.Response response = connect(url)
-                .ignoreContentType(false)
+                // Toyota sometimes serves HTML with a non-HTML Content-Type header.
+                // We parse the response body ourselves, so accept it instead of losing the listing.
+                .ignoreContentType(true)
                 .ignoreHttpErrors(true)
                 .execute();
         return Jsoup.parse(new String(response.bodyAsBytes(), StandardCharsets.UTF_8), url);
