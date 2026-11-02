@@ -37,6 +37,7 @@ import org.telegram.telegrambots.meta.generics.TelegramClient;
 
 import java.text.Normalizer;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -354,6 +355,7 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
             }
             case "/admin" -> handleAdmin(chatId);
             case "/admin_owner_list" -> handleAdminOwnerList(chatId);
+            case "/admin_incomplete" -> handleAdminIncomplete(chatId);
             default -> sendMessage(
                     chatId,
                     messages.get(lang(chatId), "command.unknown"),
@@ -3211,7 +3213,8 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
                 + "\n\nДіагностика твого фільтра:\n"
                 + filterDiagnostics
                 + "\n\nАдмін-команди:\n"
-                + "- /admin_owner_list — останні оголошення користувачів";
+                + "- /admin_owner_list — останні оголошення користувачів\n"
+                + "- /admin_incomplete — авто з неповними даними фільтрів";
 
         sendMessage(chatId, text);
         sendPendingUserListings(chatId);
@@ -3244,6 +3247,47 @@ public class CarTelegramBot implements SpringLongPollingBot, LongPollingSingleTh
                     : null;
             sendCarMessage(chatId, car, formatAdminUserListing(car), keyboard);
         }
+    }
+
+    private void handleAdminIncomplete(Long chatId) {
+        if (!isAdmin(chatId)) {
+            sendMessage(chatId, "Доступ до адмін-панелі заборонено.");
+            return;
+        }
+
+        AdminDashboardService.IncompleteCars incomplete = adminDashboardService.incompleteFilterCars();
+        if (incomplete.cars().isEmpty()) {
+            sendMessage(chatId, "✅ Авто з неповними даними фільтрів не знайдено.");
+            return;
+        }
+
+        StringBuilder text = new StringBuilder("🧩 Авто з неповними даними фільтрів\n")
+                .append("Усього: ").append(incomplete.total())
+                .append(" · показано останні авто (до 30):\n\n");
+
+        for (CarEntity car : incomplete.cars()) {
+            String entry = "• " + formatAdminSource(car.getSource()) + " — " + formatTitleForAdmin(car.getTitle())
+                    + "\n  бракує: " + String.join(", ", missingFilterFields(car))
+                    + "\n  " + car.getUrl() + "\n\n";
+            if (text.length() + entry.length() > 3_800) {
+                break;
+            }
+            text.append(entry);
+        }
+
+        sendMessage(chatId, text.toString().trim());
+    }
+
+    private List<String> missingFilterFields(CarEntity car) {
+        List<String> missing = new ArrayList<>();
+        if (safeOrNull(car.getBrand()) == null) missing.add("марка");
+        if (safeOrNull(car.getCarType()) == null) missing.add("кузов");
+        if (safeOrNull(car.getFuelType()) == null) missing.add("паливо");
+        if (safeOrNull(car.getTransmission()) == null) missing.add("коробка");
+        if (car.getYear() == null) missing.add("рік");
+        if (car.getMileage() == null) missing.add("пробіг");
+        if (safeOrNull(car.getLocation()) == null) missing.add("локація");
+        return missing;
     }
 
     private String buildParserDiagnostics() {

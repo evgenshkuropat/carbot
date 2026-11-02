@@ -51,6 +51,35 @@ public interface CarRepository extends JpaRepository<CarEntity, Long> {
     @Query("""
             select c
             from CarEntity c
+            where c.listingStatus = 'ACTIVE'
+              and (c.brand is null or c.brand = ''
+                   or c.carType is null or c.carType = ''
+                   or c.fuelType is null or c.fuelType = ''
+                   or c.transmission is null or c.transmission = ''
+                   or c.year is null
+                   or c.mileage is null
+                   or c.location is null or c.location = '')
+            order by c.createdAt desc
+            """)
+    List<CarEntity> findIncompleteFilterCars(Pageable pageable);
+
+    @Query("""
+            select count(c)
+            from CarEntity c
+            where c.listingStatus = 'ACTIVE'
+              and (c.brand is null or c.brand = ''
+                   or c.carType is null or c.carType = ''
+                   or c.fuelType is null or c.fuelType = ''
+                   or c.transmission is null or c.transmission = ''
+                   or c.year is null
+                   or c.mileage is null
+                   or c.location is null or c.location = '')
+            """)
+    long countIncompleteFilterCars();
+
+    @Query("""
+            select c
+            from CarEntity c
             where (:source is null or lower(c.source) = lower(:source))
               and (:location is null or lower(c.location) like lower(concat('%', :location, '%')))
               and (:maxPrice is null or c.priceValue <= :maxPrice)

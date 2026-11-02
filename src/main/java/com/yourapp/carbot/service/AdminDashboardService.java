@@ -3,6 +3,7 @@ package com.yourapp.carbot.service;
 import com.yourapp.carbot.entity.CarEntity;
 import com.yourapp.carbot.repository.CarRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.data.domain.PageRequest;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -52,6 +53,11 @@ public class AdminDashboardService {
         );
     }
 
+    public IncompleteCars incompleteFilterCars() {
+        List<CarEntity> cars = carRepository.findIncompleteFilterCars(PageRequest.of(0, 30));
+        return new IncompleteCars(carRepository.countIncompleteFilterCars(), cars);
+    }
+
     private long countStatus(List<CarEntity> cars, String status) {
         return cars.stream().filter(car -> status.equalsIgnoreCase(car.getListingStatus())).count();
     }
@@ -64,4 +70,6 @@ public class AdminDashboardService {
 
     public record OwnerListings(long total, List<CarEntity> cars, long pending,
                                 long active, long rejected, long inactive) { }
+
+    public record IncompleteCars(long total, List<CarEntity> cars) { }
 }
