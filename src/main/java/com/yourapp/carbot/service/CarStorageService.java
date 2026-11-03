@@ -541,12 +541,19 @@ public class CarStorageService {
         String titleLower = safe(title).toLowerCase(Locale.ROOT);
 
         // These models are unambiguously electric even when a source sends a stale fuel value.
+        if (titleLower.contains("honda e")) {
+            return "ELECTRIC";
+        }
         if (titleLower.contains("dacia spring")) {
             return "ELECTRIC";
         }
         if (containsAny(titleLower, "megane e-tech", "megane e tech", "mégane e-tech", "mégane e tech")
                 && containsAny(titleLower, " ev ", "electric", "elektro", "kwh")) {
             return "ELECTRIC";
+        }
+        if (containsAny(titleLower, "dacia logan", "logan")
+                && containsAny(titleLower, "dci", "diesel", "nafta")) {
+            return "DIESEL";
         }
 
         String value = clean(fuelType);
@@ -734,7 +741,7 @@ public class CarStorageService {
             return "MINIVAN";
         }
 
-        if (containsAny(lower, "matiz", "bravo", "caliber", "twingo")) {
+        if (containsAny(lower, "honda e", "matiz", "bravo", "caliber", "twingo")) {
             return "HATCHBACK";
         }
 

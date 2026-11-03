@@ -42,6 +42,8 @@ class CarStorageServiceTest {
         assertThat(normalizeFuelType("HYBRID", "Chevrolet Corvette C8 Cabriolet Stingray 2021")).isEqualTo("PETROL");
         assertThat(normalizeFuelType("DIESEL", "Dacia Spring")).isEqualTo("ELECTRIC");
         assertThat(normalizeFuelType("HYBRID", "Renault Mégane E TECH Evolution 60 1 MAJITEL EV")).isEqualTo("ELECTRIC");
+        assertThat(normalizeFuelType(null, "Honda e, servisní historie | TOP STAV Ojeté, 11/2020")).isEqualTo("ELECTRIC");
+        assertThat(normalizeFuelType("PETROL", "Prodám Dacia Logan 1.5DCi 66KW - KLIMATIZACE")).isEqualTo("DIESEL");
     }
 
     @Test
@@ -98,6 +100,7 @@ class CarStorageServiceTest {
         assertThat(normalizeCarType("WAGON", "Renault Twingo 1.2 Dynamique PANORAMA")).isEqualTo("HATCHBACK");
         assertThat(normalizeCarType("MINIVAN", "Chevrolet Corvette C8 Cabriolet Stingray 2021")).isEqualTo("CABRIO");
         assertThat(normalizeCarType("HATCHBACK", "Honda crv 2.2 nafta 2008 rok")).isEqualTo("SUV");
+        assertThat(normalizeCarType(null, "Honda e, servisní historie | TOP STAV Ojeté, 11/2020")).isEqualTo("HATCHBACK");
     }
 
     @Test

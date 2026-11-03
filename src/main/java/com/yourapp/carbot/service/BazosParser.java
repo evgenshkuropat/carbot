@@ -1118,6 +1118,9 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         source = source + " " + ascii + " " + repairedAscii;
         String compact = source.replaceAll("[^a-z0-9]", "");
 
+        if (containsAny(source, " honda e ") || compact.contains("hondae")) {
+            return "ELECTRIC";
+        }
         if (containsAny(source, " dacia spring ") || compact.contains("daciaspring")) {
             return "ELECTRIC";
         }
@@ -1598,7 +1601,8 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         }
 
         if (containsAny(source, " dacia logan ", " logan mcv ", " dacia lodgy ")
-                && Pattern.compile("\\b1[.,][236]\\b").matcher(source).find()) {
+                && Pattern.compile("\\b1[.,][236]\\b").matcher(source).find()
+                && !containsAny(source, " dci ", " diesel ", " nafta ")) {
             return "PETROL";
         }
 
@@ -2956,7 +2960,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " clio ", " megane ", " fiesta ",
                 " rs3 ", " rs 3 ",
                 " civic ", " insight ", " leon ", " swift ", " born ", " punto ", " panda ",
-                " fiat 500e ", " fiat e500 ", " 500e ", " e500 ",
+                " fiat 500e ", " fiat e500 ", " 500e ", " e500 ", " honda e ",
                 " ec4 ", " e-c4 ", " e c4 ",
                 " leaf ", " micra ", " colt ", " spacestar ", " space star ",
                 " f40 ", " bmw i3 ", " i3 ", " audi s1 ", " řada 1 ", " rada 1 ",

@@ -194,6 +194,8 @@ class BazosParserTest {
         assertThat(extractFuelType("Opel Corsa, ELECTRO 100kW")).isEqualTo("ELECTRIC");
         assertThat(extractFuelType("Dacia Spring")).isEqualTo("ELECTRIC");
         assertThat(extractFuelType("Renault Mégane E TECH Evolution 60 1 MAJITEL EV")).isEqualTo("ELECTRIC");
+        assertThat(extractFuelType("Honda e, servisní historie | TOP STAV Ojeté, 11/2020")).isEqualTo("ELECTRIC");
+        assertThat(extractFuelType("Prodám Dacia Logan 1.5DCi 66KW - KLIMATIZACE")).isEqualTo("DIESEL");
         assertThat(extractFuelType("Renault Grand Scenic 1.6dC MANUAL LED VYHREV KAMERA SERVISKA")).isEqualTo("DIESEL");
         assertThat(extractFuelType("Renault Grand ScĂ©nic 1.6dC MANUĂL LED VĂťHĹEV KAMERA SERVISKA")).isEqualTo("DIESEL");
         assertThat(extractFuelType("VW Passat B8 Variant GTE 1.4TSI 160kW DSG - zaruka Autodraft")).isEqualTo("PLUGIN_HYBRID");
