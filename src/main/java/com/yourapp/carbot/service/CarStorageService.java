@@ -539,6 +539,16 @@ public class CarStorageService {
     private String normalizeFuelType(String fuelType, String title) {
         String lower = (safe(fuelType) + " " + safe(title)).toLowerCase(Locale.ROOT);
         String titleLower = safe(title).toLowerCase(Locale.ROOT);
+
+        // These models are unambiguously electric even when a source sends a stale fuel value.
+        if (titleLower.contains("dacia spring")) {
+            return "ELECTRIC";
+        }
+        if (containsAny(titleLower, "megane e-tech", "megane e tech", "mégane e-tech", "mégane e tech")
+                && containsAny(titleLower, " ev ", "electric", "elektro", "kwh")) {
+            return "ELECTRIC";
+        }
+
         String value = clean(fuelType);
         if (value != null) {
             String upper = value.toUpperCase(Locale.ROOT)
@@ -732,7 +742,7 @@ public class CarStorageService {
             return "MINIVAN";
         }
 
-        if (containsAny(lower, "land cruiser", "freelander", "koleos", "captur", "elroq", "bigster", "fiat 500x", "500x", "korando", "tivoli", "rdx", "e-tron", "etron", "tiguan", "yeti", "duster", "kodiaq", "karoq", "kamiq", "kuga", "x1", "x2", "x3", "x5", "x6", "x7", "compass", "cherokee", "glk", "glc", "gle", "gls", "gla", "glb", "gl 500", "gl500", "x-trail", "x trail", "pathfinder", "grandland", "grandal", "cx-5", "cx 5", "cx5", "cx-7", "cx 7", "cx7", "niro", "eqa", "mustang mach-e", "mustang mache", "xc40", "xc 40", "xc60", "xc 60", "xc70", "xc 70", "xc90", "xc 90", "arona", "stelvio", "sx4", "s-cross", "s cross", "dongfeng mage", "t5 evo", "dongfeng t5", "jaecoo", "omoda", "swm g1", "swm g01", "inster", "puma", "puma gen-e", "puma gen e", "infiniti fx", "fx35", "fx-35", "jimny", "xd3")) {
+        if (containsAny(lower, "land cruiser", "freelander", "koleos", "captur", "elroq", "bigster", "fiat 500x", "500x", "korando", "tivoli", "rdx", "e-tron", "etron", "tiguan", "yeti", "duster", "kodiaq", "karoq", "kamiq", "kuga", "x1", "x2", "x3", "x5", "x6", "x7", "compass", "cherokee", "glk", "glc", "gle", "gls", "gla", "glb", "gl 500", "gl500", "x-trail", "x trail", "pathfinder", "grandland", "grandal", "cx-5", "cx 5", "cx5", "cx-7", "cx 7", "cx7", "niro", "eqa", "mustang mach-e", "mustang mache", "xc40", "xc 40", "xc60", "xc 60", "xc70", "xc 70", "xc90", "xc 90", "arona", "stelvio", "sx4", "s-cross", "s cross", "cr-v", "cr v", "crv", "dongfeng mage", "t5 evo", "dongfeng t5", "jaecoo", "omoda", "swm g1", "swm g01", "inster", "puma", "puma gen-e", "puma gen e", "infiniti fx", "fx35", "fx-35", "jimny", "xd3")) {
             return "SUV";
         }
 

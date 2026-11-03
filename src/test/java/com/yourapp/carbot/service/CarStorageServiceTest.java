@@ -40,6 +40,8 @@ class CarStorageServiceTest {
         assertThat(normalizeFuelType(null, "Suzuki SX4 S-Cross 1,4 BoosterJet Premium")).isEqualTo("PETROL");
         assertThat(normalizeFuelType(null, "Dongfeng U-Tour 1,5 T 130 kW ExclusiveFR")).isEqualTo("PETROL");
         assertThat(normalizeFuelType("HYBRID", "Chevrolet Corvette C8 Cabriolet Stingray 2021")).isEqualTo("PETROL");
+        assertThat(normalizeFuelType("DIESEL", "Dacia Spring")).isEqualTo("ELECTRIC");
+        assertThat(normalizeFuelType("HYBRID", "Renault Mégane E TECH Evolution 60 1 MAJITEL EV")).isEqualTo("ELECTRIC");
     }
 
     @Test
@@ -95,6 +97,7 @@ class CarStorageServiceTest {
         assertThat(normalizeCarType("WAGON", "Peugeot Partner 1,6HDi 2xSOUPACKY")).isEqualTo("MINIVAN");
         assertThat(normalizeCarType("WAGON", "Renault Twingo 1.2 Dynamique PANORAMA")).isEqualTo("HATCHBACK");
         assertThat(normalizeCarType("MINIVAN", "Chevrolet Corvette C8 Cabriolet Stingray 2021")).isEqualTo("CABRIO");
+        assertThat(normalizeCarType("HATCHBACK", "Honda crv 2.2 nafta 2008 rok")).isEqualTo("SUV");
     }
 
     @Test

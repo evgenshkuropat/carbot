@@ -1118,6 +1118,14 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         source = source + " " + ascii + " " + repairedAscii;
         String compact = source.replaceAll("[^a-z0-9]", "");
 
+        if (containsAny(source, " dacia spring ") || compact.contains("daciaspring")) {
+            return "ELECTRIC";
+        }
+        if (containsAny(source, " megane e-tech ", " megane e tech ", " mégane e-tech ", " mégane e tech ")
+                && containsAny(source, " ev ", " electric ", " elektro ", " kwh ")) {
+            return "ELECTRIC";
+        }
+
         if (containsAny(source, " c43 amg ", " c 43 amg ")) {
             return "PETROL";
         }
