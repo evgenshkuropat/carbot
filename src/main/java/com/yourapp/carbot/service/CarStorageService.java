@@ -547,6 +547,21 @@ public class CarStorageService {
         if (titleLower.contains("dacia spring")) {
             return "ELECTRIC";
         }
+        if (containsAny(titleLower, "c4 grand spacetourer", "grand c4 spacetourer")
+                && Pattern.compile("\\b1[\\.,]2\\b", Pattern.CASE_INSENSITIVE).matcher(titleLower).find()) {
+            return "PETROL";
+        }
+        if (containsAny(titleLower, "chevrolet traverse", " traverse ")
+                && containsAny(titleLower, "3.6", "3,6", "v6")) {
+            return "PETROL";
+        }
+        if (titleLower.contains("stonic")
+                && Pattern.compile("\\b1[\\.,]2\\b", Pattern.CASE_INSENSITIVE).matcher(titleLower).find()) {
+            return "PETROL";
+        }
+        if (titleLower.contains("qashqai") && containsAny(titleLower, "dig-t", "dig t")) {
+            return "PETROL";
+        }
         if (containsAny(titleLower, "megane e-tech", "megane e tech", "mégane e-tech", "mégane e tech")
                 && containsAny(titleLower, " ev ", "electric", "elektro", "kwh")) {
             return "ELECTRIC";
@@ -741,8 +756,16 @@ public class CarStorageService {
             return "MINIVAN";
         }
 
-        if (containsAny(lower, "honda e", "matiz", "bravo", "caliber", "twingo")) {
+        if (containsAny(lower, "dacia spring", "honda e", "matiz", "bravo", "caliber", "twingo")) {
             return "HATCHBACK";
+        }
+
+        if (containsAny(lower, "c4 grand spacetourer", "grand c4 spacetourer")) {
+            return "MINIVAN";
+        }
+
+        if (containsAny(lower, "chevrolet traverse", " traverse ")) {
+            return "SUV";
         }
 
         if (containsAny(lower, "touran", "sharan", "multivan", "c-max", "c max", "grand scenic", "grand scĂ©nic", "scenic", "scĂ©nic", "v 250", "v250", "v 250l", "v250l", "v 250d", "v250d", "v300d", "grandis", "altea")) {

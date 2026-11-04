@@ -196,6 +196,10 @@ class BazosParserTest {
         assertThat(extractFuelType("Renault Mégane E TECH Evolution 60 1 MAJITEL EV")).isEqualTo("ELECTRIC");
         assertThat(extractFuelType("Honda e, servisní historie | TOP STAV Ojeté, 11/2020")).isEqualTo("ELECTRIC");
         assertThat(extractFuelType("Prodám Dacia Logan 1.5DCi 66KW - KLIMATIZACE")).isEqualTo("DIESEL");
+        assertThat(extractFuelType("Citroen C4 Grand Spacetourer 1,2 96KW 1. Maj. 7 míst DPH")).isEqualTo("PETROL");
+        assertThat(extractFuelType("Chevrolet Traverse 3.6 V6 AWD")).isEqualTo("PETROL");
+        assertThat(extractFuelType("KIA STONIC SE 1,2 DPI SPIN 2023")).isEqualTo("PETROL");
+        assertThat(extractFuelType("Nissan Qashqai 1,2DIG-T 85kW")).isEqualTo("PETROL");
         assertThat(extractFuelType("Renault Grand Scenic 1.6dC MANUAL LED VYHREV KAMERA SERVISKA")).isEqualTo("DIESEL");
         assertThat(extractFuelType("Renault Grand ScĂ©nic 1.6dC MANUĂL LED VĂťHĹEV KAMERA SERVISKA")).isEqualTo("DIESEL");
         assertThat(extractFuelType("VW Passat B8 Variant GTE 1.4TSI 160kW DSG - zaruka Autodraft")).isEqualTo("PLUGIN_HYBRID");

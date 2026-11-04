@@ -1124,6 +1124,21 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         if (containsAny(source, " dacia spring ") || compact.contains("daciaspring")) {
             return "ELECTRIC";
         }
+        if (containsAny(source, " c4 grand spacetourer ", " grand c4 spacetourer ")
+                && Pattern.compile("\\b1[\\.,]2\\b", Pattern.CASE_INSENSITIVE).matcher(source).find()) {
+            return "PETROL";
+        }
+        if (containsAny(source, " chevrolet traverse ", " traverse ")
+                && containsAny(source, " 3.6 ", " 3,6 ", " v6 ")) {
+            return "PETROL";
+        }
+        if (source.contains(" stonic ")
+                && Pattern.compile("\\b1[\\.,]2\\b", Pattern.CASE_INSENSITIVE).matcher(source).find()) {
+            return "PETROL";
+        }
+        if (source.contains(" qashqai ") && containsAny(source, " dig-t ", " dig t ")) {
+            return "PETROL";
+        }
         if (containsAny(source, " megane e-tech ", " megane e tech ", " mégane e-tech ", " mégane e tech ")
                 && containsAny(source, " ev ", " electric ", " elektro ", " kwh ")) {
             return "ELECTRIC";
@@ -2341,6 +2356,9 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         String textSource = " " + normalizeText(safe(text)).toLowerCase(Locale.ROOT) + " ";
         String urlSource = " " + normalizeText(safe(url)).toLowerCase(Locale.ROOT) + " ";
 
+        if (containsAny(titleSource, " dacia spring ")) return "HATCHBACK";
+        if (containsAny(titleSource, " c4 grand spacetourer ", " grand c4 spacetourer ")) return "MINIVAN";
+        if (containsAny(titleSource, " chevrolet traverse ", " traverse ")) return "SUV";
         if (containsAny(titleSource, " c43 amg ", " c 43 amg ")) return "SEDAN";
         if (containsAny(titleSource, " smart fortwo ", " fortwo ")) return "HATCHBACK";
         if (containsAny(titleSource, " peugeot 807 ", " 807 ")) return "MINIVAN";

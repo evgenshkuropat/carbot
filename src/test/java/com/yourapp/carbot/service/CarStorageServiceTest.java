@@ -44,6 +44,10 @@ class CarStorageServiceTest {
         assertThat(normalizeFuelType("HYBRID", "Renault Mégane E TECH Evolution 60 1 MAJITEL EV")).isEqualTo("ELECTRIC");
         assertThat(normalizeFuelType(null, "Honda e, servisní historie | TOP STAV Ojeté, 11/2020")).isEqualTo("ELECTRIC");
         assertThat(normalizeFuelType("PETROL", "Prodám Dacia Logan 1.5DCi 66KW - KLIMATIZACE")).isEqualTo("DIESEL");
+        assertThat(normalizeFuelType("HYBRID", "Citroen C4 Grand Spacetourer 1,2 96KW 1. Maj. 7 míst DPH")).isEqualTo("PETROL");
+        assertThat(normalizeFuelType("HYBRID", "Chevrolet Traverse 3.6 V6 AWD")).isEqualTo("PETROL");
+        assertThat(normalizeFuelType("HYBRID", "KIA STONIC SE 1,2 DPI SPIN 2023")).isEqualTo("PETROL");
+        assertThat(normalizeFuelType(null, "Nissan Qashqai 1,2DIG-T 85kW")).isEqualTo("PETROL");
     }
 
     @Test
@@ -101,6 +105,9 @@ class CarStorageServiceTest {
         assertThat(normalizeCarType("MINIVAN", "Chevrolet Corvette C8 Cabriolet Stingray 2021")).isEqualTo("CABRIO");
         assertThat(normalizeCarType("HATCHBACK", "Honda crv 2.2 nafta 2008 rok")).isEqualTo("SUV");
         assertThat(normalizeCarType(null, "Honda e, servisní historie | TOP STAV Ojeté, 11/2020")).isEqualTo("HATCHBACK");
+        assertThat(normalizeCarType(null, "Dacia Spring")).isEqualTo("HATCHBACK");
+        assertThat(normalizeCarType("HATCHBACK", "Citroen C4 Grand Spacetourer 1,2 96KW")).isEqualTo("MINIVAN");
+        assertThat(normalizeCarType("MINIVAN", "Chevrolet Traverse 3.6 V6 AWD")).isEqualTo("SUV");
     }
 
     @Test
