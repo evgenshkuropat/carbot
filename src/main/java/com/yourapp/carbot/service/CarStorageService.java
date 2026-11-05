@@ -544,6 +544,13 @@ public class CarStorageService {
         if (titleLower.contains("honda e")) {
             return "ELECTRIC";
         }
+        if (titleLower.contains("defender") && containsAny(titleLower, "d250", " d 250")) {
+            return "DIESEL";
+        }
+        if (titleLower.contains("outlander")
+                && Pattern.compile("\\b2[\\.,]0\\s*148\\s*kw\\b", Pattern.CASE_INSENSITIVE).matcher(titleLower).find()) {
+            return "PETROL";
+        }
         if (titleLower.contains("dacia spring")) {
             return "ELECTRIC";
         }
@@ -762,6 +769,10 @@ public class CarStorageService {
 
         if (containsAny(lower, "c4 grand spacetourer", "grand c4 spacetourer")) {
             return "MINIVAN";
+        }
+
+        if (containsAny(lower, "civic aerodeck", "civic-aerodeck")) {
+            return "WAGON";
         }
 
         if (containsAny(lower, "chevrolet traverse", " traverse ")) {

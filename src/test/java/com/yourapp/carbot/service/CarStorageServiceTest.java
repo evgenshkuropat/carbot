@@ -48,6 +48,8 @@ class CarStorageServiceTest {
         assertThat(normalizeFuelType("HYBRID", "Chevrolet Traverse 3.6 V6 AWD")).isEqualTo("PETROL");
         assertThat(normalizeFuelType("HYBRID", "KIA STONIC SE 1,2 DPI SPIN 2023")).isEqualTo("PETROL");
         assertThat(normalizeFuelType(null, "Nissan Qashqai 1,2DIG-T 85kW")).isEqualTo("PETROL");
+        assertThat(normalizeFuelType(null, "Land Rover Defender 110 D250 X-DYNAMIC SE AWD AUT")).isEqualTo("DIESEL");
+        assertThat(normalizeFuelType(null, "Mitsubishi Outlander I 2.0 148kW")).isEqualTo("PETROL");
     }
 
     @Test
@@ -108,6 +110,7 @@ class CarStorageServiceTest {
         assertThat(normalizeCarType(null, "Dacia Spring")).isEqualTo("HATCHBACK");
         assertThat(normalizeCarType("HATCHBACK", "Citroen C4 Grand Spacetourer 1,2 96KW")).isEqualTo("MINIVAN");
         assertThat(normalizeCarType("MINIVAN", "Chevrolet Traverse 3.6 V6 AWD")).isEqualTo("SUV");
+        assertThat(normalizeCarType("HATCHBACK", "Honda Civic Aerodeck 1.4i 66 kW")).isEqualTo("WAGON");
     }
 
     @Test
