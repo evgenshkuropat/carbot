@@ -203,6 +203,8 @@ class BazosParserTest {
         assertThat(extractFuelType("Land Rover Defender 110 D250 X-DYNAMIC SE AWD AUT")).isEqualTo("DIESEL");
         assertThat(extractFuelType("Mitsubishi Outlander I 2.0 148kW")).isEqualTo("PETROL");
         assertThat(extractFuelType("Chevrolet Orlando 1.8i 104kW 7míst, Klima")).isEqualTo("PETROL");
+        assertThat(extractFuelType("Škoda Superb 1,8 T")).isEqualTo("PETROL");
+        assertThat(extractFuelType("Volvo XC40, T2 MOMENTUM AUTOMAT-DPH")).isEqualTo("PETROL");
         assertThat(extractFuelType("Renault Grand Scenic 1.6dC MANUAL LED VYHREV KAMERA SERVISKA")).isEqualTo("DIESEL");
         assertThat(extractFuelType("Renault Grand ScĂ©nic 1.6dC MANUĂL LED VĂťHĹEV KAMERA SERVISKA")).isEqualTo("DIESEL");
         assertThat(extractFuelType("VW Passat B8 Variant GTE 1.4TSI 160kW DSG - zaruka Autodraft")).isEqualTo("PLUGIN_HYBRID");

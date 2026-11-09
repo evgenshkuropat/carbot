@@ -544,6 +544,13 @@ public class CarStorageService {
         if (titleLower.contains("honda e")) {
             return "ELECTRIC";
         }
+        if (titleLower.contains("superb")
+                && Pattern.compile("\\b1[\\.,]8\\s*t\\b", Pattern.CASE_INSENSITIVE).matcher(titleLower).find()) {
+            return "PETROL";
+        }
+        if (containsAny(titleLower, "xc40", "xc 40") && Pattern.compile("\\bt\s*2\\b", Pattern.CASE_INSENSITIVE).matcher(titleLower).find()) {
+            return "PETROL";
+        }
         if (titleLower.contains("orlando")
                 && Pattern.compile("\\b1[\\.,]8\\b", Pattern.CASE_INSENSITIVE).matcher(titleLower).find()) {
             return "PETROL";

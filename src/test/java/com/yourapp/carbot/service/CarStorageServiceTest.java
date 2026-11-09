@@ -51,6 +51,8 @@ class CarStorageServiceTest {
         assertThat(normalizeFuelType(null, "Land Rover Defender 110 D250 X-DYNAMIC SE AWD AUT")).isEqualTo("DIESEL");
         assertThat(normalizeFuelType(null, "Mitsubishi Outlander I 2.0 148kW")).isEqualTo("PETROL");
         assertThat(normalizeFuelType("HYBRID", "Chevrolet Orlando 1.8i 104kW 7míst, Klima")).isEqualTo("PETROL");
+        assertThat(normalizeFuelType(null, "Škoda Superb 1,8 T")).isEqualTo("PETROL");
+        assertThat(normalizeFuelType(null, "Volvo XC40, T2 MOMENTUM AUTOMAT-DPH")).isEqualTo("PETROL");
     }
 
     @Test
