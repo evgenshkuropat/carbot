@@ -205,6 +205,8 @@ class BazosParserTest {
         assertThat(extractFuelType("Chevrolet Orlando 1.8i 104kW 7míst, Klima")).isEqualTo("PETROL");
         assertThat(extractFuelType("Škoda Superb 1,8 T")).isEqualTo("PETROL");
         assertThat(extractFuelType("Volvo XC40, T2 MOMENTUM AUTOMAT-DPH")).isEqualTo("PETROL");
+        assertThat(extractFuelType("MERCEDES-BENZ EQV 250 | 2025 | ZÁRUKA")).isEqualTo("ELECTRIC");
+        assertThat(extractFuelType("Honda Accord 7G CL9 sedan")).isEqualTo("PETROL");
         assertThat(extractFuelType("Renault Grand Scenic 1.6dC MANUAL LED VYHREV KAMERA SERVISKA")).isEqualTo("DIESEL");
         assertThat(extractFuelType("Renault Grand ScĂ©nic 1.6dC MANUĂL LED VĂťHĹEV KAMERA SERVISKA")).isEqualTo("DIESEL");
         assertThat(extractFuelType("VW Passat B8 Variant GTE 1.4TSI 160kW DSG - zaruka Autodraft")).isEqualTo("PLUGIN_HYBRID");
@@ -873,6 +875,8 @@ class BazosParserTest {
                 .isTrue();
         assertThat(looksCommercialVehicle("Mercedes-Benz Sprinter Tourer 9 mist", "", ""))
                 .isFalse();
+        assertThat(looksCommercialVehicle("Mitsubishi Fuso 3.0D 2006/sklápěcí korba/3.5t", "", ""))
+                .isTrue();
     }
 
     @Test

@@ -544,6 +544,12 @@ public class CarStorageService {
         if (titleLower.contains("honda e")) {
             return "ELECTRIC";
         }
+        if (titleLower.contains("eqv")) {
+            return "ELECTRIC";
+        }
+        if (titleLower.contains("accord") && titleLower.contains("cl9")) {
+            return "PETROL";
+        }
         if (titleLower.contains("superb")
                 && Pattern.compile("\\b1[\\.,]8\\s*t\\b", Pattern.CASE_INSENSITIVE).matcher(titleLower).find()) {
             return "PETROL";
@@ -1113,6 +1119,7 @@ public class CarStorageService {
                 || t.contains("vivaro")
                 || t.contains("trafic")
                 || t.contains("furgon")
+                || t.contains("fuso")
                 || t.contains("valník")
                 || t.contains("valnik")
                 || t.contains("plachta")

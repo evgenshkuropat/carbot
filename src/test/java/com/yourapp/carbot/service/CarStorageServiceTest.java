@@ -53,6 +53,8 @@ class CarStorageServiceTest {
         assertThat(normalizeFuelType("HYBRID", "Chevrolet Orlando 1.8i 104kW 7míst, Klima")).isEqualTo("PETROL");
         assertThat(normalizeFuelType(null, "Škoda Superb 1,8 T")).isEqualTo("PETROL");
         assertThat(normalizeFuelType(null, "Volvo XC40, T2 MOMENTUM AUTOMAT-DPH")).isEqualTo("PETROL");
+        assertThat(normalizeFuelType("DIESEL", "MERCEDES-BENZ EQV 250 | 2025 | ZÁRUKA")).isEqualTo("ELECTRIC");
+        assertThat(normalizeFuelType("DIESEL", "Honda Accord 7G CL9 sedan")).isEqualTo("PETROL");
     }
 
     @Test
@@ -201,6 +203,8 @@ class CarStorageServiceTest {
         cargoVivaro.setFuelType("DIESEL");
         cargoVivaro.setCarType("MINIVAN");
         assertThat(isValidForSave(cargoVivaro, 279_000)).isFalse();
+
+        assertThat(isValidForSave(car("Mitsubishi Fuso 3.0D 2006/sklápěcí korba/3.5t"), 279_000)).isFalse();
     }
 
     @Test
