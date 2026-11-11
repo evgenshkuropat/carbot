@@ -207,6 +207,10 @@ class BazosParserTest {
         assertThat(extractFuelType("Volvo XC40, T2 MOMENTUM AUTOMAT-DPH")).isEqualTo("PETROL");
         assertThat(extractFuelType("MERCEDES-BENZ EQV 250 | 2025 | ZÁRUKA")).isEqualTo("ELECTRIC");
         assertThat(extractFuelType("Honda Accord 7G CL9 sedan")).isEqualTo("PETROL");
+        assertThat(extractCarType("Hyundai i30 cw 1,4i", "", "")).isEqualTo("WAGON");
+        assertThat(extractCarType("Mercedes W211 E320 cdi 6V 7G 2007", "", "")).isEqualTo("SEDAN");
+        assertThat(extractCarType("Nissan Navara 2008", "", "")).isEqualTo("PICKUP");
+        assertThat(extractCarType("Prodám Peugeot 206 cc", "", "")).isEqualTo("CABRIO");
         assertThat(extractFuelType("Renault Grand Scenic 1.6dC MANUAL LED VYHREV KAMERA SERVISKA")).isEqualTo("DIESEL");
         assertThat(extractFuelType("Renault Grand ScĂ©nic 1.6dC MANUĂL LED VĂťHĹEV KAMERA SERVISKA")).isEqualTo("DIESEL");
         assertThat(extractFuelType("VW Passat B8 Variant GTE 1.4TSI 160kW DSG - zaruka Autodraft")).isEqualTo("PLUGIN_HYBRID");

@@ -116,6 +116,10 @@ class CarStorageServiceTest {
         assertThat(normalizeCarType("HATCHBACK", "Citroen C4 Grand Spacetourer 1,2 96KW")).isEqualTo("MINIVAN");
         assertThat(normalizeCarType("MINIVAN", "Chevrolet Traverse 3.6 V6 AWD")).isEqualTo("SUV");
         assertThat(normalizeCarType("HATCHBACK", "Honda Civic Aerodeck 1.4i 66 kW")).isEqualTo("WAGON");
+        assertThat(normalizeCarType("HATCHBACK", "Hyundai i30 cw 1,4i")).isEqualTo("WAGON");
+        assertThat(normalizeCarType(null, "Mercedes W211 E320 cdi 6V 7G 2007")).isEqualTo("SEDAN");
+        assertThat(normalizeCarType("HATCHBACK", "Nissan Navara 2008")).isEqualTo("PICKUP");
+        assertThat(normalizeCarType("HATCHBACK", "Prodám Peugeot 206 cc")).isEqualTo("CABRIO");
     }
 
     @Test

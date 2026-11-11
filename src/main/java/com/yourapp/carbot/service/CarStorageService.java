@@ -772,6 +772,22 @@ public class CarStorageService {
                     : "COUPE";
         }
 
+        if (containsAny(lower, "i30 cw", "i30-cw")) {
+            return "WAGON";
+        }
+
+        if (containsAny(lower, "w211", " e320 cdi ", "e 320 cdi")) {
+            return "SEDAN";
+        }
+
+        if (containsAny(lower, "navara")) {
+            return "PICKUP";
+        }
+
+        if (containsAny(lower, "206 cc", "206cc")) {
+            return "CABRIO";
+        }
+
         if (containsAny(lower, "picasso", "roomster", "citroen c8", "citroën c8", " c8 ")) {
             return "MINIVAN";
         }

@@ -2380,6 +2380,10 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         String textSource = " " + normalizeText(safe(text)).toLowerCase(Locale.ROOT) + " ";
         String urlSource = " " + normalizeText(safe(url)).toLowerCase(Locale.ROOT) + " ";
 
+        if (containsAny(titleSource, " i30 cw ", " i30-cw ")) return "WAGON";
+        if (containsAny(titleSource, " w211 ", " e320 cdi ", " e 320 cdi ")) return "SEDAN";
+        if (containsAny(titleSource, " navara ")) return "PICKUP";
+        if (containsAny(titleSource, " 206 cc ", " 206cc ")) return "CABRIO";
         if (containsAny(titleSource, " dacia spring ")) return "HATCHBACK";
         if (containsAny(titleSource, " c4 grand spacetourer ", " grand c4 spacetourer ")) return "MINIVAN";
         if (containsAny(titleSource, " civic aerodeck ", " civic-aerodeck ")) return "WAGON";
