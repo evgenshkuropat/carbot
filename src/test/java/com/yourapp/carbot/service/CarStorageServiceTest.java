@@ -57,6 +57,8 @@ class CarStorageServiceTest {
         assertThat(normalizeFuelType("DIESEL", "Honda Accord 7G CL9 sedan")).isEqualTo("PETROL");
         assertThat(normalizeFuelType("PETROL", "Dacia LODGY 1,5 BLUE DCi KLIMATIZACE")).isEqualTo("DIESEL");
         assertThat(normalizeFuelType("HYBRID", "Chevrolet Cruze 1.6 86KW R.v.2014 150 TIS KM ECO TEC")).isEqualTo("PETROL");
+        assertThat(normalizeFuelType("HYBRID", "Alfa Romeo Mito")).isNull();
+        assertThat(normalizeTransmission(null, "Peugeot Rifter ALLURE, 1.5 HDI, manuál", "DIESEL")).isEqualTo("MANUAL");
     }
 
     @Test

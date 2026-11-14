@@ -602,6 +602,9 @@ public class CarStorageService {
                 && Pattern.compile("\\b1[\\.,]6\\s+86\\s*kw\\b", Pattern.CASE_INSENSITIVE).matcher(titleLower).find()) {
             return "PETROL";
         }
+        if (titleLower.contains("alfa romeo mito") && "HYBRID".equals(clean(fuelType))) {
+            return null;
+        }
 
         String value = clean(fuelType);
         if (value != null) {
@@ -726,7 +729,7 @@ public class CarStorageService {
         String tokens = " " + lower.replaceAll("[^a-z0-9]+", " ") + " ";
 
         if (containsAny(tokens, " 6mt ", " 5mt ", " mt ", " 6rychl ", " 6ti ", " mt6 ", " m6 ", " 6m ", " 6mp ")
-                || containsAny(lower, "manual", "manuÄ‚Ë‡l", "manualni", "manuÄ‚Ë‡lnÄ‚Â­", "6ti rychl", "6 rychl", "6ti rychlost", "6 rychlost")) {
+                || containsAny(lower, "manual", "manuál", "manuální", "manuÄ‚Ë‡l", "manualni", "manuÄ‚Ë‡lnÄ‚Â­", "6ti rychl", "6 rychl", "6ti rychlost", "6 rychlost")) {
             if (lower.contains("silverado")
                     && !containsAny(lower, "manual", "manuĂ„â€šĂ‹â€ˇl", "manualni", " man. ", " 5mt ", " 6mt ", "6ti rychl", "6 rychl")) {
                 return null;

@@ -38,6 +38,7 @@ class BazosParserTest {
         assertThat(extractTransmission("Automatická klimatizace, automatické svícení")).isNull();
         assertThat(extractTransmission("Převodovka automat")).isEqualTo("AUTOMATIC");
         assertThat(extractTransmission("Suzuki Vitara automatická prevodovka")).isEqualTo("AUTOMATIC");
+        assertThat(extractTransmission("Peugeot Rifter ALLURE, 1.5 HDI, manuál")).isEqualTo("MANUAL");
         assertThat(extractFuelType("Alfa Romeo Giulietta 1.4 multiair")).isEqualTo("PETROL");
     }
 

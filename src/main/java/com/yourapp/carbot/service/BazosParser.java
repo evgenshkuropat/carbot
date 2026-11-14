@@ -1756,6 +1756,11 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         if (source.contains(" sienna ") && "DIESEL".equals(fuelType)) {
             return extractFuelType(title);
         }
+        if ("HYBRID".equals(fuelType)
+                && source.contains(" alfa romeo mito ")
+                && extractFuelType(title) == null) {
+            return null;
+        }
         if ("DIESEL".equals(fuelType)
                 && source.contains(" yaris ")
                 && Pattern.compile("\\b1[\\.,]8\\b").matcher(source).find()
