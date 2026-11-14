@@ -159,6 +159,8 @@ class BazosParserTest {
         assertThat(extractFuelType("Honda Civic Type-R FN2 (2007)")).isEqualTo("PETROL");
         assertThat(extractFuelType("Honda Accord Coupe KUZE AUTOMAT PLYN")).isEqualTo("LPG");
         assertThat(extractFuelType("Prodam Honda City 1,4 73 kw")).isEqualTo("PETROL");
+        assertThat(extractFuelType("Dacia LODGY 1,5 BLUE DCi KLIMATIZACE")).isEqualTo("DIESEL");
+        assertThat(extractFuelType("Chevrolet Cruze 1.6 86KW R.v.2014 150 TIS KM ECO TEC")).isEqualTo("PETROL");
         assertThat(extractFuelType("FIAT 500 1.0 11/2022 DPH 61000km zanovni")).isEqualTo("PETROL");
         assertThat(extractFuelType("Fiat 500 / 0.9 TwinAir / SPORT / 77kW / NAVI")).isEqualTo("PETROL");
         assertThat(extractFuelType("Toyota Yaris Cross, 1.5HEV, Adventure, 4x4")).isEqualTo("HYBRID");

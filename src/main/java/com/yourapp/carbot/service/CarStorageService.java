@@ -594,6 +594,14 @@ public class CarStorageService {
                 && containsAny(titleLower, "dci", "diesel", "nafta")) {
             return "DIESEL";
         }
+        if (titleLower.contains("dacia lodgy")
+                && containsAny(titleLower, "dci", "blue dci")) {
+            return "DIESEL";
+        }
+        if (titleLower.contains("chevrolet cruze")
+                && Pattern.compile("\\b1[\\.,]6\\s+86\\s*kw\\b", Pattern.CASE_INSENSITIVE).matcher(titleLower).find()) {
+            return "PETROL";
+        }
 
         String value = clean(fuelType);
         if (value != null) {

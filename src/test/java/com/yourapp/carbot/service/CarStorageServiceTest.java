@@ -55,6 +55,8 @@ class CarStorageServiceTest {
         assertThat(normalizeFuelType(null, "Volvo XC40, T2 MOMENTUM AUTOMAT-DPH")).isEqualTo("PETROL");
         assertThat(normalizeFuelType("DIESEL", "MERCEDES-BENZ EQV 250 | 2025 | ZÁRUKA")).isEqualTo("ELECTRIC");
         assertThat(normalizeFuelType("DIESEL", "Honda Accord 7G CL9 sedan")).isEqualTo("PETROL");
+        assertThat(normalizeFuelType("PETROL", "Dacia LODGY 1,5 BLUE DCi KLIMATIZACE")).isEqualTo("DIESEL");
+        assertThat(normalizeFuelType("HYBRID", "Chevrolet Cruze 1.6 86KW R.v.2014 150 TIS KM ECO TEC")).isEqualTo("PETROL");
     }
 
     @Test
