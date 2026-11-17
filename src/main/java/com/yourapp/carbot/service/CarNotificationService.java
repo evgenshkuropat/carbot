@@ -335,7 +335,7 @@ public class CarNotificationService {
 
             telegramDeliveryService.sendTextOrThrow(chatId, textMessage, keyboard);
 
-            log.debug("Sent as text message. source={} chatId={} title='{}'",
+            log.info("Notification sent as text fallback after photo delivery failed. source={} chatId={} title='{}'",
                     safe(car.getSource()), chatId, safe(car.getTitle()));
 
             return true;

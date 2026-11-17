@@ -1065,6 +1065,7 @@ public class CarStorageService {
                 || t.contains("corsa")
                 || t.contains("punto")
                 || t.contains("megane")
+                || t.contains("berlingo")
                 || t.contains("astra")
                 || t.contains("thalia")
                 || t.contains("sq5")

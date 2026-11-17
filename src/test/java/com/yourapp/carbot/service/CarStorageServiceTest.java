@@ -161,6 +161,12 @@ class CarStorageServiceTest {
         citroen.setCarType("HATCHBACK");
         assertThat(isValidForSave(citroen, 129_000)).isTrue();
 
+        CarDto berlingo = car("ZACHOVALÉ BERLINGO, 1. MAJITEL, NOVÁ STK, 2x PNEU");
+        berlingo.setBrand("CITROEN");
+        berlingo.setFuelType("DIESEL");
+        berlingo.setCarType("MINIVAN");
+        assertThat(isValidForSave(berlingo, 129_000)).isTrue();
+
         CarDto serviceListing = car("Prodej + montaz + servis klimatizaci dle vykonu");
         serviceListing.setCarType("SEDAN");
         assertThat(isValidForSave(serviceListing, 20_000)).isFalse();
