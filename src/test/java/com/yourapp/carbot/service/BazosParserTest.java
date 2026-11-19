@@ -566,6 +566,7 @@ class BazosParserTest {
         assertThat(looksLikelyFalseManual("BMW X5 xDrive 45e 290kW 2020", "MANUAL")).isTrue();
         assertThat(looksLikelyFalseManual("TOYOTA C-HR 1.8 Hybrid EXECUTIVE-LED-KAMERA-ACC-CR", "MANUAL")).isTrue();
         assertThat(extractTransmission("Ford Kuga ST Line 1,5 110 kW benzin 6-ti st.mech.")).isEqualTo("MANUAL");
+        assertThat(extractTransmission("BMW 320i CUPE e92, výkon 125 KW, 6-ti rychlostní")).isEqualTo("MANUAL");
         assertThat(extractTransmission("Citroen Berlingo 1.5 BlueHDi 130S&S MAN 6 SHINE")).isEqualTo("MANUAL");
         assertThat(extractTransmission("Citroen Berlingo 1.6 BlueHDI XTR 100 MAN")).isEqualTo("MANUAL");
         assertThat(extractTransmission("SEAT LEON 2.0TDi Xcellence-AUT-NAVI-LED-COCKPIT-ACC-TAŽNÉ"))

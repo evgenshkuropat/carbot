@@ -284,7 +284,7 @@ public class ToyotaProvereneVozyParser implements CarSourceParser {
             carType = "MINIVAN";
         }
         location = firstNonBlank(extractDetailLocation(detailDoc), location);
-        imageUrl = firstNonBlank(extractMetaContent(detailDoc, "meta[property=og:image]"), imageUrl);
+        imageUrl = firstNonBlank(sanitizeImageUrl(extractMetaContent(detailDoc, "meta[property=og:image]")), imageUrl);
 
         CarDto car = new CarDto();
         car.setSource(getSourceName());
@@ -619,18 +619,32 @@ public class ToyotaProvereneVozyParser implements CarSourceParser {
             return null;
         }
 
-        Element img = container.selectFirst("img[src], img[data-src], source[srcset]");
-        if (img == null) {
+        for (Element img : container.select("img[src], img[data-src], source[srcset]")) {
+            String value = sanitizeImageUrl(firstNonBlank(
+                    img.hasAttr("src") ? img.absUrl("src") : null,
+                    img.hasAttr("data-src") ? img.absUrl("data-src") : null,
+                    firstSrcSetUrl(img.absUrl("srcset"))
+            ));
+            if (value != null) {
+                return value;
+            }
+        }
+
+        return null;
+    }
+
+    private String sanitizeImageUrl(String value) {
+        if (value == null || value.isBlank()) {
             return null;
         }
 
-        String value = firstNonBlank(
-                img.hasAttr("src") ? img.absUrl("src") : null,
-                img.hasAttr("data-src") ? img.absUrl("data-src") : null,
-                firstSrcSetUrl(img.absUrl("srcset"))
-        );
+        String normalized = value.trim();
+        String lower = normalized.toLowerCase(Locale.ROOT);
+        if (lower.contains("main-hero") || lower.contains("hero_bg")) {
+            return null;
+        }
 
-        return value == null || value.isBlank() ? null : value;
+        return normalized;
     }
 
     private String firstSrcSetUrl(String srcset) {

@@ -54,6 +54,13 @@ class ToyotaProvereneVozyParserTest {
         assertThat(parseFixture("MG S9 PREMIUM 1.5TGI PHEV", "").getYear()).isNull();
     }
 
+    @Test
+    void rejectsToyotaHeroBackgroundAsCarPhoto() throws Exception {
+        assertThat(sanitizeImageUrl("https://panel.pewneauto.pl/toyotapl/resources/img/main-hero_bg_1000.jpg")).isNull();
+        assertThat(sanitizeImageUrl("https://images.example.com/toyota-c-hr.jpg"))
+                .isEqualTo("https://images.example.com/toyota-c-hr.jpg");
+    }
+
     private CarDto parseFixture(String title, String details) throws Exception {
         String url = "https://proverenevozy.toyota.cz/nabidka/test/1";
         Element link = Jsoup.parse("<div><a href='" + url + "'>" + title + "</a></div>", url).selectFirst("a");
@@ -297,6 +304,12 @@ class ToyotaProvereneVozyParserTest {
 
     private String mapElectrifiedFuel(String value) throws Exception {
         Method method = ToyotaProvereneVozyParser.class.getDeclaredMethod("mapElectrifiedFuel", String.class);
+        method.setAccessible(true);
+        return (String) method.invoke(parser, value);
+    }
+
+    private String sanitizeImageUrl(String value) throws Exception {
+        Method method = ToyotaProvereneVozyParser.class.getDeclaredMethod("sanitizeImageUrl", String.class);
         method.setAccessible(true);
         return (String) method.invoke(parser, value);
     }

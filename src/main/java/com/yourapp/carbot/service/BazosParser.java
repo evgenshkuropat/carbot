@@ -1895,7 +1895,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             return false;
         }
 
-        return containsAny(source, " twin spark ", " twinspark ", " 6ti rychl ", " 6ti rychlost ", " 6 rychl ", " 6 rychlost ",
+        return containsAny(source, " twin spark ", " twinspark ", " 6ti rychl ", " 6ti rychlost ", " 6-ti rychl ", " 6-ti rychlost ", " 6 rychl ", " 6 rychlost ",
                 " alfa romeo 159 ", " alfa 159 ", " alfa romeo 147 ", " alfa 147 ", " giulietta ", " giuletta ", " guilietta ",
                 " gtv ", " brera ", " alfa romeo gt ", " gt coupe ", " alfa romeo sportwagon ", " mito ", " alfa 33 ",
                 " accord ", " civic ", " crx ", " delsol ", " cr-v ", " cr v ", " crv ",
@@ -1918,7 +1918,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
 
         String source = " " + normalizeText(title).toLowerCase(Locale.ROOT) + " ";
         String compact = source.replaceAll("[^a-z0-9]", "");
-        boolean hasExplicitManual = containsAny(source, " manual ", " manuĂˇl ", " manualni ", " man. ", " mt ", " 5mt ", " 6mt ", " 6 rychl ", " 6ti rychl ");
+        boolean hasExplicitManual = containsAny(source, " manual ", " manuĂˇl ", " manualni ", " man. ", " mt ", " 5mt ", " 6mt ", " 6 rychl ", " 6ti rychl ", " 6-ti rychl ");
         if (!hasExplicitManual
                 && containsAny(source, " bmw ")
                 && Pattern.compile("(?:225|230|320|330|530|545|745|750|30|40|45|50)e(?:xdrive)?").matcher(compact).find()) {
@@ -1974,6 +1974,8 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                 " razeni manualni ",
                 " 6ti rychl ",
                 " 6ti rychlost ",
+                " 6-ti rychl ",
+                " 6-ti rychlost ",
                 " 6 rychl ",
                 " 6 rychlost ")) {
             return "MANUAL";
