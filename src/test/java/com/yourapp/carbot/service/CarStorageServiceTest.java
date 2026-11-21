@@ -124,6 +124,7 @@ class CarStorageServiceTest {
         assertThat(normalizeCarType(null, "Mercedes W211 E320 cdi 6V 7G 2007")).isEqualTo("SEDAN");
         assertThat(normalizeCarType("HATCHBACK", "Nissan Navara 2008")).isEqualTo("PICKUP");
         assertThat(normalizeCarType("HATCHBACK", "Prodám Peugeot 206 cc")).isEqualTo("CABRIO");
+        assertThat(normalizeCarType(null, "Prodám Peugeot 307 1.4 benzin 2006")).isEqualTo("HATCHBACK");
     }
 
     @Test

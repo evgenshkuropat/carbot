@@ -2399,6 +2399,10 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         if (containsAny(titleSource, " w211 ", " e320 cdi ", " e 320 cdi ")) return "SEDAN";
         if (containsAny(titleSource, " navara ")) return "PICKUP";
         if (containsAny(titleSource, " 206 cc ", " 206cc ")) return "CABRIO";
+        if (containsAny(titleSource, " peugeot 307 ")
+                && !containsAny(titleSource, " 307 sw ", " 307sw ", " 307 cc ", " 307cc ", " break ", " kombi ", " combi ", " wagon ")) {
+            return "HATCHBACK";
+        }
         if (containsAny(titleSource, " dacia spring ")) return "HATCHBACK";
         if (containsAny(titleSource, " c4 grand spacetourer ", " grand c4 spacetourer ")) return "MINIVAN";
         if (containsAny(titleSource, " civic aerodeck ", " civic-aerodeck ")) return "WAGON";

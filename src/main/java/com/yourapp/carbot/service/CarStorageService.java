@@ -799,6 +799,11 @@ public class CarStorageService {
             return "CABRIO";
         }
 
+        if (lower.contains("peugeot 307")
+                && !containsAny(lower, "307 sw", "307sw", "307 cc", "307cc", "break", "kombi", "combi", "wagon")) {
+            return "HATCHBACK";
+        }
+
         if (containsAny(lower, "picasso", "roomster", "citroen c8", "citroën c8", " c8 ")) {
             return "MINIVAN";
         }

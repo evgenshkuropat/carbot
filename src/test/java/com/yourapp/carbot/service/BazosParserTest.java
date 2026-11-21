@@ -491,6 +491,7 @@ class BazosParserTest {
                 .isEqualTo("MINIVAN");
         assertThat(extractCarType("Scirocco 2.0 TSI DSG 155kw r 2012", "", "")).isEqualTo("COUPE");
         assertThat(extractCarType("peugeot rcz", "", "")).isEqualTo("COUPE");
+        assertThat(extractCarType("Prodám Peugeot 307 1.4 benzin 2006", "", "")).isEqualTo("HATCHBACK");
         assertThat(extractCarType("Peugeot 5008 1.6i,digiklima,7 mist,Panorama,1.majit,serviska", "", "")).isEqualTo("MINIVAN");
         assertThat(extractCarType("Volkswagen UP 1.0MPI KLIMA", "", "")).isEqualTo("HATCHBACK");
         assertThat(extractCarType("Volvo S80 2.4D5 120 kW Klima Tempomat CR", "", "")).isEqualTo("SEDAN");
