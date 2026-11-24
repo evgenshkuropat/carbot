@@ -1155,6 +1155,10 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         source = source + " " + ascii + " " + repairedAscii;
         String compact = source.replaceAll("[^a-z0-9]", "");
 
+        if (source.contains(" dokker ") && Pattern.compile("\\b1[.,]5\\s*dci\\b").matcher(source).find()) {
+            return "DIESEL";
+        }
+
         if (containsAny(source, " honda e ") || compact.contains("hondae")) {
             return "ELECTRIC";
         }
@@ -2432,6 +2436,11 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         String textSource = " " + normalizeText(safe(text)).toLowerCase(Locale.ROOT) + " ";
         String urlSource = " " + normalizeText(safe(url)).toLowerCase(Locale.ROOT) + " ";
 
+        if (titleSource.contains(" dokker ")
+                && !containsAny(titleSource, " van ", " cargo ", " nakladni ", " uzitkovy ", " l1h1 ", " l2h1 ")) {
+            return "MINIVAN";
+        }
+
         if (containsAny(titleSource, " i30 cw ", " i30-cw ")) return "WAGON";
         if (containsAny(titleSource, " w211 ", " e320 cdi ", " e 320 cdi ")) return "SEDAN";
         if (containsAny(titleSource, " navara ")) return "PICKUP";
@@ -2796,7 +2805,7 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         if (containsAny(titleSource, " alfa 156 sw ", " alfa romeo 156 sw ", " romeo 156 sw ",
                 " alfa 159 sw ", " alfa romeo 159 sw ", " romeo 159 sw ")
                 || (containsAny(titleSource, " alfa 159 ", " alfa romeo 159 ", " romeo 159 ")
-                && containsAny(titleSource, " combi ", " kombi ", " wagon ", " sportwagon "))) {
+                && containsAny(titleSource, " sw ", " combi ", " kombi ", " wagon ", " sportwagon "))) {
             return "WAGON";
         }
 

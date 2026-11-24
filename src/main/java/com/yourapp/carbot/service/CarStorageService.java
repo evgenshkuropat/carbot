@@ -540,6 +540,10 @@ public class CarStorageService {
         String lower = (safe(fuelType) + " " + safe(title)).toLowerCase(Locale.ROOT);
         String titleLower = safe(title).toLowerCase(Locale.ROOT);
 
+        if (titleLower.contains("dokker") && Pattern.compile("\\b1[.,]5\\s*dci\\b").matcher(titleLower).find()) {
+            return "DIESEL";
+        }
+
         // These models are unambiguously electric even when a source sends a stale fuel value.
         if (titleLower.contains("honda e")) {
             return "ELECTRIC";
@@ -776,6 +780,16 @@ public class CarStorageService {
 
     private String normalizeCarType(String carType, String title) {
         String lower = safe(title).toLowerCase(Locale.ROOT);
+        String words = " " + Normalizer.normalize(lower, Normalizer.Form.NFD)
+                .replaceAll("\\p{M}", "").replaceAll("[^a-z0-9]+", " ") + " ";
+
+        if (containsAny(words, " alfa romeo 159 ", " alfa 159 ") && words.contains(" sw ")) {
+            return "WAGON";
+        }
+        if (words.contains(" dokker ") && !"VAN".equalsIgnoreCase(carType)
+                && !containsAny(words, " van ", " cargo ", " nakladni ", " uzitkovy ", " l1h1 ", " l2h1 ")) {
+            return "MINIVAN";
+        }
 
         if (containsAny(lower, "corvette", "camaro")) {
             return containsAny(lower, "cabrio", "cabriolet", "convertible", "targa")

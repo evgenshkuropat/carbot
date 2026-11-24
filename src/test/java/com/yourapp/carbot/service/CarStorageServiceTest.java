@@ -12,6 +12,16 @@ class CarStorageServiceTest {
     private final CarStorageService service = new CarStorageService(null);
 
     @Test
+    void correctsAlfa159SwAndPassengerDokkerFromLogs() throws Exception {
+        String dokker = "Prodám Dacia Dokker 1.5DCI 55KW - KLIMATIZACE";
+        assertThat(normalizeFuelType("PETROL", dokker)).isEqualTo("DIESEL");
+        assertThat(normalizeCarType("HATCHBACK", dokker)).isEqualTo("MINIVAN");
+        assertThat(normalizeCarType("VAN", "Dacia Dokker Van 1.5 dCi")).isNull();
+        assertThat(normalizeCarType("SEDAN", "Alfa Romeo 159 1750 Tbi SW")).isEqualTo("WAGON");
+        assertThat(normalizeCarType("SEDAN", "Alfa Romeo 159 1750 Tbi")).isEqualTo("SEDAN");
+    }
+
+    @Test
     void normalizesElectricSignalsFromTitles() throws Exception {
         assertThat(normalizeFuelType(null, "Tesla Model Y")).isEqualTo("ELECTRIC");
         assertThat(normalizeFuelType(null, "Polestar 2 EV 350kW AWD 78kWh Performance")).isEqualTo("ELECTRIC");

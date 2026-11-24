@@ -67,6 +67,14 @@ class BazosParserTest {
     private final BazosParser parser = new BazosParser();
 
     @Test
+    void recognizesAlfa159SwAndPassengerDokkerFromLogs() throws Exception {
+        String dokker = "Prodám Dacia Dokker 1.5DCI 55KW - KLIMATIZACE";
+        assertThat(extractFuelType(dokker)).isEqualTo("DIESEL");
+        assertThat(extractCarType(dokker, "", "")).isEqualTo("MINIVAN");
+        assertThat(extractCarType("Alfa Romeo 159 1750 Tbi SW", "", "")).isEqualTo("WAGON");
+    }
+
+    @Test
     void resolvesBrandsFromBazosTitlesBeforeNoisyPageText() throws Exception {
         assertThat(extractBrand("2021 TARRACO XCELLENCE 4x4 FACELIFT-mozna vymena,splatky", "tiguan kodiaq skoda"))
                 .isEqualTo("SEAT");
