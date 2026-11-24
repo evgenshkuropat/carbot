@@ -717,7 +717,7 @@ public class CarStorageService {
             return "PETROL";
         }
 
-        if (containsAny(lower, "petrol", "benzin", "benz", "benzinovy", "benzín", "benzínový", "tsi", "tfsi", "fsi", "gdi", "tgdi", "sce", "puretech", "ecoboost", "1.0eb", "1,0eb", "1.2eb", "1,2eb", "camaro", "corvette", "chevrolet ssr", "civic 1.8", "civic 1,8", "civic ufo", "legend 2.7", "legend 2,7", "twinspark", "twin spark", "1.8tbi", "1,8tbi", "giulietta sprint", " jts")) {
+        if (containsAny(lower, "petrol", "benzin", "benz", "benzinovy", "benzín", "benzínový", "tsi", "tfsi", "fsi", "gdi", "tgdi", "sce", "puretech", "ecoboost", "eco boost", "1.0eb", "1,0eb", "1.2eb", "1,2eb", "camaro", "corvette", "chevrolet ssr", "civic 1.8", "civic 1,8", "civic ufo", "legend 2.7", "legend 2,7", "twinspark", "twin spark", "1.8tbi", "1,8tbi", "giulietta sprint", " jts")) {
             return "PETROL";
         }
 

@@ -57,6 +57,7 @@ class SbazarParserTest {
 
     @Test
     void resolvesFuelFromTrustedListingIdentity() throws Exception {
+        assertThat(resolveFuelType("ford fiesta 1.0 eco boost 92kw titanium", "")).isEqualTo("PETROL");
         assertThat(resolveFuelType("vw id 3 pro performance rv.2024", "")).isEqualTo("ELECTRIC");
         assertThat(resolveTransmission("vw id 3 pro performance rv.2024", "", "ELECTRIC")).isEqualTo("AUTOMATIC");
 

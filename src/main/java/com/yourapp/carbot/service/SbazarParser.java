@@ -699,7 +699,7 @@ public class SbazarParser implements CarSourceParser {
 
         if (containsAny(searchable,
                 "benzin", "benzín", "petrol", "tsi", "tfsi", "tsfi", "fsi",
-                "gdi", "tgdi", "dig-t", "tce", "ecoboost", "mivec", "vtec",
+                "gdi", "tgdi", "dig-t", "tce", "ecoboost", "eco boost", "mivec", "vtec",
                 "vti", "vvt", "vvt-i", "puretech", "pt", "mpi", "dpi", "jts", "16v", "18i", "20i", "2 0i",
                 "30i", "40i", "50i", "850i", "14tsi", "20tsi", "turbo", "ti-vct", "pentastar", "hemi",
                 "challenger", "pacifica", "carrera", "cooper s", "kompressor", "gti", "gr86", "gr 86",
@@ -803,7 +803,7 @@ public class SbazarParser implements CarSourceParser {
     private boolean hasFuelSignal(String identityText, String fuelType) {
         return switch (fuelType) {
             case "PETROL" -> containsAny(identityText, "benzin", "benzĂ­n", "petrol", "tsi", "tfsi", "fsi", "gdi",
-                    "tgdi", "dig-t", "tce", "ecoboost", "mivec", "vtec", "vti", "puretech", "mpi", "jts",
+                    "tgdi", "dig-t", "tce", "ecoboost", "eco boost", "mivec", "vtec", "vti", "puretech", "mpi", "jts",
                     "16v", "18i", "20i", "30i", "40i", "50i", "850i", "v8", "v12", "gti")
                     || identityText.matches(".*\\b[0-9][.,][0-9]\\s*i\\b.*")
                     || identityText.matches(".*\\b[0-9]{2,3}i\\b.*")

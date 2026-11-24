@@ -32,6 +32,28 @@ class BazosParserTest {
     }
 
     @Test
+    void stopsRequestsForTheRunAndDuringCooldownAfterAccessBlock() {
+        var requests = new java.util.ArrayList<String>();
+        BazosParser blocked = new BazosParser() {
+            @Override
+            protected org.jsoup.nodes.Document loadDocument(String url) throws java.io.IOException {
+                requests.add(url);
+                throw new java.io.IOException("Access blocked for url: " + url);
+            }
+        };
+
+        assertThat(blocked.fetchCars()).isEmpty();
+        assertThat(blocked.fetchCars()).isEmpty();
+        assertThat(requests).hasSize(1);
+    }
+
+    @Test
+    void recognizesBazosAccessBlockResponses() throws Exception {
+        assertThat(isAccessBlocked(new RuntimeException("Access blocked for url: https://auto.bazos.cz/alfa/"))).isTrue();
+        assertThat(isAccessBlocked(new RuntimeException("Connection timed out"))).isFalse();
+    }
+
+    @Test
     void doesNotTreatWordAutoAsAutomaticTransmission() throws Exception {
         assertThat(extractTransmission("Prodám auto v dobrém stavu")).isNull();
         assertThat(extractTransmission("Android Auto, servisní historie")).isNull();
@@ -1405,6 +1427,12 @@ class BazosParserTest {
         Method method = BazosParser.class.getDeclaredMethod("looksCommercialVehicle", String.class, String.class, String.class);
         method.setAccessible(true);
         return (boolean) method.invoke(parser, title, text, url);
+    }
+
+    private boolean isAccessBlocked(Exception exception) throws Exception {
+        Method method = BazosParser.class.getDeclaredMethod("isAccessBlocked", Exception.class);
+        method.setAccessible(true);
+        return (boolean) method.invoke(parser, exception);
     }
 
     private Object inferTitleProfile(String title, String url) throws Exception {

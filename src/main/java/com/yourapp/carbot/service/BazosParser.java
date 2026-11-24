@@ -15,6 +15,8 @@ import java.nio.charset.Charset;
 import java.nio.charset.CodingErrorAction;
 import java.nio.charset.StandardCharsets;
 import java.text.Normalizer;
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -59,6 +61,9 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
     private static final int MAX_DETAIL_LINKS = 1000;
     private static final int MIN_VALID_PRICE = 30_000;
     private static final int MAX_VALID_PRICE = 10_000_000;
+    private static final Duration ACCESS_BLOCK_COOLDOWN = Duration.ofHours(1);
+
+    private LocalDateTime accessBlockedUntil;
 
     private record TitleProfile(String fuelType, String transmission, String carType, boolean strongIdentity) {
     }
@@ -85,8 +90,14 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
 
     @Override
     public List<CarDto> fetchCars() {
+        if (accessBlockedUntil != null && LocalDateTime.now().isBefore(accessBlockedUntil)) {
+            log.warn("BAZOS parser skipped until {} because source access is temporarily blocked", accessBlockedUntil);
+            return List.of();
+        }
+
         List<CarDto> cars = new ArrayList<>();
         Set<String> allDetailUrls = new LinkedHashSet<>();
+        boolean accessBlocked = false;
 
         int emptyTitleCount = 0;
         int demandListingCount = 0;
@@ -134,53 +145,66 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
                         }
 
                     } catch (Exception e) {
-                        log.warn("BAZOS list page parse failed url={} error={}", pageUrl, e.getMessage());
+                        if (isAccessBlocked(e)) {
+                            accessBlocked = true;
+                            pauseAfterAccessBlock(pageUrl);
+                        } else {
+                            log.warn("BAZOS list page parse failed url={} error={}", pageUrl, e.getMessage());
+                        }
                         break;
                     }
                 }
 
-                if (allDetailUrls.size() >= MAX_DETAIL_LINKS) {
+                if (accessBlocked || allDetailUrls.size() >= MAX_DETAIL_LINKS) {
                     break;
                 }
             }
 
-            log.debug("BAZOS total detail links collected={}", allDetailUrls.size());
+            if (accessBlocked) {
+                log.warn("BAZOS detail parsing skipped because list access is blocked");
+            } else {
+                log.debug("BAZOS total detail links collected={}", allDetailUrls.size());
 
-            int count = 0;
+                int count = 0;
 
-            for (String url : allDetailUrls) {
-                if (count >= MAX_DETAIL_LINKS) {
-                    break;
-                }
-
-                try {
-                    ParseResult result = parseDetail(url);
-
-                    if (result.car() != null) {
-                        cars.add(result.car());
-                    } else {
-                        switch (result.reason()) {
-                            case "empty_title" -> emptyTitleCount++;
-                            case "demand_listing" -> demandListingCount++;
-                            case "commercial_vehicle" -> commercialVehicleCount++;
-                            case "non_car_listing" -> nonCarListingCount++;
-                            case "broken_or_for_parts" -> brokenOrForPartsCount++;
-                            case "suspicious_listing" -> suspiciousListingCount++;
-                            case "invalid_price" -> invalidPriceCount++;
-                            case "missing_price" -> missingPriceCount++;
-                            case "parse_error" -> parseErrorCount++;
-                            case "tyre_or_wheel_listing" -> tyreOrWheelListingCount++;
-                        }
+                for (String url : allDetailUrls) {
+                    if (count >= MAX_DETAIL_LINKS) {
+                        break;
                     }
 
-                } catch (Exception e) {
-                    parseErrorCount++;
-                    log.debug("BAZOS SKIP url={} reason=parse_error", safe(url));
+                    try {
+                        ParseResult result = parseDetail(url);
+                        if ("access_blocked".equals(result.reason())) {
+                            pauseAfterAccessBlock(url);
+                            break;
+                        }
+
+                        if (result.car() != null) {
+                            cars.add(result.car());
+                        } else {
+                            switch (result.reason()) {
+                                case "empty_title" -> emptyTitleCount++;
+                                case "demand_listing" -> demandListingCount++;
+                                case "commercial_vehicle" -> commercialVehicleCount++;
+                                case "non_car_listing" -> nonCarListingCount++;
+                                case "broken_or_for_parts" -> brokenOrForPartsCount++;
+                                case "suspicious_listing" -> suspiciousListingCount++;
+                                case "invalid_price" -> invalidPriceCount++;
+                                case "missing_price" -> missingPriceCount++;
+                                case "parse_error" -> parseErrorCount++;
+                                case "tyre_or_wheel_listing" -> tyreOrWheelListingCount++;
+                            }
+                        }
+
+                    } catch (Exception e) {
+                        parseErrorCount++;
+                        log.debug("BAZOS SKIP url={} reason=parse_error", safe(url));
+                    }
+
+                    sleepBetweenDetailRequests();
+
+                    count++;
                 }
-
-                sleepBetweenDetailRequests();
-
-                count++;
             }
 
         } catch (Exception e) {
@@ -204,6 +228,16 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         );
 
         return cars;
+    }
+
+    private void pauseAfterAccessBlock(String url) {
+        accessBlockedUntil = LocalDateTime.now().plus(ACCESS_BLOCK_COOLDOWN);
+        log.warn("BAZOS access blocked at url={}; stopping this run and pausing requests until {}", url, accessBlockedUntil);
+    }
+
+    private boolean isAccessBlocked(Exception exception) {
+        String message = exception == null ? null : exception.getMessage();
+        return message != null && message.toLowerCase(Locale.ROOT).contains("access blocked");
     }
 
     private Set<String> extractDetailUrls(Document listDoc) {
@@ -459,6 +493,9 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
             return ParseResult.ok(car);
 
         } catch (Exception e) {
+            if (isAccessBlocked(e)) {
+                return ParseResult.skip("access_blocked");
+            }
             log.debug("BAZOS SKIP url={} reason=parse_error", safe(url));
             return ParseResult.skip("parse_error");
         }

@@ -37,6 +37,7 @@ class CarStorageServiceTest {
         assertThat(normalizeFuelType(null, "Chevrolet Cruze 1.6 91kW")).isEqualTo("PETROL");
         assertThat(normalizeFuelType(null, "Ford Focus Combi 1.6 85 kW")).isEqualTo("PETROL");
         assertThat(normalizeFuelType(null, "Ford Fiesta ST atmosfera 150PS")).isEqualTo("PETROL");
+        assertThat(normalizeFuelType(null, "Ford Fiesta 1.0 Eco Boost 92kW TITANIUM")).isEqualTo("PETROL");
         assertThat(normalizeFuelType(null, "Suzuki SX4 S-Cross 1,4 BoosterJet Premium")).isEqualTo("PETROL");
         assertThat(normalizeFuelType(null, "Dongfeng U-Tour 1,5 T 130 kW ExclusiveFR")).isEqualTo("PETROL");
         assertThat(normalizeFuelType("HYBRID", "Chevrolet Corvette C8 Cabriolet Stingray 2021")).isEqualTo("PETROL");
