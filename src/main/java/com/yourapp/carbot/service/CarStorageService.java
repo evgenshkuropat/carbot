@@ -568,6 +568,9 @@ public class CarStorageService {
         if (titleLower.contains("defender") && containsAny(titleLower, "d250", " d 250")) {
             return "DIESEL";
         }
+        if (titleLower.contains("outlander") && Pattern.compile("\\b2[.,]2\\s*di[-\\s]?d\\b").matcher(titleLower).find()) {
+            return "DIESEL";
+        }
         if (titleLower.contains("outlander")
                 && Pattern.compile("\\b2[\\.,]0\\s*148\\s*kw\\b", Pattern.CASE_INSENSITIVE).matcher(titleLower).find()) {
             return "PETROL";
@@ -783,6 +786,9 @@ public class CarStorageService {
         String words = " " + Normalizer.normalize(lower, Normalizer.Form.NFD)
                 .replaceAll("\\p{M}", "").replaceAll("[^a-z0-9]+", " ") + " ";
 
+        if (words.contains(" outlander ")) {
+            return "SUV";
+        }
         if (containsAny(words, " alfa romeo 159 ", " alfa 159 ") && words.contains(" sw ")) {
             return "WAGON";
         }

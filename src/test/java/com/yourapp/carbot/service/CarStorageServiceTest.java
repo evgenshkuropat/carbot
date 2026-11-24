@@ -12,6 +12,13 @@ class CarStorageServiceTest {
     private final CarStorageService service = new CarStorageService(null);
 
     @Test
+    void correctsOutlanderDieselSuvFromLog() throws Exception {
+        String title = "Prodám Mitsubishi Outlander 2.2DI-D 130kW - KLIMATIZACE";
+        assertThat(normalizeFuelType("PETROL", title)).isEqualTo("DIESEL");
+        assertThat(normalizeCarType("HATCHBACK", title)).isEqualTo("SUV");
+    }
+
+    @Test
     void correctsAlfa159SwAndPassengerDokkerFromLogs() throws Exception {
         String dokker = "Prodám Dacia Dokker 1.5DCI 55KW - KLIMATIZACE";
         assertThat(normalizeFuelType("PETROL", dokker)).isEqualTo("DIESEL");

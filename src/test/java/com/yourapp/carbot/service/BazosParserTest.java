@@ -67,6 +67,13 @@ class BazosParserTest {
     private final BazosParser parser = new BazosParser();
 
     @Test
+    void recognizesOutlanderDieselSuvFromLog() throws Exception {
+        String title = "Prodám Mitsubishi Outlander 2.2DI-D 130kW - KLIMATIZACE";
+        assertThat(extractFuelType(title)).isEqualTo("DIESEL");
+        assertThat(extractCarType(title, "", "")).isEqualTo("SUV");
+    }
+
+    @Test
     void recognizesAlfa159SwAndPassengerDokkerFromLogs() throws Exception {
         String dokker = "Prodám Dacia Dokker 1.5DCI 55KW - KLIMATIZACE";
         assertThat(extractFuelType(dokker)).isEqualTo("DIESEL");

@@ -1182,6 +1182,9 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         if (source.contains(" defender ") && containsAny(source, " d250 ", " d 250 ")) {
             return "DIESEL";
         }
+        if (source.contains(" outlander ") && Pattern.compile("\\b2[.,]2\\s*di[-\\s]?d\\b").matcher(source).find()) {
+            return "DIESEL";
+        }
         if (source.contains(" outlander ")
                 && Pattern.compile("\\b2[\\.,]0\\s*148\\s*kw\\b", Pattern.CASE_INSENSITIVE).matcher(source).find()) {
             return "PETROL";
@@ -2435,6 +2438,10 @@ public class BazosParser extends AbstractJsoupParser implements CarSourceParser 
         titleSource = titleSource + " " + asciiSearchText(safe(title));
         String textSource = " " + normalizeText(safe(text)).toLowerCase(Locale.ROOT) + " ";
         String urlSource = " " + normalizeText(safe(url)).toLowerCase(Locale.ROOT) + " ";
+
+        if (titleSource.contains(" outlander ")) {
+            return "SUV";
+        }
 
         if (titleSource.contains(" dokker ")
                 && !containsAny(titleSource, " van ", " cargo ", " nakladni ", " uzitkovy ", " l1h1 ", " l2h1 ")) {
