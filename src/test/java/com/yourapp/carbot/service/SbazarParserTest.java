@@ -11,6 +11,18 @@ class SbazarParserTest {
     private final SbazarParser parser = new SbazarParser();
 
     @Test
+    void recognizesLexusHybridsFromLogs() throws Exception {
+        String gs = "lexus gs 300h";
+        String ux = "lexus ux 250h navi/led/kamera/63tis.km/1.maj";
+        for (String title : new String[]{gs, ux}) {
+            assertThat(resolveFuelType(title, "")).isEqualTo("HYBRID");
+            assertThat(resolveTransmission(title, "", "HYBRID")).isEqualTo("AUTOMATIC");
+        }
+        assertThat(resolveCarType(gs, "")).isEqualTo("SEDAN");
+        assertThat(resolveCarType(ux, "")).isEqualTo("SUV");
+    }
+
+    @Test
     void ignoresWarrantyMileageFromSeptemberLog() throws Exception {
         assertThat(extractMileage("skoda karoq 1.5 tsi zar. 5 let/100000 km")).isNull();
         assertThat(extractMileage("zaruka 5 let/100000 km, najeto 24421 km")).isEqualTo(24421);

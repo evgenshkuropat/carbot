@@ -12,6 +12,18 @@ class CarStorageServiceTest {
     private final CarStorageService service = new CarStorageService(null);
 
     @Test
+    void correctsLexusHybridsFromLogs() throws Exception {
+        String gs = "Lexus GS 300h";
+        String ux = "Lexus UX 250h NAVI/LED/KAMERA/63tis.km/1.maj";
+        for (String title : new String[]{gs, ux}) {
+            assertThat(normalizeFuelType(null, title)).isEqualTo("HYBRID");
+            assertThat(normalizeTransmission(null, title, "HYBRID")).isEqualTo("AUTOMATIC");
+        }
+        assertThat(normalizeCarType("HATCHBACK", gs)).isEqualTo("SEDAN");
+        assertThat(normalizeCarType("SEDAN", ux)).isEqualTo("SUV");
+    }
+
+    @Test
     void correctsOutlanderDieselSuvFromLog() throws Exception {
         String title = "Prodám Mitsubishi Outlander 2.2DI-D 130kW - KLIMATIZACE";
         assertThat(normalizeFuelType("PETROL", title)).isEqualTo("DIESEL");

@@ -783,6 +783,7 @@ public class SbazarParser implements CarSourceParser {
     }
 
     private String resolveFuelType(String identityText, String scopedText) {
+        if (LexusHybridModel.bodyType(identityText) != null) return "HYBRID";
         String identityFuel = detectFuelType(identityText);
         if (!"-".equals(identityFuel)) {
             return identityFuel;
@@ -862,6 +863,7 @@ public class SbazarParser implements CarSourceParser {
     }
 
     private String resolveTransmission(String identityText, String scopedText, String fuelType) {
+        if (LexusHybridModel.bodyType(identityText) != null) return "AUTOMATIC";
         String identityTransmission = detectTransmission(identityText);
         if (!"-".equals(identityTransmission)) {
             return identityTransmission;
@@ -1051,6 +1053,8 @@ public class SbazarParser implements CarSourceParser {
     }
 
     private String resolveCarType(String identityText, String scopedText) {
+        String lexusBodyType = LexusHybridModel.bodyType(identityText);
+        if (lexusBodyType != null) return lexusBodyType;
         if (containsAny(identityText, "octavia") && containsAny(identityText, "scout")) {
             return "WAGON";
         }

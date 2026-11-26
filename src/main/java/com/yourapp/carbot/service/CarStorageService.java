@@ -537,6 +537,7 @@ public class CarStorageService {
     }
 
     private String normalizeFuelType(String fuelType, String title) {
+        if (LexusHybridModel.bodyType(title) != null) return "HYBRID";
         String lower = (safe(fuelType) + " " + safe(title)).toLowerCase(Locale.ROOT);
         String titleLower = safe(title).toLowerCase(Locale.ROOT);
 
@@ -732,6 +733,7 @@ public class CarStorageService {
     }
 
     private String normalizeTransmission(String transmission, String title, String fuelType) {
+        if (LexusHybridModel.bodyType(title) != null) return "AUTOMATIC";
         String lower = (safe(transmission) + " " + safe(title)).toLowerCase(Locale.ROOT);
         String tokens = " " + lower.replaceAll("[^a-z0-9]+", " ") + " ";
 
@@ -782,6 +784,8 @@ public class CarStorageService {
     }
 
     private String normalizeCarType(String carType, String title) {
+        String lexusBodyType = LexusHybridModel.bodyType(title);
+        if (lexusBodyType != null) return lexusBodyType;
         String lower = safe(title).toLowerCase(Locale.ROOT);
         String words = " " + Normalizer.normalize(lower, Normalizer.Form.NFD)
                 .replaceAll("\\p{M}", "").replaceAll("[^a-z0-9]+", " ") + " ";
